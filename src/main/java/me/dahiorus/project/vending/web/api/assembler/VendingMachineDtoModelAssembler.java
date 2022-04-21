@@ -4,6 +4,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,9 +29,9 @@ public class VendingMachineDtoModelAssembler extends DtoModelAssembler<VendingMa
   }
 
   @Override
-  protected Link selfLink(final VendingMachineDTO content) throws AppException
+  protected Optional<Link> selfLink(final VendingMachineDTO content) throws AppException
   {
-    return linkTo(methodOn(VendingMachineRestService.class).read(content.getId())).withSelfRel();
+    return Optional.of(linkTo(methodOn(VendingMachineRestService.class).read(content.getId())).withSelfRel());
   }
 
   @Override

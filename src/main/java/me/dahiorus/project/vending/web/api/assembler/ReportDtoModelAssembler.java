@@ -3,6 +3,8 @@ package me.dahiorus.project.vending.web.api.assembler;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+import java.util.Optional;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.hateoas.CollectionModel;
@@ -33,8 +35,8 @@ public class ReportDtoModelAssembler extends DtoModelAssembler<Report, ReportDTO
   }
 
   @Override
-  protected Link selfLink(final ReportDTO content) throws AppException
+  protected Optional<Link> selfLink(final ReportDTO content) throws AppException
   {
-    return linkTo(methodOn(ReportRestService.class).read(content.getId())).withSelfRel();
+    return Optional.of(linkTo(methodOn(ReportRestService.class).read(content.getId())).withSelfRel());
   }
 }

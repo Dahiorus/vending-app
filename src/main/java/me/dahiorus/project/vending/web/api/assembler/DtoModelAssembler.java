@@ -1,9 +1,9 @@
 package me.dahiorus.project.vending.web.api.assembler;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -32,11 +32,7 @@ public abstract class DtoModelAssembler<E extends AbstractEntity, T extends Abst
 
     try
     {
-      Link selfLink = selfLink(content);
-      if (selfLink != null)
-      {
-        resource.add(selfLink);
-      }
+      selfLink(content).ifPresent(resource::add);
       resource.add(buildLinks(content));
     }
     catch (AppException e)
@@ -54,10 +50,9 @@ public abstract class DtoModelAssembler<E extends AbstractEntity, T extends Abst
     resources.add(Link.of(requestUri.toString()));
   }
 
-  @Nullable
-  protected Link selfLink(final T content) throws AppException
+  protected Optional<Link> selfLink(final T content) throws AppException
   {
-    return null;
+    return Optional.empty();
   }
 
   protected Iterable<Link> buildLinks(@Nonnull final T content) throws AppException
