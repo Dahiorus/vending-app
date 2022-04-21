@@ -1,22 +1,21 @@
 package me.dahiorus.project.vending.web.api.assembler;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
 import java.util.List;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.SimpleRepresentationModelAssembler;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponents;
 
 import me.dahiorus.project.vending.common.HasLogger;
 import me.dahiorus.project.vending.core.exception.AppException;
 import me.dahiorus.project.vending.core.model.AbstractEntity;
 import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
-import me.dahiorus.project.vending.web.api.RestService;
 
 public abstract class DtoModelAssembler<E extends AbstractEntity, T extends AbstractDTO<E>>
     implements SimpleRepresentationModelAssembler<T>, HasLogger
@@ -33,8 +32,12 @@ public abstract class DtoModelAssembler<E extends AbstractEntity, T extends Abst
 
     try
     {
-      resource.add(selfLink(content))
-        .add(buildLinks(content));
+      Link selfLink = selfLink(content);
+      if (selfLink != null)
+      {
+        resource.add(selfLink);
+      }
+      resource.add(buildLinks(content));
     }
     catch (AppException e)
     {
@@ -45,14 +48,16 @@ public abstract class DtoModelAssembler<E extends AbstractEntity, T extends Abst
   @Override
   public void addLinks(final CollectionModel<EntityModel<T>> resources)
   {
-    // empty method
+    UriComponents requestUri = ServletUriComponentsBuilder.fromCurrentRequest()
+      .build();
+
+    resources.add(Link.of(requestUri.toString()));
   }
 
+  @Nullable
   protected Link selfLink(final T content) throws AppException
   {
-    getLogger().trace("Building self link for {}", content);
-
-    return linkTo(methodOn(getControllerClass()).read(content.getId())).withSelfRel();
+    return null;
   }
 
   protected Iterable<Link> buildLinks(@Nonnull final T content) throws AppException
@@ -61,7 +66,4 @@ public abstract class DtoModelAssembler<E extends AbstractEntity, T extends Abst
 
     return List.of();
   }
-
-  @Nonnull
-  protected abstract Class<? extends RestService<E, T>> getControllerClass();
 }

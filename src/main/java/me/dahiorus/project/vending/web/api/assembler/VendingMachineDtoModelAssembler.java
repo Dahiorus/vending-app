@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import me.dahiorus.project.vending.core.exception.AppException;
 import me.dahiorus.project.vending.core.model.VendingMachine;
 import me.dahiorus.project.vending.core.model.dto.VendingMachineDTO;
-import me.dahiorus.project.vending.web.api.RestService;
 import me.dahiorus.project.vending.web.api.impl.CommentRestService;
 import me.dahiorus.project.vending.web.api.impl.VendingMachineRestService;
 
@@ -29,15 +28,15 @@ public class VendingMachineDtoModelAssembler extends DtoModelAssembler<VendingMa
   }
 
   @Override
+  protected Link selfLink(final VendingMachineDTO content) throws AppException
+  {
+    return linkTo(methodOn(VendingMachineRestService.class).read(content.getId())).withSelfRel();
+  }
+
+  @Override
   protected Iterable<Link> buildLinks(final VendingMachineDTO content) throws AppException
   {
     return List.of(linkTo(methodOn(VendingMachineRestService.class).getStocks(content.getId())).withRel("stocks"),
         linkTo(methodOn(CommentRestService.class).getComments(content.getId())).withRel("comments"));
-  }
-
-  @Override
-  protected Class<? extends RestService<VendingMachine, VendingMachineDTO>> getControllerClass()
-  {
-    return VendingMachineRestService.class;
   }
 }
