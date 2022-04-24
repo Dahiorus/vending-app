@@ -26,7 +26,7 @@ public class DtoMapperImpl implements DtoMapper
   @Override
   public <E extends AbstractEntity, D extends AbstractDTO<E>> E toEntity(final D dto, final Class<E> targetClass)
   {
-    logger.debug("Converting {} to instance of {}", dto, targetClass);
+    logger.debug("Converting {} to instance of {}", dto, targetClass.getSimpleName());
 
     if (dto == null)
     {
@@ -39,7 +39,7 @@ public class DtoMapperImpl implements DtoMapper
   @Override
   public <E extends AbstractEntity, D extends AbstractDTO<E>> D toDto(final E entity, final Class<D> targetClass)
   {
-    logger.debug("Converting {} to instance of {}", entity, targetClass);
+    logger.debug("Converting {} to instance of {}", entity, targetClass.getSimpleName());
 
     if (entity == null)
     {

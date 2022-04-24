@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
 import me.dahiorus.project.vending.common.HasLogger;
@@ -43,13 +42,13 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
   @Override
   public D create(final D dto) throws ValidationException
   {
-    getLogger().debug("Creating a new {}: {}", entityClass.getSimpleName(), dto);
+    getLogger().debug("Creating a new {}: {}", getDomainClass().getSimpleName(), dto);
 
     validate(dto, CrudOperation.CREATE);
     E createdEntity = dao.save(dtoMapper.toEntity(dto, entityClass));
     D createdDto = dtoMapper.toDto(createdEntity, getDomainClass());
 
-    getLogger().info("{} created: {}", entityClass.getSimpleName(), createdDto);
+    getLogger().info("{} created: {}", getDomainClass().getSimpleName(), createdDto);
 
     return createdDto;
   }
@@ -68,7 +67,7 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
   @Override
   public D update(final UUID id, final D dto) throws EntityNotFound, ValidationException
   {
-    getLogger().debug("Updating {} with ID {}: {}", entityClass.getSimpleName(), id, dto);
+    getLogger().debug("Updating {} with ID {}: {}", getDomainClass().getSimpleName(), id, dto);
 
     E entity = dao.read(id);
 
@@ -78,7 +77,7 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     E updatedEntity = dao.save(entity);
     D updatedDto = dtoMapper.toDto(updatedEntity, getDomainClass());
 
-    getLogger().info("{} updated: {}", entityClass.getSimpleName(), updatedDto);
+    getLogger().info("{} updated: {}", getDomainClass().getSimpleName(), updatedDto);
 
     return updatedDto;
   }
@@ -87,21 +86,21 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
   @Override
   public void delete(final UUID id) throws EntityNotFound
   {
-    getLogger().debug("Deleting {} with ID {}", entityClass.getSimpleName(), id);
+    getLogger().debug("Deleting {} with ID {}", getDomainClass().getSimpleName(), id);
 
     E entity = dao.read(id);
     dao.delete(entity);
 
-    getLogger().info("{} with ID {} deleted", getDomainClass().getSimpleName(), id);
+    getLogger().info("{} deleted: ID {}", getDomainClass().getSimpleName(), id);
   }
 
   @Transactional(readOnly = true)
   @Override
   public Page<D> list(final Pageable pageable)
   {
-    getLogger().debug("Getting page {} of {}", pageable, entityClass.getSimpleName());
+    getLogger().debug("Getting page {} of {}", pageable, getDomainClass().getSimpleName());
 
-    Page<E> entities = dao.findAll(Specification.where(null), pageable);
+    Page<E> entities = dao.findAll(pageable);
 
     return entities.map(entity -> dtoMapper.toDto(entity, getDomainClass()));
   }
@@ -109,7 +108,7 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
   @Override
   public Optional<D> findById(final UUID id)
   {
-    getLogger().debug("Finding one {} with ID {}", entityClass.getSimpleName(), id);
+    getLogger().debug("Finding one {} with ID {}", getDomainClass().getSimpleName(), id);
 
     Optional<E> entity = dao.findById(id);
 
@@ -120,14 +119,14 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
   {
     if (dtoValidator.isEmpty())
     {
-      getLogger().debug("No available validator for {}. Skipping the validation", entityClass.getSimpleName());
+      getLogger().debug("No available validator for {}. Skipping the validation", getDomainClass().getSimpleName());
       return;
     }
 
-    getLogger().debug("Validating {}: {}", entityClass.getSimpleName(), dto);
+    getLogger().debug("Validating {}: {}", getDomainClass().getSimpleName(), dto);
 
-    DtoValidator<E, D> validator = dtoValidator.get();
-    ValidationResults validationResults = validator.validate(dto);
+    ValidationResults validationResults = dtoValidator.get()
+      .validate(dto);
     validationResults.throwIfError(dto, operation);
   }
 
