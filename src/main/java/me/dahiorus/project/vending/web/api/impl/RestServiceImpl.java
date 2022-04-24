@@ -79,11 +79,21 @@ public abstract class RestServiceImpl<E extends AbstractEntity, D extends Abstra
   }
 
   @Override
-  public ResponseEntity<EntityModel<D>> update(final UUID id, final D dto) throws EntityNotFound, ValidationException
+  public ResponseEntity<EntityModel<D>> update(final UUID id, final D dto) throws ValidationException
   {
-    getLogger().debug("Updating entity with ID {}: {}", id, dto);
 
-    D updatedEntity = dtoService.update(id, dto);
+    D updatedEntity;
+    try
+    {
+      getLogger().debug("Updating entity with ID {}: {}", id, dto);
+      updatedEntity = dtoService.update(id, dto);
+    }
+    catch (EntityNotFound ignore)
+    {
+      getLogger().debug("Creating entity with ID {}: {}", id, dto);
+      dto.setId(id);
+      updatedEntity = dtoService.create(dto);
+    }
 
     return ok(modelAssembler.toModel(updatedEntity));
   }

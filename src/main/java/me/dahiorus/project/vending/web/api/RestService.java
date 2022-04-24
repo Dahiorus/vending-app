@@ -48,13 +48,11 @@ public interface RestService<E extends AbstractEntity, D extends AbstractDTO<E>>
   @GetMapping("/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}")
   ResponseEntity<EntityModel<D>> read(@PathVariable UUID id) throws EntityNotFound;
 
-  @Operation(description = "Update an existing entity targeted by its ID")
+  @Operation(description = "Update or create an entity targeted by its ID")
   @ApiResponse(responseCode = "200", description = "Entity updated")
   @PutMapping(value = "/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}",
       consumes = MediaType.APPLICATION_JSON_VALUE)
-  ResponseEntity<EntityModel<D>> update(@PathVariable UUID id,
-      @RequestBody D dto)
-      throws EntityNotFound, ValidationException;
+  ResponseEntity<EntityModel<D>> update(@PathVariable UUID id, @RequestBody D dto) throws ValidationException;
 
   @Operation(description = "Delete an existing entity targeted by its ID")
   @ApiResponse(responseCode = "204", description = "Entity deleted")
