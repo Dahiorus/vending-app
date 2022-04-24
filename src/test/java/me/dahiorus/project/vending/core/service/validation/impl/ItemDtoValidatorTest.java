@@ -18,7 +18,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import me.dahiorus.project.vending.core.dao.ModelDaos.ItemDAO;
+import me.dahiorus.project.vending.core.dao.ItemDAO;
 import me.dahiorus.project.vending.core.model.Item;
 import me.dahiorus.project.vending.core.model.ItemType;
 import me.dahiorus.project.vending.core.model.dto.ItemDTO;

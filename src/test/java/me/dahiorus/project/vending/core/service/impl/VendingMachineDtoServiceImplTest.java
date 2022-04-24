@@ -19,10 +19,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import me.dahiorus.project.vending.core.dao.VendingMachineDAO;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ItemMissing;
 import me.dahiorus.project.vending.core.exception.ValidationException;
-import me.dahiorus.project.vending.core.manager.impl.VendingMachineManager;
 import me.dahiorus.project.vending.core.model.Item;
 import me.dahiorus.project.vending.core.model.ItemType;
 import me.dahiorus.project.vending.core.model.Stock;
@@ -38,7 +38,7 @@ import me.dahiorus.project.vending.core.service.validation.impl.VendingMachineDt
 class VendingMachineDtoServiceImplTest
 {
   @Mock
-  VendingMachineManager manager;
+  VendingMachineDAO dao;
 
   @Mock
   VendingMachineDtoValidator dtoValidator;
@@ -72,7 +72,7 @@ class VendingMachineDtoServiceImplTest
   @BeforeEach
   void setUp()
   {
-    controller = new VendingMachineDtoServiceImpl(manager, new DtoMapperImpl(), dtoValidator, commentDtoValidator);
+    controller = new VendingMachineDtoServiceImpl(dao, new DtoMapperImpl(), dtoValidator, commentDtoValidator);
   }
 
   @Nested
@@ -86,8 +86,8 @@ class VendingMachineDtoServiceImplTest
       itemDto.setName("CocaCola");
       itemDto.setType(machine.getType());
 
-      when(manager.read(machine.getId())).thenReturn(machine);
-      when(manager.update(machine)).thenReturn(machine);
+      when(dao.read(machine.getId())).thenReturn(machine);
+      when(dao.save(machine)).thenReturn(machine);
 
       assertThatNoException().isThrownBy(() -> controller.provisionStock(machine.getId(), itemDto, 10L));
 
@@ -108,8 +108,8 @@ class VendingMachineDtoServiceImplTest
       item.setName("CocaCola");
       addStock(machine, item, 5L);
 
-      when(manager.read(machine.getId())).thenReturn(machine);
-      when(manager.update(machine)).thenReturn(machine);
+      when(dao.read(machine.getId())).thenReturn(machine);
+      when(dao.save(machine)).thenReturn(machine);
 
       ItemDTO itemDto = new ItemDTO();
       itemDto.setId(item.getId());
@@ -128,22 +128,22 @@ class VendingMachineDtoServiceImplTest
       itemDto.setName("Lays");
       itemDto.setType(ItemType.FOOD);
 
-      when(manager.read(machine.getId())).thenReturn(machine);
+      when(dao.read(machine.getId())).thenReturn(machine);
 
       assertThatExceptionOfType(ValidationException.class)
         .isThrownBy(() -> controller.provisionStock(machine.getId(), itemDto, 10L));
-      verify(manager, never()).update(machine);
+      verify(dao, never()).save(machine);
     }
 
     @Test
     void cannotProvisionUnknownMachine() throws Exception
     {
       UUID id = UUID.randomUUID();
-      when(manager.read(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
+      when(dao.read(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
 
       assertThatExceptionOfType(EntityNotFound.class)
         .isThrownBy(() -> controller.provisionStock(id, new ItemDTO(), 15L));
-      verify(manager, never()).update(any());
+      verify(dao, never()).save(any());
     }
   }
 
@@ -157,8 +157,8 @@ class VendingMachineDtoServiceImplTest
       Item item = buildItem("Chips", machine.getType(), 1.5);
       addStock(machine, item, 10L);
 
-      when(manager.read(machine.getId())).thenReturn(machine);
-      when(manager.update(machine)).thenReturn(machine);
+      when(dao.read(machine.getId())).thenReturn(machine);
+      when(dao.save(machine)).thenReturn(machine);
 
       ItemDTO itemToPurchase = new ItemDTO();
       itemToPurchase.setId(item.getId());
@@ -178,42 +178,42 @@ class VendingMachineDtoServiceImplTest
       Item item = buildItem("Chips", machine.getType(), 1.5);
       addStock(machine, item, 0L);
 
-      when(manager.read(machine.getId())).thenReturn(machine);
+      when(dao.read(machine.getId())).thenReturn(machine);
 
       ItemDTO itemToPurchase = new ItemDTO();
       itemToPurchase.setId(item.getId());
 
       assertThatExceptionOfType(ItemMissing.class)
         .isThrownBy(() -> controller.purchaseItem(machine.getId(), itemToPurchase));
-      verify(manager, never()).update(machine);
+      verify(dao, never()).save(machine);
     }
 
     @Test
     void purchaseUnknownItem() throws Exception
     {
       VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.FOOD);
-      when(manager.read(machine.getId())).thenReturn(machine);
+      when(dao.read(machine.getId())).thenReturn(machine);
 
       ItemDTO itemToPurchase = new ItemDTO();
       itemToPurchase.setId(UUID.randomUUID());
 
       assertThatExceptionOfType(ItemMissing.class)
         .isThrownBy(() -> controller.purchaseItem(machine.getId(), itemToPurchase));
-      verify(manager, never()).update(machine);
+      verify(dao, never()).save(machine);
     }
 
     @Test
     void purchaseFromUnknownMachine() throws Exception
     {
       UUID id = UUID.randomUUID();
-      when(manager.read(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
+      when(dao.read(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
 
       ItemDTO itemToPurchase = new ItemDTO();
       itemToPurchase.setId(UUID.randomUUID());
 
       assertThatExceptionOfType(EntityNotFound.class)
         .isThrownBy(() -> controller.purchaseItem(id, itemToPurchase));
-      verify(manager, never()).update(any());
+      verify(dao, never()).save(any());
     }
 
     Item buildItem(final String name, final ItemType type, final Double price)
@@ -235,8 +235,8 @@ class VendingMachineDtoServiceImplTest
     void commentMachine() throws Exception
     {
       VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.FOOD);
-      when(manager.read(machine.getId())).thenReturn(machine);
-      when(manager.update(machine)).thenReturn(machine);
+      when(dao.read(machine.getId())).thenReturn(machine);
+      when(dao.save(machine)).thenReturn(machine);
 
       CommentDTO comment = new CommentDTO();
       comment.setRate(5);
@@ -251,7 +251,7 @@ class VendingMachineDtoServiceImplTest
     void commentHasInvalidValue() throws Exception
     {
       VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.FOOD);
-      when(manager.read(machine.getId())).thenReturn(machine);
+      when(dao.read(machine.getId())).thenReturn(machine);
 
       CommentDTO comment = new CommentDTO();
       comment.setContent("This is a comment");
@@ -265,18 +265,18 @@ class VendingMachineDtoServiceImplTest
 
       assertThatExceptionOfType(ValidationException.class)
         .isThrownBy(() -> controller.comment(machine.getId(), comment));
-      verify(manager, never()).update(machine);
+      verify(dao, never()).save(machine);
     }
 
     @Test
     void commentUnknownMachine() throws Exception
     {
       UUID id = UUID.randomUUID();
-      when(manager.read(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
+      when(dao.read(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
 
       assertThatExceptionOfType(EntityNotFound.class)
         .isThrownBy(() -> controller.comment(id, new CommentDTO()));
-      verify(manager, never()).update(any());
+      verify(dao, never()).save(any());
     }
   }
 }

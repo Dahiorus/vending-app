@@ -12,7 +12,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import me.dahiorus.project.vending.core.dao.ModelDaos.CommentDAO;
+import me.dahiorus.project.vending.core.dao.CommentDAO;
 import me.dahiorus.project.vending.core.model.dto.CommentDTO;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 

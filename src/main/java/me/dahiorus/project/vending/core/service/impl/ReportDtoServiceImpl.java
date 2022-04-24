@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import me.dahiorus.project.vending.common.HasLogger;
+import me.dahiorus.project.vending.core.dao.AbstractDAO;
+import me.dahiorus.project.vending.core.dao.ReportDAO;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ValidationException;
-import me.dahiorus.project.vending.core.manager.GenericManager;
-import me.dahiorus.project.vending.core.manager.impl.ReportManager;
 import me.dahiorus.project.vending.core.model.Report;
 import me.dahiorus.project.vending.core.model.VendingMachine;
 import me.dahiorus.project.vending.core.model.dto.ReportDTO;
@@ -22,19 +22,19 @@ import me.dahiorus.project.vending.core.service.DtoMapper;
 import me.dahiorus.project.vending.core.service.ReportDtoService;
 
 @Service
-public class ReportDtoServiceImpl extends DtoServiceImpl<Report, ReportDTO, ReportManager>
+public class ReportDtoServiceImpl extends DtoServiceImpl<Report, ReportDTO, ReportDAO>
     implements ReportDtoService, HasLogger
 {
   private static final Logger logger = LogManager.getLogger(ReportDtoServiceImpl.class);
 
-  private final GenericManager<VendingMachine> vendingMachineManager;
+  private final AbstractDAO<VendingMachine> vendingMachineDao;
 
   @Autowired
-  public ReportDtoServiceImpl(final ReportManager manager, final DtoMapper dtoMapper,
-      final GenericManager<VendingMachine> vendingMachineManager)
+  public ReportDtoServiceImpl(final ReportDAO manager, final DtoMapper dtoMapper,
+      final AbstractDAO<VendingMachine> vendingMachineDao)
   {
     super(manager, dtoMapper, null);
-    this.vendingMachineManager = vendingMachineManager;
+    this.vendingMachineDao = vendingMachineDao;
   }
 
   @Override
@@ -49,13 +49,13 @@ public class ReportDtoServiceImpl extends DtoServiceImpl<Report, ReportDTO, Repo
   {
     logger.traceEntry(() -> vendingMachineId);
 
-    VendingMachine machineToReport = vendingMachineManager.read(vendingMachineId);
+    VendingMachine machineToReport = vendingMachineDao.read(vendingMachineId);
 
     // get the last report to have the last reporting date
-    Optional<Report> lastReportOpt = manager.findLastGenerated(machineToReport);
+    Optional<Report> lastReportOpt = dao.findLastGenerated(machineToReport);
     Instant lastReportingDate = lastReportOpt.map(Report::getCreatedAt)
       .orElse(null);
-    Report report = manager.create(new Report(machineToReport, lastReportingDate));
+    Report report = dao.save(new Report(machineToReport, lastReportingDate));
     ReportDTO dto = dtoMapper.toDto(report, getDomainClass());
 
     logger.info("Report created for vending machine {} : {}", machineToReport.getId(), report);

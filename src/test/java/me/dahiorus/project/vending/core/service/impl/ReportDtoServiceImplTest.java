@@ -23,9 +23,9 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import me.dahiorus.project.vending.core.dao.ReportDAO;
+import me.dahiorus.project.vending.core.dao.VendingMachineDAO;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.manager.impl.ReportManager;
-import me.dahiorus.project.vending.core.manager.impl.VendingMachineManager;
 import me.dahiorus.project.vending.core.model.ChangeSystemStatus;
 import me.dahiorus.project.vending.core.model.Item;
 import me.dahiorus.project.vending.core.model.ItemType;
@@ -41,10 +41,10 @@ import me.dahiorus.project.vending.core.model.dto.ReportDTO;
 class ReportDtoServiceImplTest
 {
   @Mock
-  ReportManager manager;
+  ReportDAO dao;
 
   @Mock
-  VendingMachineManager vendingMachineManager;
+  VendingMachineDAO vendingMachineDao;
 
   ReportDtoServiceImpl controller;
 
@@ -54,10 +54,10 @@ class ReportDtoServiceImplTest
   @BeforeEach
   void setUp()
   {
-    when(manager.getDomainClass()).thenCallRealMethod();
-    controller = new ReportDtoServiceImpl(manager, new DtoMapperImpl(), vendingMachineManager);
+    when(dao.getDomainClass()).thenCallRealMethod();
+    controller = new ReportDtoServiceImpl(dao, new DtoMapperImpl(), vendingMachineDao);
 
-    lenient().when(manager.create(any()))
+    lenient().when(dao.save(any()))
       .then(invocation -> {
         Report arg = invocation.getArgument(0);
         arg.setId(UUID.randomUUID());
@@ -86,17 +86,17 @@ class ReportDtoServiceImplTest
     void reportUnkownMachine() throws Exception
     {
       UUID id = UUID.randomUUID();
-      when(vendingMachineManager.read(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
+      when(vendingMachineDao.read(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
 
       assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> controller.report(id));
-      verify(manager, never()).create(any());
+      verify(dao, never()).save(any());
     }
 
     @Test
     void reportVendingMachine() throws Exception
     {
       VendingMachine machine = buildMachine(UUID.randomUUID());
-      when(vendingMachineManager.read(machine.getId())).thenReturn(machine);
+      when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
 
       ReportDTO report = controller.report(machine.getId());
 
@@ -118,7 +118,7 @@ class ReportDtoServiceImplTest
       stock.setQuantity(12L);
       machine.setStocks(List.of(stock));
 
-      when(vendingMachineManager.read(machine.getId())).thenReturn(machine);
+      when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
 
       ReportDTO report = controller.report(machine.getId());
 
@@ -141,7 +141,7 @@ class ReportDtoServiceImplTest
       sale2.setMachine(machine);
       machine.setSales(List.of(sale1, sale2));
 
-      when(vendingMachineManager.read(machine.getId())).thenReturn(machine);
+      when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
 
       ReportDTO report = controller.report(machine.getId());
 
@@ -163,8 +163,8 @@ class ReportDtoServiceImplTest
       sale2.setCreatedAt(Instant.parse("2022-04-10T10:15:30Z"));
       machine.setSales(List.of(sale1, sale2));
 
-      when(vendingMachineManager.read(machine.getId())).thenReturn(machine);
-      when(manager.findLastGenerated(machine)).then(invocation -> {
+      when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
+      when(dao.findLastGenerated(machine)).then(invocation -> {
         Report oldReport = new Report();
         oldReport.setCreatedAt(Instant.parse("2022-04-02T10:15:30Z"));
         return Optional.of(oldReport);

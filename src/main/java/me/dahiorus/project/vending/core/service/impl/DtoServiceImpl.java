@@ -5,12 +5,13 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
 import me.dahiorus.project.vending.common.HasLogger;
+import me.dahiorus.project.vending.core.dao.AbstractDAO;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ValidationException;
-import me.dahiorus.project.vending.core.manager.GenericManager;
 import me.dahiorus.project.vending.core.model.AbstractEntity;
 import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
 import me.dahiorus.project.vending.core.service.DtoMapper;
@@ -19,10 +20,10 @@ import me.dahiorus.project.vending.core.service.validation.CrudOperation;
 import me.dahiorus.project.vending.core.service.validation.DtoValidator;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
-public abstract class DtoServiceImpl<E extends AbstractEntity, D extends AbstractDTO<E>, M extends GenericManager<E>>
+public abstract class DtoServiceImpl<E extends AbstractEntity, D extends AbstractDTO<E>, DAO extends AbstractDAO<E>>
     implements DtoService<E, D>, HasLogger
 {
-  protected final M manager;
+  protected final DAO dao;
 
   protected final DtoMapper dtoMapper;
 
@@ -30,12 +31,12 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
 
   protected final Class<E> entityClass;
 
-  protected DtoServiceImpl(final M manager, final DtoMapper dtoMapper, final DtoValidator<E, D> dtoValidator)
+  protected DtoServiceImpl(final DAO dao, final DtoMapper dtoMapper, final DtoValidator<E, D> dtoValidator)
   {
-    this.manager = manager;
+    this.dao = dao;
     this.dtoMapper = dtoMapper;
     this.dtoValidator = Optional.ofNullable(dtoValidator);
-    entityClass = manager.getDomainClass();
+    entityClass = dao.getDomainClass();
   }
 
   @Transactional(rollbackFor = ValidationException.class)
@@ -45,7 +46,7 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     getLogger().debug("Creating a new {}: {}", entityClass.getSimpleName(), dto);
 
     validate(dto, CrudOperation.CREATE);
-    E createdEntity = manager.create(dtoMapper.toEntity(dto, entityClass));
+    E createdEntity = dao.save(dtoMapper.toEntity(dto, entityClass));
     D createdDto = dtoMapper.toDto(createdEntity, getDomainClass());
 
     getLogger().info("{} created: {}", entityClass.getSimpleName(), createdDto);
@@ -58,7 +59,7 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
   public D read(final UUID id) throws EntityNotFound
   {
     getLogger().debug("Getting {} with ID {}", getDomainClass().getSimpleName(), id);
-    E entity = manager.read(id);
+    E entity = dao.read(id);
 
     return dtoMapper.toDto(entity, getDomainClass());
   }
@@ -69,12 +70,12 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
   {
     getLogger().debug("Updating {} with ID {}: {}", entityClass.getSimpleName(), id, dto);
 
-    E entity = manager.read(id);
+    E entity = dao.read(id);
 
     dto.setId(id);
     validate(dto, CrudOperation.UPDATE);
     dtoMapper.patchEntity(dto, entity);
-    E updatedEntity = manager.update(entity);
+    E updatedEntity = dao.save(entity);
     D updatedDto = dtoMapper.toDto(updatedEntity, getDomainClass());
 
     getLogger().info("{} updated: {}", entityClass.getSimpleName(), updatedDto);
@@ -88,8 +89,8 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
   {
     getLogger().debug("Deleting {} with ID {}", entityClass.getSimpleName(), id);
 
-    E entity = manager.read(id);
-    manager.delete(entity);
+    E entity = dao.read(id);
+    dao.delete(entity);
 
     getLogger().info("{} with ID {} deleted", getDomainClass().getSimpleName(), id);
   }
@@ -100,7 +101,7 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
   {
     getLogger().debug("Getting page {} of {}", pageable, entityClass.getSimpleName());
 
-    Page<E> entities = manager.findAll(pageable, null);
+    Page<E> entities = dao.findAll(Specification.where(null), pageable);
 
     return entities.map(entity -> dtoMapper.toDto(entity, getDomainClass()));
   }
@@ -110,7 +111,7 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
   {
     getLogger().debug("Finding one {} with ID {}", entityClass.getSimpleName(), id);
 
-    Optional<E> entity = manager.findOneById(id);
+    Optional<E> entity = dao.findById(id);
 
     return Optional.ofNullable(dtoMapper.toDto(entity.orElse(null), getDomainClass()));
   }

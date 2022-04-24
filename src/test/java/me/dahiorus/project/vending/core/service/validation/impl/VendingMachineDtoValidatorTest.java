@@ -17,7 +17,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import me.dahiorus.project.vending.core.dao.ModelDaos.VendingMachineDAO;
+import me.dahiorus.project.vending.core.dao.VendingMachineDAO;
 import me.dahiorus.project.vending.core.model.ItemType;
 import me.dahiorus.project.vending.core.model.PowerStatus;
 import me.dahiorus.project.vending.core.model.VendingMachine;
