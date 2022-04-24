@@ -1,24 +1,23 @@
 package me.dahiorus.project.vending.core.service.impl;
 
-import static org.springframework.validation.ValidationUtils.invokeValidator;
-
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.Errors;
 
 import me.dahiorus.project.vending.common.HasLogger;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.exception.InvalidData;
+import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.manager.GenericManager;
 import me.dahiorus.project.vending.core.model.AbstractEntity;
 import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
 import me.dahiorus.project.vending.core.service.DtoMapper;
 import me.dahiorus.project.vending.core.service.DtoService;
+import me.dahiorus.project.vending.core.service.validation.CrudOperation;
+import me.dahiorus.project.vending.core.service.validation.DtoValidator;
+import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
 public abstract class DtoServiceImpl<E extends AbstractEntity, D extends AbstractDTO<E>, M extends GenericManager<E>>
     implements DtoService<E, D>, HasLogger
@@ -27,26 +26,25 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
 
   protected final DtoMapper dtoMapper;
 
-  protected final DtoValidator<E, D> dtoValidator;
+  protected final Optional<DtoValidator<E, D>> dtoValidator;
 
   protected final Class<E> entityClass;
 
-  protected DtoServiceImpl(final M manager, final DtoMapper dtoMapper,
-      final DtoValidator<E, D> dtoValidator)
+  protected DtoServiceImpl(final M manager, final DtoMapper dtoMapper, final DtoValidator<E, D> dtoValidator)
   {
     this.manager = manager;
     this.dtoMapper = dtoMapper;
-    this.dtoValidator = dtoValidator;
+    this.dtoValidator = Optional.ofNullable(dtoValidator);
     entityClass = manager.getDomainClass();
   }
 
-  @Transactional(rollbackFor = InvalidData.class)
+  @Transactional(rollbackFor = ValidationException.class)
   @Override
-  public D create(final D dto) throws InvalidData
+  public D create(final D dto) throws ValidationException
   {
     getLogger().debug("Creating a new {}: {}", entityClass.getSimpleName(), dto);
 
-    checkErrors(validate(dto), dto);
+    validate(dto, CrudOperation.CREATE);
     E createdEntity = manager.create(dtoMapper.toEntity(dto, entityClass));
     D createdDto = dtoMapper.toDto(createdEntity, getDomainClass());
 
@@ -65,16 +63,16 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     return dtoMapper.toDto(entity, getDomainClass());
   }
 
-  @Transactional(rollbackFor = { EntityNotFound.class, InvalidData.class })
+  @Transactional(rollbackFor = { EntityNotFound.class, ValidationException.class })
   @Override
-  public D update(final UUID id, final D dto) throws EntityNotFound, InvalidData
+  public D update(final UUID id, final D dto) throws EntityNotFound, ValidationException
   {
     getLogger().debug("Updating {} with ID {}: {}", entityClass.getSimpleName(), id, dto);
 
     E entity = manager.read(id);
 
     dto.setId(id);
-    checkErrors(validate(dto), dto);
+    validate(dto, CrudOperation.UPDATE);
     dtoMapper.patchEntity(dto, entity);
     E updatedEntity = manager.update(entity);
     D updatedDto = dtoMapper.toDto(updatedEntity, getDomainClass());
@@ -117,22 +115,19 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     return Optional.ofNullable(dtoMapper.toDto(entity.orElse(null), getDomainClass()));
   }
 
-  protected Errors validate(final D dto)
+  protected void validate(final D dto, final CrudOperation operation) throws ValidationException
   {
+    if (dtoValidator.isEmpty())
+    {
+      getLogger().debug("No available validator for {}. Skipping the validation", entityClass.getSimpleName());
+      return;
+    }
+
     getLogger().debug("Validating {}: {}", entityClass.getSimpleName(), dto);
 
-    Errors errors = new BeanPropertyBindingResult(dto, entityClass.getSimpleName());
-    invokeValidator(dtoValidator, dto, errors);
-
-    return errors;
-  }
-
-  protected void checkErrors(final Errors errors, final Object target) throws InvalidData
-  {
-    if (errors.hasErrors())
-    {
-      throw new InvalidData(errors, target);
-    }
+    DtoValidator<E, D> validator = dtoValidator.get();
+    ValidationResults validationResults = validator.validate(dto);
+    validationResults.throwIfError(dto, operation);
   }
 
   protected abstract Class<D> getDomainClass();

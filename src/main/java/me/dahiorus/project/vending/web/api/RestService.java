@@ -26,7 +26,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.exception.InvalidData;
+import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.model.AbstractEntity;
 import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
 
@@ -42,7 +42,7 @@ public interface RestService<E extends AbstractEntity, D extends AbstractDTO<E>>
   @ApiResponse(responseCode = "201", description = "Entity created")
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   ResponseEntity<EntityModel<D>> create(
-      @RequestBody D dto) throws InvalidData;
+      @RequestBody D dto) throws ValidationException;
 
   @Operation(description = "Get an entity by its ID")
   @GetMapping("/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}")
@@ -54,7 +54,7 @@ public interface RestService<E extends AbstractEntity, D extends AbstractDTO<E>>
       consumes = MediaType.APPLICATION_JSON_VALUE)
   ResponseEntity<EntityModel<D>> update(@PathVariable UUID id,
       @RequestBody D dto)
-      throws EntityNotFound, InvalidData;
+      throws EntityNotFound, ValidationException;
 
   @Operation(description = "Delete an existing entity targeted by its ID")
   @ApiResponse(responseCode = "204", description = "Entity deleted")
@@ -68,5 +68,5 @@ public interface RestService<E extends AbstractEntity, D extends AbstractDTO<E>>
   ResponseEntity<EntityModel<D>> patch(@PathVariable UUID id,
       @ArraySchema(schema = @Schema(implementation = JsonPatchOperation.class,
           description = "JSON patch using RFC 6902")) @RequestBody JsonPatch jsonPatch)
-      throws EntityNotFound, InvalidData;
+      throws EntityNotFound, ValidationException;
 }

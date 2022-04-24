@@ -23,7 +23,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.exception.InvalidData;
+import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.model.dto.CommentDTO;
 import me.dahiorus.project.vending.core.service.VendingMachineDtoService;
 import me.dahiorus.project.vending.web.api.AppWebService;
@@ -61,7 +61,7 @@ public class CommentRestService implements AppWebService
   @ApiResponse(responseCode = "204", description = "Comment created")
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> comment(@PathVariable final UUID id, @RequestBody final CommentDTO comment)
-      throws EntityNotFound, InvalidData
+      throws EntityNotFound, ValidationException
   {
     vendingMachineDtoService.comment(id, comment);
 

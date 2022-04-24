@@ -21,7 +21,7 @@ import com.github.fge.jsonpatch.JsonPatch;
 
 import me.dahiorus.project.vending.common.HasLogger;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.exception.InvalidData;
+import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.model.AbstractEntity;
 import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
 import me.dahiorus.project.vending.core.service.DtoService;
@@ -55,7 +55,7 @@ public abstract class RestServiceImpl<E extends AbstractEntity, D extends Abstra
   }
 
   @Override
-  public ResponseEntity<EntityModel<D>> create(final D dto) throws InvalidData
+  public ResponseEntity<EntityModel<D>> create(final D dto) throws ValidationException
   {
     getLogger().debug("Creating a new entity: {}", dto);
 
@@ -79,7 +79,7 @@ public abstract class RestServiceImpl<E extends AbstractEntity, D extends Abstra
   }
 
   @Override
-  public ResponseEntity<EntityModel<D>> update(final UUID id, final D dto) throws EntityNotFound, InvalidData
+  public ResponseEntity<EntityModel<D>> update(final UUID id, final D dto) throws EntityNotFound, ValidationException
   {
     getLogger().debug("Updating entity with ID {}: {}", id, dto);
 
@@ -107,7 +107,7 @@ public abstract class RestServiceImpl<E extends AbstractEntity, D extends Abstra
 
   @Override
   public ResponseEntity<EntityModel<D>> patch(final UUID id, final JsonPatch jsonPatch)
-      throws EntityNotFound, InvalidData
+      throws EntityNotFound, ValidationException
   {
     getLogger().debug("Patching entity with ID {}: {}", id, jsonPatch);
 

@@ -9,6 +9,7 @@ import me.dahiorus.project.vending.core.model.Item;
 import me.dahiorus.project.vending.core.model.dto.ItemDTO;
 import me.dahiorus.project.vending.core.service.DtoMapper;
 import me.dahiorus.project.vending.core.service.ItemDtoService;
+import me.dahiorus.project.vending.core.service.validation.DtoValidator;
 
 @Service
 public class ItemDtoServiceImpl extends DtoServiceImpl<Item, ItemDTO, ItemManager> implements ItemDtoService

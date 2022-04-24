@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.UUID;
 
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.exception.InvalidData;
 import me.dahiorus.project.vending.core.exception.ItemMissing;
+import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.model.VendingMachine;
 import me.dahiorus.project.vending.core.model.dto.CommentDTO;
 import me.dahiorus.project.vending.core.model.dto.ItemDTO;
@@ -17,11 +17,11 @@ public interface VendingMachineDtoService extends DtoService<VendingMachine, Ven
 {
   List<StockDTO> getStocks(UUID id) throws EntityNotFound;
 
-  void provisionStock(UUID id, ItemDTO item, long quantity) throws EntityNotFound, InvalidData;
+  void provisionStock(UUID id, ItemDTO item, Long quantity) throws EntityNotFound, ValidationException;
 
   SaleDTO purchaseItem(UUID id, ItemDTO item) throws EntityNotFound, ItemMissing;
 
   List<CommentDTO> getComments(UUID id) throws EntityNotFound;
 
-  void comment(UUID id, CommentDTO comment) throws EntityNotFound, InvalidData;
+  void comment(UUID id, CommentDTO comment) throws EntityNotFound, ValidationException;
 }

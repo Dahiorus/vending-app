@@ -46,9 +46,6 @@ class ReportDtoServiceImplTest
   @Mock
   VendingMachineManager vendingMachineManager;
 
-  @Mock
-  ReportDtoValidator dtoValidator;
-
   ReportDtoServiceImpl controller;
 
   @Captor
@@ -58,7 +55,7 @@ class ReportDtoServiceImplTest
   void setUp()
   {
     when(manager.getDomainClass()).thenCallRealMethod();
-    controller = new ReportDtoServiceImpl(manager, new DtoMapperImpl(), dtoValidator, vendingMachineManager);
+    controller = new ReportDtoServiceImpl(manager, new DtoMapperImpl(), vendingMachineManager);
 
     lenient().when(manager.create(any()))
       .then(invocation -> {
@@ -67,6 +64,19 @@ class ReportDtoServiceImplTest
         arg.setCreatedAt(Instant.now());
         return arg;
       });
+  }
+
+  @Test
+  void createIsUnsupported()
+  {
+    assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> controller.create(new ReportDTO()));
+  }
+
+  @Test
+  void updateIsUnsupported()
+  {
+    assertThatExceptionOfType(UnsupportedOperationException.class)
+      .isThrownBy(() -> controller.update(UUID.randomUUID(), new ReportDTO()));
   }
 
   @Nested

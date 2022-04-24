@@ -1,14 +1,11 @@
 package me.dahiorus.project.vending.core.service.impl;
 
+import static me.dahiorus.project.vending.core.service.validation.FieldValidationError.fieldError;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,11 +20,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.validation.Errors;
 
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.exception.InvalidData;
 import me.dahiorus.project.vending.core.exception.ItemMissing;
+import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.manager.impl.VendingMachineManager;
 import me.dahiorus.project.vending.core.model.Item;
 import me.dahiorus.project.vending.core.model.ItemType;
@@ -37,6 +33,10 @@ import me.dahiorus.project.vending.core.model.dto.CommentDTO;
 import me.dahiorus.project.vending.core.model.dto.ItemDTO;
 import me.dahiorus.project.vending.core.model.dto.SaleDTO;
 import me.dahiorus.project.vending.core.model.dto.StockDTO;
+import me.dahiorus.project.vending.core.service.validation.ValidationResults;
+import me.dahiorus.project.vending.core.service.validation.impl.CommentDtoValidator;
+import me.dahiorus.project.vending.core.service.validation.impl.StockDtoValidator;
+import me.dahiorus.project.vending.core.service.validation.impl.VendingMachineDtoValidator;
 
 @ExtendWith(MockitoExtension.class)
 class VendingMachineDtoServiceImplTest
@@ -57,9 +57,6 @@ class VendingMachineDtoServiceImplTest
 
   @Captor
   ArgumentCaptor<StockDTO> stockArg;
-
-  @Captor
-  ArgumentCaptor<Errors> errorsArg;
 
   VendingMachine buildMachine(final UUID id, final ItemType itemType)
   {
@@ -85,7 +82,6 @@ class VendingMachineDtoServiceImplTest
   @BeforeEach
   void setUp()
   {
-    when(manager.getDomainClass()).thenCallRealMethod();
     controller = new VendingMachineDtoServiceImpl(manager, new DtoMapperImpl(), dtoValidator, stockDtoValidator,
         commentDtoValidator);
   }
@@ -93,13 +89,6 @@ class VendingMachineDtoServiceImplTest
   @Nested
   class ProvisionStockTests
   {
-    @BeforeEach
-    void setUp()
-    {
-      lenient().when(stockDtoValidator.supports(StockDTO.class))
-        .thenReturn(true);
-    }
-
     @Test
     void provisionNewItem() throws Exception
     {
@@ -109,8 +98,7 @@ class VendingMachineDtoServiceImplTest
       itemDto.setType(machine.getType());
 
       when(manager.read(machine.getId())).thenReturn(machine);
-      doNothing().when(stockDtoValidator)
-        .validate(stockArg.capture(), any());
+      when(stockDtoValidator.validate(stockArg.capture())).thenReturn(new ValidationResults());
       when(manager.update(machine)).thenReturn(machine);
 
       assertThatNoException().isThrownBy(() -> controller.provisionStock(machine.getId(), itemDto, 10L));
@@ -129,8 +117,7 @@ class VendingMachineDtoServiceImplTest
       addStock(machine, item, 5L);
 
       when(manager.read(machine.getId())).thenReturn(machine);
-      doNothing().when(stockDtoValidator)
-        .validate(any(), any());
+      when(stockDtoValidator.validate(stockArg.capture())).thenReturn(new ValidationResults());
       when(manager.update(machine)).thenReturn(machine);
 
       ItemDTO itemDto = new ItemDTO();
@@ -151,8 +138,9 @@ class VendingMachineDtoServiceImplTest
       itemDto.setType(ItemType.FOOD);
 
       when(manager.read(machine.getId())).thenReturn(machine);
+      when(stockDtoValidator.validate(any())).thenReturn(new ValidationResults());
 
-      assertThatExceptionOfType(InvalidData.class)
+      assertThatExceptionOfType(ValidationException.class)
         .isThrownBy(() -> controller.provisionStock(machine.getId(), itemDto, 10L));
       verify(manager, never()).update(machine);
     }
@@ -166,15 +154,13 @@ class VendingMachineDtoServiceImplTest
       itemDto.setType(machine.getType());
 
       when(manager.read(machine.getId())).thenReturn(machine);
-      doAnswer(invocation -> {
-        invocation.getArgument(1, Errors.class)
-          .rejectValue("itemId", "validation.constraints.stock.item_not_found",
-              "Error from test");
-        return null;
-      }).when(stockDtoValidator)
-        .validate(any(), errorsArg.capture());
+      when(stockDtoValidator.validate(any())).then(invocation -> {
+        ValidationResults results = new ValidationResults();
+        results.addError(fieldError("itemId", "validation.constraints.stock.item_not_found", "Error from test"));
+        return results;
+      });
 
-      assertThatExceptionOfType(InvalidData.class)
+      assertThatExceptionOfType(ValidationException.class)
         .isThrownBy(() -> controller.provisionStock(machine.getId(), itemDto, 10L));
       verify(manager, never()).update(machine);
     }
@@ -198,11 +184,7 @@ class VendingMachineDtoServiceImplTest
     void purchaseItem() throws Exception
     {
       VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.FOOD);
-      Item item = new Item();
-      item.setId(UUID.randomUUID());
-      item.setName("Chips");
-      item.setType(machine.getType());
-      item.setPrice(1.5);
+      Item item = buildItem("Chips", machine.getType(), 1.5);
       addStock(machine, item, 10L);
 
       when(manager.read(machine.getId())).thenReturn(machine);
@@ -223,11 +205,7 @@ class VendingMachineDtoServiceImplTest
     void purchaseItemFromEmptyMachine() throws Exception
     {
       VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.FOOD);
-      Item item = new Item();
-      item.setId(UUID.randomUUID());
-      item.setName("Chips");
-      item.setType(machine.getType());
-      item.setPrice(1.5);
+      Item item = buildItem("Chips", machine.getType(), 1.5);
       addStock(machine, item, 0L);
 
       when(manager.read(machine.getId())).thenReturn(machine);
@@ -267,18 +245,22 @@ class VendingMachineDtoServiceImplTest
         .isThrownBy(() -> controller.purchaseItem(id, itemToPurchase));
       verify(manager, never()).update(any());
     }
+
+    Item buildItem(final String name, final ItemType type, final Double price)
+    {
+      Item item = new Item();
+      item.setId(UUID.randomUUID());
+      item.setName(name);
+      item.setType(type);
+      item.setPrice(price);
+
+      return item;
+    }
   }
 
   @Nested
   class CommentTests
   {
-    @BeforeEach
-    void setUp()
-    {
-      lenient().when(commentDtoValidator.supports(CommentDTO.class))
-        .thenReturn(true);
-    }
-
     @Test
     void commentMachine() throws Exception
     {
@@ -289,13 +271,14 @@ class VendingMachineDtoServiceImplTest
       CommentDTO comment = new CommentDTO();
       comment.setRate(5);
       comment.setContent("This is a comment");
+      when(commentDtoValidator.validate(comment)).thenReturn(new ValidationResults());
 
       assertThatNoException().isThrownBy(() -> controller.comment(machine.getId(), comment));
       assertThat(machine.getComments()).isNotEmpty();
     }
 
     @Test
-    void commentMustHaveRate() throws Exception
+    void commentHasInvalidValue() throws Exception
     {
       VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.FOOD);
       when(manager.read(machine.getId())).thenReturn(machine);
@@ -303,15 +286,15 @@ class VendingMachineDtoServiceImplTest
       CommentDTO comment = new CommentDTO();
       comment.setContent("This is a comment");
 
-      doAnswer(invocation -> {
-        invocation.getArgument(1, Errors.class)
-          .rejectValue("rate", "validation.constraints.comment.rate_interval",
-              "Error from test");
-        return null;
-      }).when(commentDtoValidator)
-        .validate(eq(comment), errorsArg.capture());
+      when(commentDtoValidator.validate(comment)).then(invoc -> {
+        ValidationResults results = new ValidationResults();
+        results.addError(fieldError("rate", "validation.constraints.comment.rate_interval",
+            "Error from test"));
+        return results;
+      });
 
-      assertThatExceptionOfType(InvalidData.class).isThrownBy(() -> controller.comment(machine.getId(), comment));
+      assertThatExceptionOfType(ValidationException.class)
+        .isThrownBy(() -> controller.comment(machine.getId(), comment));
       verify(manager, never()).update(machine);
     }
 

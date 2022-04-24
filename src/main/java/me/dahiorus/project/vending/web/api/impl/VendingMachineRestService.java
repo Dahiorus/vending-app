@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.exception.InvalidData;
+import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.exception.ItemMissing;
 import me.dahiorus.project.vending.core.model.VendingMachine;
 import me.dahiorus.project.vending.core.model.dto.ItemDTO;
@@ -77,7 +77,7 @@ public class VendingMachineRestService
   public ResponseEntity<CollectionModel<EntityModel<StockDTO>>> provisionStock(@PathVariable("id") final UUID id,
       @PathVariable("itemId") final UUID itemId,
       @RequestBody final ProvisionRequest provisionRequest)
-      throws EntityNotFound, InvalidData
+      throws EntityNotFound, ValidationException
   {
     ItemDTO item = itemDtoService.read(itemId);
     dtoService.provisionStock(id, item, provisionRequest.getQuantity());

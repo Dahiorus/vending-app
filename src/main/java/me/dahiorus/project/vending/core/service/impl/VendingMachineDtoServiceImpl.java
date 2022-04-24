@@ -1,24 +1,21 @@
 package me.dahiorus.project.vending.core.service.impl;
 
-import static org.springframework.validation.ValidationUtils.invokeValidator;
+import static me.dahiorus.project.vending.core.service.validation.ValidationError.objectError;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.Errors;
 
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.exception.InvalidData;
 import me.dahiorus.project.vending.core.exception.ItemMissing;
+import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.manager.impl.VendingMachineManager;
 import me.dahiorus.project.vending.core.model.Comment;
 import me.dahiorus.project.vending.core.model.Item;
@@ -32,6 +29,9 @@ import me.dahiorus.project.vending.core.model.dto.StockDTO;
 import me.dahiorus.project.vending.core.model.dto.VendingMachineDTO;
 import me.dahiorus.project.vending.core.service.DtoMapper;
 import me.dahiorus.project.vending.core.service.VendingMachineDtoService;
+import me.dahiorus.project.vending.core.service.validation.CrudOperation;
+import me.dahiorus.project.vending.core.service.validation.DtoValidator;
+import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
 @Service
 public class VendingMachineDtoServiceImpl
@@ -75,16 +75,16 @@ public class VendingMachineDtoServiceImpl
     List<StockDTO> stocks = entity.getStocks()
       .stream()
       .map(stock -> dtoMapper.toDto(stock, StockDTO.class))
-      .collect(Collectors.toList());
+      .toList();
     stocks.forEach(stock -> stock.setVendingMachineId(id));
 
     return stocks;
   }
 
-  @Transactional(rollbackFor = { EntityNotFound.class, InvalidData.class })
+  @Transactional(rollbackFor = { EntityNotFound.class, ValidationException.class })
   @Override
-  public void provisionStock(final UUID id, final ItemDTO itemDto, final long quantity)
-      throws EntityNotFound, InvalidData
+  public void provisionStock(final UUID id, final ItemDTO itemDto, final Long quantity)
+      throws EntityNotFound, ValidationException
   {
     logger.traceEntry(() -> id, () -> itemDto, () -> quantity);
 
@@ -94,18 +94,15 @@ public class VendingMachineDtoServiceImpl
     stock.setItemName(itemDto.getName());
     stock.setQuantity(quantity);
 
-    // validate stock data is valid
-    Errors errors = new BeanPropertyBindingResult(stock, "stock");
-    invokeValidator(stockDtoValidator, stock, errors);
-
+    ValidationResults validationResults = stockDtoValidator.validate(stock);
     // the item type must be the same as the machine type
     if (machine.getType() != itemDto.getType())
     {
-      errors.reject("validation.constraints.stock.invalid_item",
-          "Unable to add a stock of " + itemDto.getName() + " in the machine " + machine.getId());
+      validationResults.addError(objectError("validation.constraints.stock.invalid_item",
+          "Unable to add a stock of " + itemDto.getName() + " in the machine " + machine.getId(), itemDto.getName(),
+          machine.getId()));
     }
-
-    checkErrors(errors, stock);
+    validationResults.throwIfError(stock, CrudOperation.UPDATE);
 
     Item item = dtoMapper.toEntity(itemDto, Item.class);
     if (!machine.hasItem(item))
@@ -183,23 +180,22 @@ public class VendingMachineDtoServiceImpl
     List<CommentDTO> comments = entity.getComments()
       .stream()
       .map(comment -> dtoMapper.toDto(comment, CommentDTO.class))
-      .collect(Collectors.toList());
+      .toList();
     comments.forEach(comment -> comment.setVendingMachineId(id));
 
     return comments;
   }
 
-  @Transactional(rollbackFor = { EntityNotFound.class, InvalidData.class })
+  @Transactional(rollbackFor = { EntityNotFound.class, ValidationException.class })
   @Override
-  public void comment(final UUID id, final CommentDTO commentDto) throws EntityNotFound, InvalidData
+  public void comment(final UUID id, final CommentDTO commentDto) throws EntityNotFound, ValidationException
   {
     logger.traceEntry(() -> id, () -> commentDto);
 
     VendingMachine machine = manager.read(id);
 
-    Errors errors = new BeanPropertyBindingResult(commentDto, "comment");
-    invokeValidator(commentDtoValidator, commentDto, errors);
-    checkErrors(errors, commentDto);
+    ValidationResults validationResults = commentDtoValidator.validate(commentDto);
+    validationResults.throwIfError(commentDto, CrudOperation.CREATE);
 
     Comment comment = dtoMapper.toEntity(commentDto, Comment.class);
     machine.addComment(comment);
