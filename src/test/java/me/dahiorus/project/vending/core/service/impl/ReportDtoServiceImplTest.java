@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -40,7 +39,7 @@ import me.dahiorus.project.vending.core.model.dto.ReportDTO;
 @ExtendWith(MockitoExtension.class)
 class ReportDtoServiceImplTest
 {
-  @Mock
+  @Mock(lenient = true)
   ReportDAO dao;
 
   @Mock
@@ -54,10 +53,10 @@ class ReportDtoServiceImplTest
   @BeforeEach
   void setUp()
   {
-    when(dao.getDomainClass()).thenCallRealMethod();
+    when(dao.getDomainClass()).thenReturn(Report.class);
     controller = new ReportDtoServiceImpl(dao, new DtoMapperImpl(), vendingMachineDao);
 
-    lenient().when(dao.save(any()))
+    when(dao.save(any()))
       .then(invocation -> {
         Report arg = invocation.getArgument(0);
         arg.setId(UUID.randomUUID());
