@@ -16,8 +16,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -32,10 +30,8 @@ import me.dahiorus.project.vending.core.model.VendingMachine;
 import me.dahiorus.project.vending.core.model.dto.CommentDTO;
 import me.dahiorus.project.vending.core.model.dto.ItemDTO;
 import me.dahiorus.project.vending.core.model.dto.SaleDTO;
-import me.dahiorus.project.vending.core.model.dto.StockDTO;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 import me.dahiorus.project.vending.core.service.validation.impl.CommentDtoValidator;
-import me.dahiorus.project.vending.core.service.validation.impl.StockDtoValidator;
 import me.dahiorus.project.vending.core.service.validation.impl.VendingMachineDtoValidator;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,15 +44,9 @@ class VendingMachineDtoServiceImplTest
   VendingMachineDtoValidator dtoValidator;
 
   @Mock
-  StockDtoValidator stockDtoValidator;
-
-  @Mock
   CommentDtoValidator commentDtoValidator;
 
   VendingMachineDtoServiceImpl controller;
-
-  @Captor
-  ArgumentCaptor<StockDTO> stockArg;
 
   VendingMachine buildMachine(final UUID id, final ItemType itemType)
   {
@@ -82,8 +72,7 @@ class VendingMachineDtoServiceImplTest
   @BeforeEach
   void setUp()
   {
-    controller = new VendingMachineDtoServiceImpl(manager, new DtoMapperImpl(), dtoValidator, stockDtoValidator,
-        commentDtoValidator);
+    controller = new VendingMachineDtoServiceImpl(manager, new DtoMapperImpl(), dtoValidator, commentDtoValidator);
   }
 
   @Nested
@@ -98,13 +87,16 @@ class VendingMachineDtoServiceImplTest
       itemDto.setType(machine.getType());
 
       when(manager.read(machine.getId())).thenReturn(machine);
-      when(stockDtoValidator.validate(stockArg.capture())).thenReturn(new ValidationResults());
       when(manager.update(machine)).thenReturn(machine);
 
       assertThatNoException().isThrownBy(() -> controller.provisionStock(machine.getId(), itemDto, 10L));
+
+      Stock stock = machine.getStocks()
+        .get(0);
       assertAll(() -> assertThat(machine.getLastIntervention()).isNotNull(),
-          () -> assertThat(stockArg.getValue()).hasFieldOrPropertyWithValue("itemName", itemDto.getName())
-            .hasFieldOrPropertyWithValue("quantity", 10L));
+          () -> assertThat(stock.getQuantity()).isEqualTo(10L),
+          () -> assertThat(stock).extracting(Stock::getItem)
+            .hasFieldOrPropertyWithValue("name", itemDto.getName()));
     }
 
     @Test
@@ -117,7 +109,6 @@ class VendingMachineDtoServiceImplTest
       addStock(machine, item, 5L);
 
       when(manager.read(machine.getId())).thenReturn(machine);
-      when(stockDtoValidator.validate(stockArg.capture())).thenReturn(new ValidationResults());
       when(manager.update(machine)).thenReturn(machine);
 
       ItemDTO itemDto = new ItemDTO();
@@ -138,27 +129,6 @@ class VendingMachineDtoServiceImplTest
       itemDto.setType(ItemType.FOOD);
 
       when(manager.read(machine.getId())).thenReturn(machine);
-      when(stockDtoValidator.validate(any())).thenReturn(new ValidationResults());
-
-      assertThatExceptionOfType(ValidationException.class)
-        .isThrownBy(() -> controller.provisionStock(machine.getId(), itemDto, 10L));
-      verify(manager, never()).update(machine);
-    }
-
-    @Test
-    void cannotProvisionUnknownItem() throws Exception
-    {
-      VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.COLD_BAVERAGE);
-      ItemDTO itemDto = new ItemDTO();
-      itemDto.setName("CocaCola");
-      itemDto.setType(machine.getType());
-
-      when(manager.read(machine.getId())).thenReturn(machine);
-      when(stockDtoValidator.validate(any())).then(invocation -> {
-        ValidationResults results = new ValidationResults();
-        results.addError(fieldError("itemId", "validation.constraints.stock.item_not_found", "Error from test"));
-        return results;
-      });
 
       assertThatExceptionOfType(ValidationException.class)
         .isThrownBy(() -> controller.provisionStock(machine.getId(), itemDto, 10L));

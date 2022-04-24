@@ -2,7 +2,7 @@ package me.dahiorus.project.vending.core.dao;
 
 import javax.persistence.EntityManager;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import me.dahiorus.project.vending.core.model.Comment;
 import me.dahiorus.project.vending.core.model.CommunicationModule;
@@ -18,7 +18,7 @@ public class ModelDaos
     // Factory class
   }
 
-  @Component
+  @Repository
   public static class VendingMachineDAO extends AbstractDAO<VendingMachine>
   {
     public VendingMachineDAO(final EntityManager em)
@@ -27,7 +27,7 @@ public class ModelDaos
     }
   }
 
-  @Component
+  @Repository
   public static class ItemDAO extends AbstractDAO<Item>
   {
     public ItemDAO(final EntityManager em)
@@ -36,7 +36,7 @@ public class ModelDaos
     }
   }
 
-  @Component
+  @Repository
   public static class CommentDAO extends AbstractDAO<Comment>
   {
     public CommentDAO(final EntityManager em)
@@ -45,7 +45,7 @@ public class ModelDaos
     }
   }
 
-  @Component
+  @Repository
   public static class CommunicationModuleDAO extends AbstractDAO<CommunicationModule>
   {
     public CommunicationModuleDAO(final EntityManager em)
@@ -54,7 +54,7 @@ public class ModelDaos
     }
   }
 
-  @Component
+  @Repository
   public static class StockDAO extends AbstractDAO<Stock>
   {
     public StockDAO(final EntityManager em)
@@ -63,7 +63,7 @@ public class ModelDaos
     }
   }
 
-  @Component
+  @Repository
   public static class ReportDAO extends AbstractDAO<Report>
   {
     public ReportDAO(final EntityManager em)

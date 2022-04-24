@@ -32,6 +32,13 @@ public class VendingApplication implements WebMvcConfigurer
       .version("v1.0"));
   }
 
+//  @Bean
+//  public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder()
+//  {
+//    return new Jackson2ObjectMapperBuilder()// .serializationInclusion(Include.NON_NULL)
+//      .failOnUnknownProperties(false);
+//  }
+
   @Override
   public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers)
   {

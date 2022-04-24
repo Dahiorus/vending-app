@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.core.service.impl;
 
+import static me.dahiorus.project.vending.core.service.validation.FieldValidationError.fieldError;
 import static me.dahiorus.project.vending.core.service.validation.ValidationError.objectError;
 
 import java.time.Instant;
@@ -40,18 +41,14 @@ public class VendingMachineDtoServiceImpl
 {
   private static final Logger logger = LogManager.getLogger(VendingMachineDtoServiceImpl.class);
 
-  private final DtoValidator<Stock, StockDTO> stockDtoValidator;
-
   private final DtoValidator<Comment, CommentDTO> commentDtoValidator;
 
   @Autowired
   public VendingMachineDtoServiceImpl(final VendingMachineManager manager, final DtoMapper dtoMapper,
       final DtoValidator<VendingMachine, VendingMachineDTO> dtoValidator,
-      final DtoValidator<Stock, StockDTO> stockDtoValidator,
       final DtoValidator<Comment, CommentDTO> commentDtoValidator)
   {
     super(manager, dtoMapper, dtoValidator);
-    this.stockDtoValidator = stockDtoValidator;
     this.commentDtoValidator = commentDtoValidator;
   }
 
@@ -94,20 +91,13 @@ public class VendingMachineDtoServiceImpl
     stock.setItemName(itemDto.getName());
     stock.setQuantity(quantity);
 
-    ValidationResults validationResults = stockDtoValidator.validate(stock);
-    // the item type must be the same as the machine type
-    if (machine.getType() != itemDto.getType())
-    {
-      validationResults.addError(objectError("validation.constraints.stock.invalid_item",
-          "Unable to add a stock of " + itemDto.getName() + " in the machine " + machine.getId(), itemDto.getName(),
-          machine.getId()));
-    }
+    ValidationResults validationResults = validateStock(itemDto, quantity, machine);
     validationResults.throwIfError(stock, CrudOperation.UPDATE);
 
     Item item = dtoMapper.toEntity(itemDto, Item.class);
     if (!machine.hasItem(item))
     {
-      logger.debug("Adding a new stock of {} in machine {}", stock, machine);
+      logger.debug("Adding a new stock {} in machine {}", stock, machine.getId());
 
       // no stock exists with the given item, so we add a new stock with this item
       Stock stockToAdd = dtoMapper.toEntity(stock, Stock.class);
@@ -130,6 +120,28 @@ public class VendingMachineDtoServiceImpl
     VendingMachine updatedMachine = manager.update(machine);
 
     logger.info("Vending machine {} stock of {} provisioned with {}", updatedMachine.getId(), itemDto, stock);
+  }
+
+  private static ValidationResults validateStock(final ItemDTO itemDto, final Long quantity,
+      final VendingMachine machine)
+  {
+    ValidationResults validationResults = new ValidationResults();
+
+    // the item type must be the same as the machine type
+    if (machine.getType() != itemDto.getType())
+    {
+      validationResults.addError(objectError("validation.constraints.stock.invalid_item",
+          "Unable to add a stock of " + itemDto.getName() + " in the machine " + machine.getId(), itemDto.getName(),
+          machine.getId()));
+    }
+
+    if (quantity == null || quantity < 1L)
+    {
+      validationResults.addError(fieldError("quantity", "validation.constraints.stock.quantity_positive",
+          "The quantity to provision must be positive", quantity));
+    }
+
+    return validationResults;
   }
 
   @Transactional(rollbackFor = { EntityNotFound.class, ItemMissing.class })
