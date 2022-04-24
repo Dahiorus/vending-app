@@ -5,7 +5,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
@@ -26,11 +25,15 @@ public abstract class AbstractEntity
   @PrePersist
   public void prePersist()
   {
+    if (id == null)
+    {
+      id = UUID.randomUUID();
+    }
+
     createdAt = Instant.now();
   }
 
   @Id
-  @GeneratedValue
   @Column(insertable = true, updatable = false)
   public UUID getId()
   {
