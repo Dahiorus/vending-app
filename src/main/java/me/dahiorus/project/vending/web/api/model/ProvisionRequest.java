@@ -4,17 +4,15 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
-import lombok.Setter;
 
 public class ProvisionRequest
 {
   @Getter
-  @Setter
   @JsonProperty(required = true)
-  private long quantity;
+  private Long quantity;
 
   @JsonCreator
-  public ProvisionRequest(final long quantity)
+  public ProvisionRequest(final Long quantity)
   {
     this.quantity = quantity;
   }
