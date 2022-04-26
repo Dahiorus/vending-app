@@ -15,7 +15,6 @@ import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
@@ -59,8 +58,6 @@ public class VendingMachine extends AbstractEntity
   private CardSystemStatus smartCardStatus;
 
   private ChangeSystemStatus changeMoneyStatus;
-
-  private CommunicationModule module;
 
   private List<Comment> comments = new ArrayList<>(0);
 
@@ -215,18 +212,6 @@ public class VendingMachine extends AbstractEntity
   public void setChangeMoneyStatus(final ChangeSystemStatus changeMoneyStatus)
   {
     this.changeMoneyStatus = changeMoneyStatus;
-  }
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "module_id", foreignKey = @ForeignKey(name = "FK_VENDING_MACHINE_COM_MODULE"))
-  public CommunicationModule getModule()
-  {
-    return module;
-  }
-
-  public void setModule(final CommunicationModule module)
-  {
-    this.module = module;
   }
 
   @OneToMany(orphanRemoval = true, fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
