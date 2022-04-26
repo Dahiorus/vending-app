@@ -7,19 +7,19 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import me.dahiorus.project.vending.core.dao.AbstractDAO;
+import me.dahiorus.project.vending.core.dao.CommentDAO;
 import me.dahiorus.project.vending.core.model.Comment;
 import me.dahiorus.project.vending.core.model.Comment_;
 import me.dahiorus.project.vending.core.model.dto.CommentDTO;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
 @Component
-public class CommentDtoValidator extends DtoValidatorImpl<Comment, CommentDTO>
+public class CommentDtoValidator extends DtoValidatorImpl<Comment, CommentDTO, CommentDAO>
 {
   private static final Logger logger = LogManager.getLogger(CommentDtoValidator.class);
 
   @Autowired
-  public CommentDtoValidator(final AbstractDAO<Comment> dao)
+  public CommentDtoValidator(final CommentDAO dao)
   {
     super(dao);
   }

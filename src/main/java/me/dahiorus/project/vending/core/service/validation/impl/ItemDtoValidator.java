@@ -10,19 +10,19 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import me.dahiorus.project.vending.core.dao.AbstractDAO;
+import me.dahiorus.project.vending.core.dao.ItemDAO;
 import me.dahiorus.project.vending.core.model.Item;
 import me.dahiorus.project.vending.core.model.Item_;
 import me.dahiorus.project.vending.core.model.dto.ItemDTO;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
 @Component
-public class ItemDtoValidator extends DtoValidatorImpl<Item, ItemDTO>
+public class ItemDtoValidator extends DtoValidatorImpl<Item, ItemDTO, ItemDAO>
 {
   private static final Logger logger = LogManager.getLogger(ItemDtoValidator.class);
 
   @Autowired
-  public ItemDtoValidator(final AbstractDAO<Item> dao)
+  public ItemDtoValidator(final ItemDAO dao)
   {
     super(dao);
   }

@@ -11,12 +11,12 @@ import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
 import me.dahiorus.project.vending.core.service.validation.DtoValidator;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
-public abstract class DtoValidatorImpl<E extends AbstractEntity, D extends AbstractDTO<E>>
+public abstract class DtoValidatorImpl<E extends AbstractEntity, D extends AbstractDTO<E>, R extends AbstractDAO<E>>
     implements DtoValidator<E, D>, HasLogger
 {
-  protected final AbstractDAO<E> dao;
+  protected final R dao;
 
-  protected DtoValidatorImpl(final AbstractDAO<E> dao)
+  protected DtoValidatorImpl(final R dao)
   {
     this.dao = dao;
   }
