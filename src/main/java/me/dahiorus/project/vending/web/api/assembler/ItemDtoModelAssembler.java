@@ -11,12 +11,11 @@ import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 
 import me.dahiorus.project.vending.core.exception.AppException;
-import me.dahiorus.project.vending.core.model.Item;
 import me.dahiorus.project.vending.core.model.dto.ItemDTO;
 import me.dahiorus.project.vending.web.api.impl.ItemRestService;
 
 @Component
-public class ItemDtoModelAssembler extends DtoModelAssembler<Item, ItemDTO>
+public class ItemDtoModelAssembler extends DtoModelAssembler<ItemDTO>
 {
   private static final Logger logger = LogManager.getLogger(ItemDtoModelAssembler.class);
 

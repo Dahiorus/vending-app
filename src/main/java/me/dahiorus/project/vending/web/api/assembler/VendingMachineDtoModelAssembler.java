@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.web.api.assembler;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -8,17 +9,17 @@ import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.hateoas.Affordance;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 
 import me.dahiorus.project.vending.core.exception.AppException;
-import me.dahiorus.project.vending.core.model.VendingMachine;
 import me.dahiorus.project.vending.core.model.dto.VendingMachineDTO;
 import me.dahiorus.project.vending.web.api.impl.CommentRestService;
 import me.dahiorus.project.vending.web.api.impl.VendingMachineRestService;
 
 @Component
-public class VendingMachineDtoModelAssembler extends DtoModelAssembler<VendingMachine, VendingMachineDTO>
+public class VendingMachineDtoModelAssembler extends DtoModelAssembler<VendingMachineDTO>
 {
   private static final Logger logger = LogManager.getLogger(VendingMachineDtoModelAssembler.class);
 
@@ -31,7 +32,12 @@ public class VendingMachineDtoModelAssembler extends DtoModelAssembler<VendingMa
   @Override
   protected Optional<Link> selfLink(final VendingMachineDTO content) throws AppException
   {
-    return Optional.of(linkTo(methodOn(VendingMachineRestService.class).read(content.getId())).withSelfRel());
+    Link selfLink = linkTo(methodOn(VendingMachineRestService.class).read(content.getId())).withSelfRel();
+    Affordance updateLink = afford(methodOn(VendingMachineRestService.class).update(content.getId(), null));
+    Affordance deleteLink = afford(methodOn(VendingMachineRestService.class).delete(content.getId()));
+
+    return Optional.of(selfLink.andAffordance(updateLink)
+      .andAffordance(deleteLink));
   }
 
   @Override
