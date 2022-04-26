@@ -19,10 +19,10 @@ import me.dahiorus.project.vending.core.service.validation.CrudOperation;
 import me.dahiorus.project.vending.core.service.validation.DtoValidator;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
-public abstract class DtoServiceImpl<E extends AbstractEntity, D extends AbstractDTO<E>, DAO extends AbstractDAO<E>>
+public abstract class DtoServiceImpl<E extends AbstractEntity, D extends AbstractDTO<E>, R extends AbstractDAO<E>>
     implements DtoService<E, D>, HasLogger
 {
-  protected final DAO dao;
+  protected final R dao;
 
   protected final DtoMapper dtoMapper;
 
@@ -30,7 +30,7 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
 
   protected final Class<E> entityClass;
 
-  protected DtoServiceImpl(final DAO dao, final DtoMapper dtoMapper, final DtoValidator<E, D> dtoValidator)
+  protected DtoServiceImpl(final R dao, final DtoMapper dtoMapper, final DtoValidator<E, D> dtoValidator)
   {
     this.dao = dao;
     this.dtoMapper = dtoMapper;
@@ -105,6 +105,7 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     return entities.map(entity -> dtoMapper.toDto(entity, getDomainClass()));
   }
 
+  @Transactional(readOnly = true)
   @Override
   public Optional<D> findById(final UUID id)
   {
