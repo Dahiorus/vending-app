@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -22,8 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.exception.ItemMissing;
+import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.model.VendingMachine;
 import me.dahiorus.project.vending.core.model.dto.ItemDTO;
 import me.dahiorus.project.vending.core.model.dto.SaleDTO;
@@ -45,7 +44,6 @@ public class VendingMachineRestService
 
   private final RepresentationModelAssembler<StockDTO, EntityModel<StockDTO>> stockModelAssembler;
 
-  @Autowired
   public VendingMachineRestService(final VendingMachineDtoService dtoService,
       final RepresentationModelAssembler<VendingMachineDTO, EntityModel<VendingMachineDTO>> modelAssembler,
       final PagedResourcesAssembler<VendingMachineDTO> pageModelAssembler,

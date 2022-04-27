@@ -3,7 +3,6 @@ package me.dahiorus.project.vending.core.service.impl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import me.dahiorus.project.vending.core.model.AbstractEntity;
@@ -17,7 +16,6 @@ public class DtoMapperImpl implements DtoMapper
 
   private final ModelMapper mapper;
 
-  @Autowired
   public DtoMapperImpl()
   {
     mapper = new ModelMapper();

@@ -10,7 +10,6 @@ import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +42,6 @@ public class VendingMachineDtoServiceImpl
 
   private final DtoValidator<Comment, CommentDTO> commentDtoValidator;
 
-  @Autowired
   public VendingMachineDtoServiceImpl(final VendingMachineDAO dao, final DtoMapper dtoMapper,
       final DtoValidator<VendingMachine, VendingMachineDTO> dtoValidator,
       final DtoValidator<Comment, CommentDTO> commentDtoValidator)

@@ -4,7 +4,6 @@ import static me.dahiorus.project.vending.core.service.validation.FieldValidatio
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import me.dahiorus.project.vending.core.dao.CommentDAO;
@@ -18,7 +17,6 @@ public class CommentDtoValidator extends DtoValidatorImpl<Comment, CommentDTO, C
 {
   private static final Logger logger = LogManager.getLogger(CommentDtoValidator.class);
 
-  @Autowired
   public CommentDtoValidator(final CommentDAO dao)
   {
     super(dao);

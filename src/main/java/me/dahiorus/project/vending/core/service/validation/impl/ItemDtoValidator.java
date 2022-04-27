@@ -7,7 +7,6 @@ import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import me.dahiorus.project.vending.core.dao.ItemDAO;
@@ -21,7 +20,6 @@ public class ItemDtoValidator extends DtoValidatorImpl<Item, ItemDTO, ItemDAO>
 {
   private static final Logger logger = LogManager.getLogger(ItemDtoValidator.class);
 
-  @Autowired
   public ItemDtoValidator(final ItemDAO dao)
   {
     super(dao);

@@ -9,7 +9,6 @@ import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springdoc.api.annotations.ParameterObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -48,7 +47,6 @@ public class ReportRestService implements HasLogger, AppWebService
 
   protected final PagedResourcesAssembler<ReportDTO> pageModelAssembler;
 
-  @Autowired
   public ReportRestService(final ReportDtoService dtoService,
       final RepresentationModelAssembler<ReportDTO, EntityModel<ReportDTO>> modelAssembler,
       final PagedResourcesAssembler<ReportDTO> pageModelAssembler)

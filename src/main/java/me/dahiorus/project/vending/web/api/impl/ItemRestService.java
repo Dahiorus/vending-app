@@ -2,7 +2,6 @@ package me.dahiorus.project.vending.web.api.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
@@ -21,7 +20,6 @@ public class ItemRestService extends RestServiceImpl<Item, ItemDTO, ItemDtoServi
 {
   private static final Logger logger = LogManager.getLogger(ItemRestService.class);
 
-  @Autowired
   public ItemRestService(final ItemDtoService dtoService,
       final RepresentationModelAssembler<ItemDTO, EntityModel<ItemDTO>> modelAssembler,
       final PagedResourcesAssembler<ItemDTO> pageModelAssembler)

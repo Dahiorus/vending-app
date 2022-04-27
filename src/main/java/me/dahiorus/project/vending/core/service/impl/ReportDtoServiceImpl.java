@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +28,6 @@ public class ReportDtoServiceImpl extends DtoServiceImpl<Report, ReportDTO, Repo
 
   private final AbstractDAO<VendingMachine> vendingMachineDao;
 
-  @Autowired
   public ReportDtoServiceImpl(final ReportDAO manager, final DtoMapper dtoMapper,
       final AbstractDAO<VendingMachine> vendingMachineDao)
   {
