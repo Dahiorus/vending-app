@@ -35,16 +35,16 @@ import me.dahiorus.project.vending.web.api.model.ProvisionRequest;
 @Tag(name = "VendingMachine", description = "Operations on Vending machine")
 @RestController
 @RequestMapping(value = "/v1/vending-machines")
-public class VendingMachineRestService
-    extends RestServiceImpl<VendingMachine, VendingMachineDTO, VendingMachineDtoService>
+public class VendingMachineRestController
+    extends RestControllerImpl<VendingMachine, VendingMachineDTO, VendingMachineDtoService>
 {
-  private static final Logger logger = LogManager.getLogger(VendingMachineRestService.class);
+  private static final Logger logger = LogManager.getLogger(VendingMachineRestController.class);
 
   private final ItemDtoService itemDtoService;
 
   private final RepresentationModelAssembler<StockDTO, EntityModel<StockDTO>> stockModelAssembler;
 
-  public VendingMachineRestService(final VendingMachineDtoService dtoService,
+  public VendingMachineRestController(final VendingMachineDtoService dtoService,
       final RepresentationModelAssembler<VendingMachineDTO, EntityModel<VendingMachineDTO>> modelAssembler,
       final PagedResourcesAssembler<VendingMachineDTO> pageModelAssembler,
       final ItemDtoService itemDtoService,

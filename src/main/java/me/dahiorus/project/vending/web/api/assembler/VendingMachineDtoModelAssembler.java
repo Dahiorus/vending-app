@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 
 import me.dahiorus.project.vending.core.exception.AppException;
 import me.dahiorus.project.vending.core.model.dto.VendingMachineDTO;
-import me.dahiorus.project.vending.web.api.impl.CommentRestService;
-import me.dahiorus.project.vending.web.api.impl.VendingMachineRestService;
+import me.dahiorus.project.vending.web.api.impl.CommentRestController;
+import me.dahiorus.project.vending.web.api.impl.VendingMachineRestController;
 
 @Component
 public class VendingMachineDtoModelAssembler extends DtoModelAssembler<VendingMachineDTO>
@@ -32,9 +32,9 @@ public class VendingMachineDtoModelAssembler extends DtoModelAssembler<VendingMa
   @Override
   protected Optional<Link> selfLink(final VendingMachineDTO content) throws AppException
   {
-    Link selfLink = linkTo(methodOn(VendingMachineRestService.class).read(content.getId())).withSelfRel();
-    Affordance updateLink = afford(methodOn(VendingMachineRestService.class).update(content.getId(), null));
-    Affordance deleteLink = afford(methodOn(VendingMachineRestService.class).delete(content.getId()));
+    Link selfLink = linkTo(methodOn(VendingMachineRestController.class).read(content.getId())).withSelfRel();
+    Affordance updateLink = afford(methodOn(VendingMachineRestController.class).update(content.getId(), null));
+    Affordance deleteLink = afford(methodOn(VendingMachineRestController.class).delete(content.getId()));
 
     return Optional.of(selfLink.andAffordance(updateLink)
       .andAffordance(deleteLink));
@@ -43,7 +43,7 @@ public class VendingMachineDtoModelAssembler extends DtoModelAssembler<VendingMa
   @Override
   protected Iterable<Link> buildLinks(final VendingMachineDTO content) throws AppException
   {
-    return List.of(linkTo(methodOn(VendingMachineRestService.class).getStocks(content.getId())).withRel("stocks"),
-        linkTo(methodOn(CommentRestService.class).getComments(content.getId())).withRel("comments"));
+    return List.of(linkTo(methodOn(VendingMachineRestController.class).getStocks(content.getId())).withRel("stocks"),
+        linkTo(methodOn(CommentRestController.class).getComments(content.getId())).withRel("comments"));
   }
 }

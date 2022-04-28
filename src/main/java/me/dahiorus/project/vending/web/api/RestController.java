@@ -32,7 +32,7 @@ import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
 import me.dahiorus.project.vending.web.api.model.ExampleMatcherAdapter;
 
 @RequestMapping(produces = MediaTypes.HAL_JSON_VALUE)
-public interface RestService<E extends AbstractEntity, D extends AbstractDTO<E>> extends AppWebService
+public interface RestController<E extends AbstractEntity, D extends AbstractDTO<E>> extends AppWebService
 {
   @Operation(description = "Get a page of entities")
   @GetMapping

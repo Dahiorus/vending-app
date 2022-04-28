@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import me.dahiorus.project.vending.core.exception.AppException;
 import me.dahiorus.project.vending.core.model.dto.ReportDTO;
-import me.dahiorus.project.vending.web.api.impl.ReportRestService;
+import me.dahiorus.project.vending.web.api.impl.ReportRestController;
 
 @Component
 public class ReportDtoModelAssembler extends DtoModelAssembler<ReportDTO>
@@ -36,6 +36,6 @@ public class ReportDtoModelAssembler extends DtoModelAssembler<ReportDTO>
   @Override
   protected Optional<Link> selfLink(final ReportDTO content) throws AppException
   {
-    return Optional.of(linkTo(methodOn(ReportRestService.class).read(content.getId())).withSelfRel());
+    return Optional.of(linkTo(methodOn(ReportRestController.class).read(content.getId())).withSelfRel());
   }
 }

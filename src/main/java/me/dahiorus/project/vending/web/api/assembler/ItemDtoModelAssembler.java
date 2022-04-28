@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import me.dahiorus.project.vending.core.exception.AppException;
 import me.dahiorus.project.vending.core.model.dto.ItemDTO;
-import me.dahiorus.project.vending.web.api.impl.ItemRestService;
+import me.dahiorus.project.vending.web.api.impl.ItemRestController;
 
 @Component
 public class ItemDtoModelAssembler extends DtoModelAssembler<ItemDTO>
@@ -28,6 +28,6 @@ public class ItemDtoModelAssembler extends DtoModelAssembler<ItemDTO>
   @Override
   protected Optional<Link> selfLink(final ItemDTO content) throws AppException
   {
-    return Optional.of(linkTo(methodOn(ItemRestService.class).read(content.getId())).withSelfRel());
+    return Optional.of(linkTo(methodOn(ItemRestController.class).read(content.getId())).withSelfRel());
   }
 }

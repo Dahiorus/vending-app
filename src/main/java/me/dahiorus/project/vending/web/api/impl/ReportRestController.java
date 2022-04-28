@@ -38,9 +38,9 @@ import me.dahiorus.project.vending.web.api.model.ExampleMatcherAdapter;
 @Tag(name = "Report", description = "Operations on reports")
 @RestController
 @RequestMapping(produces = MediaTypes.HAL_JSON_VALUE)
-public class ReportRestService implements HasLogger, AppWebService
+public class ReportRestController implements HasLogger, AppWebService
 {
-  private static final Logger logger = LogManager.getLogger(ReportRestService.class);
+  private static final Logger logger = LogManager.getLogger(ReportRestController.class);
 
   protected final ReportDtoService dtoService;
 
@@ -48,7 +48,7 @@ public class ReportRestService implements HasLogger, AppWebService
 
   protected final PagedResourcesAssembler<ReportDTO> pageModelAssembler;
 
-  public ReportRestService(final ReportDtoService dtoService,
+  public ReportRestController(final ReportDtoService dtoService,
       final RepresentationModelAssembler<ReportDTO, EntityModel<ReportDTO>> modelAssembler,
       final PagedResourcesAssembler<ReportDTO> pageModelAssembler)
   {
@@ -70,7 +70,7 @@ public class ReportRestService implements HasLogger, AppWebService
   {
     ReportDTO report = dtoService.report(id);
 
-    URI location = MvcUriComponentsBuilder.fromController(ReportRestService.class)
+    URI location = MvcUriComponentsBuilder.fromController(ReportRestController.class)
       .path("/{id}")
       .buildAndExpand(report.getId())
       .toUri();

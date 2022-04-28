@@ -33,13 +33,13 @@ import me.dahiorus.project.vending.web.api.AppWebService;
 @RequestMapping(
     value = "/v1/vending-machines/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}/comments",
     produces = MediaTypes.HAL_JSON_VALUE)
-public class CommentRestService implements AppWebService
+public class CommentRestController implements AppWebService
 {
   private final VendingMachineDtoService vendingMachineDtoService;
 
   private final RepresentationModelAssembler<CommentDTO, EntityModel<CommentDTO>> commentModelAssembler;
 
-  public CommentRestService(final VendingMachineDtoService vendingMachineDtoService,
+  public CommentRestController(final VendingMachineDtoService vendingMachineDtoService,
       final RepresentationModelAssembler<CommentDTO, EntityModel<CommentDTO>> commentModelAssembler)
   {
     this.vendingMachineDtoService = vendingMachineDtoService;

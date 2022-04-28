@@ -25,11 +25,11 @@ import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.model.AbstractEntity;
 import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
 import me.dahiorus.project.vending.core.service.DtoService;
-import me.dahiorus.project.vending.web.api.RestService;
+import me.dahiorus.project.vending.web.api.RestController;
 import me.dahiorus.project.vending.web.api.model.ExampleMatcherAdapter;
 
-public abstract class RestServiceImpl<E extends AbstractEntity, D extends AbstractDTO<E>, S extends DtoService<E, D>>
-    implements RestService<E, D>, HasLogger
+public abstract class RestControllerImpl<E extends AbstractEntity, D extends AbstractDTO<E>, S extends DtoService<E, D>>
+    implements RestController<E, D>, HasLogger
 {
   protected final S dtoService;
 
@@ -37,7 +37,7 @@ public abstract class RestServiceImpl<E extends AbstractEntity, D extends Abstra
 
   protected final PagedResourcesAssembler<D> pageModelAssembler;
 
-  protected RestServiceImpl(final S dtoService, final RepresentationModelAssembler<D, EntityModel<D>> modelAssembler,
+  protected RestControllerImpl(final S dtoService, final RepresentationModelAssembler<D, EntityModel<D>> modelAssembler,
       final PagedResourcesAssembler<D> pageModelAssembler)
   {
     this.dtoService = dtoService;

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import me.dahiorus.project.vending.core.exception.AppException;
 import me.dahiorus.project.vending.core.model.dto.CommentDTO;
-import me.dahiorus.project.vending.web.api.impl.VendingMachineRestService;
+import me.dahiorus.project.vending.web.api.impl.VendingMachineRestController;
 
 @Component
 public class CommentDtoModelAssembler extends DtoModelAssembler<CommentDTO>
@@ -29,6 +29,6 @@ public class CommentDtoModelAssembler extends DtoModelAssembler<CommentDTO>
   protected Iterable<Link> buildLinks(final CommentDTO content) throws AppException
   {
     return List
-      .of(linkTo(methodOn(VendingMachineRestService.class).read(content.getVendingMachineId())).withRel("machine"));
+      .of(linkTo(methodOn(VendingMachineRestController.class).read(content.getVendingMachineId())).withRel("machine"));
   }
 }

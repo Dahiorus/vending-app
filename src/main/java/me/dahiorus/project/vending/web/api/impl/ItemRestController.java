@@ -16,11 +16,11 @@ import me.dahiorus.project.vending.core.service.ItemDtoService;
 @Tag(name = "Item", description = "Operations on Item")
 @RestController
 @RequestMapping(value = "/v1/items")
-public class ItemRestService extends RestServiceImpl<Item, ItemDTO, ItemDtoService>
+public class ItemRestController extends RestControllerImpl<Item, ItemDTO, ItemDtoService>
 {
-  private static final Logger logger = LogManager.getLogger(ItemRestService.class);
+  private static final Logger logger = LogManager.getLogger(ItemRestController.class);
 
-  public ItemRestService(final ItemDtoService dtoService,
+  public ItemRestController(final ItemDtoService dtoService,
       final RepresentationModelAssembler<ItemDTO, EntityModel<ItemDTO>> modelAssembler,
       final PagedResourcesAssembler<ItemDTO> pageModelAssembler)
   {
