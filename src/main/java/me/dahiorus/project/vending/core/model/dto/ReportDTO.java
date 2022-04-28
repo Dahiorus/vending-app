@@ -14,7 +14,7 @@ import me.dahiorus.project.vending.core.model.PowerStatus;
 import me.dahiorus.project.vending.core.model.Report;
 import me.dahiorus.project.vending.core.model.WorkingStatus;
 
-@EqualsAndHashCode(callSuper = true, exclude = "reportStocks")
+@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true, exclude = "reportStocks")
 public class ReportDTO extends AbstractDTO<Report>
 {

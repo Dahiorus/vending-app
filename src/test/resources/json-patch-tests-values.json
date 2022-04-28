@@ -1,0 +1,221 @@
+[
+  {
+    "description": "Change the price of an item",
+    "objectClass": "me.dahiorus.project.vending.core.model.dto.ItemDTO",
+    "source": {
+      "name": "Item",
+      "type": "FOOD",
+      "price": 1.5
+    },
+    "patch": [
+      {
+        "path": "/price",
+        "op": "replace",
+        "value": 1.9
+      }
+    ],
+    "expected": {
+      "name": "Item",
+      "type": "FOOD",
+      "price": 1.9
+    }
+  },
+  {
+    "description": "Remove the name of an item",
+    "objectClass": "me.dahiorus.project.vending.core.model.dto.ItemDTO",
+    "source": {
+      "name": "Item",
+      "type": "FOOD",
+      "price": 1.5
+    },
+    "patch": [
+      {
+        "path": "/name",
+        "op": "remove"
+      }
+    ],
+    "expected": {
+      "type": "FOOD",
+      "price": 1.5
+    }
+  },
+  {
+    "description": "Add stock to report",
+    "objectClass": "me.dahiorus.project.vending.core.model.dto.ReportDTO",
+    "source": {
+      "machineSerialNumber": "123456987",
+      "mesuredTemperature": 4,
+      "totalSaleAmount": 16.5,
+      "powerStatus": "ON",
+      "workingStatus": "OK",
+      "reportStocks": [
+        {
+          "itemName": "Item1",
+          "quantity": 5
+        }
+      ],
+      "rfidStatus": "ERROR",
+      "smartCardStatus": "ERROR",
+      "changeMoneyStatus": "FULL"
+    },
+    "patch": [
+      {
+        "path": "/reportStocks/-",
+        "op": "add",
+        "value": {
+          "itemName": "Item2",
+          "quantity": 2
+        }
+      }
+    ],
+    "expected": {
+      "machineSerialNumber": "123456987",
+      "mesuredTemperature": 4,
+      "totalSaleAmount": 16.5,
+      "powerStatus": "ON",
+      "workingStatus": "OK",
+      "reportStocks": [
+        {
+          "itemName": "Item1",
+          "quantity": 5
+        },
+        {
+          "itemName": "Item2",
+          "quantity": 2
+        }
+      ],
+      "rfidStatus": "ERROR",
+      "smartCardStatus": "ERROR",
+      "changeMoneyStatus": "FULL"
+    }
+  },
+  {
+    "description": "Add stock to report at the start of the array",
+    "objectClass": "me.dahiorus.project.vending.core.model.dto.ReportDTO",
+    "source": {
+      "machineSerialNumber": "123456987",
+      "mesuredTemperature": 4,
+      "totalSaleAmount": 16.5,
+      "powerStatus": "ON",
+      "workingStatus": "OK",
+      "reportStocks": [
+        {
+          "itemName": "Item1",
+          "quantity": 5
+        }
+      ],
+      "rfidStatus": "ERROR",
+      "smartCardStatus": "ERROR",
+      "changeMoneyStatus": "FULL"
+    },
+    "patch": [
+      {
+        "path": "/reportStocks/0",
+        "op": "add",
+        "value": {
+          "itemName": "Item2",
+          "quantity": 2
+        }
+      }
+    ],
+    "expected": {
+      "machineSerialNumber": "123456987",
+      "mesuredTemperature": 4,
+      "totalSaleAmount": 16.5,
+      "powerStatus": "ON",
+      "workingStatus": "OK",
+      "reportStocks": [
+        {
+          "itemName": "Item2",
+          "quantity": 2
+        },
+        {
+          "itemName": "Item1",
+          "quantity": 5
+        }
+      ],
+      "rfidStatus": "ERROR",
+      "smartCardStatus": "ERROR",
+      "changeMoneyStatus": "FULL"
+    }
+  },
+  {
+    "description": "Remove a stock from a report",
+    "objectClass": "me.dahiorus.project.vending.core.model.dto.ReportDTO",
+    "source": {
+      "machineSerialNumber": "123456987",
+      "mesuredTemperature": 4,
+      "totalSaleAmount": 16.5,
+      "powerStatus": "ON",
+      "workingStatus": "OK",
+      "reportStocks": [
+        {
+          "itemName": "Item1",
+          "quantity": 5
+        }
+      ],
+      "rfidStatus": "ERROR",
+      "smartCardStatus": "ERROR",
+      "changeMoneyStatus": "FULL"
+    },
+    "patch": [
+      {
+        "path": "/reportStocks/0",
+        "op": "remove"
+      }
+    ],
+    "expected": {
+      "machineSerialNumber": "123456987",
+      "mesuredTemperature": 4,
+      "totalSaleAmount": 16.5,
+      "powerStatus": "ON",
+      "workingStatus": "OK",
+      "reportStocks": [
+      ],
+      "rfidStatus": "ERROR",
+      "smartCardStatus": "ERROR",
+      "changeMoneyStatus": "FULL"
+    }
+  },
+  {
+    "description": "Copy RFID status to smart card status",
+    "objectClass": "me.dahiorus.project.vending.core.model.dto.VendingMachineDTO",
+    "source": {
+      "serialNumber": "123654789",
+      "latitude": 0,
+      "longitude": 0,
+      "place": "string",
+      "address": "string",
+      "lastIntervention": "2022-04-28T16:28:50.251Z",
+      "temperature": 0,
+      "type": "HOT_BAVERAGE",
+      "powerStatus": "ON",
+      "workingStatus": "OK",
+      "rfidStatus": "ERROR",
+      "smartCardStatus": "NORMAL",
+      "changeMoneyStatus": "FULL"
+    },
+    "patch": [
+      {
+        "op": "copy",
+        "from": "/rfidStatus",
+        "path": "/smartCardStatus"
+      }
+    ],
+    "expected": {
+      "serialNumber": "123654789",
+      "latitude": 0,
+      "longitude": 0,
+      "place": "string",
+      "address": "string",
+      "lastIntervention": "2022-04-28T16:28:50.251Z",
+      "temperature": 0,
+      "type": "HOT_BAVERAGE",
+      "powerStatus": "ON",
+      "workingStatus": "OK",
+      "rfidStatus": "ERROR",
+      "smartCardStatus": "ERROR",
+      "changeMoneyStatus": "FULL"
+    }
+  }
+]
