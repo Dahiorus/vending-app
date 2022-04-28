@@ -34,7 +34,7 @@ import me.dahiorus.project.vending.core.model.dto.ReportDTO;
 import me.dahiorus.project.vending.core.service.ReportDtoService;
 import me.dahiorus.project.vending.web.api.DeleteRestAPI;
 import me.dahiorus.project.vending.web.api.ReadOnlyRestController;
-import me.dahiorus.project.vending.web.api.model.ExampleMatcherAdapter;
+import me.dahiorus.project.vending.web.api.request.ExampleMatcherAdapter;
 
 @Tag(name = "Report", description = "Operations on reports")
 @RestController

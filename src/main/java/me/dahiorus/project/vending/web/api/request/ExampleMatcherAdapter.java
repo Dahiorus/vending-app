@@ -1,4 +1,4 @@
-package me.dahiorus.project.vending.web.api.model;
+package me.dahiorus.project.vending.web.api.request;
 
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.ExampleMatcher.MatchMode;

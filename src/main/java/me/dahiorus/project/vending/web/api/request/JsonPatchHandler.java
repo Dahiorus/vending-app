@@ -1,4 +1,4 @@
-package me.dahiorus.project.vending.web.api;
+package me.dahiorus.project.vending.web.api.request;
 
 import javax.annotation.Nonnull;
 
@@ -17,7 +17,7 @@ public class JsonPatchHandler
   private static final ObjectMapper mapper = new ObjectMapper();
 
   @SuppressWarnings("unchecked")
-  public static <E extends AbstractEntity, D extends AbstractDTO<E>> D applyPatch(@Nonnull final D source,
+  public static <D extends AbstractDTO<? extends AbstractEntity>> D applyPatch(@Nonnull final D source,
       @Nonnull final JsonPatch jsonPatch)
   {
     try

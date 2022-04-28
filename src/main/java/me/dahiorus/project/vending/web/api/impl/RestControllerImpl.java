@@ -1,6 +1,6 @@
 package me.dahiorus.project.vending.web.api.impl;
 
-import static me.dahiorus.project.vending.web.api.JsonPatchHandler.applyPatch;
+import static me.dahiorus.project.vending.web.api.request.JsonPatchHandler.applyPatch;
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.http.ResponseEntity.ok;
@@ -33,7 +33,7 @@ import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
 import me.dahiorus.project.vending.core.service.DtoService;
 import me.dahiorus.project.vending.web.api.RestController;
-import me.dahiorus.project.vending.web.api.model.ExampleMatcherAdapter;
+import me.dahiorus.project.vending.web.api.request.ExampleMatcherAdapter;
 
 @RequestMapping(produces = MediaTypes.HAL_JSON_VALUE)
 public abstract class RestControllerImpl<D extends AbstractDTO<?>, S extends DtoService<?, D>>

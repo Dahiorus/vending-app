@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 
 import io.swagger.v3.oas.annotations.Operation;
 import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
-import me.dahiorus.project.vending.web.api.model.ExampleMatcherAdapter;
+import me.dahiorus.project.vending.web.api.request.ExampleMatcherAdapter;
 
 public interface ListRestAPI<D extends AbstractDTO<?>>
 {

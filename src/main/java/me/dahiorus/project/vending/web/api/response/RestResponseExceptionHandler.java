@@ -1,4 +1,4 @@
-package me.dahiorus.project.vending.web.api;
+package me.dahiorus.project.vending.web.api.response;
 
 import java.time.Instant;
 import java.util.HashMap;
