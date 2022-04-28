@@ -6,26 +6,25 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.core.exception.AppException;
 import me.dahiorus.project.vending.core.model.dto.VendingMachineDTO;
 import me.dahiorus.project.vending.web.api.impl.CommentRestController;
 import me.dahiorus.project.vending.web.api.impl.ReportRestController;
 import me.dahiorus.project.vending.web.api.impl.VendingMachineRestController;
 
+@Log4j2
 @Component
 public class VendingMachineDtoModelAssembler extends DtoModelAssembler<VendingMachineDTO>
 {
-  private static final Logger logger = LogManager.getLogger(VendingMachineDtoModelAssembler.class);
-
   @Override
   public Logger getLogger()
   {
-    return logger;
+    return log;
   }
 
   @Override

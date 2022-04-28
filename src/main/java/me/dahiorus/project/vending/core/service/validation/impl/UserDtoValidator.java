@@ -4,20 +4,19 @@ import static me.dahiorus.project.vending.core.service.validation.FieldValidatio
 
 import java.util.Objects;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.core.dao.UserDAO;
 import me.dahiorus.project.vending.core.model.User_;
 import me.dahiorus.project.vending.core.model.dto.UserDTO;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
+@Log4j2
 @Component
 public class UserDtoValidator extends DtoValidatorImpl<UserDTO, UserDAO>
 {
-  private static final Logger logger = LogManager.getLogger(UserDtoValidator.class);
-
   public UserDtoValidator(final UserDAO dao)
   {
     super(dao);
@@ -26,7 +25,7 @@ public class UserDtoValidator extends DtoValidatorImpl<UserDTO, UserDAO>
   @Override
   public Logger getLogger()
   {
-    return logger;
+    return log;
   }
 
   @Override
@@ -38,7 +37,7 @@ public class UserDtoValidator extends DtoValidatorImpl<UserDTO, UserDAO>
 
     if (!results.hasFieldError(User_.EMAIL))
     {
-      logger.trace("Validating email uniqueness...");
+      log.trace("Validating email uniqueness...");
       dao.findByEmail(dto.getEmail())
         .ifPresent(other -> {
           if (!Objects.equals(dto.getId(), other.getId()))

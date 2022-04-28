@@ -6,11 +6,11 @@ import static me.dahiorus.project.vending.core.service.validation.FieldValidatio
 
 import java.util.Objects;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.core.dao.VendingMachineDAO;
 import me.dahiorus.project.vending.core.model.PowerStatus;
 import me.dahiorus.project.vending.core.model.VendingMachine_;
@@ -18,11 +18,10 @@ import me.dahiorus.project.vending.core.model.WorkingStatus;
 import me.dahiorus.project.vending.core.model.dto.VendingMachineDTO;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
+@Log4j2
 @Component
 public class VendingMachineDtoValidator extends DtoValidatorImpl<VendingMachineDTO, VendingMachineDAO>
 {
-  private static final Logger logger = LogManager.getLogger(VendingMachineDtoValidator.class);
-
   @Autowired
   public VendingMachineDtoValidator(final VendingMachineDAO dao)
   {
@@ -32,7 +31,7 @@ public class VendingMachineDtoValidator extends DtoValidatorImpl<VendingMachineD
   @Override
   public Logger getLogger()
   {
-    return logger;
+    return log;
   }
 
   @Override

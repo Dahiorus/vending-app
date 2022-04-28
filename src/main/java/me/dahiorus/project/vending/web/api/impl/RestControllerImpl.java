@@ -73,6 +73,8 @@ public abstract class RestControllerImpl<D extends AbstractDTO<?>, S extends Dto
       .buildAndExpand(createdEntity.getId())
       .toUri();
 
+    getLogger().info("Created entity: {}", location);
+
     return created(location).body(modelAssembler.toModel(createdEntity));
   }
 
@@ -92,7 +94,6 @@ public abstract class RestControllerImpl<D extends AbstractDTO<?>, S extends Dto
   @Override
   public ResponseEntity<EntityModel<D>> update(final UUID id, final D dto) throws ValidationException
   {
-
     D updatedEntity;
     try
     {
@@ -106,6 +107,8 @@ public abstract class RestControllerImpl<D extends AbstractDTO<?>, S extends Dto
       updatedEntity = dtoService.create(dto);
     }
 
+    getLogger().info("Updated entity: {}", updatedEntity);
+
     return ok(modelAssembler.toModel(updatedEntity));
   }
 
@@ -118,6 +121,7 @@ public abstract class RestControllerImpl<D extends AbstractDTO<?>, S extends Dto
     try
     {
       dtoService.delete(id);
+      getLogger().info("Deleted entity: {}", id);
     }
     catch (EntityNotFound e)
     {
@@ -137,6 +141,8 @@ public abstract class RestControllerImpl<D extends AbstractDTO<?>, S extends Dto
 
     D entity = applyPatch(dtoService.read(id), jsonPatch);
     D updatedEntity = dtoService.update(id, entity);
+
+    getLogger().info("Patched entity: {}", updatedEntity);
 
     return ok(modelAssembler.toModel(updatedEntity));
   }

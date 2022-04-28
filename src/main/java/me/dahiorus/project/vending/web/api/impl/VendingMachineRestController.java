@@ -4,7 +4,6 @@ import static org.springframework.http.ResponseEntity.ok;
 
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ItemMissing;
 import me.dahiorus.project.vending.core.exception.ValidationException;
@@ -34,11 +34,9 @@ import me.dahiorus.project.vending.web.api.request.ProvisionRequest;
 @Tag(name = "VendingMachine", description = "Operations on Vending machine")
 @RestController
 @RequestMapping(value = "/api/v1/vending-machines")
-public class VendingMachineRestController
-    extends RestControllerImpl<VendingMachineDTO, VendingMachineDtoService>
+@Log4j2
+public class VendingMachineRestController extends RestControllerImpl<VendingMachineDTO, VendingMachineDtoService>
 {
-  private static final Logger logger = LogManager.getLogger(VendingMachineRestController.class);
-
   private final ItemDtoService itemDtoService;
 
   private final RepresentationModelAssembler<StockDTO, EntityModel<StockDTO>> stockModelAssembler;
@@ -57,7 +55,7 @@ public class VendingMachineRestController
   @Override
   public Logger getLogger()
   {
-    return logger;
+    return log;
   }
 
   @Operation(description = "Get the stocks of a vending machine")
@@ -79,6 +77,8 @@ public class VendingMachineRestController
     ItemDTO item = itemDtoService.read(itemId);
     dtoService.provisionStock(id, item, provisionRequest.getQuantity());
 
+    log.info("Provisioned stock of {} for vending machine {} with {}", itemId, id, provisionRequest);
+
     return ok(stockModelAssembler.toCollectionModel(dtoService.getStocks(id)));
   }
 
@@ -90,6 +90,8 @@ public class VendingMachineRestController
   {
     ItemDTO item = itemDtoService.read(itemId);
     SaleDTO sale = dtoService.purchaseItem(id, item);
+
+    log.info("Purchased item {} from vending machine {}", itemId, id);
 
     return ok(EntityModel.of(sale));
   }

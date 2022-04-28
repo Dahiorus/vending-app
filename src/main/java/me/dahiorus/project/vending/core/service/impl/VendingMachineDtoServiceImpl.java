@@ -6,11 +6,11 @@ import static me.dahiorus.project.vending.core.service.validation.ValidationErro
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.core.dao.VendingMachineDAO;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ItemMissing;
@@ -30,13 +30,12 @@ import me.dahiorus.project.vending.core.service.validation.CrudOperation;
 import me.dahiorus.project.vending.core.service.validation.DtoValidator;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
+@Log4j2
 @Service
 public class VendingMachineDtoServiceImpl
     extends DtoServiceImpl<VendingMachine, VendingMachineDTO, VendingMachineDAO>
     implements VendingMachineDtoService
 {
-  private static final Logger logger = LogManager.getLogger(VendingMachineDtoServiceImpl.class);
-
   private final DtoValidator<CommentDTO> commentDtoValidator;
 
   public VendingMachineDtoServiceImpl(final VendingMachineDAO dao, final DtoMapper dtoMapper,
@@ -50,7 +49,7 @@ public class VendingMachineDtoServiceImpl
   @Override
   public Logger getLogger()
   {
-    return logger;
+    return log;
   }
 
   @Override
@@ -78,14 +77,14 @@ public class VendingMachineDtoServiceImpl
   public void provisionStock(final UUID id, final ItemDTO item, final Integer quantity)
       throws EntityNotFound, ValidationException
   {
-    logger.traceEntry(() -> id, () -> item, () -> quantity);
+    log.traceEntry(() -> id, () -> item, () -> quantity);
 
     VendingMachine machine = dao.read(id);
 
     ValidationResults validationResults = validateStock(item, quantity, machine);
     validationResults.throwIfError("Cannot provision " + item + " to vending machine " + id);
 
-    logger.debug("Provisioning {} to vending machine {}", item, id);
+    log.debug("Provisioning '{}' to vending machine {}", item.getName(), id);
 
     Item itemToProvision = dtoMapper.toEntity(item, Item.class);
     machine.provision(itemToProvision, quantity);
@@ -93,7 +92,7 @@ public class VendingMachineDtoServiceImpl
 
     VendingMachine updatedMachine = dao.save(machine);
 
-    logger.info("Vending machine {} stock of {} provisioned with {}", updatedMachine.getId(), item, quantity);
+    log.info("Vending machine {} stock of '{}' increased by {}", updatedMachine.getId(), item.getName(), quantity);
   }
 
   private static ValidationResults validateStock(final ItemDTO itemDto, final Integer quantity,
@@ -122,7 +121,7 @@ public class VendingMachineDtoServiceImpl
   @Override
   public SaleDTO purchaseItem(final UUID id, final ItemDTO item) throws EntityNotFound, ItemMissing
   {
-    logger.traceEntry(() -> id, () -> item);
+    log.traceEntry(() -> id, () -> item);
 
     VendingMachine machine = dao.read(id);
     Item itemToPurchase = dtoMapper.toEntity(item, Item.class);
@@ -132,14 +131,14 @@ public class VendingMachineDtoServiceImpl
       throw new ItemMissing("Vending machine " + id + " does not have item " + item.getName());
     }
 
-    logger.debug("Purchasing {} from the vending machine {}", item.getName(), id);
+    log.debug("Purchasing '{}' from the vending machine {}", item.getName(), id);
     Sale sale = machine.purchase(itemToPurchase);
     VendingMachine updatedMachine = dao.save(machine);
 
-    logger.info("Item {} purchased from vending machine {} for price {}", item.getName(), updatedMachine.getId(),
+    log.info("Item '{}' purchased from vending machine {} for price {}", item.getName(), updatedMachine.getId(),
         sale.getAmount());
 
-    return logger.traceExit(dtoMapper.toDto(sale, SaleDTO.class));
+    return log.traceExit(dtoMapper.toDto(sale, SaleDTO.class));
   }
 
   @Transactional(readOnly = true, rollbackFor = EntityNotFound.class)
@@ -160,7 +159,7 @@ public class VendingMachineDtoServiceImpl
   @Override
   public void comment(final UUID id, final CommentDTO comment) throws EntityNotFound, ValidationException
   {
-    logger.traceEntry(() -> id, () -> comment);
+    log.traceEntry(() -> id, () -> comment);
 
     VendingMachine machine = dao.read(id);
 
@@ -171,6 +170,6 @@ public class VendingMachineDtoServiceImpl
     machine.addComment(commentToAdd);
     dao.save(machine);
 
-    logger.info("Comment {} added to vending machine {}", comment, machine.getId());
+    log.info("Comment {} added to vending machine {}", comment, machine.getId());
   }
 }

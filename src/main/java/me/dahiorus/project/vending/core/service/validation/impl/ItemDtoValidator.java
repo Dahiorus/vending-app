@@ -5,20 +5,19 @@ import static me.dahiorus.project.vending.core.service.validation.FieldValidatio
 
 import java.util.Objects;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.core.dao.ItemDAO;
 import me.dahiorus.project.vending.core.model.Item_;
 import me.dahiorus.project.vending.core.model.dto.ItemDTO;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
+@Log4j2
 @Component
 public class ItemDtoValidator extends DtoValidatorImpl<ItemDTO, ItemDAO>
 {
-  private static final Logger logger = LogManager.getLogger(ItemDtoValidator.class);
-
   public ItemDtoValidator(final ItemDAO dao)
   {
     super(dao);
@@ -27,7 +26,7 @@ public class ItemDtoValidator extends DtoValidatorImpl<ItemDTO, ItemDAO>
   @Override
   public Logger getLogger()
   {
-    return logger;
+    return log;
   }
 
   @Override

@@ -31,10 +31,15 @@ public class StockDtoModelAssembler extends DtoModelAssembler<StockDTO>
   {
     UUID vendingMachineId = content.getVendingMachineId();
     Link machineLink = linkTo(methodOn(VendingMachineRestController.class).read(vendingMachineId)).withRel("machine");
-    Link provisionLink = linkTo(
-        methodOn(VendingMachineRestController.class).provisionStock(vendingMachineId, content.getItemId(), null))
-          .withRel("provision");
 
-    return List.of(machineLink, provisionLink);
+    UUID itemId = content.getItemId();
+    Link provisionLink = linkTo(
+        methodOn(VendingMachineRestController.class).provisionStock(vendingMachineId, itemId, null))
+          .withRel("provision");
+    Link purchaseLink = linkTo(
+        methodOn(VendingMachineRestController.class).purchaseItem(vendingMachineId, itemId))
+          .withRel("purchase");
+
+    return List.of(machineLink, provisionLink, purchaseLink);
   }
 }

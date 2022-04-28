@@ -6,7 +6,6 @@ import static org.springframework.http.ResponseEntity.ok;
 import java.net.URI;
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -29,6 +28,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.common.HasLogger;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.model.dto.ReportDTO;
@@ -41,11 +41,10 @@ import me.dahiorus.project.vending.web.api.request.ExampleMatcherAdapter;
 @RestController
 @RequestMapping(produces = MediaTypes.HAL_JSON_VALUE)
 @AllArgsConstructor
+@Log4j2
 public class ReportRestController
     implements ReadOnlyRestController<ReportDTO>, DeleteRestAPI, HasLogger
 {
-  private static final Logger logger = LogManager.getLogger(ReportRestController.class);
-
   protected final ReportDtoService dtoService;
 
   protected final RepresentationModelAssembler<ReportDTO, EntityModel<ReportDTO>> modelAssembler;
@@ -55,7 +54,7 @@ public class ReportRestController
   @Override
   public Logger getLogger()
   {
-    return logger;
+    return log;
   }
 
   @Operation(description = "Create a report of a vending machine at this instant")
@@ -69,6 +68,8 @@ public class ReportRestController
       .path("/{id}")
       .buildAndExpand(report.getId())
       .toUri();
+
+    log.info("Created report of vending machine {}: {}", id, location);
 
     return ResponseEntity.created(location)
       .body(modelAssembler.toModel(report));

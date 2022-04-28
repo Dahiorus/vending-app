@@ -5,22 +5,21 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.Optional;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.core.exception.AppException;
 import me.dahiorus.project.vending.core.model.dto.ReportDTO;
 import me.dahiorus.project.vending.web.api.impl.ReportRestController;
 
+@Log4j2
 @Component
 public class ReportDtoModelAssembler extends DtoModelAssembler<ReportDTO>
 {
-  private static final Logger logger = LogManager.getLogger(ReportDtoModelAssembler.class);
-
   @Override
   public void addLinks(final CollectionModel<EntityModel<ReportDTO>> resources)
   {
@@ -30,7 +29,7 @@ public class ReportDtoModelAssembler extends DtoModelAssembler<ReportDTO>
   @Override
   public Logger getLogger()
   {
-    return logger;
+    return log;
   }
 
   @Override

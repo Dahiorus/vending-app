@@ -4,12 +4,11 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import me.dahiorus.project.vending.common.HasLogger;
+import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.core.dao.AbstractDAO;
 import me.dahiorus.project.vending.core.dao.ReportDAO;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
@@ -20,12 +19,11 @@ import me.dahiorus.project.vending.core.model.dto.ReportDTO;
 import me.dahiorus.project.vending.core.service.DtoMapper;
 import me.dahiorus.project.vending.core.service.ReportDtoService;
 
+@Log4j2
 @Service
 public class ReportDtoServiceImpl extends DtoServiceImpl<Report, ReportDTO, ReportDAO>
-    implements ReportDtoService, HasLogger
+    implements ReportDtoService
 {
-  private static final Logger logger = LogManager.getLogger(ReportDtoServiceImpl.class);
-
   private final AbstractDAO<VendingMachine> vendingMachineDao;
 
   public ReportDtoServiceImpl(final ReportDAO manager, final DtoMapper dtoMapper,
@@ -38,14 +36,14 @@ public class ReportDtoServiceImpl extends DtoServiceImpl<Report, ReportDTO, Repo
   @Override
   public Logger getLogger()
   {
-    return logger;
+    return log;
   }
 
   @Transactional(rollbackFor = EntityNotFound.class)
   @Override
   public ReportDTO report(final UUID vendingMachineId) throws EntityNotFound
   {
-    logger.traceEntry(() -> vendingMachineId);
+    log.traceEntry(() -> vendingMachineId);
 
     VendingMachine machineToReport = vendingMachineDao.read(vendingMachineId);
 
@@ -56,9 +54,9 @@ public class ReportDtoServiceImpl extends DtoServiceImpl<Report, ReportDTO, Repo
     Report report = dao.save(Report.of(machineToReport, lastReportingDate));
     ReportDTO dto = dtoMapper.toDto(report, getDomainClass());
 
-    logger.info("Report created for vending machine {} : {}", machineToReport.getId(), report);
+    log.info("Report created for vending machine {} : {}", machineToReport.getId(), report);
 
-    return logger.traceExit(dto);
+    return log.traceExit(dto);
   }
 
   @Override
