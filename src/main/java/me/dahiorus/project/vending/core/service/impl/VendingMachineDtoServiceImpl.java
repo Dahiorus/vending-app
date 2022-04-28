@@ -75,7 +75,7 @@ public class VendingMachineDtoServiceImpl
 
   @Transactional(rollbackFor = { EntityNotFound.class, ValidationException.class })
   @Override
-  public void provisionStock(final UUID id, final ItemDTO item, final Long quantity)
+  public void provisionStock(final UUID id, final ItemDTO item, final Integer quantity)
       throws EntityNotFound, ValidationException
   {
     logger.traceEntry(() -> id, () -> item, () -> quantity);
@@ -96,7 +96,7 @@ public class VendingMachineDtoServiceImpl
     logger.info("Vending machine {} stock of {} provisioned with {}", updatedMachine.getId(), item, quantity);
   }
 
-  private static ValidationResults validateStock(final ItemDTO itemDto, final Long quantity,
+  private static ValidationResults validateStock(final ItemDTO itemDto, final Integer quantity,
       final VendingMachine machine)
   {
     ValidationResults validationResults = new ValidationResults();

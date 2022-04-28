@@ -258,7 +258,7 @@ public class VendingMachine extends AbstractEntity
       .anyMatch(stock -> Objects.equals(stock.getItem(), item));
   }
 
-  public void provision(@Nonnull final Item item, final Long quantity)
+  public void provision(@Nonnull final Item item, final Integer quantity)
   {
     if (!hasItem(item))
     {
@@ -294,7 +294,7 @@ public class VendingMachine extends AbstractEntity
       .filter(stock -> Objects.equals(stock.getItem(), item))
       .findFirst()
       .map(Stock::getQuantity)
-      .orElse(0L);
+      .orElse(0);
   }
 
   @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "machine", cascade = CascadeType.MERGE)

@@ -16,7 +16,7 @@ public class ReportStockDTO extends AbstractDTO<ReportStock>
 
   @Getter
   @Setter
-  private Long quantity;
+  private Integer quantity;
 
   @Override
   public Class<ReportStock> getEntityClass()

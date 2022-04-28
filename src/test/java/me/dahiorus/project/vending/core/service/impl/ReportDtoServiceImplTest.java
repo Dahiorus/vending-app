@@ -114,7 +114,7 @@ class ReportDtoServiceImplTest
       Stock stock = new Stock();
       stock.setId(UUID.randomUUID());
       stock.setItem(item);
-      stock.setQuantity(12L);
+      stock.setQuantity(12);
       machine.setStocks(List.of(stock));
 
       when(vendingMachineDao.read(machine.getId())).thenReturn(machine);

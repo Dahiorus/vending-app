@@ -29,7 +29,7 @@ public class StockDTO extends AbstractDTO<Stock>
 
   @Getter
   @Setter
-  private Long quantity;
+  private Integer quantity;
 
   @Override
   public Class<Stock> getEntityClass()

@@ -33,7 +33,7 @@ public interface VendingMachineDtoService extends DtoService<VendingMachine, Ven
    * @throws EntityNotFound      if no vending machine match the ID
    * @throws ValidationException if the item cannot be stock in the machine
    */
-  void provisionStock(UUID id, ItemDTO item, Long quantity) throws EntityNotFound, ValidationException;
+  void provisionStock(UUID id, ItemDTO item, Integer quantity) throws EntityNotFound, ValidationException;
 
   /**
    * Purchase an item from a vending machine

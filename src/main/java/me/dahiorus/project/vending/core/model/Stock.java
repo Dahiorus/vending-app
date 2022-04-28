@@ -21,9 +21,9 @@ public class Stock extends AbstractEntity
 {
   private Item item;
 
-  private Long quantity;
+  private Integer quantity;
 
-  public static Stock of(final Item item, final Long quantity)
+  public static Stock of(final Item item, final Integer quantity)
   {
     Stock stock = new Stock();
     stock.setItem(item);
@@ -45,17 +45,17 @@ public class Stock extends AbstractEntity
   }
 
   @Column(nullable = false)
-  public Long getQuantity()
+  public Integer getQuantity()
   {
     return quantity;
   }
 
-  public void setQuantity(final Long quantity)
+  public void setQuantity(final Integer quantity)
   {
     this.quantity = quantity;
   }
 
-  public void addQuantity(final long quantity)
+  public void addQuantity(final int quantity)
   {
     this.quantity += quantity;
   }

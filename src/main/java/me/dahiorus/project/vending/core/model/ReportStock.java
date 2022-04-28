@@ -18,7 +18,7 @@ public class ReportStock extends AbstractEntity
 {
   private String itemName;
 
-  private Long quantity;
+  private Integer quantity;
 
   private Report report;
 
@@ -44,12 +44,12 @@ public class ReportStock extends AbstractEntity
   }
 
   @Column(nullable = false)
-  public Long getQuantity()
+  public Integer getQuantity()
   {
     return quantity;
   }
 
-  public void setQuantity(final Long quantity)
+  public void setQuantity(final Integer quantity)
   {
     this.quantity = quantity;
   }

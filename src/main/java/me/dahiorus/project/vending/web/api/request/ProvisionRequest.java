@@ -11,10 +11,10 @@ public class ProvisionRequest
 {
   @Getter
   @JsonProperty(required = true)
-  private Long quantity;
+  private int quantity;
 
   @JsonCreator
-  public ProvisionRequest(final Long quantity)
+  public ProvisionRequest(final int quantity)
   {
     this.quantity = quantity;
   }

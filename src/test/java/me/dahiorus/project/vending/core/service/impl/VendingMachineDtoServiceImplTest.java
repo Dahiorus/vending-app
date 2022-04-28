@@ -60,7 +60,7 @@ class VendingMachineDtoServiceImplTest
     return machine;
   }
 
-  void addStock(final VendingMachine machine, final Item item, final long quantity)
+  void addStock(final VendingMachine machine, final Item item, final int quantity)
   {
     machine.getStocks()
       .clear();
@@ -93,7 +93,7 @@ class VendingMachineDtoServiceImplTest
       when(dao.read(machine.getId())).thenReturn(machine);
       when(dao.save(machine)).thenReturn(machine);
 
-      assertThatNoException().isThrownBy(() -> controller.provisionStock(machine.getId(), itemDto, 10L));
+      assertThatNoException().isThrownBy(() -> controller.provisionStock(machine.getId(), itemDto, 10));
 
       Stock stock = machine.getStocks()
         .get(0);
@@ -110,7 +110,7 @@ class VendingMachineDtoServiceImplTest
       Item item = new Item();
       item.setId(UUID.randomUUID());
       item.setName("CocaCola");
-      addStock(machine, item, 5L);
+      addStock(machine, item, 5);
 
       when(dao.read(machine.getId())).thenReturn(machine);
       when(dao.save(machine)).thenReturn(machine);
@@ -119,7 +119,7 @@ class VendingMachineDtoServiceImplTest
       itemDto.setId(item.getId());
       itemDto.setType(machine.getType());
 
-      assertThatNoException().isThrownBy(() -> controller.provisionStock(machine.getId(), itemDto, 10L));
+      assertThatNoException().isThrownBy(() -> controller.provisionStock(machine.getId(), itemDto, 10));
       assertAll(() -> assertThat(machine.getLastIntervention()).isNotNull(),
           () -> assertThat(machine.getQuantityInStock(item)).isEqualTo(15L));
     }
@@ -135,7 +135,7 @@ class VendingMachineDtoServiceImplTest
       when(dao.read(machine.getId())).thenReturn(machine);
 
       assertThatExceptionOfType(ValidationException.class)
-        .isThrownBy(() -> controller.provisionStock(machine.getId(), itemDto, 10L));
+        .isThrownBy(() -> controller.provisionStock(machine.getId(), itemDto, 10));
       verify(dao, never()).save(machine);
     }
 
@@ -146,14 +146,14 @@ class VendingMachineDtoServiceImplTest
       when(dao.read(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
 
       assertThatExceptionOfType(EntityNotFound.class)
-        .isThrownBy(() -> controller.provisionStock(id, new ItemDTO(), 15L));
+        .isThrownBy(() -> controller.provisionStock(id, new ItemDTO(), 15));
       verify(dao, never()).save(any());
     }
 
     @ParameterizedTest(name = "Cannot provision {0} quantity of item")
     @NullSource
-    @ValueSource(longs = { 0L, -50L })
-    void canOnlyProvisiongPositiveQuantity(final Long quantity) throws Exception
+    @ValueSource(ints = { 0, -50 })
+    void canOnlyProvisiongPositiveQuantity(final Integer quantity) throws Exception
     {
       VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.COLD_BAVERAGE);
       when(dao.read(machine.getId())).thenReturn(machine);
@@ -175,7 +175,7 @@ class VendingMachineDtoServiceImplTest
     {
       VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.FOOD);
       Item item = buildItem("Chips", machine.getType(), 1.5);
-      addStock(machine, item, 10L);
+      addStock(machine, item, 10);
 
       when(dao.read(machine.getId())).thenReturn(machine);
       when(dao.save(machine)).thenReturn(machine);
@@ -196,7 +196,7 @@ class VendingMachineDtoServiceImplTest
     {
       VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.FOOD);
       Item item = buildItem("Chips", machine.getType(), 1.5);
-      addStock(machine, item, 0L);
+      addStock(machine, item, 0);
 
       when(dao.read(machine.getId())).thenReturn(machine);
 
