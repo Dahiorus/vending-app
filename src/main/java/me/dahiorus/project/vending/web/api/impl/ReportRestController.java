@@ -32,13 +32,15 @@ import me.dahiorus.project.vending.common.HasLogger;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.model.dto.ReportDTO;
 import me.dahiorus.project.vending.core.service.ReportDtoService;
-import me.dahiorus.project.vending.web.api.AppWebService;
+import me.dahiorus.project.vending.web.api.DeleteRestAPI;
+import me.dahiorus.project.vending.web.api.ReadOnlyRestController;
 import me.dahiorus.project.vending.web.api.model.ExampleMatcherAdapter;
 
 @Tag(name = "Report", description = "Operations on reports")
 @RestController
 @RequestMapping(produces = MediaTypes.HAL_JSON_VALUE)
-public class ReportRestController implements HasLogger, AppWebService
+public class ReportRestController
+    implements ReadOnlyRestController<ReportDTO>, DeleteRestAPI, HasLogger
 {
   private static final Logger logger = LogManager.getLogger(ReportRestController.class);
 
@@ -79,7 +81,7 @@ public class ReportRestController implements HasLogger, AppWebService
       .body(modelAssembler.toModel(report));
   }
 
-  @Operation(description = "Get a page of reports")
+  @Override
   @GetMapping("/v1/reports")
   public ResponseEntity<PagedModel<EntityModel<ReportDTO>>> list(@ParameterObject final Pageable pageable,
       @ParameterObject final ReportDTO criteria, @ParameterObject final ExampleMatcherAdapter exampleMatcherAdapter)
@@ -89,7 +91,7 @@ public class ReportRestController implements HasLogger, AppWebService
     return ok(pageModelAssembler.toModel(page, modelAssembler));
   }
 
-  @Operation(description = "Get a report by its ID")
+  @Override
   @GetMapping("/v1/reports/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}")
   public ResponseEntity<EntityModel<ReportDTO>> read(@PathVariable final UUID id) throws EntityNotFound
   {
@@ -98,8 +100,7 @@ public class ReportRestController implements HasLogger, AppWebService
     return ok(modelAssembler.toModel(entity));
   }
 
-  @Operation(description = "Delete an existing report targeted by its ID")
-  @ApiResponse(responseCode = "204", description = "Report deleted")
+  @Override
   @DeleteMapping("/v1/reports/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}")
   public ResponseEntity<Void> delete(@PathVariable final UUID id)
   {

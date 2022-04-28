@@ -12,9 +12,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import com.github.fge.jsonpatch.JsonPatch;
@@ -22,14 +30,14 @@ import com.github.fge.jsonpatch.JsonPatch;
 import me.dahiorus.project.vending.common.HasLogger;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ValidationException;
-import me.dahiorus.project.vending.core.model.AbstractEntity;
 import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
 import me.dahiorus.project.vending.core.service.DtoService;
 import me.dahiorus.project.vending.web.api.RestController;
 import me.dahiorus.project.vending.web.api.model.ExampleMatcherAdapter;
 
-public abstract class RestControllerImpl<E extends AbstractEntity, D extends AbstractDTO<E>, S extends DtoService<E, D>>
-    implements RestController<E, D>, HasLogger
+@RequestMapping(produces = MediaTypes.HAL_JSON_VALUE)
+public abstract class RestControllerImpl<D extends AbstractDTO<?>, S extends DtoService<?, D>>
+    implements RestController<D>, HasLogger
 {
   protected final S dtoService;
 
@@ -45,6 +53,7 @@ public abstract class RestControllerImpl<E extends AbstractEntity, D extends Abs
     this.pageModelAssembler = pageModelAssembler;
   }
 
+  @GetMapping
   @Override
   public ResponseEntity<PagedModel<EntityModel<D>>> list(final Pageable pageable, final D criteria,
       final ExampleMatcherAdapter exampleMatcherAdapter)
@@ -57,6 +66,7 @@ public abstract class RestControllerImpl<E extends AbstractEntity, D extends Abs
     return ok(pageModelAssembler.toModel(page, modelAssembler));
   }
 
+  @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   @Override
   public ResponseEntity<EntityModel<D>> create(final D dto) throws ValidationException
   {
@@ -71,6 +81,7 @@ public abstract class RestControllerImpl<E extends AbstractEntity, D extends Abs
     return created(location).body(modelAssembler.toModel(createdEntity));
   }
 
+  @GetMapping("/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}")
   @Override
   public ResponseEntity<EntityModel<D>> read(final UUID id) throws EntityNotFound
   {
@@ -81,6 +92,8 @@ public abstract class RestControllerImpl<E extends AbstractEntity, D extends Abs
     return ok(modelAssembler.toModel(entity));
   }
 
+  @PutMapping(value = "/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}",
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   @Override
   public ResponseEntity<EntityModel<D>> update(final UUID id, final D dto) throws ValidationException
   {
@@ -101,6 +114,7 @@ public abstract class RestControllerImpl<E extends AbstractEntity, D extends Abs
     return ok(modelAssembler.toModel(updatedEntity));
   }
 
+  @DeleteMapping("/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}")
   @Override
   public ResponseEntity<Void> delete(final UUID id)
   {
@@ -118,6 +132,8 @@ public abstract class RestControllerImpl<E extends AbstractEntity, D extends Abs
     return noContent().build();
   }
 
+  @PatchMapping(value = "/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}",
+      consumes = "application/json-patch+json")
   @Override
   public ResponseEntity<EntityModel<D>> patch(final UUID id, final JsonPatch jsonPatch)
       throws EntityNotFound, ValidationException

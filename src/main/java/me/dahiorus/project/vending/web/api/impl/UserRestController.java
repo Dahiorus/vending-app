@@ -9,14 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
-import me.dahiorus.project.vending.core.model.User;
 import me.dahiorus.project.vending.core.model.dto.UserDTO;
 import me.dahiorus.project.vending.core.service.UserDtoService;
 
 @Tag(name = "User", description = "Operations on User")
 @RestController
 @RequestMapping(value = "/v1/users")
-public class UserRestController extends RestControllerImpl<User, UserDTO, UserDtoService>
+public class UserRestController extends RestControllerImpl<UserDTO, UserDtoService>
 {
   private static final Logger logger = LogManager.getLogger(UserRestController.class);
 

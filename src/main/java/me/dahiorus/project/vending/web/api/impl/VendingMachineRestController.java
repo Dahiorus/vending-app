@@ -23,7 +23,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ItemMissing;
 import me.dahiorus.project.vending.core.exception.ValidationException;
-import me.dahiorus.project.vending.core.model.VendingMachine;
 import me.dahiorus.project.vending.core.model.dto.ItemDTO;
 import me.dahiorus.project.vending.core.model.dto.SaleDTO;
 import me.dahiorus.project.vending.core.model.dto.StockDTO;
@@ -36,7 +35,7 @@ import me.dahiorus.project.vending.web.api.model.ProvisionRequest;
 @RestController
 @RequestMapping(value = "/v1/vending-machines")
 public class VendingMachineRestController
-    extends RestControllerImpl<VendingMachine, VendingMachineDTO, VendingMachineDtoService>
+    extends RestControllerImpl<VendingMachineDTO, VendingMachineDtoService>
 {
   private static final Logger logger = LogManager.getLogger(VendingMachineRestController.class);
 
