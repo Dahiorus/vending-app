@@ -48,7 +48,7 @@ public class Report extends AbstractEntity
     Report report = new Report();
     report.machineSerialNumber = machine.getSerialNumber();
     report.mesuredTemperature = machine.getTemperature();
-    report.totalSaleAmount = machine.getTotalAmountSince(lastReportingDate);
+    report.totalSaleAmount = machine.computeTotalAmountSince(lastReportingDate);
     report.powerStatus = machine.getPowerStatus();
     report.workingStatus = machine.getWorkingStatus();
     report.rfidStatus = machine.getRfidStatus();

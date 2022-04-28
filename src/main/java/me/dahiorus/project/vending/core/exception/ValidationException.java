@@ -1,7 +1,6 @@
 package me.dahiorus.project.vending.core.exception;
 
 import java.util.Collection;
-import java.util.List;
 
 import lombok.Getter;
 import me.dahiorus.project.vending.core.service.validation.CrudOperation;
@@ -25,17 +24,14 @@ public class ValidationException extends AppException
   public ValidationException(final CrudOperation operation, final Object target,
       final ValidationResults validationResults)
   {
-    super(operation + ": " + validationResults.count() + " error(s) found on " + target);
+    this(operation + ": " + validationResults.count() + " error(s) found on " + target, validationResults);
+  }
+
+  public ValidationException(final String message, final ValidationResults validationResults)
+  {
+    super(message);
     this.fieldErrors = validationResults.getFieldErrors();
     this.globalErrors = validationResults.getObjectErrors();
     this.count = validationResults.count();
-  }
-
-  public ValidationException(final String message)
-  {
-    super(message);
-    this.fieldErrors = List.of();
-    this.globalErrors = List.of();
-    this.count = 0;
   }
 }

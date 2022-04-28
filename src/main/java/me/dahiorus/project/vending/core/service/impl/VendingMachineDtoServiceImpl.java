@@ -3,9 +3,7 @@ package me.dahiorus.project.vending.core.service.impl;
 import static me.dahiorus.project.vending.core.service.validation.FieldValidationError.fieldError;
 import static me.dahiorus.project.vending.core.service.validation.ValidationError.objectError;
 
-import java.time.Instant;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
@@ -20,7 +18,6 @@ import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.model.Comment;
 import me.dahiorus.project.vending.core.model.Item;
 import me.dahiorus.project.vending.core.model.Sale;
-import me.dahiorus.project.vending.core.model.Stock;
 import me.dahiorus.project.vending.core.model.VendingMachine;
 import me.dahiorus.project.vending.core.model.dto.CommentDTO;
 import me.dahiorus.project.vending.core.model.dto.ItemDTO;
@@ -78,46 +75,25 @@ public class VendingMachineDtoServiceImpl
 
   @Transactional(rollbackFor = { EntityNotFound.class, ValidationException.class })
   @Override
-  public void provisionStock(final UUID id, final ItemDTO itemDto, final Long quantity)
+  public void provisionStock(final UUID id, final ItemDTO item, final Long quantity)
       throws EntityNotFound, ValidationException
   {
-    logger.traceEntry(() -> id, () -> itemDto, () -> quantity);
+    logger.traceEntry(() -> id, () -> item, () -> quantity);
 
     VendingMachine machine = dao.read(id);
-    StockDTO stock = new StockDTO();
-    stock.setItemId(itemDto.getId());
-    stock.setItemName(itemDto.getName());
-    stock.setQuantity(quantity);
 
-    ValidationResults validationResults = validateStock(itemDto, quantity, machine);
-    validationResults.throwIfError(stock, CrudOperation.UPDATE);
+    ValidationResults validationResults = validateStock(item, quantity, machine);
+    validationResults.throwIfError("Cannot provision " + item + " to vending machine " + id);
 
-    Item item = dtoMapper.toEntity(itemDto, Item.class);
-    if (!machine.hasItem(item))
-    {
-      logger.debug("Adding a new stock {} in machine {}", stock, machine.getId());
+    logger.debug("Provisioning {} to vending machine {}", item, id);
 
-      // no stock exists with the given item, so we add a new stock with this item
-      Stock stockToAdd = dtoMapper.toEntity(stock, Stock.class);
-      machine.addStock(stockToAdd);
-    }
-    else
-    {
-      // a stock already exists (even if empty), so we add the adequate quantity
-      machine.getStocks()
-        .stream()
-        .filter(s -> Objects.equals(s.getItem(), item))
-        .findFirst()
-        .ifPresent(s -> {
-          getLogger().debug("Refill existing stock of {} in machine {}", stock, machine);
-          s.addQuantity(stock.getQuantity());
-        });
-    }
+    Item itemToProvision = dtoMapper.toEntity(item, Item.class);
+    machine.provision(itemToProvision, quantity);
+    machine.markIntervention();
 
-    machine.setLastIntervention(Instant.now());
     VendingMachine updatedMachine = dao.save(machine);
 
-    logger.info("Vending machine {} stock of {} provisioned with {}", updatedMachine.getId(), itemDto, stock);
+    logger.info("Vending machine {} stock of {} provisioned with {}", updatedMachine.getId(), item, quantity);
   }
 
   private static ValidationResults validateStock(final ItemDTO itemDto, final Long quantity,
@@ -149,35 +125,19 @@ public class VendingMachineDtoServiceImpl
     logger.traceEntry(() -> id, () -> item);
 
     VendingMachine machine = dao.read(id);
-    Item entity = dtoMapper.toEntity(item, Item.class);
+    Item itemToPurchase = dtoMapper.toEntity(item, Item.class);
 
-    if (!machine.hasItem(entity) || machine.getQuantityInStock(entity) == 0)
+    if (!machine.hasItem(itemToPurchase) || machine.getQuantityInStock(itemToPurchase) == 0L)
     {
-      throw new ItemMissing("Vending machine " + machine.getId() + " does not have item " + item.getName());
+      throw new ItemMissing("Vending machine " + id + " does not have item " + item.getName());
     }
 
-    // decrement machine stock
-    machine.getStocks()
-      .stream()
-      .filter(stock -> Objects.equals(stock.getItem(), entity))
-      .findFirst()
-      .ifPresent(stock -> {
-        logger.debug("Removing one item {} from the stock {}", entity.getName(), stock);
-        stock.decrementQuantity();
-      });
-
-    // add a new sale to the machine
-    Sale sale = new Sale();
-    sale.setId(UUID.randomUUID());
-    sale.setAmount(item.getPrice());
-    sale.setMachine(machine);
-
-    logger.debug("Adding new sale {} to vending machine {}", sale, machine.getId());
-
-    machine.addSale(sale);
+    logger.debug("Purchasing {} from the vending machine {}", item.getName(), id);
+    Sale sale = machine.purchase(itemToPurchase);
     VendingMachine updatedMachine = dao.save(machine);
 
-    logger.info("Item {} purchased from vending machine {}: {}", item.getName(), updatedMachine.getId(), sale);
+    logger.info("Item {} purchased from vending machine {} for price {}", item.getName(), updatedMachine.getId(),
+        sale.getAmount());
 
     return logger.traceExit(dtoMapper.toDto(sale, SaleDTO.class));
   }
@@ -198,19 +158,19 @@ public class VendingMachineDtoServiceImpl
 
   @Transactional(rollbackFor = { EntityNotFound.class, ValidationException.class })
   @Override
-  public void comment(final UUID id, final CommentDTO commentDto) throws EntityNotFound, ValidationException
+  public void comment(final UUID id, final CommentDTO comment) throws EntityNotFound, ValidationException
   {
-    logger.traceEntry(() -> id, () -> commentDto);
+    logger.traceEntry(() -> id, () -> comment);
 
     VendingMachine machine = dao.read(id);
 
-    ValidationResults validationResults = commentDtoValidator.validate(commentDto);
-    validationResults.throwIfError(commentDto, CrudOperation.CREATE);
+    ValidationResults validationResults = commentDtoValidator.validate(comment);
+    validationResults.throwIfError(comment, CrudOperation.CREATE);
 
-    Comment comment = dtoMapper.toEntity(commentDto, Comment.class);
-    machine.addComment(comment);
+    Comment commentToAdd = dtoMapper.toEntity(comment, Comment.class);
+    machine.addComment(commentToAdd);
     dao.save(machine);
 
-    logger.info("Comment {} added to vending machine {}", commentDto, machine.getId());
+    logger.info("Comment {} added to vending machine {}", comment, machine.getId());
   }
 }

@@ -59,4 +59,13 @@ public class ValidationResults
       throw new ValidationException(operation, target, this);
     }
   }
+
+  public void throwIfError(final String message)
+      throws ValidationException
+  {
+    if (hasError())
+    {
+      throw new ValidationException(message, this);
+    }
+  }
 }

@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import javax.annotation.Nonnull;
 import javax.persistence.CascadeType;
@@ -131,6 +132,11 @@ public class VendingMachine extends AbstractEntity
     this.lastIntervention = lastIntervention;
   }
 
+  public void markIntervention()
+  {
+    setLastIntervention(Instant.now());
+  }
+
   @Column
   public Integer getTemperature()
   {
@@ -252,14 +258,39 @@ public class VendingMachine extends AbstractEntity
       .anyMatch(stock -> Objects.equals(stock.getItem(), item));
   }
 
-  public void addStock(@Nonnull final Stock stock)
+  public void provision(@Nonnull final Item item, final Long quantity)
   {
-    getStocks().add(stock);
+    if (!hasItem(item))
+    {
+      stocks.add(Stock.of(item, quantity));
+    }
+    else
+    {
+      stocks.stream()
+        .filter(s -> Objects.equals(s.getItem(), item))
+        .findFirst()
+        .ifPresent(s -> s.addQuantity(quantity));
+    }
+  }
+
+  public Sale purchase(@Nonnull final Item item)
+  {
+    getStocks()
+      .stream()
+      .filter(stock -> Objects.equals(stock.getItem(), item))
+      .findFirst()
+      .ifPresent(Stock::decrementQuantity);
+
+    Sale sale = Sale.of(item, this);
+    sale.setId(UUID.randomUUID());
+    sales.add(sale);
+
+    return sale;
   }
 
   public long getQuantityInStock(final Item item)
   {
-    return getStocks().stream()
+    return stocks.stream()
       .filter(stock -> Objects.equals(stock.getItem(), item))
       .findFirst()
       .map(Stock::getQuantity)
@@ -278,12 +309,7 @@ public class VendingMachine extends AbstractEntity
     this.sales = sales;
   }
 
-  public void addSale(final Sale sale)
-  {
-    getSales().add(sale);
-  }
-
-  public Double getTotalAmountSince(final Instant lastReportingDate)
+  public Double computeTotalAmountSince(final Instant lastReportingDate)
   {
     if (lastReportingDate == null)
     {

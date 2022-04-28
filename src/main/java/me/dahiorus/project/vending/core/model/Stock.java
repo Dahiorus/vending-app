@@ -23,6 +23,15 @@ public class Stock extends AbstractEntity
 
   private Long quantity;
 
+  public static Stock of(final Item item, final Long quantity)
+  {
+    Stock stock = new Stock();
+    stock.setItem(item);
+    stock.setQuantity(quantity);
+
+    return stock;
+  }
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "item_id", nullable = false, foreignKey = @ForeignKey(name = "FK_STOCK_ITEM"))
   public Item getItem()

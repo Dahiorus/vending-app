@@ -17,6 +17,15 @@ public class Sale extends AbstractEntity
 
   private VendingMachine machine;
 
+  public static Sale of(final Item item, final VendingMachine machine)
+  {
+    Sale sale = new Sale();
+    sale.setAmount(item.getPrice());
+    sale.setMachine(machine);
+
+    return sale;
+  }
+
   @Column(nullable = false, scale = 2, precision = 4)
   public Double getAmount()
   {

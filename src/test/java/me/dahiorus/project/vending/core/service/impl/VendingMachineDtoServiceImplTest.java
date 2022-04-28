@@ -16,6 +16,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -66,7 +69,8 @@ class VendingMachineDtoServiceImplTest
     stock.setId(UUID.randomUUID());
     stock.setItem(item);
     stock.setQuantity(quantity);
-    machine.addStock(stock);
+    machine.getStocks()
+      .add(stock);
   }
 
   @BeforeEach
@@ -144,6 +148,22 @@ class VendingMachineDtoServiceImplTest
       assertThatExceptionOfType(EntityNotFound.class)
         .isThrownBy(() -> controller.provisionStock(id, new ItemDTO(), 15L));
       verify(dao, never()).save(any());
+    }
+
+    @ParameterizedTest(name = "Cannot provision {0} quantity of item")
+    @NullSource
+    @ValueSource(longs = { 0L, -50L })
+    void canOnlyProvisiongPositiveQuantity(final Long quantity) throws Exception
+    {
+      VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.COLD_BAVERAGE);
+      when(dao.read(machine.getId())).thenReturn(machine);
+
+      ItemDTO itemDto = new ItemDTO();
+      itemDto.setName("CocaCola");
+      itemDto.setType(machine.getType());
+
+      assertThatExceptionOfType(ValidationException.class)
+        .isThrownBy(() -> controller.provisionStock(machine.getId(), itemDto, quantity));
     }
   }
 
