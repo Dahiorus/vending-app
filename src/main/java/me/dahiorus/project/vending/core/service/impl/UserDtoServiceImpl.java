@@ -17,7 +17,7 @@ public class UserDtoServiceImpl extends DtoServiceImpl<User, UserDTO, UserDAO> i
   private static final Logger logger = LogManager.getLogger(UserDtoServiceImpl.class);
 
   public UserDtoServiceImpl(final UserDAO dao, final DtoMapper dtoMapper,
-      final DtoValidator<User, UserDTO> dtoValidator)
+      final DtoValidator<UserDTO> dtoValidator)
   {
     super(dao, dtoMapper, dtoValidator);
   }

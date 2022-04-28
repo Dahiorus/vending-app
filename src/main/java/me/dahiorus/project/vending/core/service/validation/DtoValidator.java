@@ -5,7 +5,7 @@ import javax.annotation.Nonnull;
 import me.dahiorus.project.vending.core.model.AbstractEntity;
 import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
 
-public interface DtoValidator<E extends AbstractEntity, D extends AbstractDTO<E>>
+public interface DtoValidator<D extends AbstractDTO<? extends AbstractEntity>>
 {
   @Nonnull
   ValidationResults validate(@Nonnull D dto);

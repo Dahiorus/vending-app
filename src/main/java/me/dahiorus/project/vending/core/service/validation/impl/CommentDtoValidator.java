@@ -7,13 +7,12 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import me.dahiorus.project.vending.core.dao.CommentDAO;
-import me.dahiorus.project.vending.core.model.Comment;
 import me.dahiorus.project.vending.core.model.Comment_;
 import me.dahiorus.project.vending.core.model.dto.CommentDTO;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
 @Component
-public class CommentDtoValidator extends DtoValidatorImpl<Comment, CommentDTO, CommentDAO>
+public class CommentDtoValidator extends DtoValidatorImpl<CommentDTO, CommentDAO>
 {
   private static final Logger logger = LogManager.getLogger(CommentDtoValidator.class);
 

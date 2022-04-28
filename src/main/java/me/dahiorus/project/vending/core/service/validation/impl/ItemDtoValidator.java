@@ -10,13 +10,12 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import me.dahiorus.project.vending.core.dao.ItemDAO;
-import me.dahiorus.project.vending.core.model.Item;
 import me.dahiorus.project.vending.core.model.Item_;
 import me.dahiorus.project.vending.core.model.dto.ItemDTO;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
 @Component
-public class ItemDtoValidator extends DtoValidatorImpl<Item, ItemDTO, ItemDAO>
+public class ItemDtoValidator extends DtoValidatorImpl<ItemDTO, ItemDAO>
 {
   private static final Logger logger = LogManager.getLogger(ItemDtoValidator.class);
 

@@ -31,11 +31,11 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
 
   protected final DtoMapper dtoMapper;
 
-  protected final Optional<DtoValidator<E, D>> dtoValidator;
+  protected final Optional<DtoValidator<D>> dtoValidator;
 
   protected final Class<E> entityClass;
 
-  protected DtoServiceImpl(final R dao, final DtoMapper dtoMapper, final DtoValidator<E, D> dtoValidator)
+  protected DtoServiceImpl(final R dao, final DtoMapper dtoMapper, final DtoValidator<D> dtoValidator)
   {
     this.dao = dao;
     this.dtoMapper = dtoMapper;

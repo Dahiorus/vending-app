@@ -17,7 +17,7 @@ public class ItemDtoServiceImpl extends DtoServiceImpl<Item, ItemDTO, ItemDAO> i
   private static final Logger logger = LogManager.getLogger(ItemDtoServiceImpl.class);
 
   public ItemDtoServiceImpl(final ItemDAO manager, final DtoMapper dtoMapper,
-      final DtoValidator<Item, ItemDTO> dtoValidator)
+      final DtoValidator<ItemDTO> dtoValidator)
   {
     super(manager, dtoMapper, dtoValidator);
   }

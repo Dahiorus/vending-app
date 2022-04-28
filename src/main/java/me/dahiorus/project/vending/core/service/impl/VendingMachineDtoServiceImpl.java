@@ -40,11 +40,11 @@ public class VendingMachineDtoServiceImpl
 {
   private static final Logger logger = LogManager.getLogger(VendingMachineDtoServiceImpl.class);
 
-  private final DtoValidator<Comment, CommentDTO> commentDtoValidator;
+  private final DtoValidator<CommentDTO> commentDtoValidator;
 
   public VendingMachineDtoServiceImpl(final VendingMachineDAO dao, final DtoMapper dtoMapper,
-      final DtoValidator<VendingMachine, VendingMachineDTO> dtoValidator,
-      final DtoValidator<Comment, CommentDTO> commentDtoValidator)
+      final DtoValidator<VendingMachineDTO> dtoValidator,
+      final DtoValidator<CommentDTO> commentDtoValidator)
   {
     super(dao, dtoMapper, dtoValidator);
     this.commentDtoValidator = commentDtoValidator;
