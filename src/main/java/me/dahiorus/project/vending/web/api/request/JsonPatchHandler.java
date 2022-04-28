@@ -10,10 +10,13 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import me.dahiorus.project.vending.core.exception.AppRuntimeException;
 import me.dahiorus.project.vending.core.model.AbstractEntity;
 import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JsonPatchHandler
 {
   private static final ObjectMapper mapper = new ObjectMapper();
@@ -39,10 +42,5 @@ public class JsonPatchHandler
     {
       throw new AppRuntimeException("Unable to patch an entity", e);
     }
-  }
-
-  private JsonPatchHandler()
-  {
-    // util class
   }
 }

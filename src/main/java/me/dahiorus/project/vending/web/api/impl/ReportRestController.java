@@ -28,6 +28,7 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
 import me.dahiorus.project.vending.common.HasLogger;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.model.dto.ReportDTO;
@@ -39,6 +40,7 @@ import me.dahiorus.project.vending.web.api.request.ExampleMatcherAdapter;
 @Tag(name = "Report", description = "Operations on reports")
 @RestController
 @RequestMapping(produces = MediaTypes.HAL_JSON_VALUE)
+@AllArgsConstructor
 public class ReportRestController
     implements ReadOnlyRestController<ReportDTO>, DeleteRestAPI, HasLogger
 {
@@ -49,15 +51,6 @@ public class ReportRestController
   protected final RepresentationModelAssembler<ReportDTO, EntityModel<ReportDTO>> modelAssembler;
 
   protected final PagedResourcesAssembler<ReportDTO> pageModelAssembler;
-
-  public ReportRestController(final ReportDtoService dtoService,
-      final RepresentationModelAssembler<ReportDTO, EntityModel<ReportDTO>> modelAssembler,
-      final PagedResourcesAssembler<ReportDTO> pageModelAssembler)
-  {
-    this.dtoService = dtoService;
-    this.modelAssembler = modelAssembler;
-    this.pageModelAssembler = pageModelAssembler;
-  }
 
   @Override
   public Logger getLogger()

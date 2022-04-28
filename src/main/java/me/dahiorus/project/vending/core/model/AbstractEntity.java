@@ -1,7 +1,6 @@
 package me.dahiorus.project.vending.core.model;
 
 import java.time.Instant;
-import java.util.Objects;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -13,9 +12,13 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
 
+import lombok.EqualsAndHashCode;
+import lombok.EqualsAndHashCode.CacheStrategy;
+
 @MappedSuperclass
 @DynamicInsert
 @DynamicUpdate
+@EqualsAndHashCode(of = "id", cacheStrategy = CacheStrategy.LAZY)
 public abstract class AbstractEntity
 {
   private UUID id;
@@ -56,27 +59,6 @@ public abstract class AbstractEntity
   public void setCreatedAt(final Instant createdAt)
   {
     this.createdAt = createdAt;
-  }
-
-  @Override
-  public int hashCode()
-  {
-    return Objects.hash(id);
-  }
-
-  @Override
-  public boolean equals(final Object obj)
-  {
-    if (this == obj)
-    {
-      return true;
-    }
-    if (!(obj instanceof AbstractEntity))
-    {
-      return false;
-    }
-    AbstractEntity other = (AbstractEntity) obj;
-    return Objects.equals(id, other.id);
   }
 
   @Override

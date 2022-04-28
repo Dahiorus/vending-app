@@ -27,6 +27,8 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 
 import com.github.fge.jsonpatch.JsonPatch;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import me.dahiorus.project.vending.common.HasLogger;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ValidationException;
@@ -35,6 +37,7 @@ import me.dahiorus.project.vending.core.service.DtoService;
 import me.dahiorus.project.vending.web.api.RestController;
 import me.dahiorus.project.vending.web.api.request.ExampleMatcherAdapter;
 
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @RequestMapping(produces = MediaTypes.HAL_JSON_VALUE)
 public abstract class RestControllerImpl<D extends AbstractDTO<?>, S extends DtoService<?, D>>
     implements RestController<D>, HasLogger
@@ -44,14 +47,6 @@ public abstract class RestControllerImpl<D extends AbstractDTO<?>, S extends Dto
   protected final RepresentationModelAssembler<D, EntityModel<D>> modelAssembler;
 
   protected final PagedResourcesAssembler<D> pageModelAssembler;
-
-  protected RestControllerImpl(final S dtoService, final RepresentationModelAssembler<D, EntityModel<D>> modelAssembler,
-      final PagedResourcesAssembler<D> pageModelAssembler)
-  {
-    this.dtoService = dtoService;
-    this.modelAssembler = modelAssembler;
-    this.pageModelAssembler = pageModelAssembler;
-  }
 
   @GetMapping
   @Override

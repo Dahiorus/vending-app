@@ -9,19 +9,17 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import me.dahiorus.project.vending.core.exception.AppRuntimeException;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ItemMissing;
 import me.dahiorus.project.vending.core.exception.ValidationException;
 
 @RestControllerAdvice(basePackages = "me.dahiorus.project.vending.web.api")
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RestResponseExceptionHandler
 {
-  private RestResponseExceptionHandler()
-  {
-    //
-  }
-
   @ExceptionHandler(EntityNotFound.class)
   @ResponseStatus(code = HttpStatus.NOT_FOUND)
   public static Object handleEntityNotFound(final EntityNotFound e)

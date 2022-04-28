@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.model.dto.CommentDTO;
@@ -33,18 +34,12 @@ import me.dahiorus.project.vending.web.api.AppWebService;
 @RequestMapping(
     value = "/v1/vending-machines/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}/comments",
     produces = MediaTypes.HAL_JSON_VALUE)
+@AllArgsConstructor
 public class CommentRestController implements AppWebService
 {
   private final VendingMachineDtoService vendingMachineDtoService;
 
   private final RepresentationModelAssembler<CommentDTO, EntityModel<CommentDTO>> commentModelAssembler;
-
-  public CommentRestController(final VendingMachineDtoService vendingMachineDtoService,
-      final RepresentationModelAssembler<CommentDTO, EntityModel<CommentDTO>> commentModelAssembler)
-  {
-    this.vendingMachineDtoService = vendingMachineDtoService;
-    this.commentModelAssembler = commentModelAssembler;
-  }
 
   @Operation(description = "Get the comments of a vending machine")
   @ApiResponse(responseCode = "200", description = "Comments found")

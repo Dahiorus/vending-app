@@ -8,7 +8,9 @@ import org.springframework.data.domain.ExampleMatcher.StringMatcher;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
+@ToString
 public class ExampleMatcherAdapter
 {
   @Schema(defaultValue = "CONTAINING", description = "Match modes for treatment of String values")
@@ -30,13 +32,6 @@ public class ExampleMatcherAdapter
   @Getter
   @Setter
   private boolean ignoreCase = true;
-
-  @Override
-  public String toString()
-  {
-    return "ExampleMatcherAdapter [stringMatcher=" + stringMatcher + ", matchMode=" + matchMode + ", nullHandler="
-        + nullHandler + ", ignoreCase=" + ignoreCase + "]";
-  }
 
   public ExampleMatcher toExampleMatcher()
   {
