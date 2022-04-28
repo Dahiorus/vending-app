@@ -60,7 +60,7 @@ public class ReportRestController
 
   @Operation(description = "Create a report of a vending machine at this instant")
   @ApiResponse(responseCode = "201", description = "Report created")
-  @PostMapping("/v1/vending-machines/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}/report")
+  @PostMapping("/api/v1/vending-machines/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}/report")
   public ResponseEntity<EntityModel<ReportDTO>> report(@PathVariable final UUID id) throws EntityNotFound
   {
     ReportDTO report = dtoService.report(id);
@@ -85,7 +85,7 @@ public class ReportRestController
   }
 
   @Override
-  @GetMapping("/v1/reports/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}")
+  @GetMapping("/api/v1/reports/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}")
   public ResponseEntity<EntityModel<ReportDTO>> read(@PathVariable final UUID id) throws EntityNotFound
   {
     ReportDTO entity = dtoService.read(id);
@@ -94,7 +94,7 @@ public class ReportRestController
   }
 
   @Override
-  @DeleteMapping("/v1/reports/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}")
+  @DeleteMapping("/api/v1/reports/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}")
   public ResponseEntity<Void> delete(@PathVariable final UUID id)
   {
     try

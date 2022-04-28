@@ -14,7 +14,7 @@ import me.dahiorus.project.vending.core.service.ItemDtoService;
 
 @Tag(name = "Item", description = "Operations on Item")
 @RestController
-@RequestMapping(value = "/v1/items")
+@RequestMapping(value = "/api/v1/items")
 public class ItemRestController extends RestControllerImpl<ItemDTO, ItemDtoService>
 {
   private static final Logger logger = LogManager.getLogger(ItemRestController.class);

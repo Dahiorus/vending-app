@@ -33,7 +33,7 @@ import me.dahiorus.project.vending.web.api.request.ProvisionRequest;
 
 @Tag(name = "VendingMachine", description = "Operations on Vending machine")
 @RestController
-@RequestMapping(value = "/v1/vending-machines")
+@RequestMapping(value = "/api/v1/vending-machines")
 public class VendingMachineRestController
     extends RestControllerImpl<VendingMachineDTO, VendingMachineDtoService>
 {

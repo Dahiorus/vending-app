@@ -14,7 +14,7 @@ import me.dahiorus.project.vending.core.service.UserDtoService;
 
 @Tag(name = "User", description = "Operations on User")
 @RestController
-@RequestMapping(value = "/v1/users")
+@RequestMapping(value = "/api/v1/users")
 public class UserRestController extends RestControllerImpl<UserDTO, UserDtoService>
 {
   private static final Logger logger = LogManager.getLogger(UserRestController.class);
