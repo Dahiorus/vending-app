@@ -3,7 +3,6 @@ package me.dahiorus.project.vending.core.model;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.persistence.CascadeType;
@@ -44,26 +43,24 @@ public class Report extends AbstractEntity
 
   private ChangeSystemStatus changeMoneyStatus;
 
-  public Report()
+  public static Report of(final VendingMachine machine, @Nullable final Instant lastReportingDate)
   {
-    // default constructor
-  }
-
-  public Report(final VendingMachine machine, @Nullable final Instant lastReportingDate)
-  {
-    machineSerialNumber = machine.getSerialNumber();
-    mesuredTemperature = machine.getTemperature();
-    totalSaleAmount = machine.getTotalAmountSince(lastReportingDate);
-    powerStatus = machine.getPowerStatus();
-    workingStatus = machine.getWorkingStatus();
-    rfidStatus = machine.getRfidStatus();
-    smartCardStatus = machine.getSmartCardStatus();
-    changeMoneyStatus = machine.getChangeMoneyStatus();
-    reportStocks = machine.getStocks()
+    Report report = new Report();
+    report.machineSerialNumber = machine.getSerialNumber();
+    report.mesuredTemperature = machine.getTemperature();
+    report.totalSaleAmount = machine.getTotalAmountSince(lastReportingDate);
+    report.powerStatus = machine.getPowerStatus();
+    report.workingStatus = machine.getWorkingStatus();
+    report.rfidStatus = machine.getRfidStatus();
+    report.smartCardStatus = machine.getSmartCardStatus();
+    report.changeMoneyStatus = machine.getChangeMoneyStatus();
+    report.reportStocks = machine.getStocks()
       .stream()
-      .map(ReportStock::new)
-      .collect(Collectors.toList());
-    reportStocks.forEach(s -> s.setReport(this));
+      .map(ReportStock::of)
+      .toList();
+    report.reportStocks.forEach(s -> s.setReport(report));
+
+    return report;
   }
 
   @Column(nullable = false)

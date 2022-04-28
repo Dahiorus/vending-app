@@ -22,16 +22,14 @@ public class ReportStock extends AbstractEntity
 
   private Report report;
 
-  public ReportStock()
+  public static ReportStock of(final Stock stock)
   {
-    // default constructor
-  }
-
-  public ReportStock(final Stock stock)
-  {
-    this.itemName = stock.getItem()
+    ReportStock reportStock = new ReportStock();
+    reportStock.itemName = stock.getItem()
       .getName();
-    this.quantity = stock.getQuantity();
+    reportStock.quantity = stock.getQuantity();
+
+    return reportStock;
   }
 
   @Column(nullable = false)
