@@ -3,6 +3,11 @@ package me.dahiorus.project.vending.core.service.impl;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
@@ -96,13 +101,32 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
 
   @Transactional(readOnly = true)
   @Override
-  public Page<D> list(final Pageable pageable)
+  public Page<D> list(@Nonnull final Pageable pageable, @Nullable final D criteria,
+      @Nullable final ExampleMatcher exampleMatcher)
   {
-    getLogger().debug("Getting page {} of {}", pageable, getDomainClass().getSimpleName());
+    Page<E> entities;
 
-    Page<E> entities = dao.findAll(pageable);
+    if (criteria != null)
+    {
+      getLogger().debug("Getting page {} of {} matching criteria {}", pageable, getDomainClass().getSimpleName(),
+          criteria);
+      Example<E> example = toExample(criteria, exampleMatcher);
+      entities = dao.findAll(example, pageable);
+    }
+    else
+    {
+      getLogger().debug("Getting page {} of {}", pageable, getDomainClass().getSimpleName());
+      entities = dao.findAll(pageable);
+    }
 
     return entities.map(entity -> dtoMapper.toDto(entity, getDomainClass()));
+  }
+
+  private Example<E> toExample(@Nonnull final D criteria, @Nullable final ExampleMatcher exampleMatcher)
+  {
+    E probe = dtoMapper.toEntity(criteria, entityClass);
+
+    return exampleMatcher == null ? Example.of(probe) : Example.of(probe, exampleMatcher);
   }
 
   @Transactional(readOnly = true)

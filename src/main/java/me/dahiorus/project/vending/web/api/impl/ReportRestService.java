@@ -33,6 +33,7 @@ import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.model.dto.ReportDTO;
 import me.dahiorus.project.vending.core.service.ReportDtoService;
 import me.dahiorus.project.vending.web.api.AppWebService;
+import me.dahiorus.project.vending.web.api.model.ExampleMatcherAdapter;
 
 @Tag(name = "Report", description = "Operations on reports")
 @RestController
@@ -80,9 +81,10 @@ public class ReportRestService implements HasLogger, AppWebService
 
   @Operation(description = "Get a page of reports")
   @GetMapping("/v1/reports")
-  public ResponseEntity<PagedModel<EntityModel<ReportDTO>>> list(@ParameterObject final Pageable pageable)
+  public ResponseEntity<PagedModel<EntityModel<ReportDTO>>> list(@ParameterObject final Pageable pageable,
+      @ParameterObject final ReportDTO criteria, @ParameterObject final ExampleMatcherAdapter exampleMatcherAdapter)
   {
-    Page<ReportDTO> page = dtoService.list(pageable);
+    Page<ReportDTO> page = dtoService.list(pageable, criteria, exampleMatcherAdapter.toExampleMatcher());
 
     return ok(pageModelAssembler.toModel(page, modelAssembler));
   }

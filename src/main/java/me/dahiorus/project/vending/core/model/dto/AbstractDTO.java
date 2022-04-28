@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import lombok.EqualsAndHashCode;
@@ -18,6 +19,7 @@ import me.dahiorus.project.vending.core.model.AbstractEntity;
 @ToString(of = { "id", "createdAt" })
 public abstract class AbstractDTO<E extends AbstractEntity>
 {
+  @Parameter(hidden = true)
   @Schema(accessMode = AccessMode.READ_ONLY)
   @Getter
   @Setter

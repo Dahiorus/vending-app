@@ -29,20 +29,20 @@ import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.model.AbstractEntity;
 import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
+import me.dahiorus.project.vending.web.api.model.ExampleMatcherAdapter;
 
 @RequestMapping(produces = MediaTypes.HAL_JSON_VALUE)
 public interface RestService<E extends AbstractEntity, D extends AbstractDTO<E>> extends AppWebService
 {
   @Operation(description = "Get a page of entities")
   @GetMapping
-  ResponseEntity<PagedModel<EntityModel<D>>> list(
-      @ParameterObject Pageable pageable);
+  ResponseEntity<PagedModel<EntityModel<D>>> list(@ParameterObject Pageable pageable, @ParameterObject D criteria,
+      @ParameterObject ExampleMatcherAdapter exampleMatcherAdapter);
 
   @Operation(description = "Create a new entity")
   @ApiResponse(responseCode = "201", description = "Entity created")
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-  ResponseEntity<EntityModel<D>> create(
-      @RequestBody D dto) throws ValidationException;
+  ResponseEntity<EntityModel<D>> create(@RequestBody D dto) throws ValidationException;
 
   @Operation(description = "Get an entity by its ID")
   @GetMapping("/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}")

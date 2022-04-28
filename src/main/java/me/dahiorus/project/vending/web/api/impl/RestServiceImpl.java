@@ -26,6 +26,7 @@ import me.dahiorus.project.vending.core.model.AbstractEntity;
 import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
 import me.dahiorus.project.vending.core.service.DtoService;
 import me.dahiorus.project.vending.web.api.RestService;
+import me.dahiorus.project.vending.web.api.model.ExampleMatcherAdapter;
 
 public abstract class RestServiceImpl<E extends AbstractEntity, D extends AbstractDTO<E>, S extends DtoService<E, D>>
     implements RestService<E, D>, HasLogger
@@ -45,11 +46,13 @@ public abstract class RestServiceImpl<E extends AbstractEntity, D extends Abstra
   }
 
   @Override
-  public ResponseEntity<PagedModel<EntityModel<D>>> list(final Pageable pageable)
+  public ResponseEntity<PagedModel<EntityModel<D>>> list(final Pageable pageable, final D criteria,
+      final ExampleMatcherAdapter exampleMatcherAdapter)
   {
-    getLogger().debug("Getting page {} of entities", pageable);
+    getLogger().debug("Getting page {} of entities matching criteria [{}, matcher: {}]", pageable, criteria,
+        exampleMatcherAdapter);
 
-    Page<D> page = dtoService.list(pageable);
+    Page<D> page = dtoService.list(pageable, criteria, exampleMatcherAdapter.toExampleMatcher());
 
     return ok(pageModelAssembler.toModel(page, modelAssembler));
   }

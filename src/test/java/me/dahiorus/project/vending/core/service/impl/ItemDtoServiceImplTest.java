@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,8 +20,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -191,22 +196,73 @@ class ItemDtoServiceImplTest
     }
   }
 
-  @Test
-  void listDtos()
+  @Nested
+  class ListTests
   {
-    List<Item> entities = IntStream.range(0, 20)
-      .mapToObj(i -> buildEntity("Item-" + i, ItemType.FOOD, 1.5))
-      .toList();
-    entities.forEach(entity -> entity.setId(UUID.randomUUID()));
+    List<Item> entities;
 
-    Pageable pageable = PageRequest.of(0, entities.size());
-    when(dao.findAll(pageable)).thenReturn(new PageImpl<>(entities, pageable, 50));
+    Pageable pageable;
 
-    Page<ItemDTO> page = controller.list(pageable);
+    @Captor
+    ArgumentCaptor<Example<Item>> exampleArg;
 
-    assertAll(
-        () -> assertThat(page.getContent()).hasSameSizeAs(entities),
-        () -> assertThat(page.getPageable()).isEqualTo(pageable));
+    @BeforeEach
+    void setUp()
+    {
+      entities = IntStream.range(0, 20)
+        .mapToObj(i -> buildEntity("Item-" + i, ItemType.FOOD, 1.5))
+        .toList();
+      entities.forEach(entity -> entity.setId(UUID.randomUUID()));
+
+      pageable = PageRequest.of(0, entities.size());
+    }
+
+    @Test
+    void listDtos()
+    {
+      when(dao.findAll(pageable)).thenReturn(new PageImpl<>(entities, pageable, 50));
+
+      Page<ItemDTO> page = controller.list(pageable, null, null);
+
+      assertAll(
+          () -> assertThat(page.getContent()).hasSameSizeAs(entities),
+          () -> assertThat(page.getPageable()).isEqualTo(pageable));
+    }
+
+    @Test
+    void listByExample()
+    {
+      when(dao.findAll(exampleArg.capture(), eq(pageable)))
+        .thenReturn(new PageImpl<>(entities, pageable, 50));
+
+      ItemDTO criteria = buildDto("item", ItemType.FOOD, null);
+      controller.list(pageable, criteria, null);
+
+      Example<Item> example = exampleArg.getValue();
+      assertAll(() -> assertThat(example.getMatcher()).isEqualTo(ExampleMatcher.matching()),
+          () -> assertThat(example.getProbe()).hasFieldOrPropertyWithValue("name", criteria.getName())
+            .hasFieldOrPropertyWithValue("type", criteria.getType())
+            .hasFieldOrPropertyWithValue("price", criteria.getPrice()));
+    }
+
+    @Test
+    void listByExampleAndMatcher()
+    {
+      when(dao.findAll(exampleArg.capture(), eq(pageable)))
+        .thenReturn(new PageImpl<>(entities, pageable, 50));
+
+      ItemDTO criteria = buildDto(null, ItemType.FOOD, null);
+      ExampleMatcher exampleMatcher = ExampleMatcher.matchingAny()
+        .withIgnoreCase()
+        .withIgnoreNullValues();
+      controller.list(pageable, criteria, exampleMatcher);
+
+      Example<Item> example = exampleArg.getValue();
+      assertAll(() -> assertThat(example.getMatcher()).isEqualTo(exampleMatcher),
+          () -> assertThat(example.getProbe()).hasFieldOrPropertyWithValue("name", criteria.getName())
+            .hasFieldOrPropertyWithValue("type", criteria.getType())
+            .hasFieldOrPropertyWithValue("price", criteria.getPrice()));
+    }
   }
 
   @Nested

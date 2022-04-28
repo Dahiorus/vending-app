@@ -3,6 +3,7 @@ package me.dahiorus.project.vending.core.service;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -21,7 +22,7 @@ public interface DtoService<E extends AbstractEntity, D extends AbstractDTO<E>>
 
   void delete(UUID id) throws EntityNotFound;
 
-  Page<D> list(Pageable pageable);
+  Page<D> list(Pageable pageable, D criteria, ExampleMatcher exampleMatcher);
 
   Optional<D> findById(UUID id);
 }

@@ -3,6 +3,7 @@ package me.dahiorus.project.vending.core.model.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,6 +38,7 @@ public class ReportDTO extends AbstractDTO<Report>
   @Setter
   private WorkingStatus workingStatus;
 
+  @Parameter(hidden = true)
   @Getter
   @Setter
   private List<ReportStockDTO> reportStocks = new ArrayList<>();
