@@ -30,7 +30,11 @@ public class StockDtoModelAssembler extends DtoModelAssembler<StockDTO>
   protected Iterable<Link> buildLinks(final StockDTO content) throws AppException
   {
     UUID vendingMachineId = content.getVendingMachineId();
+    Link machineLink = linkTo(methodOn(VendingMachineRestController.class).read(vendingMachineId)).withRel("machine");
+    Link provisionLink = linkTo(
+        methodOn(VendingMachineRestController.class).provisionStock(vendingMachineId, content.getItemId(), null))
+          .withRel("provision");
 
-    return List.of(linkTo(methodOn(VendingMachineRestController.class).read(vendingMachineId)).withRel("machine"));
+    return List.of(machineLink, provisionLink);
   }
 }
