@@ -25,6 +25,7 @@ public abstract class AbstractEntity
   @PrePersist
   public void prePersist()
   {
+    // the ID can be manually set
     if (id == null)
     {
       id = UUID.randomUUID();
@@ -46,7 +47,7 @@ public abstract class AbstractEntity
   }
 
   @CreatedDate
-  @Column(updatable = false)
+  @Column(updatable = false, nullable = false)
   public Instant getCreatedAt()
   {
     return createdAt;
