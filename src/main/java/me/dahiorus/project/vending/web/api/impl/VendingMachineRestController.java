@@ -29,7 +29,7 @@ import me.dahiorus.project.vending.core.model.dto.StockDTO;
 import me.dahiorus.project.vending.core.model.dto.VendingMachineDTO;
 import me.dahiorus.project.vending.core.service.ItemDtoService;
 import me.dahiorus.project.vending.core.service.VendingMachineDtoService;
-import me.dahiorus.project.vending.web.api.request.ProvisionRequest;
+import me.dahiorus.project.vending.web.api.model.ProvisionRequest;
 
 @Tag(name = "VendingMachine", description = "Operations on Vending machine")
 @RestController

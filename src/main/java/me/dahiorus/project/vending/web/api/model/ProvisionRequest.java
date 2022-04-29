@@ -1,4 +1,4 @@
-package me.dahiorus.project.vending.web.api.request;
+package me.dahiorus.project.vending.web.api.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
