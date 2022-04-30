@@ -76,7 +76,7 @@ public class ReportRestController
   }
 
   @Override
-  @GetMapping("/v1/reports")
+  @GetMapping("/api/v1/reports")
   public ResponseEntity<PagedModel<EntityModel<ReportDTO>>> list(@ParameterObject final Pageable pageable,
       @ParameterObject final ReportDTO criteria, @ParameterObject final ExampleMatcherAdapter exampleMatcherAdapter)
   {
