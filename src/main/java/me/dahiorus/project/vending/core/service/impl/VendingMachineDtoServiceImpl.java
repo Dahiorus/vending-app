@@ -1,6 +1,7 @@
 package me.dahiorus.project.vending.core.service.impl;
 
 import static me.dahiorus.project.vending.core.service.validation.FieldValidationError.fieldError;
+import static me.dahiorus.project.vending.core.service.validation.ValidationError.getFullCode;
 import static me.dahiorus.project.vending.core.service.validation.ValidationError.objectError;
 
 import java.util.List;
@@ -103,14 +104,14 @@ public class VendingMachineDtoServiceImpl
     // the item type must be the same as the machine type
     if (machine.getType() != itemDto.getType())
     {
-      validationResults.addError(objectError("validation.constraints.stock.invalid_item",
+      validationResults.addError(objectError(getFullCode("stock.invalid_item"),
           "Unable to add a stock of " + itemDto.getName() + " in the machine " + machine.getId(), itemDto.getName(),
           machine.getId()));
     }
 
     if (quantity == null || quantity < 1L)
     {
-      validationResults.addError(fieldError("quantity", "validation.constraints.stock.quantity_positive",
+      validationResults.addError(fieldError("quantity", getFullCode("stock.quantity_positive"),
           "The quantity to provision must be positive", quantity));
     }
 

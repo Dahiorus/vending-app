@@ -152,7 +152,13 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
 
     ValidationResults validationResults = dtoValidator.get()
       .validate(dto);
+    doExtraValidation(dto, validationResults);
     validationResults.throwIfError(dto, operation);
+  }
+
+  protected void doExtraValidation(final D dto, final ValidationResults validationResults)
+  {
+    // override this method to add specific validation
   }
 
   protected abstract Class<D> getDomainClass();

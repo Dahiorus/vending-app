@@ -3,6 +3,7 @@ package me.dahiorus.project.vending.core.service.validation.impl;
 import static me.dahiorus.project.vending.core.service.validation.FieldValidationError.emptyOrNullValue;
 import static me.dahiorus.project.vending.core.service.validation.FieldValidationError.fieldError;
 import static me.dahiorus.project.vending.core.service.validation.FieldValidationError.notUniqueValue;
+import static me.dahiorus.project.vending.core.service.validation.ValidationError.getFullCode;
 
 import java.util.Objects;
 
@@ -74,7 +75,7 @@ public class VendingMachineDtoValidator extends DtoValidatorImpl<VendingMachineD
     if (workingStatus != null && powerStatus == PowerStatus.OFF)
     {
       validationResults.addError(fieldError(VendingMachine_.WORKING_STATUS,
-          "validation.constraints.vending_machine.working_status_consistency",
+          getFullCode("vending_machine.working_status_consistency"),
           "An OFF vending machine cannot have a working status", workingStatus));
     }
     else if (workingStatus == null && powerStatus == PowerStatus.ON)

@@ -36,12 +36,34 @@ public class ValidationResults
 
   public void addError(final ValidationError e)
   {
-    objectErrors.add(e);
+    // avoid duplicate error
+    if (objectErrors.stream()
+      .noneMatch(
+          err -> StringUtils.equals(err.getCode(), e.getCode())))
+    {
+      objectErrors.add(e);
+    }
   }
 
   public void addError(final FieldValidationError e)
   {
-    fieldErrors.add(e);
+    // avoid duplicate error on a field
+    if (fieldErrors.stream()
+      .noneMatch(
+          err -> StringUtils.equals(err.getField(), e.getField()) && StringUtils.equals(err.getCode(), e.getCode())))
+    {
+      fieldErrors.add(e);
+    }
+  }
+
+  public void mergeObjectErrrors(final ValidationResults other)
+  {
+    other.objectErrors.forEach(this::addError);
+  }
+
+  public void mergeFieldErrors(final ValidationResults other)
+  {
+    other.fieldErrors.forEach(this::addError);
   }
 
   public Collection<FieldValidationError> getFieldErrors(final String field)

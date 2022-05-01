@@ -1,6 +1,7 @@
 package me.dahiorus.project.vending.core.service.validation.impl;
 
 import static me.dahiorus.project.vending.core.service.validation.FieldValidationError.fieldError;
+import static me.dahiorus.project.vending.core.service.validation.ValidationError.getFullCode;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -32,7 +33,7 @@ public class CommentDtoValidator extends DtoValidatorImpl<CommentDTO, CommentDAO
     Integer rate = dto.getRate();
     if (rate == null || rate < 0 || rate > 5)
     {
-      results.addError(fieldError(Comment_.RATE, "validation.constraints.comment.rate_interval",
+      results.addError(fieldError(Comment_.RATE, getFullCode("comment.rate_interval"),
           "A comment rate must be between 0 and 5 (included)", rate));
     }
   }

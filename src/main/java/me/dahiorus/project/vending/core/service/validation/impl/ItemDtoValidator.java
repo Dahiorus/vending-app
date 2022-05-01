@@ -2,6 +2,7 @@ package me.dahiorus.project.vending.core.service.validation.impl;
 
 import static me.dahiorus.project.vending.core.service.validation.FieldValidationError.fieldError;
 import static me.dahiorus.project.vending.core.service.validation.FieldValidationError.notUniqueValue;
+import static me.dahiorus.project.vending.core.service.validation.ValidationError.getFullCode;
 
 import java.util.Objects;
 
@@ -42,7 +43,7 @@ public class ItemDtoValidator extends DtoValidatorImpl<ItemDTO, ItemDAO>
     Double price = dto.getPrice();
     if (price == null || price < .0)
     {
-      results.addError(fieldError(Item_.PRICE, "validation.constraints.item.price_positive",
+      results.addError(fieldError(Item_.PRICE, getFullCode("item.price_positive"),
           "The price must be a positive number", price));
     }
 
