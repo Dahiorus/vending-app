@@ -16,11 +16,17 @@ public class TestUtils
     return any();
   }
 
+  public static void assertNoFieldError(final ValidationResults results, final String field)
+  {
+    assertThat(results.getFieldErrors(field)).isEmpty();
+  }
+
   public static void assertHasExactlyFieldErrors(final ValidationResults results, final String field,
       final String... codes)
   {
-    assertThat(results.getFieldErrors(field)).extracting(FieldValidationError::getCode)
-      .containsExactly(codes);
+    assertThat(results.getFieldErrors(field)).isNotEmpty()
+      .extracting(FieldValidationError::getCode)
+      .containsExactlyInAnyOrder(codes);
   }
 
   private TestUtils()
