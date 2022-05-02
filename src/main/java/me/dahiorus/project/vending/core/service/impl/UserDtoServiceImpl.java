@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.core.dao.UserDAO;
 import me.dahiorus.project.vending.core.exception.ValidationException;
-import me.dahiorus.project.vending.core.model.User;
-import me.dahiorus.project.vending.core.model.User_;
+import me.dahiorus.project.vending.core.model.AppUser;
+import me.dahiorus.project.vending.core.model.AppUser_;
 import me.dahiorus.project.vending.core.model.dto.UserDTO;
 import me.dahiorus.project.vending.core.model.dto.UserWithPasswordDTO;
 import me.dahiorus.project.vending.core.service.DtoMapper;
@@ -21,7 +21,7 @@ import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
 @Log4j2
 @Service
-public class UserDtoServiceImpl extends DtoServiceImpl<User, UserDTO, UserDAO> implements UserDtoService
+public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO> implements UserDtoService
 {
   private final PasswordValidator passwordValidator;
 
@@ -57,10 +57,10 @@ public class UserDtoServiceImpl extends DtoServiceImpl<User, UserDTO, UserDAO> i
     // validate the password hard coded policy and encode it
     validate(dto, CrudOperation.CREATE);
 
-    User entity = dtoMapper.toEntity(dto, entityClass);
+    AppUser entity = dtoMapper.toEntity(dto, entityClass);
     entity.setPassword(passwordEncoder.encode(dto.getPassword()));
 
-    User createdEntity = dao.save(entity);
+    AppUser createdEntity = dao.save(entity);
     UserDTO createdDto = dtoMapper.toDto(createdEntity, getDomainClass());
 
     getLogger().info("{} created: {}", getDomainClass().getSimpleName(), createdDto);
@@ -74,7 +74,7 @@ public class UserDtoServiceImpl extends DtoServiceImpl<User, UserDTO, UserDAO> i
     if (dto instanceof UserWithPasswordDTO userWithPwd)
     {
       log.debug("Validating the user's password: {}", dto);
-      ValidationResults pwdValidationResults = passwordValidator.validate(User_.PASSWORD, userWithPwd.getPassword(),
+      ValidationResults pwdValidationResults = passwordValidator.validate(AppUser_.PASSWORD, userWithPwd.getPassword(),
           true);
       validationResults.mergeFieldErrors(pwdValidationResults);
     }

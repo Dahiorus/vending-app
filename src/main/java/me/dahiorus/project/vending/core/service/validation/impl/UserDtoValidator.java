@@ -9,14 +9,14 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.core.dao.UserDAO;
-import me.dahiorus.project.vending.core.model.User;
-import me.dahiorus.project.vending.core.model.User_;
+import me.dahiorus.project.vending.core.model.AppUser;
+import me.dahiorus.project.vending.core.model.AppUser_;
 import me.dahiorus.project.vending.core.model.dto.UserDTO;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
 @Log4j2
 @Component
-public class UserDtoValidator extends DtoValidatorImpl<User, UserDTO, UserDAO>
+public class UserDtoValidator extends DtoValidatorImpl<AppUser, UserDTO, UserDAO>
 {
   public UserDtoValidator(final UserDAO dao)
   {
@@ -32,18 +32,18 @@ public class UserDtoValidator extends DtoValidatorImpl<User, UserDTO, UserDAO>
   @Override
   protected void doValidate(final UserDTO dto, final ValidationResults results)
   {
-    rejectIfBlank(User_.EMAIL, dto.getEmail(), results);
-    rejectIfBlank(User_.FIRST_NAME, dto.getFirstName(), results);
-    rejectIfBlank(User_.LAST_NAME, dto.getLastName(), results);
+    rejectIfBlank(AppUser_.EMAIL, dto.getEmail(), results);
+    rejectIfBlank(AppUser_.FIRST_NAME, dto.getFirstName(), results);
+    rejectIfBlank(AppUser_.LAST_NAME, dto.getLastName(), results);
 
-    if (!results.hasFieldError(User_.EMAIL))
+    if (!results.hasFieldError(AppUser_.EMAIL))
     {
       log.trace("Validating email uniqueness...");
       dao.findByEmail(dto.getEmail())
         .ifPresent(other -> {
           if (!Objects.equals(dto.getId(), other.getId()))
           {
-            results.addError(notUniqueValue(User_.EMAIL, dto.getEmail()));
+            results.addError(notUniqueValue(AppUser_.EMAIL, dto.getEmail()));
           }
         });
     }

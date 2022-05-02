@@ -23,7 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import me.dahiorus.project.vending.core.dao.impl.UserDaoImpl;
 import me.dahiorus.project.vending.core.exception.ValidationException;
-import me.dahiorus.project.vending.core.model.User;
+import me.dahiorus.project.vending.core.model.AppUser;
 import me.dahiorus.project.vending.core.model.dto.UserDTO;
 import me.dahiorus.project.vending.core.model.dto.UserWithPasswordDTO;
 import me.dahiorus.project.vending.core.service.validation.FieldValidationError;
@@ -35,7 +35,7 @@ import me.dahiorus.project.vending.core.service.validation.impl.UserDtoValidator
 class UserDtoServiceImplTest
 {
   @Captor
-  ArgumentCaptor<User> userArg;
+  ArgumentCaptor<AppUser> userArg;
 
   @Mock
   UserDaoImpl dao;
@@ -53,7 +53,7 @@ class UserDtoServiceImplTest
   @BeforeEach
   void setUp()
   {
-    when(dao.getDomainClass()).thenReturn(User.class);
+    when(dao.getDomainClass()).thenReturn(AppUser.class);
     passwordEncoder = new BCryptPasswordEncoder();
     dtoService = new UserDtoServiceImpl(dao, new DtoMapperImpl(), dtoValidator, passwordValidator, passwordEncoder);
   }
@@ -66,7 +66,7 @@ class UserDtoServiceImplTest
     when(dtoValidator.validate(user)).thenReturn(successResults());
     when(passwordValidator.validate("password", user.getPassword(), true)).thenReturn(successResults());
     when(dao.save(userArg.capture())).then(invocation -> {
-      User toCreate = invocation.getArgument(0);
+      AppUser toCreate = invocation.getArgument(0);
       toCreate.setId(UUID.randomUUID());
       return toCreate;
     });

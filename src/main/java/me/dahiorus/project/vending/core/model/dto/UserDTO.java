@@ -4,11 +4,11 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import me.dahiorus.project.vending.core.model.User;
+import me.dahiorus.project.vending.core.model.AppUser;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class UserDTO extends AbstractDTO<User>
+public class UserDTO extends AbstractDTO<AppUser>
 {
   @Getter
   @Setter
@@ -23,8 +23,8 @@ public class UserDTO extends AbstractDTO<User>
   private String email;
 
   @Override
-  public Class<User> getEntityClass()
+  public Class<AppUser> getEntityClass()
   {
-    return User.class;
+    return AppUser.class;
   }
 }

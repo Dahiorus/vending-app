@@ -1,8 +1,16 @@
 package me.dahiorus.project.vending.core.model;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -14,7 +22,7 @@ import javax.persistence.UniqueConstraint;
         @Index(columnList = "lastName", name = "IDX_USER_LAST_NAME"),
         @Index(columnList = "email", name = "IDX_USER_EMAIL")
     })
-public class User extends AbstractEntity
+public class AppUser extends AbstractEntity
 {
   private String firstName;
 
@@ -23,6 +31,8 @@ public class User extends AbstractEntity
   private String email;
 
   private String password;
+
+  private List<AppRole> roles;
 
   public String getFirstName()
   {
@@ -65,5 +75,20 @@ public class User extends AbstractEntity
   public void setPassword(final String password)
   {
     this.password = password;
+  }
+
+  @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+  @JoinTable(name = "app_user_role",
+      joinColumns = @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_USER_ROLE_USER_ID")),
+      inverseJoinColumns = @JoinColumn(name = "role_id", foreignKey = @ForeignKey(name = "FK_USER_ROLE_ROLE_ID")),
+      uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "role_id" }, name = "UK_USER_ROLE_ID"))
+  public List<AppRole> getRoles()
+  {
+    return roles;
+  }
+
+  public void setRoles(final List<AppRole> roles)
+  {
+    this.roles = roles;
   }
 }

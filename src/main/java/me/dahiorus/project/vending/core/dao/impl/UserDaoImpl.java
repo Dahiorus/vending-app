@@ -8,20 +8,20 @@ import javax.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
 import me.dahiorus.project.vending.core.dao.UserDAO;
-import me.dahiorus.project.vending.core.model.User;
-import me.dahiorus.project.vending.core.model.User_;
+import me.dahiorus.project.vending.core.model.AppUser;
+import me.dahiorus.project.vending.core.model.AppUser_;
 
 @Repository
-public class UserDaoImpl extends AbstractDAO<User> implements UserDAO
+public class UserDaoImpl extends AbstractDAO<AppUser> implements UserDAO
 {
   public UserDaoImpl(final EntityManager em)
   {
-    super(User.class, em);
+    super(AppUser.class, em);
   }
 
   @Override
-  public Optional<User> findByEmail(@Nonnull final String email)
+  public Optional<AppUser> findByEmail(@Nonnull final String email)
   {
-    return findOne((root, query, cb) -> cb.equal(root.get(User_.email), email));
+    return findOne((root, query, cb) -> cb.equal(root.get(AppUser_.email), email));
   }
 }

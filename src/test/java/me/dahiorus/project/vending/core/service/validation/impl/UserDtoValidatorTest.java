@@ -16,7 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import me.dahiorus.project.vending.core.dao.impl.UserDaoImpl;
-import me.dahiorus.project.vending.core.model.User;
+import me.dahiorus.project.vending.core.model.AppUser;
 import me.dahiorus.project.vending.core.model.dto.UserDTO;
 import me.dahiorus.project.vending.core.service.validation.ValidationError;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
@@ -99,7 +99,7 @@ class UserDtoValidatorTest
   void emailIsUnique()
   {
     UserDTO dto = buildDto("User", "test", "user@yopmail.com");
-    User duplicate = new User();
+    AppUser duplicate = new AppUser();
     duplicate.setId(UUID.randomUUID());
     duplicate.setEmail(dto.getEmail());
 
