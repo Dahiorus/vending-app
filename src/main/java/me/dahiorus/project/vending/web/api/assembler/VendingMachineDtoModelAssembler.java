@@ -40,6 +40,7 @@ public class VendingMachineDtoModelAssembler extends DtoModelAssembler<VendingMa
   {
     return List.of(linkTo(methodOn(StockRestService.class).getStocks(content.getId())).withRel("stocks"),
         linkTo(methodOn(CommentRestController.class).getComments(content.getId())).withRel("comments"),
-        linkTo(methodOn(ReportRestController.class).report(content.getId())).withRel("report"));
+        linkTo(methodOn(ReportRestController.class).report(content.getId())).withRel("report"),
+        linkTo(methodOn(VendingMachineRestController.class).resetStatuses(content.getId())).withRel("reset"));
   }
 }
