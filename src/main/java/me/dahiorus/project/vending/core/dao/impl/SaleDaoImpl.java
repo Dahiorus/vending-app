@@ -1,4 +1,4 @@
-package me.dahiorus.project.vending.core.dao;
+package me.dahiorus.project.vending.core.dao.impl;
 
 import javax.persistence.EntityManager;
 
@@ -7,9 +7,9 @@ import org.springframework.stereotype.Repository;
 import me.dahiorus.project.vending.core.model.Sale;
 
 @Repository
-public class SaleDAO extends AbstractDAO<Sale>
+public class SaleDaoImpl extends AbstractDAO<Sale>
 {
-  public SaleDAO(final EntityManager em)
+  public SaleDaoImpl(final EntityManager em)
   {
     super(Sale.class, em);
   }

@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.core.dao.VendingMachineDAO;
+import me.dahiorus.project.vending.core.dao.DAO;
 import me.dahiorus.project.vending.core.model.PowerStatus;
 import me.dahiorus.project.vending.core.model.VendingMachine;
 import me.dahiorus.project.vending.core.model.VendingMachine_;
@@ -22,10 +22,10 @@ import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
 @Log4j2
 @Component
-public class VendingMachineDtoValidator extends DtoValidatorImpl<VendingMachine, VendingMachineDTO, VendingMachineDAO>
+public class VendingMachineDtoValidator extends DtoValidatorImpl<VendingMachine, VendingMachineDTO, DAO<VendingMachine>>
 {
   @Autowired
-  public VendingMachineDtoValidator(final VendingMachineDAO dao)
+  public VendingMachineDtoValidator(final DAO<VendingMachine> dao)
   {
     super(dao);
   }

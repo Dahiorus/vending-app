@@ -2,41 +2,10 @@ package me.dahiorus.project.vending.core.dao;
 
 import java.util.Optional;
 
-import javax.annotation.Nonnull;
-import javax.persistence.EntityManager;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.stereotype.Repository;
-
-import me.dahiorus.project.vending.core.model.AbstractEntity_;
 import me.dahiorus.project.vending.core.model.Report;
-import me.dahiorus.project.vending.core.model.Report_;
 import me.dahiorus.project.vending.core.model.VendingMachine;
 
-@Repository
-public class ReportDAO extends AbstractDAO<Report>
+public interface ReportDAO extends DAO<Report>
 {
-  public ReportDAO(final EntityManager em)
-  {
-    super(Report.class, em);
-  }
-
-  public Optional<Report> findLastGenerated(@Nonnull final VendingMachine machine)
-  {
-    Page<Report> reports = findAll(
-        (root, query, cb) -> cb.equal(root.get(Report_.machineSerialNumber), machine.getSerialNumber()),
-        PageRequest.of(0, 1, Direction.DESC, AbstractEntity_.CREATED_AT));
-
-    if (reports.isEmpty())
-    {
-      return Optional.empty();
-    }
-
-    Report report = reports.getContent()
-      .get(0);
-
-    return Optional.of(report);
-  }
+  Optional<Report> findLastGenerated(final VendingMachine machine);
 }

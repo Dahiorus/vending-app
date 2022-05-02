@@ -12,7 +12,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import me.dahiorus.project.vending.core.dao.CommentDAO;
+import me.dahiorus.project.vending.core.dao.impl.CommentDaoImpl;
 import me.dahiorus.project.vending.core.model.dto.CommentDTO;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
@@ -20,7 +20,7 @@ import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 class CommentDtoValidatorTest
 {
   @Mock
-  CommentDAO dao;
+  CommentDaoImpl dao;
 
   CommentDtoValidator validator;
 

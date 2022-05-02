@@ -21,7 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import me.dahiorus.project.vending.core.dao.UserDAO;
+import me.dahiorus.project.vending.core.dao.impl.UserDaoImpl;
 import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.model.User;
 import me.dahiorus.project.vending.core.model.dto.UserDTO;
@@ -38,7 +38,7 @@ class UserDtoServiceImplTest
   ArgumentCaptor<User> userArg;
 
   @Mock
-  UserDAO dao;
+  UserDaoImpl dao;
 
   @Mock
   UserDtoValidator dtoValidator;

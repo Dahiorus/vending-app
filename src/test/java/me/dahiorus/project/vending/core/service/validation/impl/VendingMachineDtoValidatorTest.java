@@ -17,7 +17,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import me.dahiorus.project.vending.core.dao.VendingMachineDAO;
+import me.dahiorus.project.vending.core.dao.impl.VendingMachineDaoImpl;
 import me.dahiorus.project.vending.core.model.ItemType;
 import me.dahiorus.project.vending.core.model.PowerStatus;
 import me.dahiorus.project.vending.core.model.VendingMachine;
@@ -29,7 +29,7 @@ import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 class VendingMachineDtoValidatorTest
 {
   @Mock
-  VendingMachineDAO dao;
+  VendingMachineDaoImpl dao;
 
   VendingMachineDtoValidator validator;
 

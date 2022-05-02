@@ -13,7 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import me.dahiorus.project.vending.common.HasLogger;
-import me.dahiorus.project.vending.core.dao.AbstractDAO;
+import me.dahiorus.project.vending.core.dao.DAO;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.model.AbstractEntity;
@@ -24,7 +24,7 @@ import me.dahiorus.project.vending.core.service.validation.CrudOperation;
 import me.dahiorus.project.vending.core.service.validation.DtoValidator;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
-public abstract class DtoServiceImpl<E extends AbstractEntity, D extends AbstractDTO<E>, R extends AbstractDAO<E>>
+public abstract class DtoServiceImpl<E extends AbstractEntity, D extends AbstractDTO<E>, R extends DAO<E>>
     implements DtoService<E, D>, HasLogger
 {
   protected final R dao;

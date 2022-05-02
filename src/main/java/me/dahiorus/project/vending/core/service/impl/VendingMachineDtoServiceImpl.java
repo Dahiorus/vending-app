@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.core.dao.VendingMachineDAO;
+import me.dahiorus.project.vending.core.dao.DAO;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.model.CardSystemStatus;
 import me.dahiorus.project.vending.core.model.ChangeSystemStatus;
@@ -22,10 +22,10 @@ import me.dahiorus.project.vending.core.service.validation.DtoValidator;
 @Log4j2
 @Service
 public class VendingMachineDtoServiceImpl
-    extends DtoServiceImpl<VendingMachine, VendingMachineDTO, VendingMachineDAO>
+    extends DtoServiceImpl<VendingMachine, VendingMachineDTO, DAO<VendingMachine>>
     implements VendingMachineDtoService
 {
-  public VendingMachineDtoServiceImpl(final VendingMachineDAO dao, final DtoMapper dtoMapper,
+  public VendingMachineDtoServiceImpl(final DAO<VendingMachine> dao, final DtoMapper dtoMapper,
       final DtoValidator<VendingMachineDTO> dtoValidator)
   {
     super(dao, dtoMapper, dtoValidator);

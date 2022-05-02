@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.core.dao.ItemDAO;
+import me.dahiorus.project.vending.core.dao.DAO;
 import me.dahiorus.project.vending.core.model.Item;
 import me.dahiorus.project.vending.core.model.Item_;
 import me.dahiorus.project.vending.core.model.dto.ItemDTO;
@@ -18,9 +18,9 @@ import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
 @Log4j2
 @Component
-public class ItemDtoValidator extends DtoValidatorImpl<Item, ItemDTO, ItemDAO>
+public class ItemDtoValidator extends DtoValidatorImpl<Item, ItemDTO, DAO<Item>>
 {
-  public ItemDtoValidator(final ItemDAO dao)
+  public ItemDtoValidator(final DAO<Item> dao)
   {
     super(dao);
   }

@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.core.dao.AbstractDAO;
 import me.dahiorus.project.vending.core.dao.ReportDAO;
+import me.dahiorus.project.vending.core.dao.impl.AbstractDAO;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.model.Report;

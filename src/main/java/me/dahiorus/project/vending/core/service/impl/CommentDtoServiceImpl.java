@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.core.dao.AbstractDAO;
+import me.dahiorus.project.vending.core.dao.DAO;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.model.Comment;
@@ -25,9 +25,9 @@ import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 @Service
 public class CommentDtoServiceImpl implements CommentDtoService
 {
-  private final AbstractDAO<Comment> dao;
+  private final DAO<Comment> dao;
 
-  private final AbstractDAO<VendingMachine> vendingMachineDao;
+  private final DAO<VendingMachine> vendingMachineDao;
 
   private final DtoValidator<CommentDTO> commentDtoValidator;
 

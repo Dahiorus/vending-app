@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.core.dao.AbstractDAO;
+import me.dahiorus.project.vending.core.dao.DAO;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.model.Item;
@@ -27,9 +27,9 @@ import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 @Service
 public class StockDtoServiceImpl implements StockDtoService
 {
-  private final AbstractDAO<Stock> dao;
+  private final DAO<Stock> dao;
 
-  private final AbstractDAO<VendingMachine> vendingMachineDao;
+  private final DAO<VendingMachine> vendingMachineDao;
 
   private final StockValidator stockValidator;
 

@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.core.dao.AbstractDAO;
+import me.dahiorus.project.vending.core.dao.DAO;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ItemMissing;
 import me.dahiorus.project.vending.core.model.Item;
@@ -25,11 +25,11 @@ import me.dahiorus.project.vending.core.service.SaleDtoService;
 @Service
 public class SaleDtoServiceImpl implements SaleDtoService
 {
-  private final AbstractDAO<Sale> dao;
+  private final DAO<Sale> dao;
 
-  private final AbstractDAO<VendingMachine> vendingMachineDao;
+  private final DAO<VendingMachine> vendingMachineDao;
 
-  private final AbstractDAO<Stock> stockDao;
+  private final DAO<Stock> stockDao;
 
   private final DtoMapper dtoMapper;
 

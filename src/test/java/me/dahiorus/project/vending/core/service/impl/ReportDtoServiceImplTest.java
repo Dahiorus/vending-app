@@ -22,8 +22,8 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import me.dahiorus.project.vending.core.dao.ReportDAO;
-import me.dahiorus.project.vending.core.dao.VendingMachineDAO;
+import me.dahiorus.project.vending.core.dao.impl.ReportDaoImpl;
+import me.dahiorus.project.vending.core.dao.impl.VendingMachineDaoImpl;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.model.ChangeSystemStatus;
 import me.dahiorus.project.vending.core.model.Item;
@@ -39,11 +39,11 @@ import me.dahiorus.project.vending.core.model.dto.ReportDTO;
 @ExtendWith(MockitoExtension.class)
 class ReportDtoServiceImplTest
 {
-  @Mock(lenient = true)
-  ReportDAO dao;
+  @Mock
+  ReportDaoImpl dao;
 
   @Mock
-  VendingMachineDAO vendingMachineDao;
+  VendingMachineDaoImpl vendingMachineDao;
 
   ReportDtoServiceImpl controller;
 
@@ -55,14 +55,6 @@ class ReportDtoServiceImplTest
   {
     when(dao.getDomainClass()).thenReturn(Report.class);
     controller = new ReportDtoServiceImpl(dao, new DtoMapperImpl(), vendingMachineDao);
-
-    when(dao.save(any()))
-      .then(invocation -> {
-        Report arg = invocation.getArgument(0);
-        arg.setId(UUID.randomUUID());
-        arg.setCreatedAt(Instant.now());
-        return arg;
-      });
   }
 
   @Test
@@ -95,7 +87,9 @@ class ReportDtoServiceImplTest
     void reportVendingMachine() throws Exception
     {
       VendingMachine machine = buildMachine(UUID.randomUUID());
+
       when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
+      mockSaveReport();
 
       ReportDTO report = controller.report(machine.getId());
 
@@ -118,6 +112,7 @@ class ReportDtoServiceImplTest
       machine.setStocks(List.of(stock));
 
       when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
+      mockSaveReport();
 
       ReportDTO report = controller.report(machine.getId());
 
@@ -141,6 +136,7 @@ class ReportDtoServiceImplTest
       machine.setSales(List.of(sale1, sale2));
 
       when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
+      mockSaveReport();
 
       ReportDTO report = controller.report(machine.getId());
 
@@ -168,11 +164,23 @@ class ReportDtoServiceImplTest
         oldReport.setCreatedAt(Instant.parse("2022-04-02T10:15:30Z"));
         return Optional.of(oldReport);
       });
+      mockSaveReport();
 
       ReportDTO report = controller.report(machine.getId());
 
       assertAll(() -> assertReportHasMachineInfo(report, machine),
           () -> assertThat(report.getTotalSaleAmount()).isEqualTo(sale2.getAmount()));
+    }
+
+    void mockSaveReport()
+    {
+      when(dao.save(any()))
+        .then(invocation -> {
+          Report arg = invocation.getArgument(0);
+          arg.setId(UUID.randomUUID());
+          arg.setCreatedAt(Instant.now());
+          return arg;
+        });
     }
   }
 
