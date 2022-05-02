@@ -16,10 +16,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.web.security.JwtService;
+import me.dahiorus.project.vending.web.security.SecurityConstants;
 
 @Log4j2
 @RequiredArgsConstructor
-public class JwtAuthorizationFilter extends OncePerRequestFilter
+public class JwtRequestFilter extends OncePerRequestFilter
 {
   private static final String AUTHORIZATION_HEADER_PREFIX = "Bearer ";
 
@@ -30,9 +31,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter
       final FilterChain filterChain)
       throws ServletException, IOException
   {
-    if (StringUtils.equalsAny(request.getServletPath(), "/api/v1/authenticate"))
+    if (StringUtils.equalsAny(request.getServletPath(), SecurityConstants.AUTHENTICATE_ENDPOINT,
+        SecurityConstants.REFRESH_TOKEN_ENDPOINT))
     {
-      log.trace("Requesting the authentication path");
+      log.trace("Requesting the authentication or the refresh token path");
       filterChain.doFilter(request, response);
       return;
     }

@@ -2,6 +2,8 @@ package me.dahiorus.project.vending.web.security.impl;
 
 import java.text.ParseException;
 import java.time.Instant;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -9,7 +11,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.nimbusds.jose.JOSEException;
@@ -45,36 +46,36 @@ public class JwtServiceImpl implements JwtService
   private final JwtProperties jwtProperties;
 
   @Override
-  public String createAccessToken(final UserDetails userDetails)
+  public String createAccessToken(final String username, final Collection<? extends GrantedAuthority> authorities)
   {
     Instant now = Instant.now();
     JWTClaimsSet claims = new JWTClaimsSet.Builder()
-      .subject(userDetails.getUsername())
+      .subject(username)
       .issueTime(Date.from(now))
       .issuer(jwtProperties.getIssuerUri())
-      .claim("roles", userDetails.getAuthorities()
+      .claim("roles", authorities
         .stream()
         .map(GrantedAuthority::getAuthority)
         .toArray(String[]::new))
       .expirationTime(Date.from(now.plus(jwtProperties.getAccessTokenDuration())))
       .build();
 
-    log.debug("Creating a JWT access token for {}", userDetails);
+    log.debug("Creating a JWT access token for {}", username);
 
     return createToken(claims);
   }
 
   @Override
-  public String createRefreshToken(final UserDetails userDetails)
+  public String createRefreshToken(final String username)
   {
     Instant now = Instant.now();
     JWTClaimsSet claims = new JWTClaimsSet.Builder()
-      .subject(userDetails.getUsername())
+      .subject(username)
       .issueTime(Date.from(now))
       .expirationTime(Date.from(now.plus(jwtProperties.getRefreshTokenDuration())))
       .build();
 
-    log.debug("Creating a JWT refresh token for {}", userDetails);
+    log.debug("Creating a JWT refresh token for {}", username);
 
     return createToken(claims);
   }
@@ -119,16 +120,18 @@ public class JwtServiceImpl implements JwtService
       String username = claims.getSubject();
       List<String> roles = claims.getStringListClaim("roles");
 
+      List<SimpleGrantedAuthority> authorities = roles == null ? Collections.emptyList()
+          : roles.stream()
+            .map(SimpleGrantedAuthority::new)
+            .toList();
+
       log.debug("Token parsed for username '{}'", username);
 
-      return new UsernamePasswordAuthenticationToken(username, null, roles.stream()
-        .map(SimpleGrantedAuthority::new)
-        .toList());
+      return new UsernamePasswordAuthenticationToken(username, null, authorities);
     }
     catch (BadJOSEException | JOSEException | ParseException e)
     {
       throw new AppRuntimeException(e.getMessage(), e);
     }
-
   }
 }

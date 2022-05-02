@@ -2,7 +2,6 @@ package me.dahiorus.project.vending.web.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,8 +16,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import lombok.RequiredArgsConstructor;
 import me.dahiorus.project.vending.web.security.JwtService;
+import me.dahiorus.project.vending.web.security.SecurityConstants;
 import me.dahiorus.project.vending.web.security.filter.JwtAuthenticationFilter;
-import me.dahiorus.project.vending.web.security.filter.JwtAuthorizationFilter;
+import me.dahiorus.project.vending.web.security.filter.JwtRequestFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -49,7 +49,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
       .permitAll()
       .and()
       .authorizeRequests()
-      .mvcMatchers(HttpMethod.POST, "/api/v1/register", "/api/v1/authenticate")
+      .mvcMatchers(SecurityConstants.AUTHENTICATE_ENDPOINT, SecurityConstants.REFRESH_TOKEN_ENDPOINT)
+      .permitAll()
+      .and()
+      .authorizeRequests()
+      .mvcMatchers(SecurityConstants.REGISTER_ENDPOINT)
       .anonymous()
       .and()
       .authorizeRequests()
@@ -57,7 +61,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
       .authenticated()
       .and()
       .addFilter(new JwtAuthenticationFilter(authenticationManagerBean(), jwtService))
-      .addFilterBefore(new JwtAuthorizationFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
+      .addFilterBefore(new JwtRequestFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
   }
 
   @Bean

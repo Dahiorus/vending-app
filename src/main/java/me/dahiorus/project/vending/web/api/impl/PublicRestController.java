@@ -3,6 +3,7 @@ package me.dahiorus.project.vending.web.api.impl;
 import static org.springframework.http.ResponseEntity.created;
 
 import java.net.URI;
+import java.util.Collections;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.hateoas.EntityModel;
@@ -10,6 +11,7 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +28,11 @@ import me.dahiorus.project.vending.core.model.dto.UserDTO;
 import me.dahiorus.project.vending.core.model.dto.UserWithPasswordDTO;
 import me.dahiorus.project.vending.core.service.UserDtoService;
 import me.dahiorus.project.vending.web.api.AppWebService;
+import me.dahiorus.project.vending.web.api.model.AuthenticateRequest;
+import me.dahiorus.project.vending.web.api.model.AuthenticateResponse;
+import me.dahiorus.project.vending.web.api.model.RefreshTokenRequest;
+import me.dahiorus.project.vending.web.security.JwtService;
+import me.dahiorus.project.vending.web.security.SecurityConstants;
 
 @Tag(name = "Public", description = "Public operations")
 @RestController
@@ -37,6 +44,8 @@ public class PublicRestController implements HasLogger, AppWebService
 
   private final RepresentationModelAssembler<UserDTO, EntityModel<UserDTO>> userModelAssembler;
 
+  private final JwtService jwtService;
+
   @Override
   public Logger getLogger()
   {
@@ -45,7 +54,7 @@ public class PublicRestController implements HasLogger, AppWebService
 
   @Operation(description = "Register a user")
   @ApiResponse(responseCode = "201", description = "User registered")
-  @PostMapping(value = "/api/v1/register", consumes = MediaType.APPLICATION_JSON_VALUE,
+  @PostMapping(value = SecurityConstants.REGISTER_ENDPOINT, consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaTypes.HAL_JSON_VALUE)
   public ResponseEntity<EntityModel<UserDTO>> register(@RequestBody final UserWithPasswordDTO user)
       throws ValidationException
@@ -61,5 +70,33 @@ public class PublicRestController implements HasLogger, AppWebService
     log.info("User registered: {}", location);
 
     return created(location).body(userModelAssembler.toModel(createdUser));
+  }
+
+  @Operation(description = "Authenticate a user")
+  @ApiResponse(responseCode = "200", description = "User authenticated")
+  @ApiResponse(responseCode = "401", description = "Bad credentials")
+  @PostMapping(value = SecurityConstants.AUTHENTICATE_ENDPOINT, consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<AuthenticateResponse> authenticate(@RequestBody final AuthenticateRequest authRequest)
+  {
+    // marker method
+    // the authentication is done in JwtAuthenticationFilter
+    return ResponseEntity.ok(null);
+  }
+
+  @Operation(description = "Refresh a user access token")
+  @ApiResponse(responseCode = "200", description = "Access token refreshed")
+  @PostMapping(value = SecurityConstants.REFRESH_TOKEN_ENDPOINT, consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<AuthenticateResponse> refreshToken(@RequestBody final RefreshTokenRequest request)
+  {
+    log.debug("Refreshing the access token of a user");
+
+    Authentication authentication = jwtService.parseToken(request.getToken());
+    String accessToken = jwtService.createAccessToken((String) authentication.getPrincipal(), Collections.emptyList());
+
+    log.info("Access token refreshed for the user '{}'", authentication.getPrincipal());
+
+    return ResponseEntity.ok(new AuthenticateResponse(accessToken, request.getToken()));
   }
 }
