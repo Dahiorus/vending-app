@@ -16,6 +16,11 @@ public class TestUtils
     return any();
   }
 
+  public static ValidationResults successResults()
+  {
+    return new ValidationResults();
+  }
+
   public static void assertNoFieldError(final ValidationResults results, final String field)
   {
     assertThat(results.getFieldErrors(field)).isEmpty();

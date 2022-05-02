@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.core.service.impl;
 
+import static com.dahiorus.project.vending.util.TestUtils.successResults;
 import static me.dahiorus.project.vending.core.service.validation.FieldValidationError.emptyOrNullValue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -66,7 +67,7 @@ class ItemDtoServiceImplTest
     {
       ItemDTO dto = buildDto("Item", ItemType.FOOD, 2.0);
 
-      when(dtoValidator.validate(dto)).thenReturn(new ValidationResults());
+      when(dtoValidator.validate(dto)).thenReturn(successResults());
       when(dao.save(any())).then(invocation -> {
         Item item = invocation.getArgument(0);
         item.setId(UUID.randomUUID());
@@ -132,7 +133,7 @@ class ItemDtoServiceImplTest
       Item entity = mockRead(UUID.randomUUID());
 
       ItemDTO dto = buildDto("Item", ItemType.FOOD, 2.5);
-      when(dtoValidator.validate(dto)).thenReturn(new ValidationResults());
+      when(dtoValidator.validate(dto)).thenReturn(successResults());
 
       when(dao.save(any())).then(invocation -> invocation.getArgument(0));
 

@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 import javax.annotation.Nonnull;
 import javax.persistence.CascadeType;
@@ -220,7 +219,7 @@ public class VendingMachine extends AbstractEntity
     this.changeMoneyStatus = changeMoneyStatus;
   }
 
-  @OneToMany(orphanRemoval = true, fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+  @OneToMany(orphanRemoval = true, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
   @JoinColumn(name = "vending_machine_id", foreignKey = @ForeignKey(name = "FK_VENDING_MACHINE_COMMENT"),
       updatable = false, nullable = false)
   @OrderBy(value = "createdAt DESC")
@@ -239,7 +238,7 @@ public class VendingMachine extends AbstractEntity
     getComments().add(comment);
   }
 
-  @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+  @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.PERSIST)
   @JoinColumn(name = "vending_machine_id", nullable = false,
       foreignKey = @ForeignKey(name = "FK_STOCK_VENDING_MACHINE"))
   public List<Stock> getStocks()
@@ -252,40 +251,15 @@ public class VendingMachine extends AbstractEntity
     this.stocks = stocks;
   }
 
+  public void addStock(final Stock stock)
+  {
+    stocks.add(stock);
+  }
+
   public boolean hasItem(@Nonnull final Item item)
   {
     return getStocks().stream()
       .anyMatch(stock -> Objects.equals(stock.getItem(), item));
-  }
-
-  public void provision(@Nonnull final Item item, final Integer quantity)
-  {
-    if (!hasItem(item))
-    {
-      stocks.add(Stock.of(item, quantity));
-    }
-    else
-    {
-      stocks.stream()
-        .filter(s -> Objects.equals(s.getItem(), item))
-        .findFirst()
-        .ifPresent(s -> s.addQuantity(quantity));
-    }
-  }
-
-  public Sale purchase(@Nonnull final Item item)
-  {
-    getStocks()
-      .stream()
-      .filter(stock -> Objects.equals(stock.getItem(), item))
-      .findFirst()
-      .ifPresent(Stock::decrementQuantity);
-
-    Sale sale = Sale.of(item, this);
-    sale.setId(UUID.randomUUID());
-    sales.add(sale);
-
-    return sale;
   }
 
   public long getQuantityInStock(final Item item)
@@ -307,6 +281,11 @@ public class VendingMachine extends AbstractEntity
   public void setSales(final List<Sale> sales)
   {
     this.sales = sales;
+  }
+
+  public void addSale(final Sale sale)
+  {
+    sales.add(sale);
   }
 
   public Double computeTotalAmountSince(final Instant lastReportingDate)

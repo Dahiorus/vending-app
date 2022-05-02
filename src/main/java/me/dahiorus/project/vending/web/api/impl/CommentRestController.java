@@ -26,7 +26,7 @@ import lombok.AllArgsConstructor;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.model.dto.CommentDTO;
-import me.dahiorus.project.vending.core.service.VendingMachineDtoService;
+import me.dahiorus.project.vending.core.service.CommentDtoService;
 import me.dahiorus.project.vending.web.api.AppWebService;
 
 @Tag(name = "Comment", description = "Operation on a vending machine comments")
@@ -37,7 +37,7 @@ import me.dahiorus.project.vending.web.api.AppWebService;
 @AllArgsConstructor
 public class CommentRestController implements AppWebService
 {
-  private final VendingMachineDtoService vendingMachineDtoService;
+  private final CommentDtoService dtoService;
 
   private final RepresentationModelAssembler<CommentDTO, EntityModel<CommentDTO>> commentModelAssembler;
 
@@ -47,7 +47,7 @@ public class CommentRestController implements AppWebService
   public ResponseEntity<CollectionModel<EntityModel<CommentDTO>>> getComments(@PathVariable final UUID id)
       throws EntityNotFound
   {
-    List<CommentDTO> comments = vendingMachineDtoService.getComments(id);
+    List<CommentDTO> comments = dtoService.getComments(id);
 
     return ok(commentModelAssembler.toCollectionModel(comments));
   }
@@ -58,7 +58,7 @@ public class CommentRestController implements AppWebService
   public ResponseEntity<Void> comment(@PathVariable final UUID id, @RequestBody final CommentDTO comment)
       throws EntityNotFound, ValidationException
   {
-    vendingMachineDtoService.comment(id, comment);
+    dtoService.comment(id, comment);
 
     return noContent().build();
   }

@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.core.service.impl;
 
+import static com.dahiorus.project.vending.util.TestUtils.successResults;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -62,8 +63,8 @@ class UserDtoServiceImplTest
   {
     UserWithPasswordDTO user = buildUser("User", "Test", "email@yopmail.com", "Secret123");
 
-    when(dtoValidator.validate(user)).thenReturn(new ValidationResults());
-    when(passwordValidator.validate("password", user.getPassword(), true)).thenReturn(new ValidationResults());
+    when(dtoValidator.validate(user)).thenReturn(successResults());
+    when(passwordValidator.validate("password", user.getPassword(), true)).thenReturn(successResults());
     when(dao.save(userArg.capture())).then(invocation -> {
       User toCreate = invocation.getArgument(0);
       toCreate.setId(UUID.randomUUID());
@@ -85,7 +86,7 @@ class UserDtoServiceImplTest
   {
     UserWithPasswordDTO user = buildUser("User", "Test", "email@yopmail.com", "Secret123");
 
-    when(dtoValidator.validate(user)).thenReturn(new ValidationResults());
+    when(dtoValidator.validate(user)).thenReturn(successResults());
     when(passwordValidator.validate("password", user.getPassword(), true)).then(invocation -> {
       ValidationResults results = new ValidationResults();
       results.addError(FieldValidationError.fieldError("password", "validation.constraints.password.min-length",

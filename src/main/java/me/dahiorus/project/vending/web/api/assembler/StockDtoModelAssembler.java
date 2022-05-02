@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 
 import me.dahiorus.project.vending.core.exception.AppException;
 import me.dahiorus.project.vending.core.model.dto.StockDTO;
+import me.dahiorus.project.vending.web.api.impl.SaleRestService;
+import me.dahiorus.project.vending.web.api.impl.StockRestService;
 import me.dahiorus.project.vending.web.api.impl.VendingMachineRestController;
 
 @Component
@@ -34,10 +36,10 @@ public class StockDtoModelAssembler extends DtoModelAssembler<StockDTO>
 
     UUID itemId = content.getItemId();
     Link provisionLink = linkTo(
-        methodOn(VendingMachineRestController.class).provisionStock(vendingMachineId, itemId, null))
+        methodOn(StockRestService.class).provisionStock(vendingMachineId, itemId, null))
           .withRel("provision");
     Link purchaseLink = linkTo(
-        methodOn(VendingMachineRestController.class).purchaseItem(vendingMachineId, itemId))
+        methodOn(SaleRestService.class).purchaseItem(vendingMachineId, itemId))
           .withRel("purchase");
 
     return List.of(machineLink, provisionLink, purchaseLink);

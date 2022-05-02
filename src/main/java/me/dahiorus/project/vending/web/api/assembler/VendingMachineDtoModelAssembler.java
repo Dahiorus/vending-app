@@ -15,6 +15,7 @@ import me.dahiorus.project.vending.core.exception.AppException;
 import me.dahiorus.project.vending.core.model.dto.VendingMachineDTO;
 import me.dahiorus.project.vending.web.api.impl.CommentRestController;
 import me.dahiorus.project.vending.web.api.impl.ReportRestController;
+import me.dahiorus.project.vending.web.api.impl.StockRestService;
 import me.dahiorus.project.vending.web.api.impl.VendingMachineRestController;
 
 @Log4j2
@@ -37,7 +38,7 @@ public class VendingMachineDtoModelAssembler extends DtoModelAssembler<VendingMa
   @Override
   protected Iterable<Link> buildLinks(final VendingMachineDTO content) throws AppException
   {
-    return List.of(linkTo(methodOn(VendingMachineRestController.class).getStocks(content.getId())).withRel("stocks"),
+    return List.of(linkTo(methodOn(StockRestService.class).getStocks(content.getId())).withRel("stocks"),
         linkTo(methodOn(CommentRestController.class).getComments(content.getId())).withRel("comments"),
         linkTo(methodOn(ReportRestController.class).report(content.getId())).withRel("report"));
   }
