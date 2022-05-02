@@ -10,7 +10,7 @@ import java.util.function.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.core.config.PasswordPolicyProperties;
 import me.dahiorus.project.vending.core.service.validation.PasswordValidator;
@@ -18,7 +18,7 @@ import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
 @Component
 @Log4j2
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PasswordValidatorImpl implements PasswordValidator
 {
   private static final String DEFAULT_MSG_PREFIX = "A password must contain at least ";

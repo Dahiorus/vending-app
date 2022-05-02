@@ -36,7 +36,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import me.dahiorus.project.vending.common.HasLogger;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ValidationException;
@@ -45,7 +45,7 @@ import me.dahiorus.project.vending.core.service.DtoService;
 import me.dahiorus.project.vending.web.api.RestController;
 import me.dahiorus.project.vending.web.api.request.ExampleMatcherAdapter;
 
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @RequestMapping(produces = MediaTypes.HAL_JSON_VALUE)
 public abstract class RestControllerImpl<D extends AbstractDTO<?>, S extends DtoService<?, D>>
     implements RestController<D>, HasLogger

@@ -5,7 +5,7 @@ import static me.dahiorus.project.vending.core.service.validation.FieldValidatio
 import org.apache.commons.lang3.StringUtils;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import me.dahiorus.project.vending.common.HasLogger;
 import me.dahiorus.project.vending.core.dao.DAO;
 import me.dahiorus.project.vending.core.model.AbstractEntity;
@@ -13,7 +13,7 @@ import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
 import me.dahiorus.project.vending.core.service.validation.DtoValidator;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class DtoValidatorImpl<E extends AbstractEntity, D extends AbstractDTO<E>, R extends DAO<E>>
     implements DtoValidator<D>, HasLogger
 {
