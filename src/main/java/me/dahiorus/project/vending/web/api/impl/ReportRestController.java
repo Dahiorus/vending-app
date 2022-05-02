@@ -98,13 +98,16 @@ public class ReportRestController
   @DeleteMapping("/api/v1/reports/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}")
   public ResponseEntity<Void> delete(@PathVariable final UUID id)
   {
+    log.debug("Deleting report with ID {}", id);
+
     try
     {
       dtoService.delete(id);
+      log.info("Deleted report: {}", id);
     }
     catch (EntityNotFound e)
     {
-      getLogger().warn("Unable to delete report with ID {}", id);
+      log.warn("Unable to delete report with ID {}", id);
     }
 
     return noContent().build();
