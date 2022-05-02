@@ -18,7 +18,7 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.common.HasLogger;
 import me.dahiorus.project.vending.core.exception.ValidationException;
@@ -30,7 +30,7 @@ import me.dahiorus.project.vending.web.api.AppWebService;
 @Tag(name = "Public", description = "Public operations")
 @RestController
 @Log4j2
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PublicRestController implements HasLogger, AppWebService
 {
   private final UserDtoService userDtoService;

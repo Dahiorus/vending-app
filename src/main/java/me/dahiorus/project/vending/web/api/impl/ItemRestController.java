@@ -7,11 +7,13 @@ import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.core.model.dto.ItemDTO;
 import me.dahiorus.project.vending.core.service.ItemDtoService;
 
+@SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Item", description = "Operations on Item")
 @RestController
 @RequestMapping(value = "/api/v1/items")

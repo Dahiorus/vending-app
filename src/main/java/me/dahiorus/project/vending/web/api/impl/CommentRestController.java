@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
@@ -29,6 +30,7 @@ import me.dahiorus.project.vending.core.model.dto.CommentDTO;
 import me.dahiorus.project.vending.core.service.CommentDtoService;
 import me.dahiorus.project.vending.web.api.AppWebService;
 
+@SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Comment", description = "Operation on a vending machine comments")
 @RestController
 @RequestMapping(value = "/api/v1/vending-machines/{id}/comments", produces = MediaTypes.HAL_JSON_VALUE)

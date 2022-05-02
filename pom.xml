@@ -22,6 +22,7 @@
     <maven-processor-plugin.version>4.5-jdk8</maven-processor-plugin.version>
     <modelmapper.version>3.1.0</modelmapper.version>
     <spring.openapi.version>1.6.8</spring.openapi.version>
+    <nimbus-jose-jwt.version>9.22</nimbus-jose-jwt.version>
   </properties>
 
   <dependencies>
@@ -40,6 +41,16 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-configuration-processor</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>com.nimbusds</groupId>
+      <artifactId>nimbus-jose-jwt</artifactId>
+      <version>${nimbus-jose-jwt.version}</version>
     </dependency>
 
     <dependency>

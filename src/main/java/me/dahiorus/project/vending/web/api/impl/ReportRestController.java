@@ -26,6 +26,7 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -37,6 +38,7 @@ import me.dahiorus.project.vending.web.api.DeleteRestAPI;
 import me.dahiorus.project.vending.web.api.ReadOnlyRestController;
 import me.dahiorus.project.vending.web.api.request.ExampleMatcherAdapter;
 
+@SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Report", description = "Operations on reports")
 @RestController
 @RequestMapping(produces = MediaTypes.HAL_JSON_VALUE)

@@ -17,12 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.model.dto.VendingMachineDTO;
 import me.dahiorus.project.vending.core.service.VendingMachineDtoService;
 
+@SecurityRequirement(name = "bearerAuth")
 @Tag(name = "VendingMachine", description = "Operations on Vending machine")
 @RestController
 @RequestMapping(value = "/api/v1/vending-machines")
