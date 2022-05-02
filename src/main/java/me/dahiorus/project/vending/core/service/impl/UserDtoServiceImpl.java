@@ -56,9 +56,11 @@ public class UserDtoServiceImpl extends DtoServiceImpl<User, UserDTO, UserDAO> i
 
     // validate the password hard coded policy and encode it
     validate(dto, CrudOperation.CREATE);
-    dto.setPassword(passwordEncoder.encode(dto.getPassword()));
 
-    User createdEntity = dao.save(dtoMapper.toEntity(dto, entityClass));
+    User entity = dtoMapper.toEntity(dto, entityClass);
+    entity.setPassword(passwordEncoder.encode(dto.getPassword()));
+
+    User createdEntity = dao.save(entity);
     UserDTO createdDto = dtoMapper.toDto(createdEntity, getDomainClass());
 
     getLogger().info("{} created: {}", getDomainClass().getSimpleName(), createdDto);
