@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +33,7 @@ import me.dahiorus.project.vending.web.api.model.ProvisionRequest;
 @AllArgsConstructor
 @RestController
 @Tag(name = "Stock", description = "Operations on the stocks of a vending machine")
-@RequestMapping(value = "/api/v1/vending-machines/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}")
+@RequestMapping(value = "/api/v1/vending-machines/{id}", produces = MediaTypes.HAL_JSON_VALUE)
 public class StockRestService implements AppWebService
 {
   private final StockDtoService dtoService;
@@ -50,7 +51,7 @@ public class StockRestService implements AppWebService
   }
 
   @Operation(description = "Provision a stock of one item to a vending machine")
-  @PostMapping("/provision/{itemId:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}")
+  @PostMapping("/provision/{itemId}")
   public ResponseEntity<CollectionModel<EntityModel<StockDTO>>> provisionStock(@PathVariable("id") final UUID id,
       @PathVariable("itemId") final UUID itemId,
       @RequestBody final ProvisionRequest provisionRequest)

@@ -59,14 +59,13 @@ public class ReportRestController
 
   @Operation(description = "Create a report of a vending machine at this instant")
   @ApiResponse(responseCode = "201", description = "Report created")
-  @PostMapping("/api/v1/vending-machines/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}/report")
+  @PostMapping("/api/v1/vending-machines/{id}/report")
   public ResponseEntity<EntityModel<ReportDTO>> report(@PathVariable final UUID id) throws EntityNotFound
   {
     ReportDTO report = dtoService.report(id);
 
-    URI location = MvcUriComponentsBuilder.fromController(ReportRestController.class)
-      .path("/{id}")
-      .buildAndExpand(report.getId())
+    URI location = MvcUriComponentsBuilder.fromMethodName(ReportRestController.class, "read", report.getId())
+      .build()
       .toUri();
 
     log.info("Created report of vending machine {}: {}", id, location);
@@ -75,6 +74,8 @@ public class ReportRestController
       .body(modelAssembler.toModel(report));
   }
 
+  @Operation(description = "Get a page of reports")
+  @ApiResponse(responseCode = "200", description = "Reports found")
   @Override
   @GetMapping("/api/v1/reports")
   public ResponseEntity<PagedModel<EntityModel<ReportDTO>>> list(@ParameterObject final Pageable pageable,
@@ -85,8 +86,10 @@ public class ReportRestController
     return ok(pageModelAssembler.toModel(page, modelAssembler));
   }
 
+  @Operation(description = "Get a report by its ID")
+  @ApiResponse(responseCode = "200", description = "Report found")
   @Override
-  @GetMapping("/api/v1/reports/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}")
+  @GetMapping("/api/v1/reports/{id}")
   public ResponseEntity<EntityModel<ReportDTO>> read(@PathVariable final UUID id) throws EntityNotFound
   {
     ReportDTO entity = dtoService.read(id);
@@ -94,8 +97,10 @@ public class ReportRestController
     return ok(modelAssembler.toModel(entity));
   }
 
+  @Operation(description = "Delete an existing report targeted by its ID")
+  @ApiResponse(responseCode = "200", description = "Report deleted")
   @Override
-  @DeleteMapping("/api/v1/reports/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}")
+  @DeleteMapping("/api/v1/reports/{id}")
   public ResponseEntity<Void> delete(@PathVariable final UUID id)
   {
     log.debug("Deleting report with ID {}", id);

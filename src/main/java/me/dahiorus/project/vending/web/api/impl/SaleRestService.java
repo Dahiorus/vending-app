@@ -5,6 +5,7 @@ import static org.springframework.http.ResponseEntity.ok;
 import java.util.UUID;
 
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,7 +28,7 @@ import me.dahiorus.project.vending.web.api.AppWebService;
 @AllArgsConstructor
 @RestController
 @Tag(name = "Sale", description = "Operations on the sales of a vending machine")
-@RequestMapping(value = "/api/v1/vending-machines/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}")
+@RequestMapping(value = "/api/v1/vending-machines/{id}", produces = MediaTypes.HAL_JSON_VALUE)
 public class SaleRestService implements AppWebService
 {
   private final SaleDtoService dtoService;
@@ -35,7 +36,7 @@ public class SaleRestService implements AppWebService
   private final ItemDtoService itemDtoService;
 
   @Operation(description = "Purchase an item from a vending machine")
-  @PostMapping("/purchase/{itemId:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}")
+  @PostMapping("/purchase/{itemId}")
   public ResponseEntity<EntityModel<SaleDTO>> purchaseItem(@PathVariable("id") final UUID id,
       @PathVariable("itemId") final UUID itemId) throws EntityNotFound, ItemMissing
   {

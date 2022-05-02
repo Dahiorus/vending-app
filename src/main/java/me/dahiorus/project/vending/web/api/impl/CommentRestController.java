@@ -31,9 +31,7 @@ import me.dahiorus.project.vending.web.api.AppWebService;
 
 @Tag(name = "Comment", description = "Operation on a vending machine comments")
 @RestController
-@RequestMapping(
-    value = "/api/v1/vending-machines/{id:^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$}/comments",
-    produces = MediaTypes.HAL_JSON_VALUE)
+@RequestMapping(value = "/api/v1/vending-machines/{id}/comments", produces = MediaTypes.HAL_JSON_VALUE)
 @AllArgsConstructor
 public class CommentRestController implements AppWebService
 {
