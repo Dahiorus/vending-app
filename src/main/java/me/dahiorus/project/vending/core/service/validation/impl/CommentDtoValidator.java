@@ -8,13 +8,14 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.core.dao.CommentDAO;
+import me.dahiorus.project.vending.core.model.Comment;
 import me.dahiorus.project.vending.core.model.Comment_;
 import me.dahiorus.project.vending.core.model.dto.CommentDTO;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
 @Log4j2
 @Component
-public class CommentDtoValidator extends DtoValidatorImpl<CommentDTO, CommentDAO>
+public class CommentDtoValidator extends DtoValidatorImpl<Comment, CommentDTO, CommentDAO>
 {
   public CommentDtoValidator(final CommentDAO dao)
   {

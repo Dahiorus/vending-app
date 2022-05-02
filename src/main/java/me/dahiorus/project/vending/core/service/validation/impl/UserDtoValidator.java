@@ -9,13 +9,14 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.core.dao.UserDAO;
+import me.dahiorus.project.vending.core.model.User;
 import me.dahiorus.project.vending.core.model.User_;
 import me.dahiorus.project.vending.core.model.dto.UserDTO;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
 @Log4j2
 @Component
-public class UserDtoValidator extends DtoValidatorImpl<UserDTO, UserDAO>
+public class UserDtoValidator extends DtoValidatorImpl<User, UserDTO, UserDAO>
 {
   public UserDtoValidator(final UserDAO dao)
   {

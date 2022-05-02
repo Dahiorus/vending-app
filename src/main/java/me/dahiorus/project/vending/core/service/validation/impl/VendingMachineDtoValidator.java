@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.core.dao.VendingMachineDAO;
 import me.dahiorus.project.vending.core.model.PowerStatus;
+import me.dahiorus.project.vending.core.model.VendingMachine;
 import me.dahiorus.project.vending.core.model.VendingMachine_;
 import me.dahiorus.project.vending.core.model.WorkingStatus;
 import me.dahiorus.project.vending.core.model.dto.VendingMachineDTO;
@@ -21,7 +22,7 @@ import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
 @Log4j2
 @Component
-public class VendingMachineDtoValidator extends DtoValidatorImpl<VendingMachineDTO, VendingMachineDAO>
+public class VendingMachineDtoValidator extends DtoValidatorImpl<VendingMachine, VendingMachineDTO, VendingMachineDAO>
 {
   @Autowired
   public VendingMachineDtoValidator(final VendingMachineDAO dao)
