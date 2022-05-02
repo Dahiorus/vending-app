@@ -91,6 +91,7 @@ class StockDtoServiceImplTest
 
       ItemDTO itemDto = new ItemDTO();
       itemDto.setId(item.getId());
+      itemDto.setName(item.getName());
       itemDto.setType(machine.getType());
 
       assertThatNoException().isThrownBy(() -> dtoService.provisionStock(machine.getId(), itemDto, 10));

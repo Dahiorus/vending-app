@@ -62,7 +62,7 @@ public class StockDtoServiceImpl implements StockDtoService
     ValidationResults validationResults = stockValidator.validate(itemToProvision, quantity, machine);
     validationResults.throwIfError("Cannot provision " + item + " to vending machine " + id);
 
-    log.debug("Provisioning '{}' to vending machine {}", item.getName(), id);
+    log.debug("Provisioning a quantity of {} of item '{}' to vending machine {}", quantity, item.getName(), id);
 
     if (!machine.hasItem(itemToProvision))
     {
@@ -78,9 +78,8 @@ public class StockDtoServiceImpl implements StockDtoService
         .filter(s -> Objects.equals(s.getItem(), itemToProvision))
         .findFirst()
         .ifPresent(s -> {
-          log.debug("Provisioning a quantity of {} of item {} to an existing stock of the vending machine {}", quantity,
-              item, id);
           s.addQuantity(quantity);
+          log.debug("Provisioned stock of item '{}': stock quantity updated to {}", item.getName(), s.getQuantity());
           dao.save(s);
         });
     }
