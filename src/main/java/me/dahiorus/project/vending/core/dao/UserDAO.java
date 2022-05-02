@@ -2,9 +2,12 @@ package me.dahiorus.project.vending.core.dao;
 
 import java.util.Optional;
 
-import me.dahiorus.project.vending.core.model.User;
+import org.springframework.data.repository.NoRepositoryBean;
 
-public interface UserDAO extends DAO<User>
+import me.dahiorus.project.vending.core.model.AppUser;
+
+@NoRepositoryBean
+public interface UserDAO extends DAO<AppUser>
 {
-  Optional<User> findByEmail(final String email);
+  Optional<AppUser> findByEmail(final String email);
 }
