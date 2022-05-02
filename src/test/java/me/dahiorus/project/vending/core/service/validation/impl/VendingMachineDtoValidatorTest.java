@@ -17,6 +17,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.dahiorus.project.vending.util.VendingMachineBuilder;
+
 import me.dahiorus.project.vending.core.dao.impl.VendingMachineDaoImpl;
 import me.dahiorus.project.vending.core.model.ItemType;
 import me.dahiorus.project.vending.core.model.PowerStatus;
@@ -39,19 +41,6 @@ class VendingMachineDtoValidatorTest
   void setUp() throws Exception
   {
     validator = new VendingMachineDtoValidator(dao);
-  }
-
-  VendingMachineDTO buildDto(final String serialNumber, final String address, final ItemType type,
-      final PowerStatus powerStatus, final WorkingStatus workingStatus)
-  {
-    VendingMachineDTO dto = new VendingMachineDTO();
-    dto.setSerialNumber(serialNumber);
-    dto.setAddress(address);
-    dto.setType(type);
-    dto.setPowerStatus(powerStatus);
-    dto.setWorkingStatus(workingStatus);
-
-    return dto;
   }
 
   @Test
@@ -142,5 +131,17 @@ class VendingMachineDtoValidatorTest
     ValidationResults results = validator.validate(dto);
 
     assertHasExactlyFieldErrors(results, "workingStatus", "validation.constraints.empty_value");
+  }
+
+  VendingMachineDTO buildDto(final String serialNumber, final String address, final ItemType type,
+      final PowerStatus powerStatus, final WorkingStatus workingStatus)
+  {
+    return VendingMachineBuilder.builder()
+      .serialNumber(serialNumber)
+      .address(address)
+      .itemType(type)
+      .powerStatus(powerStatus)
+      .workingStatus(workingStatus)
+      .buildDto();
   }
 }

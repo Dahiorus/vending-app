@@ -32,6 +32,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import com.dahiorus.project.vending.util.ItemBuilder;
+
 import me.dahiorus.project.vending.core.dao.impl.ItemDaoImpl;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ValidationException;
@@ -301,22 +303,20 @@ class ItemDtoServiceImplTest
 
   Item buildEntity(final String name, final ItemType type, final Double price)
   {
-    Item item = new Item();
-    item.setName(name);
-    item.setType(type);
-    item.setPrice(price);
-
-    return item;
+    return ItemBuilder.builder()
+      .name(name)
+      .type(type)
+      .price(price)
+      .build();
   }
 
   ItemDTO buildDto(final String name, final ItemType type, final Double price)
   {
-    ItemDTO item = new ItemDTO();
-    item.setName(name);
-    item.setType(type);
-    item.setPrice(price);
-
-    return item;
+    return ItemBuilder.builder()
+      .name(name)
+      .type(type)
+      .price(price)
+      .buildDto();
   }
 
   Item mockRead(final UUID id) throws Exception

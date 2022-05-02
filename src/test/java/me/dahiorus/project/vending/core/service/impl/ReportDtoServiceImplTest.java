@@ -22,6 +22,8 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.dahiorus.project.vending.util.VendingMachineBuilder;
+
 import me.dahiorus.project.vending.core.dao.impl.ReportDaoImpl;
 import me.dahiorus.project.vending.core.dao.impl.VendingMachineDaoImpl;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
@@ -186,18 +188,17 @@ class ReportDtoServiceImplTest
 
   VendingMachine buildMachine(final UUID id)
   {
-    VendingMachine machine = new VendingMachine();
-    machine.setId(id);
-    machine.setType(ItemType.FOOD);
-    machine.setSerialNumber("123456789");
-    machine.setChangeMoneyStatus(ChangeSystemStatus.NORMAL);
-    machine.setAddress("123 Fake street");
-    machine.setLastIntervention(Instant.parse("2022-04-01T10:15:30Z"));
-    machine.setPowerStatus(PowerStatus.ON);
-    machine.setWorkingStatus(WorkingStatus.OK);
-    machine.setTemperature(4);
-
-    return machine;
+    return VendingMachineBuilder.builder()
+      .id(id)
+      .itemType(ItemType.FOOD)
+      .changeMoneyStatus(ChangeSystemStatus.NORMAL)
+      .powerStatus(PowerStatus.ON)
+      .workingStatus(WorkingStatus.OK)
+      .serialNumber("123456789")
+      .address("123 Fake street")
+      .lastIntervention(Instant.parse("2022-04-01T10:15:30Z"))
+      .temperature(4)
+      .build();
   }
 
   private static void assertReportHasMachineInfo(final ReportDTO report, final VendingMachine machine)

@@ -10,9 +10,11 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -24,6 +26,7 @@ import me.dahiorus.project.vending.core.dao.impl.CommentDaoImpl;
 import me.dahiorus.project.vending.core.dao.impl.VendingMachineDaoImpl;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ValidationException;
+import me.dahiorus.project.vending.core.model.Comment;
 import me.dahiorus.project.vending.core.model.ItemType;
 import me.dahiorus.project.vending.core.model.VendingMachine;
 import me.dahiorus.project.vending.core.model.dto.CommentDTO;
@@ -50,55 +53,90 @@ class CommentDtoServiceImplTest
     dtoService = new CommentDtoServiceImpl(dao, vendingMachineDao, commentDtoValidator, new DtoMapperImpl());
   }
 
-  @Test
-  void commentMachine() throws Exception
+  @Nested
+  class CommentTests
   {
-    VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.FOOD);
-    when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
-    when(vendingMachineDao.save(machine)).thenReturn(machine);
+    @Test
+    void commentMachine() throws Exception
+    {
+      VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.FOOD);
+      when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
+      when(vendingMachineDao.save(machine)).thenReturn(machine);
 
-    CommentDTO comment = new CommentDTO();
-    comment.setRate(5);
-    comment.setContent("This is a comment");
-    when(commentDtoValidator.validate(comment)).thenReturn(successResults());
+      CommentDTO comment = new CommentDTO();
+      comment.setRate(5);
+      comment.setContent("This is a comment");
+      when(commentDtoValidator.validate(comment)).thenReturn(successResults());
 
-    assertThatNoException().isThrownBy(() -> dtoService.comment(machine.getId(), comment));
-    assertThat(machine.getComments()).isNotEmpty();
-    verify(dao).save(any());
+      assertThatNoException().isThrownBy(() -> dtoService.comment(machine.getId(), comment));
+      assertThat(machine.getComments()).isNotEmpty();
+      verify(dao).save(any());
+    }
+
+    @Test
+    void commentHasInvalidValue() throws Exception
+    {
+      VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.FOOD);
+      when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
+
+      CommentDTO comment = new CommentDTO();
+      comment.setContent("This is a comment");
+
+      when(commentDtoValidator.validate(comment)).then(invoc -> {
+        ValidationResults results = new ValidationResults();
+        results.addError(fieldError("rate", "validation.constraints.comment.rate_interval",
+            "Error from test"));
+        return results;
+      });
+
+      assertThatExceptionOfType(ValidationException.class)
+        .isThrownBy(() -> dtoService.comment(machine.getId(), comment));
+      verify(vendingMachineDao, never()).save(machine);
+      verify(dao, never()).save(any());
+    }
+
+    @Test
+    void commentUnknownMachine() throws Exception
+    {
+      UUID id = UUID.randomUUID();
+      when(vendingMachineDao.read(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
+
+      assertThatExceptionOfType(EntityNotFound.class)
+        .isThrownBy(() -> dtoService.comment(id, new CommentDTO()));
+      verify(vendingMachineDao, never()).save(any());
+      verify(dao, never()).save(any());
+    }
   }
 
-  @Test
-  void commentHasInvalidValue() throws Exception
+  @Nested
+  class GetCommentsTests
   {
-    VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.FOOD);
-    when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
+    @Test
+    void getComments() throws Exception
+    {
+      VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.FOOD);
+      Comment comment = new Comment();
+      comment.setContent("This is a comment");
+      comment.setRate(3);
+      machine.addComment(comment);
 
-    CommentDTO comment = new CommentDTO();
-    comment.setContent("This is a comment");
+      when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
 
-    when(commentDtoValidator.validate(comment)).then(invoc -> {
-      ValidationResults results = new ValidationResults();
-      results.addError(fieldError("rate", "validation.constraints.comment.rate_interval",
-          "Error from test"));
-      return results;
-    });
+      List<CommentDTO> comments = dtoService.getComments(machine.getId());
 
-    assertThatExceptionOfType(ValidationException.class)
-      .isThrownBy(() -> dtoService.comment(machine.getId(), comment));
-    verify(vendingMachineDao, never()).save(machine);
-    verify(dao, never()).save(any());
-  }
+      assertThat(comments).hasSize(1)
+        .anySatisfy(c -> assertThat(c).hasFieldOrPropertyWithValue("content", comment.getContent())
+          .hasFieldOrPropertyWithValue("rate", comment.getRate()));
+    }
 
-  @Test
-  void commentUnknownMachine() throws Exception
-  {
-    UUID id = UUID.randomUUID();
-    when(vendingMachineDao.read(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
+    @Test
+    void getCommentsOfNonExistingMachine() throws Exception
+    {
+      UUID id = UUID.randomUUID();
+      when(vendingMachineDao.read(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
 
-    assertThatExceptionOfType(EntityNotFound.class)
-      .isThrownBy(() -> dtoService.comment(id, new CommentDTO()));
-    verify(vendingMachineDao, never()).save(any());
-    verify(dao, never()).save(any());
+      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.getComments(id));
+    }
   }
 
   static VendingMachine buildMachine(final UUID id, final ItemType itemType)

@@ -18,6 +18,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.dahiorus.project.vending.util.ItemBuilder;
+
 import me.dahiorus.project.vending.core.dao.impl.ItemDaoImpl;
 import me.dahiorus.project.vending.core.model.Item;
 import me.dahiorus.project.vending.core.model.ItemType;
@@ -38,16 +40,6 @@ class ItemDtoValidatorTest
   void setUp() throws Exception
   {
     validator = new ItemDtoValidator(dao);
-  }
-
-  ItemDTO buildDto(final String name, final ItemType type, final Double price)
-  {
-    ItemDTO dto = new ItemDTO();
-    dto.setName(name);
-    dto.setType(type);
-    dto.setPrice(price);
-
-    return dto;
   }
 
   @Test
@@ -108,5 +100,14 @@ class ItemDtoValidatorTest
     ValidationResults results = validator.validate(dto);
 
     assertHasExactlyFieldErrors(results, "price", "validation.constraints.item.price_positive");
+  }
+
+  ItemDTO buildDto(final String name, final ItemType type, final Double price)
+  {
+    return ItemBuilder.builder()
+      .name(name)
+      .type(type)
+      .price(price)
+      .buildDto();
   }
 }

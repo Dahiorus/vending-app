@@ -1,5 +1,6 @@
 package com.dahiorus.project.vending.util;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import lombok.AccessLevel;
@@ -10,10 +11,15 @@ import me.dahiorus.project.vending.core.model.ItemType;
 import me.dahiorus.project.vending.core.model.PowerStatus;
 import me.dahiorus.project.vending.core.model.VendingMachine;
 import me.dahiorus.project.vending.core.model.WorkingStatus;
+import me.dahiorus.project.vending.core.model.dto.VendingMachineDTO;
+import me.dahiorus.project.vending.core.service.DtoMapper;
+import me.dahiorus.project.vending.core.service.impl.DtoMapperImpl;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class VendingMachineBuilder
 {
+  private final DtoMapper dtoMapper = new DtoMapperImpl();
+
   private VendingMachine machine = new VendingMachine();
 
   public static VendingMachineBuilder builder()
@@ -63,8 +69,55 @@ public class VendingMachineBuilder
     return this;
   }
 
+  public VendingMachineBuilder serialNumber(final String serialNumber)
+  {
+    machine.setSerialNumber(serialNumber);
+    return this;
+  }
+
+  public VendingMachineBuilder latitude(final Double latitude)
+  {
+    machine.setLatitude(latitude);
+    return this;
+  }
+
+  public VendingMachineBuilder longitude(final Double longitude)
+  {
+    machine.setLongitude(longitude);
+    return this;
+  }
+
+  public VendingMachineBuilder place(final String place)
+  {
+    machine.setPlace(place);
+    return this;
+  }
+
+  public VendingMachineBuilder address(final String address)
+  {
+    machine.setAddress(address);
+    return this;
+  }
+
+  public VendingMachineBuilder lastIntervention(final Instant lastIntervention)
+  {
+    machine.setLastIntervention(lastIntervention);
+    return this;
+  }
+
+  public VendingMachineBuilder temperature(final Integer temperature)
+  {
+    machine.setTemperature(temperature);
+    return this;
+  }
+
   public VendingMachine build()
   {
     return machine;
+  }
+
+  public VendingMachineDTO buildDto()
+  {
+    return dtoMapper.toDto(machine, VendingMachineDTO.class);
   }
 }
