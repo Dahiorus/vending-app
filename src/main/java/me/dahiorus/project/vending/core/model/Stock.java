@@ -33,7 +33,7 @@ public class Stock extends AbstractEntity
   }
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "item_id", nullable = false, foreignKey = @ForeignKey(name = "FK_STOCK_ITEM"))
+  @JoinColumn(name = "item_id", nullable = false, updatable = false, foreignKey = @ForeignKey(name = "FK_STOCK_ITEM"))
   public Item getItem()
   {
     return item;

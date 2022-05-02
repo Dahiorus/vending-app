@@ -18,6 +18,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 @Entity
@@ -171,6 +172,12 @@ public class VendingMachine extends AbstractEntity
     this.powerStatus = powerStatus;
   }
 
+  @Transient
+  public boolean isPowered()
+  {
+    return powerStatus == PowerStatus.ON;
+  }
+
   @Enumerated(EnumType.STRING)
   @Column
   public WorkingStatus getWorkingStatus()
@@ -181,6 +188,12 @@ public class VendingMachine extends AbstractEntity
   public void setWorkingStatus(final WorkingStatus workingStatus)
   {
     this.workingStatus = workingStatus;
+  }
+
+  @Transient
+  public boolean isWorking()
+  {
+    return isPowered() && workingStatus == WorkingStatus.OK;
   }
 
   @Enumerated(EnumType.STRING)
@@ -214,6 +227,13 @@ public class VendingMachine extends AbstractEntity
     return changeMoneyStatus;
   }
 
+  @Transient
+  public boolean isAllSystemClear()
+  {
+    return isWorking() && rfidStatus == CardSystemStatus.NORMAL && smartCardStatus == CardSystemStatus.NORMAL
+        && changeMoneyStatus == ChangeSystemStatus.NORMAL;
+  }
+
   public void setChangeMoneyStatus(final ChangeSystemStatus changeMoneyStatus)
   {
     this.changeMoneyStatus = changeMoneyStatus;
@@ -239,7 +259,7 @@ public class VendingMachine extends AbstractEntity
   }
 
   @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.PERSIST)
-  @JoinColumn(name = "vending_machine_id", nullable = false,
+  @JoinColumn(name = "vending_machine_id", nullable = false, updatable = false,
       foreignKey = @ForeignKey(name = "FK_STOCK_VENDING_MACHINE"))
   public List<Stock> getStocks()
   {
