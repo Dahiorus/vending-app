@@ -12,4 +12,9 @@ public class EntityNotFound extends AppException
   {
     super("No " + entityClass.getSimpleName() + " found with ID " + id);
   }
+
+  public EntityNotFound(final String message)
+  {
+    super(message);
+  }
 }

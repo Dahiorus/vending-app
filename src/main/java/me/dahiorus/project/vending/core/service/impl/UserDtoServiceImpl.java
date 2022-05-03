@@ -1,5 +1,10 @@
 package me.dahiorus.project.vending.core.service.impl;
 
+import static me.dahiorus.project.vending.core.service.validation.FieldValidationError.fieldError;
+import static me.dahiorus.project.vending.core.service.validation.ValidationError.getFullCode;
+
+import java.util.UUID;
+
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -7,9 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.core.dao.UserDAO;
+import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.model.AppUser;
 import me.dahiorus.project.vending.core.model.AppUser_;
+import me.dahiorus.project.vending.core.model.dto.EditPasswordDTO;
 import me.dahiorus.project.vending.core.model.dto.UserDTO;
 import me.dahiorus.project.vending.core.model.dto.UserWithPasswordDTO;
 import me.dahiorus.project.vending.core.service.DtoMapper;
@@ -78,5 +85,48 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
           true);
       validationResults.mergeFieldErrors(pwdValidationResults);
     }
+  }
+
+  @Transactional(readOnly = true)
+  @Override
+  public UserDTO getByUsername(final String username) throws EntityNotFound
+  {
+    return dao.findByEmail(username)
+      .map(user -> dtoMapper.toDto(user, UserDTO.class))
+      .orElseThrow(() -> new EntityNotFound("No user exist with the username " + username));
+  }
+
+  @Transactional(rollbackFor = { EntityNotFound.class, ValidationException.class })
+  @Override
+  public void updatePassword(final UUID id, final EditPasswordDTO editPassword)
+      throws EntityNotFound, ValidationException
+  {
+    log.debug("Updating the password of the user {}", id);
+
+    AppUser user = dao.read(id);
+    ValidationResults validationResults = new ValidationResults();
+
+    if (!passwordEncoder.matches(editPassword.getOldPassword(), user.getPassword()))
+    {
+      validationResults.addError(
+          fieldError("oldPassword", getFullCode("password.old-password-mismatch"),
+              "The old password must match the user's current password"));
+    }
+    if (passwordEncoder.matches(editPassword.getPassword(), user.getPassword()))
+    {
+      validationResults.addError(
+          fieldError("password", getFullCode("password.new-password-match"),
+              "The new password must not match the user's current password"));
+    }
+
+    ValidationResults passwordValidation = passwordValidator.validate("password", editPassword.getPassword(), true);
+    validationResults.mergeFieldErrors(passwordValidation);
+    validationResults.throwIfError("Update password: errors found");
+
+    log.debug("No validation error found. Updating the password of {}", user);
+    user.setPassword(passwordEncoder.encode(editPassword.getPassword()));
+    AppUser updatedUser = dao.save(user);
+
+    log.info("Password of {} updated", () -> dtoMapper.toDto(updatedUser, UserDTO.class));
   }
 }
