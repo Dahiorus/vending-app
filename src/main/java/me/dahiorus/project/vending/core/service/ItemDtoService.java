@@ -9,7 +9,7 @@ import me.dahiorus.project.vending.core.model.dto.ItemDTO;
 
 public interface ItemDtoService extends DtoService<Item, ItemDTO>
 {
-  ItemDTO uploadPicture(UUID id, BinaryDataDTO picture) throws EntityNotFound;
+  ItemDTO uploadImage(UUID id, BinaryDataDTO picture) throws EntityNotFound;
 
-  BinaryDataDTO getPicture(UUID id) throws EntityNotFound;
+  BinaryDataDTO getImage(UUID id) throws EntityNotFound;
 }

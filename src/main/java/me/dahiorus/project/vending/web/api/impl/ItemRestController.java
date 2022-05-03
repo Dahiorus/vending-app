@@ -55,7 +55,7 @@ public class ItemRestController extends RestControllerImpl<ItemDTO, ItemDtoServi
   @GetMapping("/{id}/picture")
   public ResponseEntity<Resource> getPicture(@PathVariable final UUID id) throws EntityNotFound
   {
-    BinaryDataDTO picture = dtoService.getPicture(id);
+    BinaryDataDTO picture = dtoService.getImage(id);
 
     if (picture == null)
     {
@@ -66,7 +66,7 @@ public class ItemRestController extends RestControllerImpl<ItemDTO, ItemDtoServi
 
     return ResponseEntity.ok()
       .contentType(MediaType.parseMediaType(picture.getContentType()))
-      .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + picture.getName() + "\"")
+      .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + picture.getName() + "\"")
       .contentLength(picture.getSize())
       .body(new ByteArrayResource(picture.getContent()));
   }
@@ -81,7 +81,7 @@ public class ItemRestController extends RestControllerImpl<ItemDTO, ItemDtoServi
     try
     {
       BinaryDataDTO picture = MultiPartFileUtils.convert(file);
-      ItemDTO updatedItem = dtoService.uploadPicture(id, picture);
+      ItemDTO updatedItem = dtoService.uploadImage(id, picture);
 
       return ResponseEntity.ok(modelAssembler.toModel(updatedItem));
     }

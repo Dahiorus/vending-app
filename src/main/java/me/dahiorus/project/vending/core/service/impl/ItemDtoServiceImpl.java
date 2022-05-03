@@ -44,7 +44,7 @@ public class ItemDtoServiceImpl extends DtoServiceImpl<Item, ItemDTO, DAO<Item>>
 
   @Transactional(rollbackFor = { EntityNotFound.class })
   @Override
-  public ItemDTO uploadPicture(final UUID id, final BinaryDataDTO picture) throws EntityNotFound
+  public ItemDTO uploadImage(final UUID id, final BinaryDataDTO picture) throws EntityNotFound
   {
     log.debug("Uploading a picture for the item {}", id);
 
@@ -63,7 +63,7 @@ public class ItemDtoServiceImpl extends DtoServiceImpl<Item, ItemDTO, DAO<Item>>
 
   @Transactional(readOnly = true)
   @Override
-  public BinaryDataDTO getPicture(final UUID id) throws EntityNotFound
+  public BinaryDataDTO getImage(final UUID id) throws EntityNotFound
   {
     log.debug("Getting the picture of the item {}", id);
 
