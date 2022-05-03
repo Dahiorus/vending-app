@@ -4,7 +4,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -22,6 +26,8 @@ public class Item extends AbstractEntity
   private ItemType type;
 
   private Double price;
+
+  private BinaryData picture;
 
   @Column(nullable = false)
   public String getName()
@@ -55,6 +61,18 @@ public class Item extends AbstractEntity
   public void setPrice(final Double price)
   {
     this.price = price;
+  }
+
+  @OneToOne(fetch = FetchType.LAZY, optional = true, orphanRemoval = true)
+  @JoinColumn(name = "picture_id", foreignKey = @ForeignKey(name = "FK_ITEM_PICTURE_ID"))
+  public BinaryData getPicture()
+  {
+    return picture;
+  }
+
+  public void setPicture(final BinaryData picture)
+  {
+    this.picture = picture;
   }
 
   @Override

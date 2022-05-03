@@ -1,7 +1,7 @@
 package me.dahiorus.project.vending.core.model;
 
 import java.time.Instant;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -60,11 +60,11 @@ public class VendingMachine extends AbstractEntity
 
   private ChangeSystemStatus changeMoneyStatus;
 
-  private List<Comment> comments = new ArrayList<>(0);
+  private List<Comment> comments = new LinkedList<>();
 
-  private List<Stock> stocks = new ArrayList<>(0);
+  private List<Stock> stocks = new LinkedList<>();
 
-  private List<Sale> sales = new ArrayList<>(0);
+  private List<Sale> sales = new LinkedList<>();
 
   @Column(nullable = false)
   public String getSerialNumber()

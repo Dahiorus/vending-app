@@ -3,6 +3,8 @@ package me.dahiorus.project.vending.web.api.assembler;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
 
 import org.apache.logging.log4j.Logger;
@@ -28,5 +30,18 @@ public class ItemDtoModelAssembler extends DtoModelAssembler<ItemDTO>
   protected Optional<Link> selfLink(final ItemDTO content) throws AppException
   {
     return Optional.of(linkTo(methodOn(ItemRestController.class).read(content.getId())).withSelfRel());
+  }
+
+  @Override
+  protected Iterable<Link> buildLinks(final ItemDTO content) throws AppException
+  {
+    Collection<Link> links = new ArrayList<>();
+
+    if (content.getPictureId() != null)
+    {
+      links.add(linkTo(methodOn(ItemRestController.class).getPicture(content.getId())).withRel("picture"));
+    }
+
+    return links;
   }
 }

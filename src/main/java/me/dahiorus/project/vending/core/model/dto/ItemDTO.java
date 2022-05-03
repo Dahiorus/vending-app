@@ -1,5 +1,9 @@
 package me.dahiorus.project.vending.core.model.dto;
 
+import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +26,11 @@ public class ItemDTO extends AbstractDTO<Item>
   @Getter
   @Setter
   private Double price;
+
+  @JsonIgnore
+  @Getter
+  @Setter
+  private UUID pictureId;
 
   @Override
   public Class<Item> getEntityClass()
