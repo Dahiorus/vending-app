@@ -2,6 +2,7 @@ package me.dahiorus.project.vending.web.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -45,16 +46,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
       .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
       .and()
       .authorizeRequests()
-      .antMatchers("/swagger-ui/**", "/v3/api-docs/**")
-      .permitAll()
+      .mvcMatchers(SecurityConstants.REGISTER_ENDPOINT)
+      .anonymous()
       .and()
       .authorizeRequests()
       .mvcMatchers(SecurityConstants.AUTHENTICATE_ENDPOINT, SecurityConstants.REFRESH_TOKEN_ENDPOINT)
       .permitAll()
-      .and()
-      .authorizeRequests()
-      .mvcMatchers(SecurityConstants.REGISTER_ENDPOINT)
-      .anonymous()
+      .antMatchers(HttpMethod.GET, "/api/v1/vending-machines/**", "/api/v1/items/{.+}/**")
+      .permitAll()
+      .antMatchers(HttpMethod.POST, "/api/v1/vending-machines/{.+}/purchase/**")
+      .permitAll()
+      .antMatchers("/swagger-ui/**", "/v3/api-docs/**")
+      .permitAll()
       .and()
       .authorizeRequests()
       .anyRequest()
