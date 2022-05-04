@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
+import me.dahiorus.project.vending.core.exception.UserNotAuthenticated;
 import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.model.dto.EditPasswordDTO;
 import me.dahiorus.project.vending.core.model.dto.UserDTO;
@@ -41,7 +42,7 @@ public class SelfServiceRestController implements AppWebService
   @Operation(description = "Get the authenticated user")
   @ApiResponse(responseCode = "200", description = "Authenticated user found")
   @GetMapping
-  public ResponseEntity<EntityModel<UserDTO>> get() throws EntityNotFound
+  public ResponseEntity<EntityModel<UserDTO>> get() throws UserNotAuthenticated
   {
     UserDTO authenticatedUser = authenticationFacade.getAuthenticatedUser();
 
@@ -54,11 +55,18 @@ public class SelfServiceRestController implements AppWebService
   @ApiResponse(responseCode = "200", description = "Password updated")
   @PostMapping("/password")
   public ResponseEntity<Void> updatePassword(@RequestBody final EditPasswordDTO editPassword)
-      throws EntityNotFound, ValidationException
+      throws ValidationException, UserNotAuthenticated
   {
     UserDTO authenticatedUser = authenticationFacade.getAuthenticatedUser();
 
-    userDtoService.updatePassword(authenticatedUser.getId(), editPassword);
+    try
+    {
+      userDtoService.updatePassword(authenticatedUser.getId(), editPassword);
+    }
+    catch (EntityNotFound e)
+    {
+      throw new UserNotAuthenticated("Unable to get the autenticated user");
+    }
 
     log.info("Updated password of {}", authenticatedUser);
 

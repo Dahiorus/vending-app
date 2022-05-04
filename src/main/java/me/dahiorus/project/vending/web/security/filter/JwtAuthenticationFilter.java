@@ -20,8 +20,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import me.dahiorus.project.vending.core.exception.AppRuntimeException;
 import me.dahiorus.project.vending.web.api.model.AuthenticateRequest;
 import me.dahiorus.project.vending.web.api.model.AuthenticateResponse;
+import me.dahiorus.project.vending.web.exception.UncreatableToken;
 import me.dahiorus.project.vending.web.security.JwtService;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter
@@ -61,8 +63,18 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
       final Authentication authentication) throws IOException, ServletException
   {
     UserDetails user = (UserDetails) authentication.getPrincipal();
-    String accessToken = jwtService.createAccessToken(user.getUsername(), user.getAuthorities());
-    String refreshToken = jwtService.createRefreshToken(user.getUsername());
+    String accessToken;
+    String refreshToken;
+
+    try
+    {
+      accessToken = jwtService.createAccessToken(user.getUsername(), user.getAuthorities());
+      refreshToken = jwtService.createRefreshToken(user.getUsername());
+    }
+    catch (UncreatableToken e)
+    {
+      throw new AppRuntimeException("Unexpected error while authenticating a user", e);
+    }
 
     AuthenticateResponse authResponse = new AuthenticateResponse(accessToken, refreshToken);
 

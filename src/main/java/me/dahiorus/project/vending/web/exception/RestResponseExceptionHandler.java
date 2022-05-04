@@ -1,4 +1,4 @@
-package me.dahiorus.project.vending.web.api.response;
+package me.dahiorus.project.vending.web.exception;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -11,19 +11,24 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.core.exception.AppRuntimeException;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ItemMissing;
+import me.dahiorus.project.vending.core.exception.UserNotAuthenticated;
 import me.dahiorus.project.vending.core.exception.ValidationException;
 
-@RestControllerAdvice(basePackages = "me.dahiorus.project.vending.web.api")
+@RestControllerAdvice(basePackages = "me.dahiorus.project.vending.web")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Log4j2
 public class RestResponseExceptionHandler
 {
   @ExceptionHandler(EntityNotFound.class)
   @ResponseStatus(code = HttpStatus.NOT_FOUND)
   public static Object handleEntityNotFound(final EntityNotFound e)
   {
+    log.warn(e.getMessage());
+
     return initResponseBody(e);
   }
 
@@ -31,6 +36,8 @@ public class RestResponseExceptionHandler
   @ResponseStatus(code = HttpStatus.BAD_REQUEST)
   public static Object handleValidationException(final ValidationException e)
   {
+    log.error(e.getMessage());
+
     Map<String, Object> body = initResponseBody(e);
 
     body.put("errorCount", e.getCount());
@@ -44,13 +51,26 @@ public class RestResponseExceptionHandler
   @ResponseStatus(code = HttpStatus.BAD_REQUEST)
   public static Object handleItemMissing(final ItemMissing e)
   {
+    log.error(e.getMessage());
+
     return initResponseBody(e);
   }
 
-  @ExceptionHandler(AppRuntimeException.class)
-  @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
-  public static Object handleRuntimeException(final AppRuntimeException e)
+  @ExceptionHandler(UserNotAuthenticated.class)
+  @ResponseStatus(code = HttpStatus.UNAUTHORIZED)
+  public static Object handleUserNotAuthenticated(final UserNotAuthenticated e)
   {
+    log.warn("User not authenticated");
+
+    return initResponseBody(e);
+  }
+
+  @ExceptionHandler({ AppRuntimeException.class, TokenException.class })
+  @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
+  public static Object handleUnexpectedError(final Exception e)
+  {
+    log.error(e);
+
     return initResponseBody(e);
   }
 

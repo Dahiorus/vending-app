@@ -32,8 +32,9 @@ import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.core.exception.AppRuntimeException;
 import me.dahiorus.project.vending.web.config.JwtProperties;
+import me.dahiorus.project.vending.web.exception.UncreatableToken;
+import me.dahiorus.project.vending.web.exception.UnparsableToken;
 import me.dahiorus.project.vending.web.security.JwtService;
 
 @Service
@@ -47,6 +48,7 @@ public class JwtServiceImpl implements JwtService
 
   @Override
   public String createAccessToken(final String username, final Collection<? extends GrantedAuthority> authorities)
+      throws UncreatableToken
   {
     Instant now = Instant.now();
     JWTClaimsSet claims = new JWTClaimsSet.Builder()
@@ -66,7 +68,7 @@ public class JwtServiceImpl implements JwtService
   }
 
   @Override
-  public String createRefreshToken(final String username)
+  public String createRefreshToken(final String username) throws UncreatableToken
   {
     Instant now = Instant.now();
     JWTClaimsSet claims = new JWTClaimsSet.Builder()
@@ -80,7 +82,7 @@ public class JwtServiceImpl implements JwtService
     return createToken(claims);
   }
 
-  private String createToken(final JWTClaimsSet claims)
+  private String createToken(final JWTClaimsSet claims) throws UncreatableToken
   {
     Payload payload = new Payload(claims.toJSONObject());
     JWSObject jwsObject = new JWSObject(new JWSHeader(ALGO), payload);
@@ -91,14 +93,14 @@ public class JwtServiceImpl implements JwtService
     }
     catch (JOSEException e)
     {
-      throw new AppRuntimeException(e.getMessage(), e);
+      throw new UncreatableToken(e.getMessage(), e);
     }
 
     return jwsObject.serialize();
   }
 
   @Override
-  public Authentication parseToken(final String token)
+  public Authentication parseToken(final String token) throws UnparsableToken
   {
     try
     {
@@ -131,7 +133,7 @@ public class JwtServiceImpl implements JwtService
     }
     catch (BadJOSEException | JOSEException | ParseException e)
     {
-      throw new AppRuntimeException(e.getMessage(), e);
+      throw new UnparsableToken(e.getMessage(), e);
     }
   }
 }

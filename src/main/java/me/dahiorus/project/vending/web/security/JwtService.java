@@ -5,11 +5,14 @@ import java.util.Collection;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
+import me.dahiorus.project.vending.web.exception.UncreatableToken;
+import me.dahiorus.project.vending.web.exception.UnparsableToken;
+
 public interface JwtService
 {
-  String createAccessToken(String username, Collection<? extends GrantedAuthority> authorities);
+  String createAccessToken(String username, Collection<? extends GrantedAuthority> authorities) throws UncreatableToken;
 
-  String createRefreshToken(String username);
+  String createRefreshToken(String username) throws UncreatableToken;
 
-  Authentication parseToken(String token);
+  Authentication parseToken(String token) throws UnparsableToken;
 }
