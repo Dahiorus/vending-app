@@ -23,7 +23,7 @@ public class JwtProperties
 
   @Getter
   @Setter
-  private Duration accessTokenDuration = Duration.ofDays(1);
+  private Duration accessTokenDuration = Duration.ofHours(3);
 
   @Getter
   @Setter
