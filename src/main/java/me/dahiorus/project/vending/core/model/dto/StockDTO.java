@@ -19,6 +19,7 @@ public class StockDTO extends AbstractDTO<Stock>
   @Setter
   private UUID vendingMachineId;
 
+  @JsonIgnore
   @Getter
   @Setter
   private UUID itemId;
