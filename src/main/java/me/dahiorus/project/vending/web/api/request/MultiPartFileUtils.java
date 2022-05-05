@@ -6,10 +6,12 @@ import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +55,7 @@ public class MultiPartFileUtils
   {
     return dto.map(data -> ok().contentType(MediaType.parseMediaType(data.getContentType()))
       .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + data.getName() + "\"")
+      .cacheControl(CacheControl.maxAge(Duration.ofHours(1)))
       .contentLength(data.getSize())
       .body(new ByteArrayResource(data.getContent())))
       .orElse(notFound().build());
