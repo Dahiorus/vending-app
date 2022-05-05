@@ -91,5 +91,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     MAPPER.writeValue(response.getOutputStream(), Map.of("message", failed.getMessage(), "timestamp", Instant.now()
       .toString()));
+    response.flushBuffer();
   }
 }
