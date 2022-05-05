@@ -1,6 +1,5 @@
 package me.dahiorus.project.vending.web.api.impl;
 
-import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 
 import java.io.IOException;
@@ -12,7 +11,6 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -65,21 +63,13 @@ public class ItemRestController extends RestControllerImpl<ItemDTO, ItemDtoServi
   {
     Optional<BinaryDataDTO> picture = dtoService.getImage(id);
 
-    return picture.map(p -> {
-      log.info("Picture found for item {}", id);
+    log.info("Picture for item {}: {}", id, picture);
 
-      return ok().contentType(MediaType.parseMediaType(p.getContentType()))
-        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + p.getName() + "\"")
-        .contentLength(p.getSize())
-        .body(new ByteArrayResource(p.getContent()));
-    })
-      .orElseGet(() -> {
-        log.info("No picture found for the item {}", id);
-
-        return notFound().build();
-      });
+    return MultiPartFileUtils.convertToResponse(picture);
   }
 
+  @Operation(description = "Upload a picture to an item")
+  @ApiResponse(responseCode = "200", description = "Picture uploaded")
   @PostMapping(value = "/{id}/picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<EntityModel<ItemDTO>> uploadPicture(@PathVariable final UUID id,
       @RequestParam("file") final MultipartFile file) throws EntityNotFound, ValidationException
@@ -92,7 +82,7 @@ public class ItemRestController extends RestControllerImpl<ItemDTO, ItemDtoServi
       BinaryDataDTO picture = MultiPartFileUtils.convert(file);
       ItemDTO updatedItem = dtoService.uploadImage(id, picture);
 
-      return ResponseEntity.ok(modelAssembler.toModel(updatedItem));
+      return ok(modelAssembler.toModel(updatedItem));
     }
     catch (IOException e)
     {
