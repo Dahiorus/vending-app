@@ -24,7 +24,7 @@ import me.dahiorus.project.vending.web.security.SecurityConstants;
 @RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter
 {
-  private static final String AUTHORIZATION_HEADER_PREFIX = "Bearer ";
+  private static final String AUTHORIZATION_HEADER_PREFIX = "Bearer";
 
   private final JwtService jwtService;
 
@@ -54,7 +54,7 @@ public class JwtRequestFilter extends OncePerRequestFilter
     log.debug("Get the user from the request");
 
     // parse the JWT token
-    String token = StringUtils.substringAfter(authorizationHeader, AUTHORIZATION_HEADER_PREFIX);
+    String token = StringUtils.removeStart(authorizationHeader, AUTHORIZATION_HEADER_PREFIX);
     Authentication authentication;
     try
     {

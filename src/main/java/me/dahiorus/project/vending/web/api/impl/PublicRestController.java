@@ -31,7 +31,7 @@ import me.dahiorus.project.vending.web.api.AppWebService;
 import me.dahiorus.project.vending.web.api.model.AuthenticateRequest;
 import me.dahiorus.project.vending.web.api.model.AuthenticateResponse;
 import me.dahiorus.project.vending.web.api.model.RefreshTokenRequest;
-import me.dahiorus.project.vending.web.exception.UncreatableToken;
+import me.dahiorus.project.vending.web.exception.InvalidTokenCreation;
 import me.dahiorus.project.vending.web.exception.UnparsableToken;
 import me.dahiorus.project.vending.web.security.JwtService;
 import me.dahiorus.project.vending.web.security.SecurityConstants;
@@ -91,7 +91,7 @@ public class PublicRestController implements HasLogger, AppWebService
   @PostMapping(value = SecurityConstants.REFRESH_TOKEN_ENDPOINT, consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<AuthenticateResponse> refreshToken(@RequestBody final RefreshTokenRequest request)
-      throws UnparsableToken, UncreatableToken
+      throws UnparsableToken, InvalidTokenCreation
   {
     log.debug("Refreshing the access token of a user");
 

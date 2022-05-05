@@ -23,8 +23,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import me.dahiorus.project.vending.core.exception.AppRuntimeException;
 import me.dahiorus.project.vending.web.api.model.AuthenticateRequest;
 import me.dahiorus.project.vending.web.api.model.AuthenticateResponse;
-import me.dahiorus.project.vending.web.exception.UncreatableToken;
+import me.dahiorus.project.vending.web.exception.InvalidTokenCreation;
 import me.dahiorus.project.vending.web.security.JwtService;
+import me.dahiorus.project.vending.web.security.SecurityConstants;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter
 {
@@ -35,7 +36,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
   public JwtAuthenticationFilter(final AuthenticationManager authenticationManager, final JwtService jwtService)
   {
     super(authenticationManager);
-    setFilterProcessesUrl("/api/v1/authenticate");
+    setFilterProcessesUrl(SecurityConstants.AUTHENTICATE_ENDPOINT);
     this.jwtService = jwtService;
   }
 
@@ -71,7 +72,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
       accessToken = jwtService.createAccessToken(user.getUsername(), user.getAuthorities());
       refreshToken = jwtService.createRefreshToken(user.getUsername());
     }
-    catch (UncreatableToken e)
+    catch (InvalidTokenCreation e)
     {
       throw new AppRuntimeException("Unexpected error while authenticating a user", e);
     }

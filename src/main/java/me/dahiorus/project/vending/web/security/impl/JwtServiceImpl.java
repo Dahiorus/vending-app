@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -33,7 +34,7 @@ import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.web.config.JwtProperties;
-import me.dahiorus.project.vending.web.exception.UncreatableToken;
+import me.dahiorus.project.vending.web.exception.InvalidTokenCreation;
 import me.dahiorus.project.vending.web.exception.UnparsableToken;
 import me.dahiorus.project.vending.web.security.JwtService;
 
@@ -48,7 +49,7 @@ public class JwtServiceImpl implements JwtService
 
   @Override
   public String createAccessToken(final String username, final Collection<? extends GrantedAuthority> authorities)
-      throws UncreatableToken
+      throws InvalidTokenCreation
   {
     Instant now = Instant.now();
     JWTClaimsSet claims = new JWTClaimsSet.Builder()
@@ -68,7 +69,7 @@ public class JwtServiceImpl implements JwtService
   }
 
   @Override
-  public String createRefreshToken(final String username) throws UncreatableToken
+  public String createRefreshToken(final String username) throws InvalidTokenCreation
   {
     Instant now = Instant.now();
     JWTClaimsSet claims = new JWTClaimsSet.Builder()
@@ -82,7 +83,7 @@ public class JwtServiceImpl implements JwtService
     return createToken(claims);
   }
 
-  private String createToken(final JWTClaimsSet claims) throws UncreatableToken
+  private String createToken(final JWTClaimsSet claims) throws InvalidTokenCreation
   {
     Payload payload = new Payload(claims.toJSONObject());
     JWSObject jwsObject = new JWSObject(new JWSHeader(ALGO), payload);
@@ -93,7 +94,7 @@ public class JwtServiceImpl implements JwtService
     }
     catch (JOSEException e)
     {
-      throw new UncreatableToken(e.getMessage(), e);
+      throw new InvalidTokenCreation(e.getMessage(), e);
     }
 
     return jwsObject.serialize();
@@ -131,7 +132,11 @@ public class JwtServiceImpl implements JwtService
 
       return new UsernamePasswordAuthenticationToken(username, null, authorities);
     }
-    catch (BadJOSEException | JOSEException | ParseException e)
+    catch (BadJOSEException e)
+    {
+      throw new BadCredentialsException(e.getMessage(), e);
+    }
+    catch (JOSEException | ParseException e)
     {
       throw new UnparsableToken(e.getMessage(), e);
     }
