@@ -27,8 +27,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.dahiorus.project.vending.util.UserBuilder;
 
-import me.dahiorus.project.vending.core.dao.impl.BinaryDataDAO;
-import me.dahiorus.project.vending.core.dao.impl.UserDaoImpl;
+import me.dahiorus.project.vending.core.dao.BinaryDataDAO;
+import me.dahiorus.project.vending.core.dao.UserDAO;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.model.AppUser;
@@ -49,7 +49,7 @@ class UserDtoServiceImplTest
   ArgumentCaptor<AppUser> userArg;
 
   @Mock
-  UserDaoImpl dao;
+  UserDAO dao;
 
   @Mock
   UserDtoValidator dtoValidator;

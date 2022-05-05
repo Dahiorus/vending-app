@@ -15,7 +15,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import me.dahiorus.project.vending.core.dao.impl.UserDaoImpl;
+import me.dahiorus.project.vending.core.dao.UserDAO;
 import me.dahiorus.project.vending.core.model.AppUser;
 import me.dahiorus.project.vending.core.model.dto.UserDTO;
 import me.dahiorus.project.vending.core.service.validation.ValidationError;
@@ -25,7 +25,7 @@ import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 class UserDtoValidatorTest
 {
   @Mock
-  UserDaoImpl dao;
+  UserDAO dao;
 
   UserDtoValidator validator;
 

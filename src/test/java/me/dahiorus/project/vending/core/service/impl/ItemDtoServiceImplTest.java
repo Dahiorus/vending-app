@@ -34,8 +34,8 @@ import org.springframework.data.domain.Pageable;
 
 import com.dahiorus.project.vending.util.ItemBuilder;
 
-import me.dahiorus.project.vending.core.dao.impl.BinaryDataDAO;
-import me.dahiorus.project.vending.core.dao.impl.ItemDaoImpl;
+import me.dahiorus.project.vending.core.dao.BinaryDataDAO;
+import me.dahiorus.project.vending.core.dao.ItemDAO;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.model.AppUser;
@@ -51,7 +51,7 @@ import me.dahiorus.project.vending.core.service.validation.impl.ItemDtoValidator
 class ItemDtoServiceImplTest
 {
   @Mock
-  ItemDaoImpl dao;
+  ItemDAO dao;
 
   @Mock
   ItemDtoValidator dtoValidator;

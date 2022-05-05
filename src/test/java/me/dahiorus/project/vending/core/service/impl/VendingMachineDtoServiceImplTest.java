@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dahiorus.project.vending.util.VendingMachineBuilder;
 
-import me.dahiorus.project.vending.core.dao.impl.VendingMachineDaoImpl;
+import me.dahiorus.project.vending.core.dao.VendingMachineDAO;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.model.CardSystemStatus;
 import me.dahiorus.project.vending.core.model.ChangeSystemStatus;
@@ -32,7 +32,7 @@ import me.dahiorus.project.vending.core.service.validation.impl.VendingMachineDt
 class VendingMachineDtoServiceImplTest
 {
   @Mock
-  VendingMachineDaoImpl dao;
+  VendingMachineDAO dao;
 
   @Mock
   VendingMachineDtoValidator dtoValidator;

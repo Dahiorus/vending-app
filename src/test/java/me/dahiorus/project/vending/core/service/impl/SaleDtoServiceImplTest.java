@@ -19,9 +19,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.dahiorus.project.vending.util.ItemBuilder;
 import com.dahiorus.project.vending.util.VendingMachineBuilder;
 
-import me.dahiorus.project.vending.core.dao.impl.SaleDaoImpl;
-import me.dahiorus.project.vending.core.dao.impl.StockDaoImpl;
-import me.dahiorus.project.vending.core.dao.impl.VendingMachineDaoImpl;
+import me.dahiorus.project.vending.core.dao.SaleDAO;
+import me.dahiorus.project.vending.core.dao.StockDAO;
+import me.dahiorus.project.vending.core.dao.VendingMachineDAO;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ItemMissing;
 import me.dahiorus.project.vending.core.model.Item;
@@ -35,13 +35,13 @@ import me.dahiorus.project.vending.core.model.dto.SaleDTO;
 class SaleDtoServiceImplTest
 {
   @Mock
-  SaleDaoImpl dao;
+  SaleDAO dao;
 
   @Mock
-  StockDaoImpl stockDao;
+  StockDAO stockDao;
 
   @Mock
-  VendingMachineDaoImpl vendingMachineDao;
+  VendingMachineDAO vendingMachineDao;
 
   SaleDtoServiceImpl dtoService;
 

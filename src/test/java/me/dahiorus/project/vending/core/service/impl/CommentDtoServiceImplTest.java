@@ -22,8 +22,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dahiorus.project.vending.util.VendingMachineBuilder;
 
-import me.dahiorus.project.vending.core.dao.impl.CommentDaoImpl;
-import me.dahiorus.project.vending.core.dao.impl.VendingMachineDaoImpl;
+import me.dahiorus.project.vending.core.dao.CommentDAO;
+import me.dahiorus.project.vending.core.dao.VendingMachineDAO;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.model.Comment;
@@ -37,10 +37,10 @@ import me.dahiorus.project.vending.core.service.validation.impl.CommentDtoValida
 class CommentDtoServiceImplTest
 {
   @Mock
-  CommentDaoImpl dao;
+  CommentDAO dao;
 
   @Mock
-  VendingMachineDaoImpl vendingMachineDao;
+  VendingMachineDAO vendingMachineDao;
 
   @Mock
   CommentDtoValidator commentDtoValidator;

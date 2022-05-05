@@ -20,7 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dahiorus.project.vending.util.ItemBuilder;
 
-import me.dahiorus.project.vending.core.dao.impl.ItemDaoImpl;
+import me.dahiorus.project.vending.core.dao.ItemDAO;
 import me.dahiorus.project.vending.core.model.Item;
 import me.dahiorus.project.vending.core.model.ItemType;
 import me.dahiorus.project.vending.core.model.dto.ItemDTO;
@@ -30,7 +30,7 @@ import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 class ItemDtoValidatorTest
 {
   @Mock
-  ItemDaoImpl dao;
+  ItemDAO dao;
 
   ItemDtoValidator validator;
 
