@@ -38,8 +38,11 @@ import me.dahiorus.project.vending.core.dao.impl.BinaryDataDAO;
 import me.dahiorus.project.vending.core.dao.impl.ItemDaoImpl;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ValidationException;
+import me.dahiorus.project.vending.core.model.AppUser;
+import me.dahiorus.project.vending.core.model.BinaryData;
 import me.dahiorus.project.vending.core.model.Item;
 import me.dahiorus.project.vending.core.model.ItemType;
+import me.dahiorus.project.vending.core.model.dto.BinaryDataDTO;
 import me.dahiorus.project.vending.core.model.dto.ItemDTO;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 import me.dahiorus.project.vending.core.service.validation.impl.ItemDtoValidator;
@@ -302,6 +305,86 @@ class ItemDtoServiceImplTest
       Optional<ItemDTO> dtoOpt = controller.findById(id);
 
       assertThat(dtoOpt).isEmpty();
+    }
+  }
+
+  @Nested
+  class GetPictureTests
+  {
+    @Test
+    void getPicture() throws Exception
+    {
+      Item entity = buildEntity("Item", ItemType.FOOD, 2.0);
+      entity.setId(UUID.randomUUID());
+      entity.setPicture(new BinaryData());
+      when(dao.read(entity.getId())).thenReturn(entity);
+
+      Optional<BinaryDataDTO> image = controller.getImage(entity.getId());
+
+      assertThat(image).isNotEmpty();
+    }
+
+    @Test
+    void getEmptyPicture() throws Exception
+    {
+      Item item = mockRead(UUID.randomUUID());
+
+      Optional<BinaryDataDTO> image = controller.getImage(item.getId());
+
+      assertThat(image).isEmpty();
+    }
+
+    @Test
+    void getFromNonExistingUser() throws Exception
+    {
+      UUID id = UUID.randomUUID();
+      when(dao.read(id)).thenThrow(new EntityNotFound(Item.class, id));
+
+      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> controller.getImage(id));
+    }
+  }
+
+  @Nested
+  class UploadImageTests
+  {
+    @Test
+    void uploadImage() throws Exception
+    {
+      Item item = mockRead(UUID.randomUUID());
+
+      when(binaryDataDao.save(any())).then(invoc -> {
+        BinaryData binary = invoc.getArgument(0);
+        binary.setId(UUID.randomUUID());
+        return binary;
+      });
+      when(dao.save(item)).thenReturn(item);
+
+      BinaryDataDTO dto = buildBinary("picture.jpg", "image/jpg");
+      ItemDTO updatedItem = controller.uploadImage(item.getId(), dto);
+
+      assertThat(updatedItem.getPictureId()).isEqualTo(item.getPicture()
+        .getId());
+    }
+
+    @Test
+    void uploadImageToNonExistingUser() throws Exception
+    {
+      UUID id = UUID.randomUUID();
+      when(dao.read(id)).thenThrow(new EntityNotFound(AppUser.class, id));
+
+      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> controller.uploadImage(id, new BinaryDataDTO()));
+      verify(binaryDataDao, never()).save(any());
+      verify(dao, never()).save(any());
+    }
+
+    BinaryDataDTO buildBinary(final String name, final String contentType)
+    {
+      BinaryDataDTO dto = new BinaryDataDTO();
+      dto.setName(name);
+      dto.setContentType(contentType);
+      dto.setContent(new byte[0]);
+
+      return dto;
     }
   }
 
