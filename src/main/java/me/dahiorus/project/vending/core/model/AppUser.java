@@ -11,6 +11,7 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -31,6 +32,8 @@ public class AppUser extends AbstractEntity
   private String email;
 
   private String password;
+
+  private BinaryData picture;
 
   private List<AppRole> roles;
 
@@ -75,6 +78,18 @@ public class AppUser extends AbstractEntity
   public void setPassword(final String password)
   {
     this.password = password;
+  }
+
+  @OneToOne(fetch = FetchType.LAZY, optional = true, orphanRemoval = true)
+  @JoinColumn(name = "picture_id", foreignKey = @ForeignKey(name = "FK_USER_PICTURE_ID"))
+  public BinaryData getPicture()
+  {
+    return picture;
+  }
+
+  public void setPicture(final BinaryData picture)
+  {
+    this.picture = picture;
   }
 
   @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)

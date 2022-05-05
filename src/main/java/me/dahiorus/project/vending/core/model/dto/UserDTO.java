@@ -1,5 +1,9 @@
 package me.dahiorus.project.vending.core.model.dto;
 
+import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +25,11 @@ public class UserDTO extends AbstractDTO<AppUser>
   @Getter
   @Setter
   private String email;
+
+  @JsonIgnore
+  @Getter
+  @Setter
+  private UUID pictureId;
 
   @Override
   public Class<AppUser> getEntityClass()

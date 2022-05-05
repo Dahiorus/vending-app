@@ -3,6 +3,7 @@ package com.dahiorus.project.vending.util;
 import java.util.UUID;
 
 import me.dahiorus.project.vending.core.model.AppUser;
+import me.dahiorus.project.vending.core.model.BinaryData;
 import me.dahiorus.project.vending.core.model.dto.UserDTO;
 import me.dahiorus.project.vending.core.service.DtoMapper;
 import me.dahiorus.project.vending.core.service.impl.DtoMapperImpl;
@@ -45,6 +46,17 @@ public class UserBuilder
   public UserBuilder password(final String password)
   {
     user.setPassword(password);
+    return this;
+  }
+
+  public UserBuilder picture(final String name, final String contentType)
+  {
+    BinaryData binaryData = new BinaryData();
+    binaryData.setName(name);
+    binaryData.setContentType(contentType);
+    binaryData.setContent(new byte[0]);
+    user.setPicture(binaryData);
+
     return this;
   }
 

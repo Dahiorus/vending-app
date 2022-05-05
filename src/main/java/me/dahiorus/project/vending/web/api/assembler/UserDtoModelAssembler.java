@@ -52,7 +52,8 @@ public class UserDtoModelAssembler extends DtoModelAssembler<UserDTO>
       Link selfServiceLink = linkTo(methodOn(SelfServiceRestController.class).get()).withRel("me:get");
       Link updatePassword = linkTo(methodOn(SelfServiceRestController.class).updatePassword(null))
         .withRel("me:update-password");
-      links.addAll(List.of(selfServiceLink, updatePassword));
+      Link pictureLink = linkTo(methodOn(SelfServiceRestController.class).getPicture()).withRel("me:picture");
+      links.addAll(List.of(selfServiceLink, updatePassword, pictureLink));
     }
 
     return links;

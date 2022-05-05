@@ -2,10 +2,17 @@ package me.dahiorus.project.vending.web.api.request;
 
 import static me.dahiorus.project.vending.core.service.validation.FieldValidationError.fieldError;
 import static org.apache.commons.io.FilenameUtils.getExtension;
+import static org.springframework.http.ResponseEntity.notFound;
+import static org.springframework.http.ResponseEntity.ok;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AccessLevel;
@@ -40,5 +47,14 @@ public class MultiPartFileUtils
     }
 
     return results;
+  }
+
+  public static ResponseEntity<ByteArrayResource> convertToResponse(final Optional<BinaryDataDTO> dto)
+  {
+    return dto.map(data -> ok().contentType(MediaType.parseMediaType(data.getContentType()))
+      .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + data.getName() + "\"")
+      .contentLength(data.getSize())
+      .body(new ByteArrayResource(data.getContent())))
+      .orElse(notFound().build());
   }
 }

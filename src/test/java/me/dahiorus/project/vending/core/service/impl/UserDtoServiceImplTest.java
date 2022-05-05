@@ -27,10 +27,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.dahiorus.project.vending.util.UserBuilder;
 
+import me.dahiorus.project.vending.core.dao.impl.BinaryDataDAO;
 import me.dahiorus.project.vending.core.dao.impl.UserDaoImpl;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.model.AppUser;
+import me.dahiorus.project.vending.core.model.BinaryData;
+import me.dahiorus.project.vending.core.model.dto.BinaryDataDTO;
 import me.dahiorus.project.vending.core.model.dto.EditPasswordDTO;
 import me.dahiorus.project.vending.core.model.dto.UserDTO;
 import me.dahiorus.project.vending.core.model.dto.UserWithPasswordDTO;
@@ -54,6 +57,9 @@ class UserDtoServiceImplTest
   @Mock
   PasswordValidatorImpl passwordValidator;
 
+  @Mock
+  BinaryDataDAO binaryDataDao;
+
   PasswordEncoder passwordEncoder;
 
   UserDtoServiceImpl dtoService;
@@ -63,7 +69,8 @@ class UserDtoServiceImplTest
   {
     when(dao.getDomainClass()).thenReturn(AppUser.class);
     passwordEncoder = new BCryptPasswordEncoder();
-    dtoService = new UserDtoServiceImpl(dao, new DtoMapperImpl(), dtoValidator, passwordValidator, passwordEncoder);
+    dtoService = new UserDtoServiceImpl(dao, new DtoMapperImpl(), dtoValidator, passwordValidator, passwordEncoder,
+        binaryDataDao);
   }
 
   @Nested
@@ -258,6 +265,102 @@ class UserDtoServiceImplTest
       return UserBuilder.builder()
         .email(username)
         .build();
+    }
+  }
+
+  @Nested
+  class GetPictureTests
+  {
+    @Test
+    void getPicture() throws Exception
+    {
+      AppUser user = buildUser(UUID.randomUUID(), "picture.jpg", "image/jpg");
+      when(dao.read(user.getId())).thenReturn(user);
+
+      Optional<BinaryDataDTO> image = dtoService.getImage(user.getId());
+
+      assertThat(image).isNotEmpty();
+    }
+
+    @Test
+    void getEmptyPicture() throws Exception
+    {
+      AppUser user = buildUser(UUID.randomUUID(), null, null);
+      user.setPicture(null);
+      when(dao.read(user.getId())).thenReturn(user);
+
+      Optional<BinaryDataDTO> image = dtoService.getImage(user.getId());
+
+      assertThat(image).isEmpty();
+    }
+
+    @Test
+    void getFromNonExistingUser() throws Exception
+    {
+      UUID id = UUID.randomUUID();
+      when(dao.read(id)).thenThrow(new EntityNotFound(AppUser.class, id));
+
+      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.getImage(id));
+    }
+
+    AppUser buildUser(final UUID id, final String pictureName, final String contentType)
+    {
+      return UserBuilder.builder()
+        .id(id)
+        .picture(pictureName, contentType)
+        .build();
+    }
+  }
+
+  @Nested
+  class UploadImageTests
+  {
+    @Test
+    void uploadImage() throws Exception
+    {
+      AppUser user = buildUser(UUID.randomUUID());
+
+      when(dao.read(user.getId())).thenReturn(user);
+      when(binaryDataDao.save(any())).then(invoc -> {
+        BinaryData binary = invoc.getArgument(0);
+        binary.setId(UUID.randomUUID());
+        return binary;
+      });
+      when(dao.save(user)).thenReturn(user);
+
+      BinaryDataDTO dto = buildBinary("picture.jpg", "image/jpg");
+      UserDTO updatedUser = dtoService.uploadImage(user.getId(), dto);
+
+      assertThat(updatedUser.getPictureId()).isEqualTo(user.getPicture()
+        .getId());
+    }
+
+    @Test
+    void uploadImageToNonExistingUser() throws Exception
+    {
+      UUID id = UUID.randomUUID();
+      when(dao.read(id)).thenThrow(new EntityNotFound(AppUser.class, id));
+
+      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.uploadImage(id, new BinaryDataDTO()));
+      verify(binaryDataDao, never()).save(any());
+      verify(dao, never()).save(any());
+    }
+
+    AppUser buildUser(final UUID id)
+    {
+      return UserBuilder.builder()
+        .id(id)
+        .build();
+    }
+
+    BinaryDataDTO buildBinary(final String name, final String contentType)
+    {
+      BinaryDataDTO dto = new BinaryDataDTO();
+      dto.setName(name);
+      dto.setContentType(contentType);
+      dto.setContent(new byte[0]);
+
+      return dto;
     }
   }
 }
