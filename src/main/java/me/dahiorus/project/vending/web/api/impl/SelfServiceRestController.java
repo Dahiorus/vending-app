@@ -3,6 +3,7 @@ package me.dahiorus.project.vending.web.api.impl;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +29,7 @@ import me.dahiorus.project.vending.web.security.AuthenticationFacade;
 @Tag(name = "Self-service", description = "Operation on the authenticated user")
 @SecurityRequirement(name = "bearerAuth")
 @RestController
-@RequestMapping(value = "/api/v1/me", produces = MediaTypes.HAL_JSON_VALUE)
+@RequestMapping(value = "/api/v1/me")
 @RequiredArgsConstructor
 @Log4j2
 public class SelfServiceRestController implements AppWebService
@@ -41,7 +42,7 @@ public class SelfServiceRestController implements AppWebService
 
   @Operation(description = "Get the authenticated user")
   @ApiResponse(responseCode = "200", description = "Authenticated user found")
-  @GetMapping
+  @GetMapping(produces = MediaTypes.HAL_JSON_VALUE)
   public ResponseEntity<EntityModel<UserDTO>> get() throws UserNotAuthenticated
   {
     UserDTO authenticatedUser = authenticationFacade.getAuthenticatedUser();
@@ -52,8 +53,8 @@ public class SelfServiceRestController implements AppWebService
   }
 
   @Operation(description = "Update the password of the authenticated user")
-  @ApiResponse(responseCode = "200", description = "Password updated")
-  @PostMapping("/password")
+  @ApiResponse(responseCode = "204", description = "Password updated")
+  @PostMapping(value = "/password", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> updatePassword(@RequestBody final EditPasswordDTO editPassword)
       throws ValidationException, UserNotAuthenticated
   {
