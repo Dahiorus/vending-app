@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.core.service.impl;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.logging.log4j.Logger;
@@ -63,12 +64,12 @@ public class ItemDtoServiceImpl extends DtoServiceImpl<Item, ItemDTO, DAO<Item>>
 
   @Transactional(readOnly = true)
   @Override
-  public BinaryDataDTO getImage(final UUID id) throws EntityNotFound
+  public Optional<BinaryDataDTO> getImage(final UUID id) throws EntityNotFound
   {
     log.debug("Getting the picture of the item {}", id);
 
     Item entity = dao.read(id);
 
-    return dtoMapper.toDto(entity.getPicture(), BinaryDataDTO.class);
+    return Optional.ofNullable(dtoMapper.toDto(entity.getPicture(), BinaryDataDTO.class));
   }
 }

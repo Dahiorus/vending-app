@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.core.service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
@@ -11,5 +12,5 @@ public interface ItemDtoService extends DtoService<Item, ItemDTO>
 {
   ItemDTO uploadImage(UUID id, BinaryDataDTO picture) throws EntityNotFound;
 
-  BinaryDataDTO getImage(UUID id) throws EntityNotFound;
+  Optional<BinaryDataDTO> getImage(UUID id) throws EntityNotFound;
 }

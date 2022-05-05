@@ -1,11 +1,14 @@
 package me.dahiorus.project.vending.web.api.impl;
 
+import static org.springframework.http.ResponseEntity.notFound;
+import static org.springframework.http.ResponseEntity.ok;
+
 import java.io.IOException;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
@@ -20,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
@@ -52,23 +57,27 @@ public class ItemRestController extends RestControllerImpl<ItemDTO, ItemDtoServi
     return log;
   }
 
+  @Operation(description = "Get the picture of an item")
+  @ApiResponse(responseCode = "200", description = "Item picture found")
+  @ApiResponse(responseCode = "404", description = "No item or picture found")
   @GetMapping("/{id}/picture")
-  public ResponseEntity<Resource> getPicture(@PathVariable final UUID id) throws EntityNotFound
+  public ResponseEntity<ByteArrayResource> getPicture(@PathVariable final UUID id) throws EntityNotFound
   {
-    BinaryDataDTO picture = dtoService.getImage(id);
+    Optional<BinaryDataDTO> picture = dtoService.getImage(id);
 
-    if (picture == null)
-    {
-      throw new EntityNotFound("No file found for the item " + id);
-    }
+    return picture.map(p -> {
+      log.info("Picture found for item {}", id);
 
-    log.info("Picture found for item {}", id);
+      return ok().contentType(MediaType.parseMediaType(p.getContentType()))
+        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + p.getName() + "\"")
+        .contentLength(p.getSize())
+        .body(new ByteArrayResource(p.getContent()));
+    })
+      .orElseGet(() -> {
+        log.info("No picture found for the item {}", id);
 
-    return ResponseEntity.ok()
-      .contentType(MediaType.parseMediaType(picture.getContentType()))
-      .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + picture.getName() + "\"")
-      .contentLength(picture.getSize())
-      .body(new ByteArrayResource(picture.getContent()));
+        return notFound().build();
+      });
   }
 
   @PostMapping(value = "/{id}/picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
