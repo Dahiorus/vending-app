@@ -10,5 +10,5 @@ import me.dahiorus.project.vending.core.dao.impl.AbstractDAO;
 @EnableJpaRepositories(repositoryBaseClass = AbstractDAO.class, basePackageClasses = DAO.class)
 public class DaoConfig
 {
-
+  // empty class
 }
