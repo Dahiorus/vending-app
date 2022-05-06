@@ -25,7 +25,6 @@ import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.common.HasLogger;
 import me.dahiorus.project.vending.core.exception.ValidationException;
 import me.dahiorus.project.vending.core.model.dto.UserDTO;
-import me.dahiorus.project.vending.core.model.dto.UserWithPasswordDTO;
 import me.dahiorus.project.vending.core.service.UserDtoService;
 import me.dahiorus.project.vending.web.api.AppWebService;
 import me.dahiorus.project.vending.web.api.model.AuthenticateRequest;
@@ -58,12 +57,12 @@ public class PublicRestController implements HasLogger, AppWebService
   @ApiResponse(responseCode = "201", description = "User registered")
   @PostMapping(value = SecurityConstants.REGISTER_ENDPOINT, consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaTypes.HAL_JSON_VALUE)
-  public ResponseEntity<EntityModel<UserDTO>> register(@RequestBody final UserWithPasswordDTO user)
+  public ResponseEntity<EntityModel<UserDTO>> register(@RequestBody final UserDTO user)
       throws ValidationException
   {
     log.debug("Signing up a new user");
-    UserDTO createdUser = userDtoService.create(user);
 
+    UserDTO createdUser = userDtoService.create(user);
     URI location = MvcUriComponentsBuilder.fromController(UserRestController.class)
       .path("/{id}")
       .buildAndExpand(createdUser.getId())
