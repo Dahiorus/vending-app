@@ -2,15 +2,14 @@ package me.dahiorus.project.vending.core.model;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -35,7 +34,7 @@ public class AppUser extends AbstractEntity
 
   private BinaryData picture;
 
-  private List<AppRole> roles;
+  private List<String> roles;
 
   public String getFirstName()
   {
@@ -92,17 +91,16 @@ public class AppUser extends AbstractEntity
     this.picture = picture;
   }
 
-  @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-  @JoinTable(name = "app_user_role",
-      joinColumns = @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_USER_ROLE_USER_ID")),
-      inverseJoinColumns = @JoinColumn(name = "role_id", foreignKey = @ForeignKey(name = "FK_USER_ROLE_ROLE_ID")),
-      uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "role_id" }, name = "UK_USER_ROLE_ID"))
-  public List<AppRole> getRoles()
+  @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(name = "app_user_role", indexes = @Index(columnList = "role_name", name = "IDX_USER_ROLE_NAME"),
+      joinColumns = @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_USER_ROLE_USER_ID")))
+  @Column(name = "role_name", nullable = false)
+  public List<String> getRoles()
   {
     return roles;
   }
 
-  public void setRoles(final List<AppRole> roles)
+  public void setRoles(final List<String> roles)
   {
     this.roles = roles;
   }
