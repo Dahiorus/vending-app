@@ -50,7 +50,11 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     getLogger().debug("Creating a new {}: {}", getDomainClass().getSimpleName(), dto);
 
     validate(dto, CrudOperation.CREATE);
-    E createdEntity = dao.save(dtoMapper.toEntity(dto, entityClass));
+
+    E entity = dtoMapper.toEntity(dto, entityClass);
+    doBeforeCallingDao(entity, dto, CrudOperation.CREATE);
+
+    E createdEntity = dao.save(entity);
     D createdDto = dtoMapper.toDto(createdEntity, getDomainClass());
 
     getLogger().info("{} created: {}", getDomainClass().getSimpleName(), createdDto);
@@ -79,6 +83,8 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     dto.setId(id);
     validate(dto, CrudOperation.UPDATE);
     dtoMapper.patchEntity(dto, entity);
+    doBeforeCallingDao(entity, dto, CrudOperation.UPDATE);
+
     E updatedEntity = dao.save(entity);
     D updatedDto = dtoMapper.toDto(updatedEntity, getDomainClass());
 
@@ -94,6 +100,7 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     getLogger().debug("Deleting {} with ID {}", getDomainClass().getSimpleName(), id);
 
     E entity = dao.read(id);
+    doBeforeCallingDao(entity, null, CrudOperation.DELETE);
     dao.delete(entity);
 
     getLogger().info("{} deleted: ID {}", getDomainClass().getSimpleName(), id);
@@ -159,6 +166,11 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
   protected void doExtraValidation(final D dto, final ValidationResults validationResults)
   {
     // override this method to add specific validation
+  }
+
+  protected void doBeforeCallingDao(final E entity, final D dto, final CrudOperation operation)
+  {
+    // override this method to modify the entity before calling the DAO
   }
 
   protected abstract Class<D> getDomainClass();
