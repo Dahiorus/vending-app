@@ -120,7 +120,7 @@ public class Report extends AbstractEntity
     this.workingStatus = workingStatus;
   }
 
-  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true, mappedBy = "report")
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST, orphanRemoval = true, mappedBy = "report")
   public List<ReportStock> getReportStocks()
   {
     return reportStocks;
