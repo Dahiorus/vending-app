@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import me.dahiorus.project.vending.core.dao.UserDAO;
-import me.dahiorus.project.vending.core.model.AppRole;
 
 @Component
 @RequiredArgsConstructor
@@ -24,8 +23,6 @@ public class AppUserDetailsService implements UserDetailsService
         .username(user.getEmail())
         .password(user.getPassword())
         .authorities(user.getRoles()
-          .stream()
-          .map(AppRole::getName)
           .toArray(String[]::new))
         .build())
       .orElseThrow(() -> new UsernameNotFoundException("No user found with username " + username));
