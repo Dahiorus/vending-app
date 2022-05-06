@@ -1,6 +1,5 @@
 package me.dahiorus.project.vending.web.config;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.Map;
 
@@ -9,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -20,8 +20,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder.BCryptVersion;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -69,12 +69,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
       .antMatchers(HttpMethod.GET, "/api/v1/vending-machines/**", "/api/v1/items/{.+}/**").permitAll()
       .antMatchers(HttpMethod.POST, "/api/v1/vending-machines/{.+}/purchase/**").permitAll()
       .antMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-      .anyRequest().authenticated()
+      .antMatchers("/api/v1/me/**").authenticated()
+      .anyRequest().hasAuthority("ROLE_ADMIN")
       // @formatter:on
       .and()
       // exception handling
       .exceptionHandling()
-      .authenticationEntryPoint(restAuthenticationEntryPoint())
+      .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
       .accessDeniedHandler(restAccessDeniedHandler())
       .and()
       // request filters
@@ -85,25 +86,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
   @Bean
   public AccessDeniedHandler restAccessDeniedHandler()
   {
-    return (request, response, accessDeniedException) -> writeExceptionInResponse(HttpServletResponse.SC_FORBIDDEN,
-        accessDeniedException, response);
-  }
-
-  @Bean
-  public AuthenticationEntryPoint restAuthenticationEntryPoint()
-  {
-    return (request, response, authException) -> writeExceptionInResponse(HttpServletResponse.SC_UNAUTHORIZED,
-        authException, response);
-  }
-
-  private static void writeExceptionInResponse(final int status, final Exception ex, final HttpServletResponse response)
-      throws IOException
-  {
-    response.setStatus(status);
-    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-    MAPPER.writeValue(response.getOutputStream(), Map.of("timestamp", Instant.now()
-      .toString(), "message", ex.getMessage()));
-    response.flushBuffer();
+    return (request, response, accessDeniedException) -> {
+      response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+      response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+      MAPPER.writeValue(response.getOutputStream(), Map.of("timestamp", Instant.now()
+        .toString(), "message", accessDeniedException.getMessage()));
+      response.flushBuffer();
+    };
   }
 
   @Bean
