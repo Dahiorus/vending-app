@@ -6,6 +6,7 @@ import static me.dahiorus.project.vending.core.service.validation.ValidationErro
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,6 @@ import me.dahiorus.project.vending.core.model.BinaryData;
 import me.dahiorus.project.vending.core.model.dto.BinaryDataDTO;
 import me.dahiorus.project.vending.core.model.dto.EditPasswordDTO;
 import me.dahiorus.project.vending.core.model.dto.UserDTO;
-import me.dahiorus.project.vending.core.model.dto.UserWithPasswordDTO;
 import me.dahiorus.project.vending.core.service.DtoMapper;
 import me.dahiorus.project.vending.core.service.UserDtoService;
 import me.dahiorus.project.vending.core.service.validation.CrudOperation;
@@ -62,35 +62,23 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
     return UserDTO.class;
   }
 
-  @Transactional(rollbackFor = ValidationException.class)
-  @Override
-  public UserDTO create(final UserWithPasswordDTO dto) throws ValidationException
-  {
-    getLogger().debug("Creating a new {} with a password: {}", getDomainClass().getSimpleName(), dto);
-
-    // validate the password hard coded policy and encode it
-    validate(dto, CrudOperation.CREATE);
-
-    AppUser entity = dtoMapper.toEntity(dto, entityClass);
-    entity.setPassword(passwordEncoder.encode(dto.getPassword()));
-
-    AppUser createdEntity = dao.save(entity);
-    UserDTO createdDto = dtoMapper.toDto(createdEntity, getDomainClass());
-
-    getLogger().info("{} created: {}", getDomainClass().getSimpleName(), createdDto);
-
-    return createdDto;
-  }
-
   @Override
   protected void doExtraValidation(final UserDTO dto, final ValidationResults validationResults)
   {
-    if (dto instanceof UserWithPasswordDTO userWithPwd)
+    log.debug("Validating the user's password: {}", dto);
+    ValidationResults pwdValidationResults = passwordValidator.validate(AppUser_.PASSWORD, dto.getPassword(),
+        true);
+    validationResults.mergeFieldErrors(pwdValidationResults);
+  }
+
+  @Override
+  protected void doBeforeCallingDao(final AppUser entity, final UserDTO dto, final CrudOperation operation)
+  {
+    if (operation == CrudOperation.CREATE
+        || operation == CrudOperation.UPDATE && StringUtils.isNotEmpty(dto.getPassword()))
     {
-      log.debug("Validating the user's password: {}", dto);
-      ValidationResults pwdValidationResults = passwordValidator.validate(AppUser_.PASSWORD, userWithPwd.getPassword(),
-          true);
-      validationResults.mergeFieldErrors(pwdValidationResults);
+      log.debug("Encoding the password of the user {}", dto);
+      entity.setPassword(passwordEncoder.encode(dto.getPassword()));
     }
   }
 

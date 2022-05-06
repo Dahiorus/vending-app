@@ -9,12 +9,9 @@ import me.dahiorus.project.vending.core.model.AppUser;
 import me.dahiorus.project.vending.core.model.dto.BinaryDataDTO;
 import me.dahiorus.project.vending.core.model.dto.EditPasswordDTO;
 import me.dahiorus.project.vending.core.model.dto.UserDTO;
-import me.dahiorus.project.vending.core.model.dto.UserWithPasswordDTO;
 
 public interface UserDtoService extends DtoService<AppUser, UserDTO>
 {
-  UserDTO create(UserWithPasswordDTO user) throws ValidationException;
-
   UserDTO getByUsername(String username) throws EntityNotFound;
 
   void updatePassword(UUID id, EditPasswordDTO editPassword) throws EntityNotFound, ValidationException;

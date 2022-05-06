@@ -65,8 +65,8 @@ public class UserBuilder
     return user;
   }
 
-  public <D extends UserDTO> D buildDto(final Class<D> dtoClass)
+  public UserDTO buildDto()
   {
-    return dtoMapper.toDto(user, dtoClass);
+    return dtoMapper.toDto(user, UserDTO.class);
   }
 }

@@ -36,7 +36,6 @@ import me.dahiorus.project.vending.core.model.BinaryData;
 import me.dahiorus.project.vending.core.model.dto.BinaryDataDTO;
 import me.dahiorus.project.vending.core.model.dto.EditPasswordDTO;
 import me.dahiorus.project.vending.core.model.dto.UserDTO;
-import me.dahiorus.project.vending.core.model.dto.UserWithPasswordDTO;
 import me.dahiorus.project.vending.core.service.validation.FieldValidationError;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 import me.dahiorus.project.vending.core.service.validation.impl.PasswordValidatorImpl;
@@ -79,7 +78,7 @@ class UserDtoServiceImplTest
     @Test
     void createUserWithPassword() throws Exception
     {
-      UserWithPasswordDTO user = buildUser("User", "Test", "email@yopmail.com", "Secret123");
+      UserDTO user = buildUser("User", "Test", "email@yopmail.com", "Secret123");
 
       when(dtoValidator.validate(user)).thenReturn(successResults());
       when(passwordValidator.validate("password", user.getPassword(), true)).thenReturn(successResults());
@@ -102,7 +101,7 @@ class UserDtoServiceImplTest
     @Test
     void passwordMustRespectPolicy() throws Exception
     {
-      UserWithPasswordDTO user = buildUser("User", "Test", "email@yopmail.com", "Secret123");
+      UserDTO user = buildUser("User", "Test", "email@yopmail.com", "Secret123");
 
       when(dtoValidator.validate(user)).thenReturn(successResults());
       when(passwordValidator.validate("password", user.getPassword(), true)).then(invocation -> {
@@ -116,7 +115,7 @@ class UserDtoServiceImplTest
       verify(dao, never()).save(any());
     }
 
-    UserWithPasswordDTO buildUser(final String firstName, final String lastName, final String email,
+    UserDTO buildUser(final String firstName, final String lastName, final String email,
         final String rawPassword)
     {
       return UserBuilder.builder()
@@ -124,7 +123,7 @@ class UserDtoServiceImplTest
         .lastName(lastName)
         .email(email)
         .password(rawPassword)
-        .buildDto(UserWithPasswordDTO.class);
+        .buildDto();
     }
   }
 
