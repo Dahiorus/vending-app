@@ -1,12 +1,11 @@
 package me.dahiorus.project.vending.core.dao;
 
+import org.springframework.stereotype.Repository;
+
 import me.dahiorus.project.vending.core.model.Comment;
 
+@Repository
 public interface CommentDAO extends DAO<Comment>
 {
-  @Override
-  default Class<Comment> getDomainClass()
-  {
-    return Comment.class;
-  }
+  // empty interface
 }
