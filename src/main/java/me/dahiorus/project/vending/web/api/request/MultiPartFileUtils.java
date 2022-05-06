@@ -55,7 +55,9 @@ public class MultiPartFileUtils
   {
     return dto.map(data -> ok().contentType(MediaType.parseMediaType(data.getContentType()))
       .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + data.getName() + "\"")
-      .cacheControl(CacheControl.maxAge(Duration.ofHours(1)))
+      .cacheControl(CacheControl.maxAge(Duration.ofHours(1))
+        .cachePublic())
+      .lastModified(data.getCreatedAt())
       .contentLength(data.getSize())
       .body(new ByteArrayResource(data.getContent())))
       .orElse(notFound().build());
