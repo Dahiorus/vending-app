@@ -2,7 +2,6 @@ package me.dahiorus.project.vending.web.security.impl;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -34,7 +33,7 @@ public class AuthenticationFacadeImpl implements AuthenticationFacade
     }
     catch (EntityNotFound e)
     {
-      throw new UsernameNotFoundException("Unable to get an authenticated user");
+      throw new UserNotAuthenticated("Unable to get an authenticated user");
     }
   }
 }

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.core.exception.AppException;
+import me.dahiorus.project.vending.core.exception.UserNotAuthenticated;
 import me.dahiorus.project.vending.core.model.dto.UserDTO;
 import me.dahiorus.project.vending.web.api.impl.SelfServiceRestController;
 import me.dahiorus.project.vending.web.api.impl.UserRestController;
@@ -45,15 +46,21 @@ public class UserDtoModelAssembler extends DtoModelAssembler<UserDTO>
   {
     Collection<Link> links = new LinkedList<>();
 
-    UserDTO authenticatedUser = authenticationFacade.getAuthenticatedUser();
-
-    if (content.equals(authenticatedUser))
+    try
     {
-      Link selfServiceLink = linkTo(methodOn(SelfServiceRestController.class).get()).withRel("me:get");
-      Link updatePassword = linkTo(methodOn(SelfServiceRestController.class).updatePassword(null))
-        .withRel("me:update-password");
-      Link pictureLink = linkTo(methodOn(SelfServiceRestController.class).getPicture()).withRel("me:picture");
-      links.addAll(List.of(selfServiceLink, updatePassword, pictureLink));
+      UserDTO authenticatedUser = authenticationFacade.getAuthenticatedUser();
+      if (content.equals(authenticatedUser))
+      {
+        Link selfServiceLink = linkTo(methodOn(SelfServiceRestController.class).get()).withRel("me:get");
+        Link updatePassword = linkTo(methodOn(SelfServiceRestController.class).updatePassword(null))
+          .withRel("me:update-password");
+        Link pictureLink = linkTo(methodOn(SelfServiceRestController.class).getPicture()).withRel("me:picture");
+        links.addAll(List.of(selfServiceLink, updatePassword, pictureLink));
+      }
+    }
+    catch (UserNotAuthenticated e)
+    {
+      log.debug(e.getMessage());
     }
 
     return links;
