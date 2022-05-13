@@ -1,0 +1,34 @@
+package me.dahiorus.project.vending.web.api.assembler;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.hateoas.EntityModel;
+
+import me.dahiorus.project.vending.core.model.dto.ReportDTO;
+import me.dahiorus.project.vending.core.model.dto.ReportStockDTO;
+
+class ReportDtoModelAssemblerTest
+{
+  ReportDtoModelAssembler modelAssembler;
+
+  @BeforeEach
+  void setUp() throws Exception
+  {
+    modelAssembler = new ReportDtoModelAssembler();
+  }
+
+  @Test
+  void dtoToEntityModel()
+  {
+    ReportDTO dto = new ReportDTO();
+    dto.setId(UUID.randomUUID());
+    dto.setReportStocks(List.of(new ReportStockDTO()));
+
+    EntityModel<ReportDTO> model = modelAssembler.toModel(dto);
+
+    Assertions.assertEntityModel(model, dto);
+  }
+}

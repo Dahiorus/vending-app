@@ -6,8 +6,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import java.util.Optional;
 
 import org.apache.logging.log4j.Logger;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 
@@ -20,12 +18,6 @@ import me.dahiorus.project.vending.web.api.impl.ReportRestController;
 @Component
 public class ReportDtoModelAssembler extends DtoModelAssembler<ReportDTO>
 {
-  @Override
-  public void addLinks(final CollectionModel<EntityModel<ReportDTO>> resources)
-  {
-    // empty method
-  }
-
   @Override
   public Logger getLogger()
   {
