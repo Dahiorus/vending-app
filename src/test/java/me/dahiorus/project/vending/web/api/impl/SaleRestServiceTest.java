@@ -1,0 +1,89 @@
+package me.dahiorus.project.vending.web.api.impl;
+
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.UUID;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.hateoas.MediaTypes;
+
+import me.dahiorus.project.vending.core.exception.EntityNotFound;
+import me.dahiorus.project.vending.core.exception.ItemMissing;
+import me.dahiorus.project.vending.core.model.Item;
+import me.dahiorus.project.vending.core.model.VendingMachine;
+import me.dahiorus.project.vending.core.model.dto.ItemDTO;
+import me.dahiorus.project.vending.core.model.dto.SaleDTO;
+import me.dahiorus.project.vending.core.service.impl.ItemDtoServiceImpl;
+import me.dahiorus.project.vending.core.service.impl.SaleDtoServiceImpl;
+import me.dahiorus.project.vending.util.ItemBuilder;
+
+@WebMvcTest(SaleRestService.class)
+class SaleRestServiceTest extends RestControllerTest
+{
+  @MockBean
+  SaleDtoServiceImpl saleDtoService;
+
+  @MockBean
+  ItemDtoServiceImpl itemDtoService;
+
+  @Test
+  void purchaseItem() throws Exception
+  {
+    UUID id = UUID.randomUUID(), itemId = UUID.randomUUID();
+    ItemDTO item = ItemBuilder.builder()
+      .id(itemId)
+      .price(2.5)
+      .buildDto();
+    when(itemDtoService.read(itemId)).thenReturn(item);
+    when(saleDtoService.purchaseItem(id, item)).thenReturn(new SaleDTO());
+
+    mockMvc.perform(post("/api/v1/vending-machines/{id}/purchase/{itemId}", id, itemId))
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(MediaTypes.HAL_JSON));
+  }
+
+  @Test
+  void purchaseFromNonExistingMachine() throws Exception
+  {
+    UUID id = UUID.randomUUID(), itemId = UUID.randomUUID();
+    ItemDTO item = ItemBuilder.builder()
+      .id(itemId)
+      .price(2.5)
+      .buildDto();
+    when(itemDtoService.read(itemId)).thenReturn(item);
+    when(saleDtoService.purchaseItem(id, item)).thenThrow(new EntityNotFound(VendingMachine.class, id));
+
+    mockMvc.perform(post("/api/v1/vending-machines/{id}/purchase/{itemId}", id, itemId))
+      .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void purchaseNonExistingItem() throws Exception
+  {
+    UUID id = UUID.randomUUID(), itemId = UUID.randomUUID();
+    when(itemDtoService.read(itemId)).thenThrow(new EntityNotFound(Item.class, itemId));
+
+    mockMvc.perform(post("/api/v1/vending-machines/{id}/purchase/{itemId}", id, itemId))
+      .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void itemMissingFromMachine() throws Exception
+  {
+    UUID id = UUID.randomUUID(), itemId = UUID.randomUUID();
+    ItemDTO item = ItemBuilder.builder()
+      .id(itemId)
+      .price(2.5)
+      .buildDto();
+    when(itemDtoService.read(itemId)).thenReturn(item);
+    when(saleDtoService.purchaseItem(id, item)).thenThrow(new ItemMissing("Exception from test"));
+
+    mockMvc.perform(post("/api/v1/vending-machines/{id}/purchase/{itemId}", id, itemId))
+      .andExpect(status().isBadRequest());
+  }
+}
