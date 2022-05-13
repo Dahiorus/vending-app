@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
 import me.dahiorus.project.vending.core.dao.DAO;
+import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.model.AbstractEntity;
 
 public class AbstractDAO<E extends AbstractEntity> extends SimpleJpaRepository<E, UUID> implements DAO<E>
@@ -24,5 +25,11 @@ public class AbstractDAO<E extends AbstractEntity> extends SimpleJpaRepository<E
   public Class<E> getDomainClass()
   {
     return domainClass;
+  }
+
+  @Override
+  public E read(final UUID id) throws EntityNotFound
+  {
+    return findById(id).orElseThrow(() -> new EntityNotFound(getDomainClass(), id));
   }
 }
