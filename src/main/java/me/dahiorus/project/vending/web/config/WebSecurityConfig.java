@@ -53,34 +53,32 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
   @Override
   protected void configure(final HttpSecurity http) throws Exception
   {
-
-    http
     // @formatter:off
+    http
       .csrf().disable()
       .httpBasic().disable()
       .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+      .and()
+        .logout().disable()
+        // request permissions
+        .authorizeRequests()
+          .mvcMatchers(SecurityConstants.AUTHENTICATE_ENDPOINT, SecurityConstants.REFRESH_TOKEN_ENDPOINT).permitAll()
+          .antMatchers(HttpMethod.GET, "/api/v1/vending-machines/**", "/api/v1/items/{.+}/**").permitAll()
+          .antMatchers(HttpMethod.POST, "/api/v1/vending-machines/{.+}/purchase/**").permitAll()
+          .antMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+          .mvcMatchers(SecurityConstants.REGISTER_ENDPOINT).anonymous()
+          .antMatchers("/api/v1/me/**").authenticated()
+          .anyRequest().hasAuthority("ROLE_ADMIN")
+      .and()
+        // exception handling
+        .exceptionHandling()
+          .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+          .accessDeniedHandler(restAccessDeniedHandler())
+      .and()
+        // request filters
+        .addFilter(new JwtAuthenticationFilter(authenticationManagerBean(), jwtService))
+        .addFilterBefore(new JwtRequestFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
     // @formatter:on
-      .and()
-      // request permissions
-      // @formatter:off
-      .authorizeRequests()
-      .mvcMatchers(SecurityConstants.REGISTER_ENDPOINT).anonymous()
-      .mvcMatchers(SecurityConstants.AUTHENTICATE_ENDPOINT, SecurityConstants.REFRESH_TOKEN_ENDPOINT).permitAll()
-      .antMatchers(HttpMethod.GET, "/api/v1/vending-machines/**", "/api/v1/items/{.+}/**").permitAll()
-      .antMatchers(HttpMethod.POST, "/api/v1/vending-machines/{.+}/purchase/**").permitAll()
-      .antMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-      .antMatchers("/api/v1/me/**").authenticated()
-      .anyRequest().hasAuthority("ROLE_ADMIN")
-      // @formatter:on
-      .and()
-      // exception handling
-      .exceptionHandling()
-      .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-      .accessDeniedHandler(restAccessDeniedHandler())
-      .and()
-      // request filters
-      .addFilter(new JwtAuthenticationFilter(authenticationManagerBean(), jwtService))
-      .addFilterBefore(new JwtRequestFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
   }
 
   @Bean
