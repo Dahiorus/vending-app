@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,7 @@ public class StockRestService implements AppWebService
   private final RepresentationModelAssembler<StockDTO, EntityModel<StockDTO>> stockModelAssembler;
 
   @Operation(description = "Get the stocks of a vending machine")
+  @ApiResponse(responseCode = "200", description = "Stocks found")
   @GetMapping("/stocks")
   public ResponseEntity<CollectionModel<EntityModel<StockDTO>>> getStocks(@PathVariable final UUID id)
       throws EntityNotFound
@@ -53,6 +55,7 @@ public class StockRestService implements AppWebService
   }
 
   @Operation(description = "Provision a stock of one item to a vending machine")
+  @ApiResponse(responseCode = "200", description = "Stock provisioned")
   @PostMapping("/provision/{itemId}")
   public ResponseEntity<CollectionModel<EntityModel<StockDTO>>> provisionStock(@PathVariable("id") final UUID id,
       @PathVariable("itemId") final UUID itemId,
