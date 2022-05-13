@@ -15,7 +15,7 @@ import lombok.ToString;
 import me.dahiorus.project.vending.core.model.AppUser;
 
 @EqualsAndHashCode(callSuper = true)
-@ToString
+@ToString(callSuper = true, exclude = { "password" })
 public class UserDTO extends AbstractDTO<AppUser>
 {
   @Getter
