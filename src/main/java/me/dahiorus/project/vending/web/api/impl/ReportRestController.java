@@ -1,5 +1,7 @@
 package me.dahiorus.project.vending.web.api.impl;
 
+import static me.dahiorus.project.vending.web.api.response.ResponseUtils.buildLocation;
+import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -22,7 +24,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -65,15 +66,11 @@ public class ReportRestController
   public ResponseEntity<EntityModel<ReportDTO>> report(@PathVariable final UUID id) throws EntityNotFound
   {
     ReportDTO report = dtoService.report(id);
-
-    URI location = MvcUriComponentsBuilder.fromMethodName(ReportRestController.class, "read", report.getId())
-      .build()
-      .toUri();
+    URI location = buildLocation(report, ReportRestController.class);
 
     log.info("Created report of vending machine {}: {}", id, location);
 
-    return ResponseEntity.created(location)
-      .body(modelAssembler.toModel(report));
+    return created(location).body(modelAssembler.toModel(report));
   }
 
   @Operation(description = "Get a page of reports")

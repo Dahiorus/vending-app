@@ -1,6 +1,7 @@
 package me.dahiorus.project.vending.web.api.impl;
 
 import static me.dahiorus.project.vending.web.api.request.JsonPatchHandler.applyPatch;
+import static me.dahiorus.project.vending.web.api.response.ResponseUtils.buildLocation;
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.http.ResponseEntity.ok;
@@ -26,7 +27,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchOperation;
@@ -72,6 +72,7 @@ public abstract class RestControllerImpl<D extends AbstractDTO<?>, S extends Dto
     return ok(pageModelAssembler.toModel(page, modelAssembler));
   }
 
+  @SuppressWarnings("unchecked")
   @Operation(description = "Create a new entity")
   @ApiResponse(responseCode = "201", description = "Entity created")
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -81,9 +82,7 @@ public abstract class RestControllerImpl<D extends AbstractDTO<?>, S extends Dto
     getLogger().debug("Creating a new entity: {}", dto);
 
     D createdEntity = dtoService.create(dto);
-    URI location = MvcUriComponentsBuilder.fromMethodName(getClass(), "read", createdEntity.getId())
-      .build()
-      .toUri();
+    URI location = buildLocation(createdEntity, getClass());
 
     getLogger().info("Created entity: {}", location);
 
