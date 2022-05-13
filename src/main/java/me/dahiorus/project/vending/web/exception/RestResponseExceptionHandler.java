@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.core.exception.AppRuntimeException;
@@ -19,13 +18,13 @@ import me.dahiorus.project.vending.core.exception.UserNotAuthenticated;
 import me.dahiorus.project.vending.core.exception.ValidationException;
 
 @RestControllerAdvice(basePackages = "me.dahiorus.project.vending.web")
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 @Log4j2
 public class RestResponseExceptionHandler
 {
   @ExceptionHandler(EntityNotFound.class)
   @ResponseStatus(code = HttpStatus.NOT_FOUND)
-  public static Object handleEntityNotFound(final EntityNotFound e)
+  public Object handleEntityNotFound(final EntityNotFound e)
   {
     log.warn(e.getMessage());
 
@@ -34,7 +33,7 @@ public class RestResponseExceptionHandler
 
   @ExceptionHandler(ValidationException.class)
   @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-  public static Object handleValidationException(final ValidationException e)
+  public Object handleValidationException(final ValidationException e)
   {
     log.error(e.getMessage());
 
@@ -49,7 +48,7 @@ public class RestResponseExceptionHandler
 
   @ExceptionHandler(ItemMissing.class)
   @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-  public static Object handleItemMissing(final ItemMissing e)
+  public Object handleItemMissing(final ItemMissing e)
   {
     log.error(e.getMessage());
 
@@ -58,7 +57,7 @@ public class RestResponseExceptionHandler
 
   @ExceptionHandler(UserNotAuthenticated.class)
   @ResponseStatus(code = HttpStatus.UNAUTHORIZED)
-  public static Object handleUserNotAuthenticated(final UserNotAuthenticated e)
+  public Object handleUserNotAuthenticated(final UserNotAuthenticated e)
   {
     log.warn("User not authenticated");
 
@@ -67,7 +66,7 @@ public class RestResponseExceptionHandler
 
   @ExceptionHandler({ AppRuntimeException.class, TokenException.class })
   @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
-  public static Object handleUnexpectedError(final Exception e)
+  public Object handleUnexpectedError(final Exception e)
   {
     log.error(e);
 
