@@ -10,12 +10,15 @@ import java.util.Optional;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.hateoas.Link;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.core.exception.AppException;
 import me.dahiorus.project.vending.core.exception.UserNotAuthenticated;
+import me.dahiorus.project.vending.core.model.dto.EditPasswordDTO;
 import me.dahiorus.project.vending.core.model.dto.UserDTO;
 import me.dahiorus.project.vending.web.api.impl.SelfServiceRestController;
 import me.dahiorus.project.vending.web.api.impl.UserRestController;
@@ -48,13 +51,16 @@ public class UserDtoModelAssembler extends DtoModelAssembler<UserDTO>
 
     try
     {
-      UserDTO authenticatedUser = authenticationFacade.getAuthenticatedUser();
+      Authentication authentication = SecurityContextHolder.getContext()
+        .getAuthentication();
+      UserDTO authenticatedUser = authenticationFacade.getAuthenticatedUser(authentication);
       if (content.equals(authenticatedUser))
       {
-        Link selfServiceLink = linkTo(methodOn(SelfServiceRestController.class).get()).withRel("me:get");
-        Link updatePassword = linkTo(methodOn(SelfServiceRestController.class).updatePassword(null))
-          .withRel("me:update-password");
-        Link pictureLink = linkTo(methodOn(SelfServiceRestController.class).getPicture()).withRel("me:picture");
+        Link selfServiceLink = linkTo(methodOn(SelfServiceRestController.class).get(null)).withRel("me:get");
+        Link updatePassword = linkTo(
+            methodOn(SelfServiceRestController.class).updatePassword(null, new EditPasswordDTO()))
+              .withRel("me:update-password");
+        Link pictureLink = linkTo(methodOn(SelfServiceRestController.class).getPicture(null)).withRel("me:picture");
         links.addAll(List.of(selfServiceLink, updatePassword, pictureLink));
       }
     }

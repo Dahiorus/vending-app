@@ -1,7 +1,6 @@
 package me.dahiorus.project.vending.web.security.impl;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -20,12 +19,14 @@ public class AuthenticationFacadeImpl implements AuthenticationFacade
   private final UserDtoService userDtoService;
 
   @Override
-  public UserDTO getAuthenticatedUser() throws UserNotAuthenticated
+  public UserDTO getAuthenticatedUser(final Authentication authentication) throws UserNotAuthenticated
   {
     log.debug("Get the authenticated user");
 
-    Authentication authentication = SecurityContextHolder.getContext()
-      .getAuthentication();
+    if (authentication == null)
+    {
+      throw userNotAuthenticated();
+    }
 
     try
     {
@@ -33,7 +34,12 @@ public class AuthenticationFacadeImpl implements AuthenticationFacade
     }
     catch (EntityNotFound e)
     {
-      throw new UserNotAuthenticated("Unable to get an authenticated user");
+      throw userNotAuthenticated();
     }
+  }
+
+  private static UserNotAuthenticated userNotAuthenticated()
+  {
+    return new UserNotAuthenticated("Unable to get an authenticated user");
   }
 }
