@@ -1,6 +1,6 @@
 package me.dahiorus.project.vending.core.service.validation.impl;
 
-import static com.dahiorus.project.vending.util.TestUtils.assertHasExactlyFieldErrors;
+import static me.dahiorus.project.vending.util.TestUtils.assertHasExactlyFieldErrors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;

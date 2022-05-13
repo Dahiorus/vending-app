@@ -1,7 +1,7 @@
 package me.dahiorus.project.vending.core.service.impl;
 
-import static com.dahiorus.project.vending.util.TestUtils.successResults;
 import static me.dahiorus.project.vending.core.service.validation.FieldValidationError.fieldError;
+import static me.dahiorus.project.vending.util.TestUtils.successResults;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNoException;
@@ -25,8 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.dahiorus.project.vending.util.UserBuilder;
-
 import me.dahiorus.project.vending.core.dao.BinaryDataDAO;
 import me.dahiorus.project.vending.core.dao.UserDAO;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
@@ -40,6 +38,7 @@ import me.dahiorus.project.vending.core.service.validation.FieldValidationError;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 import me.dahiorus.project.vending.core.service.validation.impl.PasswordValidatorImpl;
 import me.dahiorus.project.vending.core.service.validation.impl.UserDtoValidator;
+import me.dahiorus.project.vending.util.UserBuilder;
 
 @ExtendWith(MockitoExtension.class)
 class UserDtoServiceImplTest

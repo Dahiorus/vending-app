@@ -22,8 +22,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dahiorus.project.vending.util.VendingMachineBuilder;
-
 import me.dahiorus.project.vending.core.dao.ReportDAO;
 import me.dahiorus.project.vending.core.dao.VendingMachineDAO;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
@@ -37,6 +35,7 @@ import me.dahiorus.project.vending.core.model.Stock;
 import me.dahiorus.project.vending.core.model.VendingMachine;
 import me.dahiorus.project.vending.core.model.WorkingStatus;
 import me.dahiorus.project.vending.core.model.dto.ReportDTO;
+import me.dahiorus.project.vending.util.VendingMachineBuilder;
 
 @ExtendWith(MockitoExtension.class)
 class ReportDtoServiceImplTest
@@ -47,7 +46,7 @@ class ReportDtoServiceImplTest
   @Mock
   VendingMachineDAO vendingMachineDao;
 
-  ReportDtoServiceImpl controller;
+  ReportDtoServiceImpl dtoService;
 
   @Captor
   ArgumentCaptor<Report> reportArg;
@@ -56,20 +55,20 @@ class ReportDtoServiceImplTest
   void setUp()
   {
     when(dao.getDomainClass()).thenReturn(Report.class);
-    controller = new ReportDtoServiceImpl(dao, new DtoMapperImpl(), vendingMachineDao);
+    dtoService = new ReportDtoServiceImpl(dao, new DtoMapperImpl(), vendingMachineDao);
   }
 
   @Test
   void createIsUnsupported()
   {
-    assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> controller.create(new ReportDTO()));
+    assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> dtoService.create(new ReportDTO()));
   }
 
   @Test
   void updateIsUnsupported()
   {
     assertThatExceptionOfType(UnsupportedOperationException.class)
-      .isThrownBy(() -> controller.update(UUID.randomUUID(), new ReportDTO()));
+      .isThrownBy(() -> dtoService.update(UUID.randomUUID(), new ReportDTO()));
   }
 
   @Nested
@@ -81,7 +80,7 @@ class ReportDtoServiceImplTest
       UUID id = UUID.randomUUID();
       when(vendingMachineDao.read(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
 
-      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> controller.report(id));
+      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.report(id));
       verify(dao, never()).save(any());
     }
 
@@ -93,7 +92,7 @@ class ReportDtoServiceImplTest
       when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
       mockSaveReport();
 
-      ReportDTO report = controller.report(machine.getId());
+      ReportDTO report = dtoService.report(machine.getId());
 
       assertReportHasMachineInfo(report, machine);
     }
@@ -116,7 +115,7 @@ class ReportDtoServiceImplTest
       when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
       mockSaveReport();
 
-      ReportDTO report = controller.report(machine.getId());
+      ReportDTO report = dtoService.report(machine.getId());
 
       assertAll(
           () -> assertReportHasMachineInfo(report, machine),
@@ -140,7 +139,7 @@ class ReportDtoServiceImplTest
       when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
       mockSaveReport();
 
-      ReportDTO report = controller.report(machine.getId());
+      ReportDTO report = dtoService.report(machine.getId());
 
       assertAll(() -> assertReportHasMachineInfo(report, machine),
           () -> assertThat(report.getTotalSaleAmount()).isEqualTo(sale1.getAmount() + sale2.getAmount()));
@@ -168,7 +167,7 @@ class ReportDtoServiceImplTest
       });
       mockSaveReport();
 
-      ReportDTO report = controller.report(machine.getId());
+      ReportDTO report = dtoService.report(machine.getId());
 
       assertAll(() -> assertReportHasMachineInfo(report, machine),
           () -> assertThat(report.getTotalSaleAmount()).isEqualTo(sale2.getAmount()));

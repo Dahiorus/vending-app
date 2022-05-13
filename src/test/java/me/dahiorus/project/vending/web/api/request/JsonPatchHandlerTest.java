@@ -22,7 +22,7 @@ import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
 
 class JsonPatchHandlerTest
 {
-  static ObjectMapper MAPPER = new ObjectMapper().registerModule(new JavaTimeModule());
+  static ObjectMapper MAPPER = new ObjectMapper();
   static
   {
     MAPPER.registerModule(new JavaTimeModule());

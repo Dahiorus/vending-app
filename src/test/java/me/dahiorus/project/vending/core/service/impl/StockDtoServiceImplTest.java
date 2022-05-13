@@ -22,9 +22,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dahiorus.project.vending.util.ItemBuilder;
-import com.dahiorus.project.vending.util.VendingMachineBuilder;
-
 import me.dahiorus.project.vending.core.dao.StockDAO;
 import me.dahiorus.project.vending.core.dao.VendingMachineDAO;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
@@ -36,6 +33,8 @@ import me.dahiorus.project.vending.core.model.VendingMachine;
 import me.dahiorus.project.vending.core.model.dto.ItemDTO;
 import me.dahiorus.project.vending.core.model.dto.StockDTO;
 import me.dahiorus.project.vending.core.service.validation.impl.StockValidatorImpl;
+import me.dahiorus.project.vending.util.ItemBuilder;
+import me.dahiorus.project.vending.util.VendingMachineBuilder;
 
 @ExtendWith(MockitoExtension.class)
 class StockDtoServiceImplTest

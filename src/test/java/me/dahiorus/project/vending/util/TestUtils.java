@@ -1,16 +1,25 @@
-package com.dahiorus.project.vending.util;
+package me.dahiorus.project.vending.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import io.swagger.v3.core.util.Json;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import me.dahiorus.project.vending.core.model.AbstractEntity;
 import me.dahiorus.project.vending.core.service.validation.FieldValidationError;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TestUtils
 {
+  public static String jsonValue(final Object object) throws Exception
+  {
+    return Json.pretty(object);
+  }
+
   public static <T extends AbstractEntity> Specification<T> anySpec()
   {
     return any();
@@ -32,10 +41,5 @@ public class TestUtils
     assertThat(results.getFieldErrors(field)).isNotEmpty()
       .extracting(FieldValidationError::getCode)
       .containsExactlyInAnyOrder(codes);
-  }
-
-  private TestUtils()
-  {
-    // util class
   }
 }

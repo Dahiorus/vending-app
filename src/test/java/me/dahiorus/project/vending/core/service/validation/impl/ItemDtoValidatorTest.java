@@ -1,7 +1,7 @@
 package me.dahiorus.project.vending.core.service.validation.impl;
 
-import static com.dahiorus.project.vending.util.TestUtils.anySpec;
-import static com.dahiorus.project.vending.util.TestUtils.assertHasExactlyFieldErrors;
+import static me.dahiorus.project.vending.util.TestUtils.anySpec;
+import static me.dahiorus.project.vending.util.TestUtils.assertHasExactlyFieldErrors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -18,13 +18,12 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dahiorus.project.vending.util.ItemBuilder;
-
 import me.dahiorus.project.vending.core.dao.ItemDAO;
 import me.dahiorus.project.vending.core.model.Item;
 import me.dahiorus.project.vending.core.model.ItemType;
 import me.dahiorus.project.vending.core.model.dto.ItemDTO;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
+import me.dahiorus.project.vending.util.ItemBuilder;
 
 @ExtendWith(MockitoExtension.class)
 class ItemDtoValidatorTest

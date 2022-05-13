@@ -16,8 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dahiorus.project.vending.util.VendingMachineBuilder;
-
 import me.dahiorus.project.vending.core.dao.VendingMachineDAO;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.model.CardSystemStatus;
@@ -27,6 +25,7 @@ import me.dahiorus.project.vending.core.model.VendingMachine;
 import me.dahiorus.project.vending.core.model.WorkingStatus;
 import me.dahiorus.project.vending.core.model.dto.VendingMachineDTO;
 import me.dahiorus.project.vending.core.service.validation.impl.VendingMachineDtoValidator;
+import me.dahiorus.project.vending.util.VendingMachineBuilder;
 
 @ExtendWith(MockitoExtension.class)
 class VendingMachineDtoServiceImplTest

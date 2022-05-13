@@ -1,5 +1,6 @@
-package com.dahiorus.project.vending.util;
+package me.dahiorus.project.vending.util;
 
+import java.util.List;
 import java.util.UUID;
 
 import me.dahiorus.project.vending.core.model.AppUser;
@@ -57,6 +58,12 @@ public class UserBuilder
     binaryData.setContent(new byte[0]);
     user.setPicture(binaryData);
 
+    return this;
+  }
+
+  public UserBuilder roles(final List<String> roles)
+  {
+    user.setRoles(roles);
     return this;
   }
 

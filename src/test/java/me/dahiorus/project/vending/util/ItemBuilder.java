@@ -1,4 +1,4 @@
-package com.dahiorus.project.vending.util;
+package me.dahiorus.project.vending.util;
 
 import java.util.UUID;
 

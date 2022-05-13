@@ -16,9 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dahiorus.project.vending.util.ItemBuilder;
-import com.dahiorus.project.vending.util.VendingMachineBuilder;
-
 import me.dahiorus.project.vending.core.dao.SaleDAO;
 import me.dahiorus.project.vending.core.dao.StockDAO;
 import me.dahiorus.project.vending.core.dao.VendingMachineDAO;
@@ -30,6 +27,8 @@ import me.dahiorus.project.vending.core.model.Stock;
 import me.dahiorus.project.vending.core.model.VendingMachine;
 import me.dahiorus.project.vending.core.model.dto.ItemDTO;
 import me.dahiorus.project.vending.core.model.dto.SaleDTO;
+import me.dahiorus.project.vending.util.ItemBuilder;
+import me.dahiorus.project.vending.util.VendingMachineBuilder;
 
 @ExtendWith(MockitoExtension.class)
 class SaleDtoServiceImplTest

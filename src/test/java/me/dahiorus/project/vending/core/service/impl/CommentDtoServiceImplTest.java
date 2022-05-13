@@ -1,10 +1,11 @@
 package me.dahiorus.project.vending.core.service.impl;
 
-import static com.dahiorus.project.vending.util.TestUtils.successResults;
 import static me.dahiorus.project.vending.core.service.validation.FieldValidationError.fieldError;
+import static me.dahiorus.project.vending.util.TestUtils.successResults;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNoException;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -20,8 +21,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dahiorus.project.vending.util.VendingMachineBuilder;
-
 import me.dahiorus.project.vending.core.dao.CommentDAO;
 import me.dahiorus.project.vending.core.dao.VendingMachineDAO;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
@@ -32,6 +31,7 @@ import me.dahiorus.project.vending.core.model.VendingMachine;
 import me.dahiorus.project.vending.core.model.dto.CommentDTO;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 import me.dahiorus.project.vending.core.service.validation.impl.CommentDtoValidator;
+import me.dahiorus.project.vending.util.VendingMachineBuilder;
 
 @ExtendWith(MockitoExtension.class)
 class CommentDtoServiceImplTest
@@ -67,6 +67,7 @@ class CommentDtoServiceImplTest
       comment.setRate(5);
       comment.setContent("This is a comment");
       when(commentDtoValidator.validate(comment)).thenReturn(successResults());
+      when(dao.save(any())).then(returnsFirstArg());
 
       assertThatNoException().isThrownBy(() -> dtoService.comment(machine.getId(), comment));
       assertThat(machine.getComments()).isNotEmpty();

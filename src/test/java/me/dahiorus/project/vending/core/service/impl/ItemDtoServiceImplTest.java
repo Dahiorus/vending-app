@@ -1,7 +1,7 @@
 package me.dahiorus.project.vending.core.service.impl;
 
-import static com.dahiorus.project.vending.util.TestUtils.successResults;
 import static me.dahiorus.project.vending.core.service.validation.FieldValidationError.emptyOrNullValue;
+import static me.dahiorus.project.vending.util.TestUtils.successResults;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNoException;
@@ -32,8 +32,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import com.dahiorus.project.vending.util.ItemBuilder;
-
 import me.dahiorus.project.vending.core.dao.BinaryDataDAO;
 import me.dahiorus.project.vending.core.dao.ItemDAO;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
@@ -46,6 +44,7 @@ import me.dahiorus.project.vending.core.model.dto.BinaryDataDTO;
 import me.dahiorus.project.vending.core.model.dto.ItemDTO;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 import me.dahiorus.project.vending.core.service.validation.impl.ItemDtoValidator;
+import me.dahiorus.project.vending.util.ItemBuilder;
 
 @ExtendWith(MockitoExtension.class)
 class ItemDtoServiceImplTest
@@ -59,13 +58,13 @@ class ItemDtoServiceImplTest
   @Mock
   BinaryDataDAO binaryDataDao;
 
-  ItemDtoServiceImpl controller;
+  ItemDtoServiceImpl dtoService;
 
   @BeforeEach
   void setUp()
   {
     when(dao.getDomainClass()).thenReturn(Item.class);
-    controller = new ItemDtoServiceImpl(dao, new DtoMapperImpl(), dtoValidator, binaryDataDao);
+    dtoService = new ItemDtoServiceImpl(dao, new DtoMapperImpl(), dtoValidator, binaryDataDao);
   }
 
   @Nested
@@ -83,7 +82,7 @@ class ItemDtoServiceImplTest
         return item;
       });
 
-      ItemDTO createdDto = controller.create(dto);
+      ItemDTO createdDto = dtoService.create(dto);
 
       assertAll(() -> assertThat(createdDto.getId()).isNotNull(),
           () -> assertThat(createdDto.getName()).isEqualTo(dto.getName()),
@@ -102,7 +101,7 @@ class ItemDtoServiceImplTest
         return results;
       });
 
-      assertThatExceptionOfType(ValidationException.class).isThrownBy(() -> controller.create(dto));
+      assertThatExceptionOfType(ValidationException.class).isThrownBy(() -> dtoService.create(dto));
       verify(dao, never()).save(any());
     }
   }
@@ -115,7 +114,7 @@ class ItemDtoServiceImplTest
     {
       Item entity = mockRead(UUID.randomUUID());
 
-      ItemDTO dto = controller.read(entity.getId());
+      ItemDTO dto = dtoService.read(entity.getId());
 
       assertAll(() -> assertThat(dto.getId()).isEqualTo(entity.getId()),
           () -> assertThat(dto.getName()).isEqualTo(entity.getName()),
@@ -129,7 +128,7 @@ class ItemDtoServiceImplTest
       UUID id = UUID.randomUUID();
       when(dao.read(id)).thenThrow(new EntityNotFound(Item.class, id));
 
-      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> controller.read(id));
+      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.read(id));
     }
   }
 
@@ -146,7 +145,7 @@ class ItemDtoServiceImplTest
 
       when(dao.save(any())).then(invocation -> invocation.getArgument(0));
 
-      ItemDTO updatedDto = controller.update(entity.getId(), dto);
+      ItemDTO updatedDto = dtoService.update(entity.getId(), dto);
 
       assertAll(() -> assertThat(updatedDto.getId()).isEqualTo(entity.getId()),
           () -> assertThat(updatedDto.getName()).isEqualTo(dto.getName()),
@@ -167,7 +166,7 @@ class ItemDtoServiceImplTest
         return results;
       });
 
-      assertThatExceptionOfType(ValidationException.class).isThrownBy(() -> controller.update(entity.getId(), dto));
+      assertThatExceptionOfType(ValidationException.class).isThrownBy(() -> dtoService.update(entity.getId(), dto));
       verify(dao, never()).save(any());
     }
 
@@ -177,7 +176,7 @@ class ItemDtoServiceImplTest
       UUID id = UUID.randomUUID();
       when(dao.read(id)).thenThrow(new EntityNotFound(Item.class, id));
 
-      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> controller.update(id, new ItemDTO()));
+      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.update(id, new ItemDTO()));
       verify(dtoValidator, never()).validate(any());
       verify(dao, never()).save(any());
     }
@@ -191,7 +190,7 @@ class ItemDtoServiceImplTest
     {
       Item entity = mockRead(UUID.randomUUID());
 
-      assertThatNoException().isThrownBy(() -> controller.delete(entity.getId()));
+      assertThatNoException().isThrownBy(() -> dtoService.delete(entity.getId()));
       verify(dao).delete(entity);
     }
 
@@ -201,7 +200,7 @@ class ItemDtoServiceImplTest
       UUID id = UUID.randomUUID();
       when(dao.read(id)).thenThrow(new EntityNotFound(Item.class, id));
 
-      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> controller.delete(id));
+      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.delete(id));
       verify(dao, never()).delete(any());
     }
   }
@@ -232,7 +231,7 @@ class ItemDtoServiceImplTest
     {
       when(dao.findAll(pageable)).thenReturn(new PageImpl<>(entities, pageable, 50));
 
-      Page<ItemDTO> page = controller.list(pageable, null, null);
+      Page<ItemDTO> page = dtoService.list(pageable, null, null);
 
       assertAll(
           () -> assertThat(page.getContent()).hasSameSizeAs(entities),
@@ -246,7 +245,7 @@ class ItemDtoServiceImplTest
         .thenReturn(new PageImpl<>(entities, pageable, 50));
 
       ItemDTO criteria = buildDto("item", ItemType.FOOD, null);
-      controller.list(pageable, criteria, null);
+      dtoService.list(pageable, criteria, null);
 
       Example<Item> example = exampleArg.getValue();
       assertAll(() -> assertThat(example.getMatcher()).isEqualTo(ExampleMatcher.matching()),
@@ -265,7 +264,7 @@ class ItemDtoServiceImplTest
       ExampleMatcher exampleMatcher = ExampleMatcher.matchingAny()
         .withIgnoreCase()
         .withIgnoreNullValues();
-      controller.list(pageable, criteria, exampleMatcher);
+      dtoService.list(pageable, criteria, exampleMatcher);
 
       Example<Item> example = exampleArg.getValue();
       assertAll(() -> assertThat(example.getMatcher()).isEqualTo(exampleMatcher),
@@ -285,7 +284,7 @@ class ItemDtoServiceImplTest
       entity.setId(UUID.randomUUID());
       when(dao.findById(entity.getId())).thenReturn(Optional.of(entity));
 
-      Optional<ItemDTO> dtoOpt = controller.findById(entity.getId());
+      Optional<ItemDTO> dtoOpt = dtoService.findById(entity.getId());
 
       assertThat(dtoOpt).isNotEmpty()
         .hasValueSatisfying(dto -> {
@@ -302,7 +301,7 @@ class ItemDtoServiceImplTest
       UUID id = UUID.randomUUID();
       when(dao.findById(id)).thenReturn(Optional.empty());
 
-      Optional<ItemDTO> dtoOpt = controller.findById(id);
+      Optional<ItemDTO> dtoOpt = dtoService.findById(id);
 
       assertThat(dtoOpt).isEmpty();
     }
@@ -319,7 +318,7 @@ class ItemDtoServiceImplTest
       entity.setPicture(new BinaryData());
       when(dao.read(entity.getId())).thenReturn(entity);
 
-      Optional<BinaryDataDTO> image = controller.getImage(entity.getId());
+      Optional<BinaryDataDTO> image = dtoService.getImage(entity.getId());
 
       assertThat(image).isNotEmpty();
     }
@@ -329,7 +328,7 @@ class ItemDtoServiceImplTest
     {
       Item item = mockRead(UUID.randomUUID());
 
-      Optional<BinaryDataDTO> image = controller.getImage(item.getId());
+      Optional<BinaryDataDTO> image = dtoService.getImage(item.getId());
 
       assertThat(image).isEmpty();
     }
@@ -340,7 +339,7 @@ class ItemDtoServiceImplTest
       UUID id = UUID.randomUUID();
       when(dao.read(id)).thenThrow(new EntityNotFound(Item.class, id));
 
-      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> controller.getImage(id));
+      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.getImage(id));
     }
   }
 
@@ -360,7 +359,7 @@ class ItemDtoServiceImplTest
       when(dao.save(item)).thenReturn(item);
 
       BinaryDataDTO dto = buildBinary("picture.jpg", "image/jpg");
-      ItemDTO updatedItem = controller.uploadImage(item.getId(), dto);
+      ItemDTO updatedItem = dtoService.uploadImage(item.getId(), dto);
 
       assertThat(updatedItem.getPictureId()).isEqualTo(item.getPicture()
         .getId());
@@ -372,7 +371,7 @@ class ItemDtoServiceImplTest
       UUID id = UUID.randomUUID();
       when(dao.read(id)).thenThrow(new EntityNotFound(AppUser.class, id));
 
-      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> controller.uploadImage(id, new BinaryDataDTO()));
+      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.uploadImage(id, new BinaryDataDTO()));
       verify(binaryDataDao, never()).save(any());
       verify(dao, never()).save(any());
     }

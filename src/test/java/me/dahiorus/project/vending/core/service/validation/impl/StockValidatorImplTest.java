@@ -5,14 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.dahiorus.project.vending.util.ItemBuilder;
-import com.dahiorus.project.vending.util.VendingMachineBuilder;
-
 import me.dahiorus.project.vending.core.model.Item;
 import me.dahiorus.project.vending.core.model.ItemType;
 import me.dahiorus.project.vending.core.model.VendingMachine;
 import me.dahiorus.project.vending.core.service.validation.ValidationError;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
+import me.dahiorus.project.vending.util.ItemBuilder;
+import me.dahiorus.project.vending.util.VendingMachineBuilder;
 
 class StockValidatorImplTest
 {
