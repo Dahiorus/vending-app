@@ -44,6 +44,7 @@ public class JwtRequestFilter extends OncePerRequestFilter
     // get the header Authorization to get the JWT token
     String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
+    // not authenticated, the request is not processed
     if (!StringUtils.startsWith(authorizationHeader, AUTHORIZATION_HEADER_PREFIX))
     {
       log.debug("No header Authorization found with a Bearer token in the request");
@@ -51,7 +52,7 @@ public class JwtRequestFilter extends OncePerRequestFilter
       return;
     }
 
-    log.debug("Get the user from the request");
+    log.debug("Resolving the authenticated user from the request");
 
     // parse the JWT token
     String token = StringUtils.removeStart(authorizationHeader, AUTHORIZATION_HEADER_PREFIX);
