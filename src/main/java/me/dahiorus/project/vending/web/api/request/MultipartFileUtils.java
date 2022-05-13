@@ -24,7 +24,7 @@ import me.dahiorus.project.vending.core.service.validation.ValidationError;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class MultiPartFileUtils
+public class MultipartFileUtils
 {
   public static BinaryDataDTO convert(final MultipartFile file) throws IOException
   {
@@ -42,10 +42,10 @@ public class MultiPartFileUtils
     ValidationResults results = new ValidationResults();
 
     String contentType = file.getContentType();
-    if (!StringUtils.startsWith(contentType, "image/"))
+    if (!StringUtils.equalsAny(contentType, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE))
     {
-      results.addError(fieldError(field, ValidationError.getFullCode("image.wring-content-type"),
-          "The file must be an image", contentType));
+      results.addError(fieldError(field, ValidationError.getFullCode("image.wrong-content-type"),
+          "The file must be a JPEG or a PNG", contentType));
     }
 
     return results;

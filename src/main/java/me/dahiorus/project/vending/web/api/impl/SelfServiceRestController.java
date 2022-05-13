@@ -37,7 +37,7 @@ import me.dahiorus.project.vending.core.model.dto.UserDTO;
 import me.dahiorus.project.vending.core.service.UserDtoService;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 import me.dahiorus.project.vending.web.api.AppWebService;
-import me.dahiorus.project.vending.web.api.request.MultiPartFileUtils;
+import me.dahiorus.project.vending.web.api.request.MultipartFileUtils;
 import me.dahiorus.project.vending.web.security.AuthenticationFacade;
 
 @Tag(name = "Self-service", description = "Operation on the authenticated user")
@@ -98,12 +98,12 @@ public class SelfServiceRestController implements AppWebService
   {
     UserDTO authenticatedUser = authenticationFacade.getAuthenticatedUser(authentication);
 
-    ValidationResults validationResults = MultiPartFileUtils.validateImage("file", file);
+    ValidationResults validationResults = MultipartFileUtils.validateImage("file", file);
     validationResults.throwIfError("Unable to upload the given file");
 
     try
     {
-      BinaryDataDTO picture = MultiPartFileUtils.convert(file);
+      BinaryDataDTO picture = MultipartFileUtils.convert(file);
       UserDTO updatedUser = userDtoService.uploadImage(authenticatedUser.getId(), picture);
 
       return ok(userModelAssembler.toModel(updatedUser));
@@ -131,7 +131,7 @@ public class SelfServiceRestController implements AppWebService
 
       log.info("Picture for the authenticated user: {}", picture);
 
-      return MultiPartFileUtils.convertToResponse(picture);
+      return MultipartFileUtils.convertToResponse(picture);
     }
     catch (EntityNotFound e)
     {

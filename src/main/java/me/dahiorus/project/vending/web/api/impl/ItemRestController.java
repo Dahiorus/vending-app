@@ -33,7 +33,7 @@ import me.dahiorus.project.vending.core.model.dto.BinaryDataDTO;
 import me.dahiorus.project.vending.core.model.dto.ItemDTO;
 import me.dahiorus.project.vending.core.service.ItemDtoService;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
-import me.dahiorus.project.vending.web.api.request.MultiPartFileUtils;
+import me.dahiorus.project.vending.web.api.request.MultipartFileUtils;
 
 @SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Item", description = "Operations on Item")
@@ -65,7 +65,7 @@ public class ItemRestController extends RestControllerImpl<ItemDTO, ItemDtoServi
 
     log.info("Picture for item {}: {}", id, picture);
 
-    return MultiPartFileUtils.convertToResponse(picture);
+    return MultipartFileUtils.convertToResponse(picture);
   }
 
   @Operation(description = "Upload a picture to an item")
@@ -74,12 +74,12 @@ public class ItemRestController extends RestControllerImpl<ItemDTO, ItemDtoServi
   public ResponseEntity<EntityModel<ItemDTO>> uploadPicture(@PathVariable final UUID id,
       @RequestParam("file") final MultipartFile file) throws EntityNotFound, ValidationException
   {
-    ValidationResults validationResults = MultiPartFileUtils.validateImage("file", file);
+    ValidationResults validationResults = MultipartFileUtils.validateImage("file", file);
     validationResults.throwIfError("Unable to upload the given file");
 
     try
     {
-      BinaryDataDTO picture = MultiPartFileUtils.convert(file);
+      BinaryDataDTO picture = MultipartFileUtils.convert(file);
       ItemDTO updatedItem = dtoService.uploadImage(id, picture);
 
       return ok(modelAssembler.toModel(updatedItem));
