@@ -24,8 +24,9 @@ public interface CommentDtoService
    *
    * @param id      The ID of the {@link VendingMachineDTO vending machine}
    * @param comment The {@link CommentDTO comment} to add
+   * @return The new comment
    * @throws EntityNotFound      if no vending machine match the ID
    * @throws ValidationException if the comment contains invalid data
    */
-  void comment(UUID id, CommentDTO comment) throws EntityNotFound, ValidationException;
+  CommentDTO comment(UUID id, CommentDTO comment) throws EntityNotFound, ValidationException;
 }

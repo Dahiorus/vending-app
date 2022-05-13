@@ -49,7 +49,7 @@ public class CommentDtoServiceImpl implements CommentDtoService
 
   @Transactional(rollbackFor = { EntityNotFound.class, ValidationException.class })
   @Override
-  public void comment(final UUID id, final CommentDTO comment) throws EntityNotFound, ValidationException
+  public CommentDTO comment(final UUID id, final CommentDTO comment) throws EntityNotFound, ValidationException
   {
     log.traceEntry(() -> id, () -> comment);
 
@@ -60,9 +60,14 @@ public class CommentDtoServiceImpl implements CommentDtoService
 
     Comment commentToAdd = dtoMapper.toEntity(comment, Comment.class);
     machine.addComment(commentToAdd);
-    dao.save(commentToAdd);
+    Comment addedComment = dao.save(commentToAdd);
     vendingMachineDao.save(machine);
 
-    log.info("Comment {} added to vending machine {}", comment, machine.getId());
+    log.info("Comment {} added to vending machine {}", addedComment, machine.getId());
+
+    CommentDTO commentDto = dtoMapper.toDto(addedComment, CommentDTO.class);
+    commentDto.setVendingMachineId(id);
+
+    return commentDto;
   }
 }
