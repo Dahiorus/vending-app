@@ -1,6 +1,5 @@
 package me.dahiorus.project.vending.web.api.impl;
 
-import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.http.ResponseEntity.ok;
 
 import java.util.List;
@@ -53,13 +52,14 @@ public class CommentRestController implements AppWebService
   }
 
   @Operation(description = "Comment a vending machine")
-  @ApiResponse(responseCode = "204", description = "Comment created")
+  @ApiResponse(responseCode = "200", description = "Comment added")
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Void> comment(@PathVariable final UUID id, @RequestBody final CommentDTO comment)
+  public ResponseEntity<EntityModel<CommentDTO>> comment(@PathVariable final UUID id,
+      @RequestBody final CommentDTO comment)
       throws EntityNotFound, ValidationException
   {
-    dtoService.comment(id, comment);
+    CommentDTO addedComment = dtoService.comment(id, comment);
 
-    return noContent().build();
+    return ok(commentModelAssembler.toModel(addedComment));
   }
 }
