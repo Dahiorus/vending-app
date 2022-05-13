@@ -7,7 +7,6 @@ import java.net.URI;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import me.dahiorus.project.vending.core.exception.AppRuntimeException;
 import me.dahiorus.project.vending.core.exception.EntityNotFound;
 import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
 import me.dahiorus.project.vending.web.api.ReadRestAPI;
@@ -23,9 +22,10 @@ public class ResponseUtils
       return fromMethodCall(on(apiClass).read(createdEntity.getId())).build()
         .toUri();
     }
-    catch (EntityNotFound e)
+    catch (EntityNotFound ignore)
     {
-      throw new AppRuntimeException("Unable to build the location URI of " + createdEntity, e);
+      // should not happen
+      return null;
     }
   }
 }
