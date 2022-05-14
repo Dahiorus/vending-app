@@ -34,7 +34,6 @@ import me.dahiorus.project.vending.web.api.model.ProvisionRequest;
 @Log4j2
 @RequiredArgsConstructor
 @RestController
-@SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Stock", description = "Operations on the stocks of a vending machine")
 @RequestMapping(value = "/api/v1/vending-machines/{id}", produces = MediaTypes.HAL_JSON_VALUE)
 public class StockRestService implements AppWebService
@@ -54,6 +53,7 @@ public class StockRestService implements AppWebService
     return ok(stockModelAssembler.toCollectionModel(dtoService.getStocks(id)));
   }
 
+  @SecurityRequirement(name = "bearerAuth")
   @Operation(description = "Provision a stock of one item to a vending machine")
   @ApiResponse(responseCode = "200", description = "Stock provisioned")
   @PostMapping("/provision/{itemId}")
