@@ -130,8 +130,7 @@ class PublicRestControllerTest extends RestControllerTest
       when(jwtService.createAccessToken("user.test", List.of(new SimpleGrantedAuthority("ROLE_USER"))))
         .thenReturn("9874563210");
 
-      RefreshTokenRequest request = new RefreshTokenRequest();
-      request.setToken(refreshToken);
+      RefreshTokenRequest request = new RefreshTokenRequest(refreshToken);
 
       mockMvc.perform(post("/api/v1/authenticate/refresh").contentType(MediaType.APPLICATION_JSON)
         .content(jsonValue(request)))
@@ -145,8 +144,7 @@ class PublicRestControllerTest extends RestControllerTest
       String refreshToken = "123456789";
       when(jwtService.parseToken(refreshToken)).thenThrow(new UnparsableToken("Token unparsable from test"));
 
-      RefreshTokenRequest request = new RefreshTokenRequest();
-      request.setToken(refreshToken);
+      RefreshTokenRequest request = new RefreshTokenRequest(refreshToken);
 
       mockMvc.perform(post("/api/v1/authenticate/refresh").contentType(MediaType.APPLICATION_JSON)
         .content(jsonValue(request)))
@@ -167,8 +165,7 @@ class PublicRestControllerTest extends RestControllerTest
       when(jwtService.createAccessToken("user.test", List.of()))
         .thenThrow(new InvalidTokenCreation("Invalid token creation from test"));
 
-      RefreshTokenRequest request = new RefreshTokenRequest();
-      request.setToken(refreshToken);
+      RefreshTokenRequest request = new RefreshTokenRequest(refreshToken);
 
       mockMvc.perform(post("/api/v1/authenticate/refresh").contentType(MediaType.APPLICATION_JSON)
         .content(jsonValue(request)))
@@ -184,8 +181,7 @@ class PublicRestControllerTest extends RestControllerTest
       when(jwtService.parseToken(refreshToken)).thenReturn(authentication);
       when(userDtoService.getByUsername("user.test")).thenThrow(new EntityNotFound("User not found from test"));
 
-      RefreshTokenRequest request = new RefreshTokenRequest();
-      request.setToken(refreshToken);
+      RefreshTokenRequest request = new RefreshTokenRequest(refreshToken);
 
       mockMvc.perform(post("/api/v1/authenticate/refresh").contentType(MediaType.APPLICATION_JSON)
         .content(jsonValue(request)))

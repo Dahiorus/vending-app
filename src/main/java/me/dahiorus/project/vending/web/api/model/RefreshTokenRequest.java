@@ -1,11 +1,12 @@
 package me.dahiorus.project.vending.web.api.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
-public class RefreshTokenRequest
+public record RefreshTokenRequest(String token)
 {
-  @Getter
-  @Setter
-  private String token;
+  @Override
+  public String toString()
+  {
+    return "RefreshTokenRequest [token=" + StringUtils.abbreviate(token, 10) + "]";
+  }
 }

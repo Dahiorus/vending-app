@@ -88,7 +88,7 @@ public class PublicRestController implements AppWebService
   {
     log.debug("Refreshing the access token of a user");
 
-    Authentication authentication = jwtService.parseToken(request.getToken());
+    Authentication authentication = jwtService.parseToken(request.token());
     String username = (String) authentication.getPrincipal();
     UserDTO user = userDtoService.getByUsername(username);
 
@@ -100,6 +100,6 @@ public class PublicRestController implements AppWebService
 
     log.info("Access token refreshed for the user '{}'", authentication.getPrincipal());
 
-    return ok(new AuthenticateResponse(accessToken, request.getToken()));
+    return ok(new AuthenticateResponse(accessToken, request.token()));
   }
 }

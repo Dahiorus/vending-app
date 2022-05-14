@@ -1,22 +1,13 @@
 package me.dahiorus.project.vending.web.api.model;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
-@NoArgsConstructor
-@AllArgsConstructor
-public class AuthenticateResponse
+public record AuthenticateResponse(String accessToken, String refreshToken)
 {
-  @Schema(description = "Token to use to authorise the user")
-  @Getter
-  @Setter
-  private String accessToken;
-
-  @Schema(description = "Token to use to request a new access token for the user")
-  @Getter
-  @Setter
-  private String refreshToken;
+  @Override
+  public String toString()
+  {
+    return "AuthenticateResponse [accessToken=" + StringUtils.abbreviate(accessToken, 10) + ", refreshToken="
+        + StringUtils.abbreviate(refreshToken, 10) + "]";
+  }
 }

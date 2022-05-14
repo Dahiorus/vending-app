@@ -63,7 +63,7 @@ public class StockRestService implements AppWebService
       throws EntityNotFound, ValidationException
   {
     ItemDTO item = itemDtoService.read(itemId);
-    dtoService.provisionStock(id, item, provisionRequest.getQuantity());
+    dtoService.provisionStock(id, item, provisionRequest.quantity());
 
     log.info("Provisioned stock of {} for vending machine {} with {}", itemId, id, provisionRequest);
 
