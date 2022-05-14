@@ -11,7 +11,7 @@ import lombok.ToString;
 import me.dahiorus.project.vending.core.model.Comment;
 
 @EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
+@ToString(callSuper = true, exclude = "content")
 public class CommentDTO extends AbstractDTO<Comment>
 {
   @Getter

@@ -1,5 +1,7 @@
 package me.dahiorus.project.vending.web.api.request;
 
+import static me.dahiorus.project.vending.util.TestUtils.assertHasExactlyFieldErrors;
+import static me.dahiorus.project.vending.util.TestUtils.assertNoFieldError;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Instant;
@@ -22,7 +24,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import me.dahiorus.project.vending.core.model.dto.BinaryDataDTO;
-import me.dahiorus.project.vending.core.service.validation.FieldValidationError;
 import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 
 class MultipartFileUtilsTest
@@ -51,7 +52,7 @@ class MultipartFileUtilsTest
 
       ValidationResults validationResults = MultipartFileUtils.validateImage("file", file);
 
-      assertThat(validationResults.getFieldErrors("file")).isEmpty();
+      assertNoFieldError(validationResults, "file");
     }
 
     @Test
@@ -61,8 +62,7 @@ class MultipartFileUtilsTest
 
       ValidationResults validationResults = MultipartFileUtils.validateImage("file", file);
 
-      assertThat(validationResults.getFieldErrors("file")).map(FieldValidationError::getCode)
-        .containsExactly("validation.constraints.image.wrong-content-type");
+      assertHasExactlyFieldErrors(validationResults, "file", "validation.constraints.image.wrong-content-type");
     }
   }
 

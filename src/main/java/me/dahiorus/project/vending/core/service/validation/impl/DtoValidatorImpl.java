@@ -1,6 +1,7 @@
 package me.dahiorus.project.vending.core.service.validation.impl;
 
 import static me.dahiorus.project.vending.core.service.validation.FieldValidationError.emptyOrNullValue;
+import static me.dahiorus.project.vending.core.service.validation.FieldValidationError.maxLength;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -45,6 +46,15 @@ public abstract class DtoValidatorImpl<E extends AbstractEntity, D extends Abstr
     if (StringUtils.isBlank(value))
     {
       validationResults.addError(emptyOrNullValue(field));
+    }
+  }
+
+  protected void rejectIfInvalidLength(final String field, final String value, final int maxLength,
+      final ValidationResults validationResults)
+  {
+    if (StringUtils.length(value) > maxLength)
+    {
+      validationResults.addError(maxLength(field, maxLength));
     }
   }
 

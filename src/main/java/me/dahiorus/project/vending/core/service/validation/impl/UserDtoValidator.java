@@ -33,8 +33,11 @@ public class UserDtoValidator extends DtoValidatorImpl<AppUser, UserDTO, UserDAO
   protected void doValidate(final UserDTO dto, final ValidationResults results)
   {
     rejectIfBlank(AppUser_.EMAIL, dto.getEmail(), results);
+    rejectIfInvalidLength(AppUser_.EMAIL, dto.getEmail(), 255, results);
     rejectIfBlank(AppUser_.FIRST_NAME, dto.getFirstName(), results);
+    rejectIfInvalidLength(AppUser_.FIRST_NAME, dto.getFirstName(), 255, results);
     rejectIfBlank(AppUser_.LAST_NAME, dto.getLastName(), results);
+    rejectIfInvalidLength(AppUser_.LAST_NAME, dto.getLastName(), 255, results);
 
     if (!results.hasFieldError(AppUser_.EMAIL))
     {

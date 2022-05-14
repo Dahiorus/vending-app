@@ -9,7 +9,7 @@ public class FieldValidationError extends ValidationError
   private static final long serialVersionUID = -1907740491728777643L;
 
   @Getter
-  private String field;
+  private final String field;
 
   private FieldValidationError(final String field, final String code, final String defaultMessage,
       final Object[] errorArgs)
@@ -27,12 +27,19 @@ public class FieldValidationError extends ValidationError
   public static FieldValidationError emptyOrNullValue(final String field)
   {
     CommonError emptyValue = CommonError.EMPTY_VALUE;
-    return fieldError(field, emptyValue.code, emptyValue.getDefaultMessageFor(field));
+    return fieldError(field, emptyValue.code, field + " is mandatory");
   }
 
   public static FieldValidationError notUniqueValue(final String field, final Object value)
   {
     CommonError notUnique = CommonError.NOT_UNIQUE;
-    return fieldError(field, notUnique.code, notUnique.getDefaultMessageFor(field), value);
+    return fieldError(field, notUnique.code, field + " must be unique", value);
+  }
+
+  public static FieldValidationError maxLength(final String field, final int length)
+  {
+    CommonError maxLength = CommonError.MAX_LENGTH;
+    return fieldError(field, maxLength.code, field + " must have a max length of " + length,
+        length);
   }
 }

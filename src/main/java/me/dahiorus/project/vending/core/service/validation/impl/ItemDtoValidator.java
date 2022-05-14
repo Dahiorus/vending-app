@@ -38,6 +38,7 @@ public class ItemDtoValidator extends DtoValidatorImpl<Item, ItemDTO, DAO<Item>>
 
     // validate mandatory fields
     rejectIfBlank(Item_.NAME, name, results);
+    rejectIfInvalidLength(Item_.NAME, name, 255, results);
     rejectIfEmpty(Item_.TYPE, dto.getType(), results);
 
     // validate price is positive
@@ -51,7 +52,7 @@ public class ItemDtoValidator extends DtoValidatorImpl<Item, ItemDTO, DAO<Item>>
     // validate name is unique
     if (!results.hasFieldError(Item_.NAME))
     {
-      dao.findOne((root, query, cb) -> cb.equal(root.get("name"), name))
+      dao.findOne((root, query, cb) -> cb.equal(root.get(Item_.name), name))
         .ifPresent(other -> {
           if (!Objects.equals(dto.getId(), other.getId()))
           {

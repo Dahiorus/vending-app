@@ -41,7 +41,10 @@ public class VendingMachineDtoValidator extends DtoValidatorImpl<VendingMachine,
   {
     // validate all mandatory fields
     rejectIfBlank(VendingMachine_.SERIAL_NUMBER, dto.getSerialNumber(), results);
+    rejectIfInvalidLength(VendingMachine_.SERIAL_NUMBER, dto.getSerialNumber(), 255, results);
     rejectIfBlank(VendingMachine_.ADDRESS, dto.getAddress(), results);
+    rejectIfInvalidLength(VendingMachine_.ADDRESS, dto.getAddress(), 255, results);
+    rejectIfInvalidLength(VendingMachine_.PLACE, dto.getPlace(), 255, results);
     rejectIfEmpty(VendingMachine_.TYPE, dto.getType(), results);
     rejectIfEmpty(VendingMachine_.POWER_STATUS, dto.getPowerStatus(), results);
 

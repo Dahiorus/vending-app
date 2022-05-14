@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -67,9 +68,10 @@ class ItemDtoValidatorTest
   @Test
   void nameIsUnique()
   {
-    Item duplicate = new Item();
-    duplicate.setName("Item");
-    duplicate.setId(UUID.randomUUID());
+    Item duplicate = ItemBuilder.builder()
+      .id(UUID.randomUUID())
+      .name("Item")
+      .build();
     when(dao.findOne(anySpec())).thenReturn(Optional.of(duplicate));
 
     dto = buildDto(duplicate.getName(), ItemType.FOOD, 1.3);
@@ -77,6 +79,16 @@ class ItemDtoValidatorTest
     ValidationResults results = validator.validate(dto);
 
     assertHasExactlyFieldErrors(results, "name", "validation.constraints.not_unique");
+  }
+
+  @Test
+  void nameHasMaxLength()
+  {
+    dto = buildDto(RandomStringUtils.randomAlphanumeric(256), ItemType.FOOD, 1.5);
+
+    ValidationResults results = validator.validate(dto);
+
+    assertHasExactlyFieldErrors(results, "name", "validation.constraints.max_length");
   }
 
   @Test

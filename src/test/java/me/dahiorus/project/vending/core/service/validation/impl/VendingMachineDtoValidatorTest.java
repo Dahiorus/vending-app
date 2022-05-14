@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -69,14 +70,26 @@ class VendingMachineDtoValidatorTest
   void serialNumberIsUnique()
   {
     dto = buildDto("123456789", "1 Fake Street", ItemType.FOOD, PowerStatus.ON, WorkingStatus.OK);
-    VendingMachine duplicate = new VendingMachine();
-    duplicate.setId(UUID.randomUUID());
-    duplicate.setSerialNumber(dto.getSerialNumber());
+    VendingMachine duplicate = VendingMachineBuilder.builder()
+      .id(UUID.randomUUID())
+      .serialNumber(dto.getSerialNumber())
+      .build();
     when(dao.findOne(anySpec())).thenReturn(Optional.of(duplicate));
 
     ValidationResults results = validator.validate(dto);
 
     assertHasExactlyFieldErrors(results, "serialNumber", "validation.constraints.not_unique");
+  }
+
+  @Test
+  void serialNumberHasMaxLength()
+  {
+    dto = buildDto(RandomStringUtils.randomAlphabetic(256), "1 Fake Street", ItemType.FOOD, PowerStatus.ON,
+        WorkingStatus.OK);
+
+    ValidationResults results = validator.validate(dto);
+
+    assertHasExactlyFieldErrors(results, "serialNumber", "validation.constraints.max_length");
   }
 
   @ParameterizedTest(name = "Blank serial number [{0}] is not valid")
@@ -89,6 +102,29 @@ class VendingMachineDtoValidatorTest
     ValidationResults results = validator.validate(dto);
 
     assertHasExactlyFieldErrors(results, "address", "validation.constraints.empty_value");
+  }
+
+  @Test
+  void addressHasMaxLength()
+  {
+    dto = buildDto("1234", RandomStringUtils.randomAlphanumeric(256), ItemType.FOOD, PowerStatus.ON,
+        WorkingStatus.OK);
+
+    ValidationResults results = validator.validate(dto);
+
+    assertHasExactlyFieldErrors(results, "address", "validation.constraints.max_length");
+  }
+
+  @Test
+  void placeHasMaxLength()
+  {
+    dto = buildDto("1234", "1 Fake Street", ItemType.FOOD, PowerStatus.ON,
+        WorkingStatus.OK);
+    dto.setPlace(RandomStringUtils.randomAlphanumeric(256));
+
+    ValidationResults results = validator.validate(dto);
+
+    assertHasExactlyFieldErrors(results, "place", "validation.constraints.max_length");
   }
 
   @Test

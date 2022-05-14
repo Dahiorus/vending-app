@@ -3,6 +3,7 @@ package me.dahiorus.project.vending.core.service.validation.impl;
 import static me.dahiorus.project.vending.util.TestUtils.assertHasExactlyFieldErrors;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,5 +63,15 @@ class CommentDtoValidatorTest
     ValidationResults results = validator.validate(dto);
 
     assertHasExactlyFieldErrors(results, "rate", "validation.constraints.comment.rate_interval");
+  }
+
+  @Test
+  void contentHasMaxLength()
+  {
+    dto = buildDto(4, RandomStringUtils.randomAlphanumeric(1025));
+
+    ValidationResults results = validator.validate(dto);
+
+    assertHasExactlyFieldErrors(results, "content", "validation.constraints.max_length");
   }
 }

@@ -3,12 +3,12 @@ package me.dahiorus.project.vending.core.service.validation;
 import java.io.Serializable;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 @ToString(of = { "code", "defaultMessage" })
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class ValidationError implements Serializable
 {
   private static final long serialVersionUID = -8799197003814321507L;
@@ -16,13 +16,13 @@ public class ValidationError implements Serializable
   private static final String COMMON_PREFIX = "validation.constraints.";
 
   @Getter
-  private String code;
+  private final String code;
 
   @Getter
-  private String defaultMessage;
+  private final String defaultMessage;
 
   @Getter
-  private Object[] errorArgs;
+  private final Object[] errorArgs;
 
   public static ValidationError objectError(final String code, final String defaultMessage, final Object... errorArgs)
   {
@@ -36,22 +36,16 @@ public class ValidationError implements Serializable
 
   enum CommonError
   {
-    EMPTY_VALUE("empty_value", "is mandatory"),
-    NOT_UNIQUE("not_unique", "must be unique");
+    EMPTY_VALUE("empty_value"),
+    NOT_UNIQUE("not_unique"),
+    MAX_LENGTH("max_length"),
+    ;
 
     final String code;
 
-    final String defaultMessage;
-
-    CommonError(final String code, final String defaultMessage)
+    CommonError(final String code)
     {
       this.code = getFullCode(code);
-      this.defaultMessage = defaultMessage;
-    }
-
-    String getDefaultMessageFor(final String field)
-    {
-      return field + " " + defaultMessage;
     }
   }
 }
