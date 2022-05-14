@@ -46,7 +46,7 @@ class VendingMachineDtoServiceImplTest
   }
 
   @Nested
-  class ResetStatusesTests
+  class ResetStatusTests
   {
     @Test
     void machineNotWorking() throws Exception
@@ -57,7 +57,7 @@ class VendingMachineDtoServiceImplTest
       when(dao.read(machine.getId())).thenReturn(machine);
       when(dao.save(machine)).thenReturn(machine);
 
-      VendingMachineDTO updatedMachine = dtoService.resetStatuses(machine.getId());
+      VendingMachineDTO updatedMachine = dtoService.resetStatus(machine.getId());
 
       assertThat(updatedMachine).hasFieldOrPropertyWithValue("powerStatus", PowerStatus.ON)
         .hasFieldOrPropertyWithValue("workingStatus", WorkingStatus.OK)
@@ -75,7 +75,7 @@ class VendingMachineDtoServiceImplTest
 
       when(dao.read(machine.getId())).thenReturn(machine);
 
-      VendingMachineDTO updatedMachine = dtoService.resetStatuses(machine.getId());
+      VendingMachineDTO updatedMachine = dtoService.resetStatus(machine.getId());
 
       assertThat(updatedMachine).hasFieldOrPropertyWithValue("powerStatus", PowerStatus.ON)
         .hasFieldOrPropertyWithValue("workingStatus", WorkingStatus.OK)
@@ -91,7 +91,7 @@ class VendingMachineDtoServiceImplTest
       UUID id = UUID.randomUUID();
       when(dao.read(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
 
-      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.resetStatuses(id));
+      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.resetStatus(id));
       verify(dao, never()).save(any());
     }
   }

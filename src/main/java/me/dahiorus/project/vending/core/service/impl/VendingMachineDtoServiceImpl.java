@@ -45,7 +45,7 @@ public class VendingMachineDtoServiceImpl
 
   @Transactional(rollbackFor = EntityNotFound.class)
   @Override
-  public VendingMachineDTO resetStatuses(final UUID id) throws EntityNotFound
+  public VendingMachineDTO resetStatus(final UUID id) throws EntityNotFound
   {
     VendingMachine entity = dao.read(id);
 
@@ -56,7 +56,7 @@ public class VendingMachineDtoServiceImpl
       return dtoMapper.toDto(entity, getDomainClass());
     }
 
-    log.debug("Reseting all statuses of the vending machine {}", id);
+    log.debug("Reseting all status of the vending machine {}", id);
 
     entity.setPowerStatus(PowerStatus.ON);
     entity.setWorkingStatus(WorkingStatus.OK);
@@ -65,7 +65,7 @@ public class VendingMachineDtoServiceImpl
     entity.setChangeMoneyStatus(ChangeSystemStatus.NORMAL);
     entity.markIntervention();
 
-    log.info("Vending machine {} all statuses are reset", id);
+    log.info("Vending machine {} all status have been reset", id);
 
     VendingMachine updatedMachine = dao.save(entity);
 

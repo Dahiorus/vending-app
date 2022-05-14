@@ -47,10 +47,12 @@ public class VendingMachineRestController extends RestControllerImpl<VendingMach
   @Operation(description = "Reset all error statuses of a vending machine")
   @ApiResponse(responseCode = "200", description = "Error statuses reset")
   @PostMapping(value = "/{id}/reset", produces = MediaTypes.HAL_JSON_VALUE)
-  public ResponseEntity<EntityModel<VendingMachineDTO>> resetStatuses(@PathVariable("id") final UUID id)
+  public ResponseEntity<EntityModel<VendingMachineDTO>> resetStatus(@PathVariable("id") final UUID id)
       throws EntityNotFound
   {
-    VendingMachineDTO updatedEntity = dtoService.resetStatuses(id);
+    VendingMachineDTO updatedEntity = dtoService.resetStatus(id);
+
+    log.info("Status of the vending machine has been reset: {}", updatedEntity);
 
     return ok(modelAssembler.toModel(updatedEntity));
   }
