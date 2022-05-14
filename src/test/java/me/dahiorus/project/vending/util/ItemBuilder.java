@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import me.dahiorus.project.vending.core.model.BinaryData;
 import me.dahiorus.project.vending.core.model.Item;
 import me.dahiorus.project.vending.core.model.ItemType;
 import me.dahiorus.project.vending.core.model.dto.ItemDTO;
@@ -43,6 +44,17 @@ public class ItemBuilder
   public ItemBuilder type(final ItemType type)
   {
     item.setType(type);
+    return this;
+  }
+
+  public ItemBuilder picture(final String name, final String contentType)
+  {
+    BinaryData binaryData = new BinaryData();
+    binaryData.setName(name);
+    binaryData.setContentType(contentType);
+    binaryData.setContent(new byte[0]);
+    item.setPicture(binaryData);
+
     return this;
   }
 
