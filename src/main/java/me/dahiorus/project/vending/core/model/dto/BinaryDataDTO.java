@@ -1,10 +1,12 @@
 package me.dahiorus.project.vending.core.model.dto;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import me.dahiorus.project.vending.core.model.BinaryData;
 
+@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true, of = { "name", "size", "contentType" })
 public class BinaryDataDTO extends AbstractDTO<BinaryData>
 {
