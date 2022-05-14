@@ -65,7 +65,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
           .mvcMatchers(SecurityConstants.AUTHENTICATE_ENDPOINT, SecurityConstants.REFRESH_TOKEN_ENDPOINT).permitAll()
           .antMatchers(HttpMethod.GET, "/api/v1/vending-machines/**", "/api/v1/items/{.+}/**").permitAll()
           .antMatchers(HttpMethod.POST, "/api/v1/vending-machines/{.+}/purchase/**").permitAll()
-          .antMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+          .antMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
           .mvcMatchers(SecurityConstants.REGISTER_ENDPOINT).anonymous()
           .antMatchers("/api/v1/me/**").authenticated()
           .anyRequest().hasAuthority("ROLE_ADMIN")

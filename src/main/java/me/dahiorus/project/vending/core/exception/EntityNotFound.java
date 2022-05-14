@@ -10,7 +10,7 @@ public class EntityNotFound extends AppException
 
   public EntityNotFound(final Class<? extends AbstractEntity> entityClass, final UUID id)
   {
-    super("No " + entityClass.getSimpleName() + " found with ID " + id);
+    this("No " + entityClass.getSimpleName() + " found with ID " + id);
   }
 
   public EntityNotFound(final String message)

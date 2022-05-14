@@ -17,13 +17,11 @@ import me.dahiorus.project.vending.web.security.impl.JwtServiceImpl;
 @Import(WebSecurityConfig.class)
 public abstract class RestControllerTest
 {
-  // FIXME rework WebSecurityConfig to use getSharedClass instead of spring injection
   @MockBean
   AppUserDetailsService userDetailsService;
 
   @MockBean
   JwtServiceImpl jwtService;
-  // end FIXME
 
   @Autowired
   WebApplicationContext appContext;
