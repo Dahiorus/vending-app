@@ -52,7 +52,7 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     validate(dto, CrudOperation.CREATE);
 
     E entity = dtoMapper.toEntity(dto, entityClass);
-    doBeforeCallingDao(entity, dto, CrudOperation.CREATE);
+    doBeforeCallingDao(entity, CrudOperation.CREATE);
 
     E createdEntity = dao.save(entity);
     D createdDto = dtoMapper.toDto(createdEntity, getDomainClass());
@@ -83,7 +83,7 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     dto.setId(id);
     validate(dto, CrudOperation.UPDATE);
     dtoMapper.patchEntity(dto, entity);
-    doBeforeCallingDao(entity, dto, CrudOperation.UPDATE);
+    doBeforeCallingDao(entity, CrudOperation.UPDATE);
 
     E updatedEntity = dao.save(entity);
     D updatedDto = dtoMapper.toDto(updatedEntity, getDomainClass());
@@ -100,7 +100,7 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     getLogger().debug("Deleting {} with ID {}", getDomainClass().getSimpleName(), id);
 
     E entity = dao.read(id);
-    doBeforeCallingDao(entity, null, CrudOperation.DELETE);
+    doBeforeCallingDao(entity, CrudOperation.DELETE);
     dao.delete(entity);
 
     getLogger().info("{} deleted: ID {}", getDomainClass().getSimpleName(), id);
@@ -168,7 +168,7 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     // override this method to add specific validation
   }
 
-  protected void doBeforeCallingDao(final E entity, final D dto, final CrudOperation operation)
+  protected void doBeforeCallingDao(final E entity, final CrudOperation operation)
   {
     // override this method to modify the entity before calling the DAO
   }

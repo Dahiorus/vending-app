@@ -71,12 +71,12 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
   }
 
   @Override
-  protected void doBeforeCallingDao(final AppUser entity, final UserDTO dto, final CrudOperation operation)
+  protected void doBeforeCallingDao(final AppUser entity, final CrudOperation operation)
   {
     if ((operation == CrudOperation.CREATE
         || operation == CrudOperation.UPDATE) && StringUtils.isNotEmpty(entity.getPassword()))
     {
-      log.debug("Encoding the password of the user {}", dto);
+      log.debug("Encoding the password of the user {}", entity);
       entity.setEncodedPassword(passwordEncoder.encode(entity.getPassword()));
     }
   }
