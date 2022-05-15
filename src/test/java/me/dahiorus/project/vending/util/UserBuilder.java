@@ -44,6 +44,12 @@ public class UserBuilder
     return this;
   }
 
+  public UserBuilder encodedPassword(final String encodedPassword)
+  {
+    user.setEncodedPassword(encodedPassword);
+    return this;
+  }
+
   public UserBuilder password(final String password)
   {
     user.setPassword(password);

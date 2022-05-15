@@ -142,7 +142,7 @@ class UserDtoServiceImplTest
       when(passwordValidator.validate("password", editPwd.getPassword())).thenReturn(successResults());
       when(dao.save(user)).then(invoc -> {
         AppUser arg = invoc.getArgument(0);
-        assertThat(passwordEncoder.matches(editPwd.getPassword(), arg.getPassword())).isTrue();
+        assertThat(passwordEncoder.matches(editPwd.getPassword(), arg.getEncodedPassword())).isTrue();
         return arg;
       });
 
@@ -230,7 +230,7 @@ class UserDtoServiceImplTest
     {
       return UserBuilder.builder()
         .id(id)
-        .password(passwordEncoder.encode(password))
+        .encodedPassword(passwordEncoder.encode(password))
         .build();
     }
   }
