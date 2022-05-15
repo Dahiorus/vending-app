@@ -34,67 +34,58 @@ class PasswordValidatorImplTest
   @Test
   void isValid()
   {
-    testOn("Azertyuiop123&", true);
+    testOn("Azertyuiop123&");
   }
 
   @Test
   void mustHaveMinLength()
   {
-    testOn("Secret123&", true, "validation.constraints.password.min-length");
+    testOn("Secret123&", "validation.constraints.password.min-length");
   }
 
   @Test
   void mustHaveMaxLength()
   {
-    testOn(randomAlphanumeric(24) + "Az1&", true, "validation.constraints.password.max-length");
+    testOn(randomAlphanumeric(24) + "Az1&", "validation.constraints.password.max-length");
   }
 
   @Test
   void mustHaveLowerCaseChar()
   {
-    testOn("AZERTYIOP123&", true, "validation.constraints.password.min-lowercase-chars");
+    testOn("AZERTYIOP123&", "validation.constraints.password.min-lowercase-chars");
   }
 
   @Test
   void mustHaveUpperCaseChar()
   {
-    testOn("azertyuiop123&", true, "validation.constraints.password.min-uppercase-chars");
+    testOn("azertyuiop123&", "validation.constraints.password.min-uppercase-chars");
   }
 
   @Test
   void mustHaveDigit()
   {
-    testOn(randomAlphabetic(13) + '&', true, "validation.constraints.password.min-digits");
+    testOn(randomAlphabetic(13) + '&', "validation.constraints.password.min-digits");
   }
 
   @Test
   void mustHaveSpecialChar()
   {
-    testOn(randomAlphanumeric(13) + "Ééù2", true, "validation.constraints.password.min-special-chars");
+    testOn(randomAlphanumeric(13) + "Ééù2", "validation.constraints.password.min-special-chars");
   }
 
   @Test
   void hasMultipleErrors()
   {
-    testOn("secret", false, "validation.constraints.password.min-length",
-        "validation.constraints.password.min-uppercase-chars", "validation.constraints.password.min-digits",
-        "validation.constraints.password.min-special-chars");
-  }
-
-  @ParameterizedTest
-  @NullAndEmptySource
-  void emptyPasswordButIsMandatory(final String password)
-  {
-    testOn(password, true, "validation.constraints.empty_value", "validation.constraints.password.min-length",
-        "validation.constraints.password.min-lowercase-chars", "validation.constraints.password.min-uppercase-chars",
+    testOn("secret", "validation.constraints.password.min-length",
+        "validation.constraints.password.min-uppercase-chars",
         "validation.constraints.password.min-digits", "validation.constraints.password.min-special-chars");
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "Empty password [{0}]")
   @NullAndEmptySource
-  void emptyPasswordButIsOptional(final String password)
+  void emptyPasswordIsIgnored(final String password)
   {
-    testOn(password, false);
+    testOn(password);
   }
 
   @Test
@@ -110,13 +101,13 @@ class PasswordValidatorImplTest
 
     validator = new PasswordValidatorImpl(props);
 
-    testOn("Secret", true);
+    testOn("Secret");
   }
 
-  private void testOn(final String rawPassword, final boolean mandatory, final String... expectedErrorCodes)
+  private void testOn(final String rawPassword, final String... expectedErrorCodes)
   {
     String field = "pwdField";
-    ValidationResults results = validator.validate(field, rawPassword, mandatory);
+    ValidationResults results = validator.validate(field, rawPassword);
 
     if (ArrayUtils.isEmpty(expectedErrorCodes))
     {

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,6 +31,7 @@ public class UserDTO extends AbstractDTO<AppUser>
   @Setter
   private String email;
 
+  @Parameter(hidden = true)
   @JsonProperty(access = Access.WRITE_ONLY)
   @Getter
   @Setter

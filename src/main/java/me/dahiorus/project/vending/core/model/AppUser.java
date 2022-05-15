@@ -12,6 +12,7 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 @Entity
@@ -29,6 +30,8 @@ public class AppUser extends AbstractEntity
   private String lastName;
 
   private String email;
+
+  private String encodedPassword;
 
   private String password;
 
@@ -68,7 +71,18 @@ public class AppUser extends AbstractEntity
     this.email = email;
   }
 
-  @Column
+  @Column(name = "password")
+  public String getEncodedPassword()
+  {
+    return encodedPassword;
+  }
+
+  public void setEncodedPassword(final String encodedPassword)
+  {
+    this.encodedPassword = encodedPassword;
+  }
+
+  @Transient
   public String getPassword()
   {
     return password;

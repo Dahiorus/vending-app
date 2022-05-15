@@ -66,19 +66,18 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
   protected void doExtraValidation(final UserDTO dto, final ValidationResults validationResults)
   {
     log.debug("Validating the user's password: {}", dto);
-    ValidationResults pwdValidationResults = passwordValidator.validate(AppUser_.PASSWORD, dto.getPassword(),
-        true);
+    ValidationResults pwdValidationResults = passwordValidator.validate(AppUser_.PASSWORD, dto.getPassword());
     validationResults.mergeFieldErrors(pwdValidationResults);
   }
 
   @Override
   protected void doBeforeCallingDao(final AppUser entity, final UserDTO dto, final CrudOperation operation)
   {
-    if (operation == CrudOperation.CREATE
-        || operation == CrudOperation.UPDATE && StringUtils.isNotEmpty(dto.getPassword()))
+    if ((operation == CrudOperation.CREATE
+        || operation == CrudOperation.UPDATE) && StringUtils.isNotEmpty(entity.getPassword()))
     {
       log.debug("Encoding the password of the user {}", dto);
-      entity.setPassword(passwordEncoder.encode(dto.getPassword()));
+      entity.setEncodedPassword(passwordEncoder.encode(entity.getPassword()));
     }
   }
 
@@ -114,7 +113,7 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
               "The new password must not match the user's current password"));
     }
 
-    ValidationResults passwordValidation = passwordValidator.validate("password", editPassword.getPassword(), true);
+    ValidationResults passwordValidation = passwordValidator.validate("password", editPassword.getPassword());
     validationResults.mergeFieldErrors(passwordValidation);
     validationResults.throwIfError("Update password: errors found");
 

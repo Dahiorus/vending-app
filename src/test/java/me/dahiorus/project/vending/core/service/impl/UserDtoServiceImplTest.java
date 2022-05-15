@@ -80,7 +80,7 @@ class UserDtoServiceImplTest
       UserDTO user = buildUser("User", "Test", "email@yopmail.com", "Secret123");
 
       when(dtoValidator.validate(user)).thenReturn(successResults());
-      when(passwordValidator.validate("password", user.getPassword(), true)).thenReturn(successResults());
+      when(passwordValidator.validate("password", user.getPassword())).thenReturn(successResults());
       when(dao.save(userArg.capture())).then(invocation -> {
         AppUser toCreate = invocation.getArgument(0);
         toCreate.setId(UUID.randomUUID());
@@ -93,7 +93,7 @@ class UserDtoServiceImplTest
         .hasFieldOrPropertyWithValue("lastName", user.getLastName())
         .hasFieldOrPropertyWithValue("email", user.getEmail()),
           () -> assertThat(passwordEncoder.matches("Secret123", userArg.getValue()
-            .getPassword())).describedAs("Encoded password must match the raw password")
+            .getEncodedPassword())).describedAs("Encoded password must match the raw password")
               .isTrue());
     }
 
@@ -103,7 +103,7 @@ class UserDtoServiceImplTest
       UserDTO user = buildUser("User", "Test", "email@yopmail.com", "Secret123");
 
       when(dtoValidator.validate(user)).thenReturn(successResults());
-      when(passwordValidator.validate("password", user.getPassword(), true)).then(invocation -> {
+      when(passwordValidator.validate("password", user.getPassword())).then(invocation -> {
         ValidationResults results = new ValidationResults();
         results.addError(FieldValidationError.fieldError("password", "validation.constraints.password.min-length",
             "Password too short", 12));
@@ -139,7 +139,7 @@ class UserDtoServiceImplTest
       editPwd.setPassword("Secret1234");
 
       when(dao.read(user.getId())).thenReturn(user);
-      when(passwordValidator.validate("password", editPwd.getPassword(), true)).thenReturn(successResults());
+      when(passwordValidator.validate("password", editPwd.getPassword())).thenReturn(successResults());
       when(dao.save(user)).then(invoc -> {
         AppUser arg = invoc.getArgument(0);
         assertThat(passwordEncoder.matches(editPwd.getPassword(), arg.getPassword())).isTrue();
@@ -159,7 +159,7 @@ class UserDtoServiceImplTest
       editPwd.setPassword("Secret1234");
 
       when(dao.read(user.getId())).thenReturn(user);
-      when(passwordValidator.validate("password", editPwd.getPassword(), true)).thenReturn(successResults());
+      when(passwordValidator.validate("password", editPwd.getPassword())).thenReturn(successResults());
 
       assertThatExceptionOfType(ValidationException.class)
         .isThrownBy(() -> dtoService.updatePassword(user.getId(), editPwd))
@@ -181,7 +181,7 @@ class UserDtoServiceImplTest
       editPwd.setPassword("Secret123");
 
       when(dao.read(user.getId())).thenReturn(user);
-      when(passwordValidator.validate("password", editPwd.getPassword(), true)).thenReturn(successResults());
+      when(passwordValidator.validate("password", editPwd.getPassword())).thenReturn(successResults());
 
       assertThatExceptionOfType(ValidationException.class)
         .isThrownBy(() -> dtoService.updatePassword(user.getId(), editPwd))
@@ -203,7 +203,7 @@ class UserDtoServiceImplTest
       editPwd.setPassword("Secret1234");
 
       when(dao.read(user.getId())).thenReturn(user);
-      when(passwordValidator.validate("password", editPwd.getPassword(), true)).then(invoc -> {
+      when(passwordValidator.validate("password", editPwd.getPassword())).then(invoc -> {
         ValidationResults results = new ValidationResults();
         results.addError(
             fieldError(invoc.getArgument(0), "validation.constraints.password.min-length", "Pwd error from test"));

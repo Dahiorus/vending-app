@@ -1,7 +1,6 @@
 package me.dahiorus.project.vending.core.service.validation.impl;
 
 import static java.util.function.Predicate.not;
-import static me.dahiorus.project.vending.core.service.validation.FieldValidationError.emptyOrNullValue;
 import static me.dahiorus.project.vending.core.service.validation.FieldValidationError.fieldError;
 import static me.dahiorus.project.vending.core.service.validation.ValidationError.getFullCode;
 
@@ -26,7 +25,7 @@ public class PasswordValidatorImpl implements PasswordValidator
   private final PasswordPolicyProperties passwordPolicyProps;
 
   @Override
-  public ValidationResults validate(final String field, final String rawPassword, final boolean mandatory)
+  public ValidationResults validate(final String field, final String rawPassword)
   {
     log.debug("Validating the password respects the current password policy");
 
@@ -34,12 +33,8 @@ public class PasswordValidatorImpl implements PasswordValidator
 
     if (StringUtils.isEmpty(rawPassword))
     {
-      if (!mandatory)
-      {
-        log.debug("Empty password, but not mandatory. Nothing to validate.");
-        return results;
-      }
-      results.addError(emptyOrNullValue(field));
+      log.debug("Password is empty. Skipping the validation");
+      return results;
     }
 
     Integer minLength = passwordPolicyProps.getMinLength();
@@ -92,11 +87,6 @@ public class PasswordValidatorImpl implements PasswordValidator
 
   private static long countCharType(final String rawPassword, final Predicate<Character> charPredicate)
   {
-    if (StringUtils.isEmpty(rawPassword))
-    {
-      return 0L;
-    }
-
     return rawPassword.chars()
       .mapToObj(c -> (char) c)
       .filter(charPredicate)
