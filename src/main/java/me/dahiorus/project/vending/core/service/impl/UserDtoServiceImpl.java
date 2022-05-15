@@ -103,25 +103,25 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
     AppUser user = dao.read(id);
     ValidationResults validationResults = new ValidationResults();
 
-    if (!passwordEncoder.matches(editPassword.getOldPassword(), user.getEncodedPassword()))
+    if (!passwordEncoder.matches(editPassword.oldPassword(), user.getEncodedPassword()))
     {
       validationResults.addError(
           fieldError("oldPassword", getFullCode("password.old-password-mismatch"),
               "The old password must match the user's current password"));
     }
-    if (passwordEncoder.matches(editPassword.getPassword(), user.getEncodedPassword()))
+    if (passwordEncoder.matches(editPassword.password(), user.getEncodedPassword()))
     {
       validationResults.addError(
           fieldError("password", getFullCode("password.new-password-match"),
               "The new password must not match the user's current password"));
     }
 
-    ValidationResults passwordValidation = passwordValidator.validate("password", editPassword.getPassword());
+    ValidationResults passwordValidation = passwordValidator.validate("password", editPassword.password());
     validationResults.mergeFieldErrors(passwordValidation);
     validationResults.throwIfError("Update password: errors found");
 
     log.debug("No validation error found. Updating the password of {}", user);
-    user.setEncodedPassword(passwordEncoder.encode(editPassword.getPassword()));
+    user.setEncodedPassword(passwordEncoder.encode(editPassword.password()));
     AppUser updatedUser = dao.save(user);
 
     log.info("Password of {} updated", () -> dtoMapper.toDto(updatedUser, UserDTO.class));

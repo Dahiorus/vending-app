@@ -197,15 +197,13 @@ class UserDtoServiceImplTest
     {
       AppUser user = buildUser(UUID.randomUUID(), "Secret123");
 
-      EditPasswordDTO editPwd = new EditPasswordDTO();
-      editPwd.setOldPassword("Secret123");
-      editPwd.setPassword("Secret1234");
+      EditPasswordDTO editPwd = new EditPasswordDTO("Secret123", "Secret1234");
 
       when(dao.read(user.getId())).thenReturn(user);
-      when(passwordValidator.validate("password", editPwd.getPassword())).thenReturn(successResults());
+      when(passwordValidator.validate("password", editPwd.password())).thenReturn(successResults());
       when(dao.save(user)).then(invoc -> {
         AppUser arg = invoc.getArgument(0);
-        assertThat(passwordEncoder.matches(editPwd.getPassword(), arg.getEncodedPassword())).isTrue();
+        assertThat(passwordEncoder.matches(editPwd.password(), arg.getEncodedPassword())).isTrue();
         return arg;
       });
 
@@ -217,12 +215,10 @@ class UserDtoServiceImplTest
     {
       AppUser user = buildUser(UUID.randomUUID(), "Secret123");
 
-      EditPasswordDTO editPwd = new EditPasswordDTO();
-      editPwd.setOldPassword("Azertyui");
-      editPwd.setPassword("Secret1234");
+      EditPasswordDTO editPwd = new EditPasswordDTO("Azertyui", "Secret1234");
 
       when(dao.read(user.getId())).thenReturn(user);
-      when(passwordValidator.validate("password", editPwd.getPassword())).thenReturn(successResults());
+      when(passwordValidator.validate("password", editPwd.password())).thenReturn(successResults());
 
       assertThatExceptionOfType(ValidationException.class)
         .isThrownBy(() -> dtoService.updatePassword(user.getId(), editPwd))
@@ -239,12 +235,10 @@ class UserDtoServiceImplTest
     {
       AppUser user = buildUser(UUID.randomUUID(), "Secret123");
 
-      EditPasswordDTO editPwd = new EditPasswordDTO();
-      editPwd.setOldPassword("Secret123");
-      editPwd.setPassword("Secret123");
+      EditPasswordDTO editPwd = new EditPasswordDTO("Secret123", "Secret123");
 
       when(dao.read(user.getId())).thenReturn(user);
-      when(passwordValidator.validate("password", editPwd.getPassword())).thenReturn(successResults());
+      when(passwordValidator.validate("password", editPwd.password())).thenReturn(successResults());
 
       assertThatExceptionOfType(ValidationException.class)
         .isThrownBy(() -> dtoService.updatePassword(user.getId(), editPwd))
@@ -261,12 +255,10 @@ class UserDtoServiceImplTest
     {
       AppUser user = buildUser(UUID.randomUUID(), "Secret123");
 
-      EditPasswordDTO editPwd = new EditPasswordDTO();
-      editPwd.setOldPassword("Secret123");
-      editPwd.setPassword("Secret1234");
+      EditPasswordDTO editPwd = new EditPasswordDTO("Secret123", "Secret1234");
 
       when(dao.read(user.getId())).thenReturn(user);
-      when(passwordValidator.validate("password", editPwd.getPassword())).then(invoc -> {
+      when(passwordValidator.validate("password", editPwd.password())).then(invoc -> {
         ValidationResults results = new ValidationResults();
         results.addError(
             fieldError(invoc.getArgument(0), "validation.constraints.password.min-length", "Pwd error from test"));
@@ -285,7 +277,7 @@ class UserDtoServiceImplTest
       when(dao.read(id)).thenThrow(new EntityNotFound(AppUser.class, id));
 
       assertThatExceptionOfType(EntityNotFound.class)
-        .isThrownBy(() -> dtoService.updatePassword(id, new EditPasswordDTO()));
+        .isThrownBy(() -> dtoService.updatePassword(id, new EditPasswordDTO(null, null)));
       verify(dao, never()).save(any());
     }
 
