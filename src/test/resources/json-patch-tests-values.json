@@ -217,5 +217,29 @@
       "smartCardStatus": "ERROR",
       "changeMoneyStatus": "FULL"
     }
+  },
+  {
+  "description": "User's password is added",
+    "objectClass": "me.dahiorus.project.vending.core.model.dto.UserDTO",
+    "source": {
+      "id": "66ffaab1-a64c-40a4-8aeb-714e8b95da17",
+      "firstName": "John",
+      "lastName": "Smith",
+      "email": "jsmith@yopmail.com"
+    },
+    "patch": [
+      {
+        "op": "add",
+        "path": "/password",
+        "value": "Secret123"
+      }
+    ],
+    "expected": {
+      "id": "66ffaab1-a64c-40a4-8aeb-714e8b95da17",
+      "firstName": "John",
+      "lastName": "Smith",
+      "email": "jsmith@yopmail.com",
+      "password": "Secret123"
+    }
   }
 ]

@@ -33,14 +33,14 @@ public class JsonPatchHandler
   {
     try
     {
-      String json = mapper.writeValueAsString(source);
-      JsonNode patchedJson = jsonPatch.apply(mapper.readTree(json));
+      JsonNode json = mapper.valueToTree(source);
+      JsonNode patchedJson = jsonPatch.apply(json);
 
       return mapper.treeToValue(patchedJson, (Class<D>) source.getClass());
     }
     catch (JsonProcessingException | JsonPatchException e)
     {
-      throw new AppRuntimeException("Unable to patch an entity", e);
+      throw new AppRuntimeException(e.getMessage(), e);
     }
   }
 }
