@@ -35,7 +35,7 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
 
   protected final Class<E> entityClass;
 
-  protected DtoServiceImpl(final R dao, final DtoMapper dtoMapper, final DtoValidator<D> dtoValidator)
+  protected DtoServiceImpl(final R dao, final DtoMapper dtoMapper, @Nullable final DtoValidator<D> dtoValidator)
   {
     this.dao = dao;
     this.dtoMapper = dtoMapper;

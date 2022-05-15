@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -71,6 +72,19 @@ class UserDtoServiceImplTest
         binaryDataDao);
   }
 
+  @Test
+  void createUserWithoutPassword() throws Exception
+  {
+    UserDTO dto = UserBuilder.builder()
+      .buildDto();
+    when(dtoValidator.validate(dto)).thenReturn(successResults());
+    when(dao.save(any())).then(returnsFirstArg());
+
+    UserDTO createdUser = dtoService.create(dto);
+
+    assertThat(createdUser.getPassword()).isNull();
+  }
+
   @Nested
   class CreateWithPasswordTests
   {
@@ -123,6 +137,55 @@ class UserDtoServiceImplTest
         .email(email)
         .password(rawPassword)
         .buildDto();
+    }
+  }
+
+  @Nested
+  class UpdateTests
+  {
+    @Test
+    void updateUserWithPassword() throws Exception
+    {
+      UUID id = UUID.randomUUID();
+      UserDTO dto = UserBuilder.builder()
+        .id(id)
+        .password("Secret123")
+        .buildDto();
+      AppUser user = UserBuilder.builder()
+        .id(id)
+        .encodedPassword(passwordEncoder.encode("Secret"))
+        .build();
+
+      when(dao.read(id)).thenReturn(user);
+      when(passwordValidator.validate("password", dto.getPassword())).thenReturn(successResults());
+      when(dtoValidator.validate(dto)).thenReturn(successResults());
+      when(dao.save(user)).thenReturn(user);
+
+      dtoService.update(id, dto);
+
+      assertThat(passwordEncoder.matches("Secret123", user.getEncodedPassword())).isTrue();
+    }
+
+    @Test
+    void updateUserWithoutPassword() throws Exception
+    {
+      UUID id = UUID.randomUUID();
+      UserDTO dto = UserBuilder.builder()
+        .id(id)
+        .buildDto();
+      AppUser user = UserBuilder.builder()
+        .id(id)
+        .encodedPassword(passwordEncoder.encode("Secret"))
+        .build();
+
+      when(dao.read(id)).thenReturn(user);
+      when(dtoValidator.validate(dto)).thenReturn(successResults());
+      when(dao.save(user)).thenReturn(user);
+
+      dtoService.update(id, dto);
+
+      assertAll(() -> assertThat(passwordEncoder.matches("Secret", user.getEncodedPassword())).isTrue(),
+          () -> assertThat(user.getPassword()).isNull());
     }
   }
 
@@ -339,7 +402,8 @@ class UserDtoServiceImplTest
       UUID id = UUID.randomUUID();
       when(dao.read(id)).thenThrow(new EntityNotFound(AppUser.class, id));
 
-      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.uploadImage(id, new BinaryDataDTO()));
+      assertThatExceptionOfType(EntityNotFound.class)
+        .isThrownBy(() -> dtoService.uploadImage(id, new BinaryDataDTO()));
       verify(binaryDataDao, never()).save(any());
       verify(dao, never()).save(any());
     }
