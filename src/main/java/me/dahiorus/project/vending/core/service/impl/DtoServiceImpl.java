@@ -49,7 +49,7 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
   {
     getLogger().debug("Creating a new {}: {}", getDomainClass().getSimpleName(), dto);
 
-    validate(dto, CrudOperation.CREATE);
+    validate(dto).throwIfError(dto, CrudOperation.CREATE);
 
     E entity = dtoMapper.toEntity(dto, entityClass);
     doBeforeCallingDao(entity, CrudOperation.CREATE);
@@ -81,7 +81,7 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     E entity = dao.read(id);
 
     dto.setId(id);
-    validate(dto, CrudOperation.UPDATE);
+    validate(dto).throwIfError(dto, CrudOperation.UPDATE);
     dtoMapper.patchEntity(dto, entity);
     doBeforeCallingDao(entity, CrudOperation.UPDATE);
 
@@ -147,25 +147,18 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     return Optional.ofNullable(dtoMapper.toDto(entity.orElse(null), getDomainClass()));
   }
 
-  protected void validate(final D dto, final CrudOperation operation) throws ValidationException
+  protected ValidationResults validate(final D dto)
   {
     if (dtoValidator.isEmpty())
     {
       getLogger().debug("No available validator for {}. Skipping the validation", getDomainClass().getSimpleName());
-      return;
+      return new ValidationResults();
     }
 
     getLogger().debug("Validating {}: {}", getDomainClass().getSimpleName(), dto);
 
-    ValidationResults validationResults = dtoValidator.get()
+    return dtoValidator.get()
       .validate(dto);
-    doExtraValidation(dto, validationResults);
-    validationResults.throwIfError(dto, operation);
-  }
-
-  protected void doExtraValidation(final D dto, final ValidationResults validationResults)
-  {
-    // override this method to add specific validation
   }
 
   protected void doBeforeCallingDao(final E entity, final CrudOperation operation)

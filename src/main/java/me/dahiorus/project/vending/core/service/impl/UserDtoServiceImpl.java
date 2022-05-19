@@ -63,14 +63,17 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
   }
 
   @Override
-  protected void doExtraValidation(final UserDTO dto, final ValidationResults validationResults)
+  protected ValidationResults validate(final UserDTO dto)
   {
+    ValidationResults results = super.validate(dto);
+
     if (StringUtils.isNotEmpty(dto.getPassword()))
     {
       log.debug("Validating the user's password: {}", dto);
-      ValidationResults pwdValidationResults = passwordValidator.validate(AppUser_.PASSWORD, dto.getPassword());
-      validationResults.mergeFieldErrors(pwdValidationResults);
+      results.mergeFieldErrors(passwordValidator.validate(AppUser_.PASSWORD, dto.getPassword()));
     }
+
+    return results;
   }
 
   @Override
