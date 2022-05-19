@@ -39,7 +39,7 @@ class AppUserDetailsServiceTest
   {
     AppUser user = UserBuilder.builder()
       .email("user@test.com")
-      .password("secret")
+      .encodedPassword("secret")
       .roles(List.of("ROLE_USER"))
       .build();
     when(userDao.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
@@ -47,7 +47,7 @@ class AppUserDetailsServiceTest
     UserDetails userDetails = userDetailsService.loadUserByUsername("user@test.com");
 
     assertThat(userDetails).satisfies(u -> assertThat(u.getUsername()).isEqualTo(user.getEmail()))
-      .satisfies(u -> assertThat(u.getPassword()).isEqualTo(user.getPassword()))
+      .satisfies(u -> assertThat(u.getPassword()).isEqualTo(user.getEncodedPassword()))
       .satisfies(u -> assertThat(u.getAuthorities()).extracting(GrantedAuthority::getAuthority)
         .containsExactlyElementsOf(user.getRoles()));
   }

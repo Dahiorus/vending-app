@@ -21,7 +21,7 @@ public class AppUserDetailsService implements UserDetailsService
     return userDao.findByEmail(username)
       .map(user -> User.builder()
         .username(user.getEmail())
-        .password(user.getPassword())
+        .password(user.getEncodedPassword())
         .authorities(user.getRoles()
           .toArray(String[]::new))
         .build())

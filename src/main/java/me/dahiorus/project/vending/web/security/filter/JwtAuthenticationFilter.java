@@ -44,18 +44,20 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
   public Authentication attemptAuthentication(final HttpServletRequest request, final HttpServletResponse response)
       throws AuthenticationException
   {
+    AuthenticateRequest authRequest;
     try
     {
-      AuthenticateRequest authRequest = MAPPER.readValue(request.getInputStream(), AuthenticateRequest.class);
-      Authentication authentication = new UsernamePasswordAuthenticationToken(authRequest.username(),
-          authRequest.password());
-
-      return getAuthenticationManager().authenticate(authentication);
+      authRequest = MAPPER.readValue(request.getInputStream(), AuthenticateRequest.class);
     }
     catch (IOException e)
     {
       throw new InternalAuthenticationServiceException("Unable to authenticate a user", e);
     }
+
+    Authentication authentication = new UsernamePasswordAuthenticationToken(authRequest.username(),
+        authRequest.password());
+
+    return getAuthenticationManager().authenticate(authentication);
   }
 
   @Override
