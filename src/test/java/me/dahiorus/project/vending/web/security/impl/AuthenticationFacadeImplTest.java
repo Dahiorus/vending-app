@@ -12,10 +12,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 
-import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.exception.UserNotAuthenticated;
-import me.dahiorus.project.vending.core.model.dto.UserDTO;
-import me.dahiorus.project.vending.core.service.impl.UserDtoServiceImpl;
+import me.dahiorus.project.vending.domain.exception.EntityNotFound;
+import me.dahiorus.project.vending.domain.exception.UserNotAuthenticated;
+import me.dahiorus.project.vending.domain.model.dto.UserDTO;
+import me.dahiorus.project.vending.domain.service.impl.UserDtoServiceImpl;
 import me.dahiorus.project.vending.util.UserBuilder;
 
 @ExtendWith(MockitoExtension.class)

@@ -26,8 +26,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 
-import me.dahiorus.project.vending.core.model.dto.UserDTO;
-import me.dahiorus.project.vending.core.service.impl.UserDtoServiceImpl;
+import me.dahiorus.project.vending.domain.model.dto.UserDTO;
+import me.dahiorus.project.vending.domain.service.impl.UserDtoServiceImpl;
 import me.dahiorus.project.vending.util.UserBuilder;
 import me.dahiorus.project.vending.web.api.assembler.UserDtoModelAssembler;
 

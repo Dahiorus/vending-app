@@ -18,14 +18,14 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 
-import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.model.CardSystemStatus;
-import me.dahiorus.project.vending.core.model.ChangeSystemStatus;
-import me.dahiorus.project.vending.core.model.PowerStatus;
-import me.dahiorus.project.vending.core.model.VendingMachine;
-import me.dahiorus.project.vending.core.model.WorkingStatus;
-import me.dahiorus.project.vending.core.model.dto.VendingMachineDTO;
-import me.dahiorus.project.vending.core.service.impl.VendingMachineDtoServiceImpl;
+import me.dahiorus.project.vending.domain.exception.EntityNotFound;
+import me.dahiorus.project.vending.domain.model.CardSystemStatus;
+import me.dahiorus.project.vending.domain.model.ChangeSystemStatus;
+import me.dahiorus.project.vending.domain.model.PowerStatus;
+import me.dahiorus.project.vending.domain.model.VendingMachine;
+import me.dahiorus.project.vending.domain.model.WorkingStatus;
+import me.dahiorus.project.vending.domain.model.dto.VendingMachineDTO;
+import me.dahiorus.project.vending.domain.service.impl.VendingMachineDtoServiceImpl;
 import me.dahiorus.project.vending.util.VendingMachineBuilder;
 import me.dahiorus.project.vending.web.api.assembler.VendingMachineDtoModelAssembler;
 

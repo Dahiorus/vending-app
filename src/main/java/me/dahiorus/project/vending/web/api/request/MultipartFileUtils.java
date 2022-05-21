@@ -1,6 +1,6 @@
 package me.dahiorus.project.vending.web.api.request;
 
-import static me.dahiorus.project.vending.core.service.validation.FieldValidationError.fieldError;
+import static me.dahiorus.project.vending.domain.service.validation.FieldValidationError.fieldError;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
@@ -19,9 +19,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import me.dahiorus.project.vending.core.model.dto.BinaryDataDTO;
-import me.dahiorus.project.vending.core.service.validation.ValidationError;
-import me.dahiorus.project.vending.core.service.validation.ValidationResults;
+import me.dahiorus.project.vending.domain.model.dto.BinaryDataDTO;
+import me.dahiorus.project.vending.domain.service.validation.ValidationError;
+import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MultipartFileUtils

@@ -26,13 +26,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.core.exception.AppRuntimeException;
-import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.exception.ValidationException;
-import me.dahiorus.project.vending.core.model.dto.BinaryDataDTO;
-import me.dahiorus.project.vending.core.model.dto.ItemDTO;
-import me.dahiorus.project.vending.core.service.ItemDtoService;
-import me.dahiorus.project.vending.core.service.validation.ValidationResults;
+import me.dahiorus.project.vending.domain.exception.AppRuntimeException;
+import me.dahiorus.project.vending.domain.exception.EntityNotFound;
+import me.dahiorus.project.vending.domain.exception.ValidationException;
+import me.dahiorus.project.vending.domain.model.dto.BinaryDataDTO;
+import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
+import me.dahiorus.project.vending.domain.service.ItemDtoService;
+import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 import me.dahiorus.project.vending.web.api.request.MultipartFileUtils;
 
 @SecurityRequirement(name = "bearerAuth")

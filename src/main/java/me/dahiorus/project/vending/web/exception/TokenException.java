@@ -1,6 +1,6 @@
 package me.dahiorus.project.vending.web.exception;
 
-import me.dahiorus.project.vending.core.exception.AppException;
+import me.dahiorus.project.vending.domain.exception.AppException;
 
 public abstract class TokenException extends AppException
 {

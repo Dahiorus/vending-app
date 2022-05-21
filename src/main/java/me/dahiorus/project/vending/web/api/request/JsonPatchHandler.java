@@ -12,9 +12,9 @@ import com.github.fge.jsonpatch.JsonPatchException;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import me.dahiorus.project.vending.core.exception.AppRuntimeException;
-import me.dahiorus.project.vending.core.model.AbstractEntity;
-import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
+import me.dahiorus.project.vending.domain.exception.AppRuntimeException;
+import me.dahiorus.project.vending.domain.model.AbstractEntity;
+import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JsonPatchHandler

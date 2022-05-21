@@ -1,6 +1,6 @@
 package me.dahiorus.project.vending.web.api.impl;
 
-import static me.dahiorus.project.vending.core.service.validation.FieldValidationError.emptyOrNullValue;
+import static me.dahiorus.project.vending.domain.service.validation.FieldValidationError.emptyOrNullValue;
 import static me.dahiorus.project.vending.util.TestUtils.jsonValue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.endsWith;
@@ -31,10 +31,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 
-import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.model.dto.UserDTO;
-import me.dahiorus.project.vending.core.service.impl.UserDtoServiceImpl;
-import me.dahiorus.project.vending.core.service.validation.ValidationResults;
+import me.dahiorus.project.vending.domain.exception.EntityNotFound;
+import me.dahiorus.project.vending.domain.model.dto.UserDTO;
+import me.dahiorus.project.vending.domain.service.impl.UserDtoServiceImpl;
+import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 import me.dahiorus.project.vending.util.UserBuilder;
 import me.dahiorus.project.vending.web.api.assembler.UserDtoModelAssembler;
 import me.dahiorus.project.vending.web.api.model.AuthenticateResponse;

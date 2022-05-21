@@ -16,10 +16,10 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.core.exception.AppException;
-import me.dahiorus.project.vending.core.exception.UserNotAuthenticated;
-import me.dahiorus.project.vending.core.model.dto.EditPasswordDTO;
-import me.dahiorus.project.vending.core.model.dto.UserDTO;
+import me.dahiorus.project.vending.domain.exception.AppException;
+import me.dahiorus.project.vending.domain.exception.UserNotAuthenticated;
+import me.dahiorus.project.vending.domain.model.dto.EditPasswordDTO;
+import me.dahiorus.project.vending.domain.model.dto.UserDTO;
 import me.dahiorus.project.vending.web.api.impl.SelfServiceRestController;
 import me.dahiorus.project.vending.web.api.impl.UserRestController;
 import me.dahiorus.project.vending.web.security.AuthenticationFacade;

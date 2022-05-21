@@ -16,8 +16,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import me.dahiorus.project.vending.core.dao.UserDAO;
-import me.dahiorus.project.vending.core.model.AppUser;
+import me.dahiorus.project.vending.domain.dao.UserDAO;
+import me.dahiorus.project.vending.domain.model.AppUser;
 import me.dahiorus.project.vending.util.UserBuilder;
 
 @ExtendWith(MockitoExtension.class)

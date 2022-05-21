@@ -3,11 +3,11 @@ package me.dahiorus.project.vending.util;
 import java.util.List;
 import java.util.UUID;
 
-import me.dahiorus.project.vending.core.model.AppUser;
-import me.dahiorus.project.vending.core.model.BinaryData;
-import me.dahiorus.project.vending.core.model.dto.UserDTO;
-import me.dahiorus.project.vending.core.service.DtoMapper;
-import me.dahiorus.project.vending.core.service.impl.DtoMapperImpl;
+import me.dahiorus.project.vending.domain.model.AppUser;
+import me.dahiorus.project.vending.domain.model.BinaryData;
+import me.dahiorus.project.vending.domain.model.dto.UserDTO;
+import me.dahiorus.project.vending.domain.service.DtoMapper;
+import me.dahiorus.project.vending.domain.service.impl.DtoMapperImpl;
 
 public class UserBuilder
 {

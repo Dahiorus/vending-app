@@ -13,8 +13,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponents;
 
 import me.dahiorus.project.vending.common.HasLogger;
-import me.dahiorus.project.vending.core.exception.AppException;
-import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
+import me.dahiorus.project.vending.domain.exception.AppException;
+import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
 
 public abstract class DtoModelAssembler<T extends AbstractDTO<?>>
     implements SimpleRepresentationModelAssembler<T>, HasLogger

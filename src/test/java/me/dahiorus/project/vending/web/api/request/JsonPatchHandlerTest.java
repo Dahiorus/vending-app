@@ -17,8 +17,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.fge.jsonpatch.JsonPatch;
 
-import me.dahiorus.project.vending.core.model.AbstractEntity;
-import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
+import me.dahiorus.project.vending.domain.model.AbstractEntity;
+import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
 
 class JsonPatchHandlerTest
 {

@@ -17,12 +17,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.exception.ItemMissing;
-import me.dahiorus.project.vending.core.model.dto.ItemDTO;
-import me.dahiorus.project.vending.core.model.dto.SaleDTO;
-import me.dahiorus.project.vending.core.service.ItemDtoService;
-import me.dahiorus.project.vending.core.service.SaleDtoService;
+import me.dahiorus.project.vending.domain.exception.EntityNotFound;
+import me.dahiorus.project.vending.domain.exception.ItemMissing;
+import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
+import me.dahiorus.project.vending.domain.model.dto.SaleDTO;
+import me.dahiorus.project.vending.domain.service.ItemDtoService;
+import me.dahiorus.project.vending.domain.service.SaleDtoService;
 import me.dahiorus.project.vending.web.api.AppWebService;
 
 @Log4j2

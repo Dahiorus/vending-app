@@ -8,9 +8,9 @@ import org.springframework.data.jpa.domain.Specification;
 import io.swagger.v3.core.util.Json;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import me.dahiorus.project.vending.core.model.AbstractEntity;
-import me.dahiorus.project.vending.core.service.validation.FieldValidationError;
-import me.dahiorus.project.vending.core.service.validation.ValidationResults;
+import me.dahiorus.project.vending.domain.model.AbstractEntity;
+import me.dahiorus.project.vending.domain.service.validation.FieldValidationError;
+import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TestUtils

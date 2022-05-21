@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 
-import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
+import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
 
 public final class Assertions
 {

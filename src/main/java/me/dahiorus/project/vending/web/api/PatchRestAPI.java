@@ -7,9 +7,9 @@ import org.springframework.http.ResponseEntity;
 
 import com.github.fge.jsonpatch.JsonPatch;
 
-import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.exception.ValidationException;
-import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
+import me.dahiorus.project.vending.domain.exception.EntityNotFound;
+import me.dahiorus.project.vending.domain.exception.ValidationException;
+import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
 
 public interface PatchRestAPI<D extends AbstractDTO<?>>
 {

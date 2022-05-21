@@ -44,15 +44,15 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 
-import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.exception.ValidationException;
-import me.dahiorus.project.vending.core.model.Item;
-import me.dahiorus.project.vending.core.model.ItemType;
-import me.dahiorus.project.vending.core.model.dto.BinaryDataDTO;
-import me.dahiorus.project.vending.core.model.dto.ItemDTO;
-import me.dahiorus.project.vending.core.service.impl.ItemDtoServiceImpl;
-import me.dahiorus.project.vending.core.service.validation.CrudOperation;
-import me.dahiorus.project.vending.core.service.validation.ValidationResults;
+import me.dahiorus.project.vending.domain.exception.EntityNotFound;
+import me.dahiorus.project.vending.domain.exception.ValidationException;
+import me.dahiorus.project.vending.domain.model.Item;
+import me.dahiorus.project.vending.domain.model.ItemType;
+import me.dahiorus.project.vending.domain.model.dto.BinaryDataDTO;
+import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
+import me.dahiorus.project.vending.domain.service.impl.ItemDtoServiceImpl;
+import me.dahiorus.project.vending.domain.service.validation.CrudOperation;
+import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 import me.dahiorus.project.vending.util.ItemBuilder;
 import me.dahiorus.project.vending.web.api.assembler.ItemDtoModelAssembler;
 

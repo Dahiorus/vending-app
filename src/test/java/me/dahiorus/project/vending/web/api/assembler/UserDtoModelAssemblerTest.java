@@ -12,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.EntityModel;
 
-import me.dahiorus.project.vending.core.model.dto.UserDTO;
+import me.dahiorus.project.vending.domain.model.dto.UserDTO;
 import me.dahiorus.project.vending.util.UserBuilder;
 import me.dahiorus.project.vending.web.security.impl.AuthenticationFacadeImpl;
 

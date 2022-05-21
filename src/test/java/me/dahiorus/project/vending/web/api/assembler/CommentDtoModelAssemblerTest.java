@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.EntityModel;
 
-import me.dahiorus.project.vending.core.model.dto.CommentDTO;
+import me.dahiorus.project.vending.domain.model.dto.CommentDTO;
 
 class CommentDtoModelAssemblerTest
 {

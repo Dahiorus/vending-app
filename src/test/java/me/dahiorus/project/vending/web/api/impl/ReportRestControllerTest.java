@@ -37,11 +37,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 
-import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.model.Report;
-import me.dahiorus.project.vending.core.model.VendingMachine;
-import me.dahiorus.project.vending.core.model.dto.ReportDTO;
-import me.dahiorus.project.vending.core.service.impl.ReportDtoServiceImpl;
+import me.dahiorus.project.vending.domain.exception.EntityNotFound;
+import me.dahiorus.project.vending.domain.model.Report;
+import me.dahiorus.project.vending.domain.model.VendingMachine;
+import me.dahiorus.project.vending.domain.model.dto.ReportDTO;
+import me.dahiorus.project.vending.domain.service.impl.ReportDtoServiceImpl;
 import me.dahiorus.project.vending.web.api.assembler.ReportDtoModelAssembler;
 
 @WebMvcTest(ReportRestController.class)

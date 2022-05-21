@@ -4,12 +4,12 @@ import java.util.UUID;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import me.dahiorus.project.vending.core.model.BinaryData;
-import me.dahiorus.project.vending.core.model.Item;
-import me.dahiorus.project.vending.core.model.ItemType;
-import me.dahiorus.project.vending.core.model.dto.ItemDTO;
-import me.dahiorus.project.vending.core.service.DtoMapper;
-import me.dahiorus.project.vending.core.service.impl.DtoMapperImpl;
+import me.dahiorus.project.vending.domain.model.BinaryData;
+import me.dahiorus.project.vending.domain.model.Item;
+import me.dahiorus.project.vending.domain.model.ItemType;
+import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
+import me.dahiorus.project.vending.domain.service.DtoMapper;
+import me.dahiorus.project.vending.domain.service.impl.DtoMapperImpl;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ItemBuilder

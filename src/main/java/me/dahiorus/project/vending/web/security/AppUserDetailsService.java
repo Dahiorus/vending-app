@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import me.dahiorus.project.vending.core.dao.UserDAO;
+import me.dahiorus.project.vending.domain.dao.UserDAO;
 
 @Component
 @RequiredArgsConstructor

@@ -7,8 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.EntityModel;
 
-import me.dahiorus.project.vending.core.model.dto.ReportDTO;
-import me.dahiorus.project.vending.core.model.dto.ReportStockDTO;
+import me.dahiorus.project.vending.domain.model.dto.ReportDTO;
+import me.dahiorus.project.vending.domain.model.dto.ReportStockDTO;
 
 class ReportDtoModelAssemblerTest
 {

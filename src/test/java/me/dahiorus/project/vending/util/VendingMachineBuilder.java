@@ -5,15 +5,15 @@ import java.util.UUID;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import me.dahiorus.project.vending.core.model.CardSystemStatus;
-import me.dahiorus.project.vending.core.model.ChangeSystemStatus;
-import me.dahiorus.project.vending.core.model.ItemType;
-import me.dahiorus.project.vending.core.model.PowerStatus;
-import me.dahiorus.project.vending.core.model.VendingMachine;
-import me.dahiorus.project.vending.core.model.WorkingStatus;
-import me.dahiorus.project.vending.core.model.dto.VendingMachineDTO;
-import me.dahiorus.project.vending.core.service.DtoMapper;
-import me.dahiorus.project.vending.core.service.impl.DtoMapperImpl;
+import me.dahiorus.project.vending.domain.model.CardSystemStatus;
+import me.dahiorus.project.vending.domain.model.ChangeSystemStatus;
+import me.dahiorus.project.vending.domain.model.ItemType;
+import me.dahiorus.project.vending.domain.model.PowerStatus;
+import me.dahiorus.project.vending.domain.model.VendingMachine;
+import me.dahiorus.project.vending.domain.model.WorkingStatus;
+import me.dahiorus.project.vending.domain.model.dto.VendingMachineDTO;
+import me.dahiorus.project.vending.domain.service.DtoMapper;
+import me.dahiorus.project.vending.domain.service.impl.DtoMapperImpl;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class VendingMachineBuilder

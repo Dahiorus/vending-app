@@ -11,8 +11,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 
-import me.dahiorus.project.vending.core.exception.AppException;
-import me.dahiorus.project.vending.core.model.dto.StockDTO;
+import me.dahiorus.project.vending.domain.exception.AppException;
+import me.dahiorus.project.vending.domain.model.dto.StockDTO;
 import me.dahiorus.project.vending.web.api.impl.ItemRestController;
 import me.dahiorus.project.vending.web.api.impl.SaleRestController;
 import me.dahiorus.project.vending.web.api.impl.StockRestController;

@@ -15,7 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.core.exception.AppRuntimeException;
+import me.dahiorus.project.vending.domain.exception.AppRuntimeException;
 import me.dahiorus.project.vending.web.exception.UnparsableToken;
 import me.dahiorus.project.vending.web.security.JwtService;
 import me.dahiorus.project.vending.web.security.SecurityConstants;

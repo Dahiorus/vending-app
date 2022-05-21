@@ -15,9 +15,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.core.exception.ValidationException;
-import me.dahiorus.project.vending.core.model.dto.UserDTO;
-import me.dahiorus.project.vending.core.service.UserDtoService;
+import me.dahiorus.project.vending.domain.exception.ValidationException;
+import me.dahiorus.project.vending.domain.model.dto.UserDTO;
+import me.dahiorus.project.vending.domain.service.UserDtoService;
 
 @SecurityRequirement(name = "bearerAuth")
 @Tag(name = "User", description = "Operations on User")

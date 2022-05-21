@@ -23,12 +23,12 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 
-import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.exception.ValidationException;
-import me.dahiorus.project.vending.core.model.VendingMachine;
-import me.dahiorus.project.vending.core.model.dto.CommentDTO;
-import me.dahiorus.project.vending.core.service.impl.CommentDtoServiceImpl;
-import me.dahiorus.project.vending.core.service.validation.ValidationResults;
+import me.dahiorus.project.vending.domain.exception.EntityNotFound;
+import me.dahiorus.project.vending.domain.exception.ValidationException;
+import me.dahiorus.project.vending.domain.model.VendingMachine;
+import me.dahiorus.project.vending.domain.model.dto.CommentDTO;
+import me.dahiorus.project.vending.domain.service.impl.CommentDtoServiceImpl;
+import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 import me.dahiorus.project.vending.web.api.assembler.CommentDtoModelAssembler;
 
 @WebMvcTest(CommentRestController.class)

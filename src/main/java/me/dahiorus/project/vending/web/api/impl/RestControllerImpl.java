@@ -38,10 +38,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import me.dahiorus.project.vending.common.HasLogger;
-import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.exception.ValidationException;
-import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
-import me.dahiorus.project.vending.core.service.DtoService;
+import me.dahiorus.project.vending.domain.exception.EntityNotFound;
+import me.dahiorus.project.vending.domain.exception.ValidationException;
+import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
+import me.dahiorus.project.vending.domain.service.DtoService;
 import me.dahiorus.project.vending.web.api.RestController;
 import me.dahiorus.project.vending.web.api.request.ExampleMatcherAdapter;
 

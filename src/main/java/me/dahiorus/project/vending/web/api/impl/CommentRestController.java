@@ -23,10 +23,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.exception.ValidationException;
-import me.dahiorus.project.vending.core.model.dto.CommentDTO;
-import me.dahiorus.project.vending.core.service.CommentDtoService;
+import me.dahiorus.project.vending.domain.exception.EntityNotFound;
+import me.dahiorus.project.vending.domain.exception.ValidationException;
+import me.dahiorus.project.vending.domain.model.dto.CommentDTO;
+import me.dahiorus.project.vending.domain.service.CommentDtoService;
 import me.dahiorus.project.vending.web.api.AppWebService;
 
 @SecurityRequirement(name = "bearerAuth")

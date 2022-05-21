@@ -1,7 +1,7 @@
 [
   {
     "description": "Change the price of an item",
-    "objectClass": "me.dahiorus.project.vending.core.model.dto.ItemDTO",
+    "objectClass": "me.dahiorus.project.vending.domain.model.dto.ItemDTO",
     "source": {
       "name": "Item",
       "type": "FOOD",
@@ -22,7 +22,7 @@
   },
   {
     "description": "Remove the name of an item",
-    "objectClass": "me.dahiorus.project.vending.core.model.dto.ItemDTO",
+    "objectClass": "me.dahiorus.project.vending.domain.model.dto.ItemDTO",
     "source": {
       "name": "Item",
       "type": "FOOD",
@@ -41,7 +41,7 @@
   },
   {
     "description": "Add stock to report",
-    "objectClass": "me.dahiorus.project.vending.core.model.dto.ReportDTO",
+    "objectClass": "me.dahiorus.project.vending.domain.model.dto.ReportDTO",
     "source": {
       "machineSerialNumber": "123456987",
       "mesuredTemperature": 4,
@@ -91,7 +91,7 @@
   },
   {
     "description": "Add stock to report at the start of the array",
-    "objectClass": "me.dahiorus.project.vending.core.model.dto.ReportDTO",
+    "objectClass": "me.dahiorus.project.vending.domain.model.dto.ReportDTO",
     "source": {
       "machineSerialNumber": "123456987",
       "mesuredTemperature": 4,
@@ -141,7 +141,7 @@
   },
   {
     "description": "Remove a stock from a report",
-    "objectClass": "me.dahiorus.project.vending.core.model.dto.ReportDTO",
+    "objectClass": "me.dahiorus.project.vending.domain.model.dto.ReportDTO",
     "source": {
       "machineSerialNumber": "123456987",
       "mesuredTemperature": 4,
@@ -179,7 +179,7 @@
   },
   {
     "description": "Copy RFID status to smart card status",
-    "objectClass": "me.dahiorus.project.vending.core.model.dto.VendingMachineDTO",
+    "objectClass": "me.dahiorus.project.vending.domain.model.dto.VendingMachineDTO",
     "source": {
       "serialNumber": "123654789",
       "latitude": 0,
@@ -220,7 +220,7 @@
   },
   {
   "description": "User's password is added",
-    "objectClass": "me.dahiorus.project.vending.core.model.dto.UserDTO",
+    "objectClass": "me.dahiorus.project.vending.domain.model.dto.UserDTO",
     "source": {
       "id": "66ffaab1-a64c-40a4-8aeb-714e8b95da17",
       "firstName": "John",

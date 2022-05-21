@@ -7,8 +7,8 @@ import java.net.URI;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
+import me.dahiorus.project.vending.domain.exception.EntityNotFound;
+import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
 import me.dahiorus.project.vending.web.api.ReadRestAPI;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

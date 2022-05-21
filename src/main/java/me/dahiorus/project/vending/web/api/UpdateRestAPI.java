@@ -5,8 +5,8 @@ import java.util.UUID;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 
-import me.dahiorus.project.vending.core.exception.ValidationException;
-import me.dahiorus.project.vending.core.model.dto.AbstractDTO;
+import me.dahiorus.project.vending.domain.exception.ValidationException;
+import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
 
 public interface UpdateRestAPI<D extends AbstractDTO<?>>
 {

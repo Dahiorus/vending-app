@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.core.exception.AppRuntimeException;
-import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.exception.ItemMissing;
-import me.dahiorus.project.vending.core.exception.UserNotAuthenticated;
-import me.dahiorus.project.vending.core.exception.ValidationException;
+import me.dahiorus.project.vending.domain.exception.AppRuntimeException;
+import me.dahiorus.project.vending.domain.exception.EntityNotFound;
+import me.dahiorus.project.vending.domain.exception.ItemMissing;
+import me.dahiorus.project.vending.domain.exception.UserNotAuthenticated;
+import me.dahiorus.project.vending.domain.exception.ValidationException;
 
 @RestControllerAdvice(basePackages = "me.dahiorus.project.vending.web")
 @NoArgsConstructor

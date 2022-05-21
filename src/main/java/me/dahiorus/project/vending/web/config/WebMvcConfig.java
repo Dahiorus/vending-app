@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import me.dahiorus.project.vending.core.model.AbstractEntity_;
+import me.dahiorus.project.vending.domain.model.AbstractEntity_;
 
 @Configuration
 @OpenAPIDefinition(

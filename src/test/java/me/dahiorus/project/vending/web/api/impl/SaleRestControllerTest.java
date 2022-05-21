@@ -12,14 +12,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.hateoas.MediaTypes;
 
-import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.exception.ItemMissing;
-import me.dahiorus.project.vending.core.model.Item;
-import me.dahiorus.project.vending.core.model.VendingMachine;
-import me.dahiorus.project.vending.core.model.dto.ItemDTO;
-import me.dahiorus.project.vending.core.model.dto.SaleDTO;
-import me.dahiorus.project.vending.core.service.impl.ItemDtoServiceImpl;
-import me.dahiorus.project.vending.core.service.impl.SaleDtoServiceImpl;
+import me.dahiorus.project.vending.domain.exception.EntityNotFound;
+import me.dahiorus.project.vending.domain.exception.ItemMissing;
+import me.dahiorus.project.vending.domain.model.Item;
+import me.dahiorus.project.vending.domain.model.VendingMachine;
+import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
+import me.dahiorus.project.vending.domain.model.dto.SaleDTO;
+import me.dahiorus.project.vending.domain.service.impl.ItemDtoServiceImpl;
+import me.dahiorus.project.vending.domain.service.impl.SaleDtoServiceImpl;
 import me.dahiorus.project.vending.util.ItemBuilder;
 
 @WebMvcTest(SaleRestController.class)

@@ -23,8 +23,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-import me.dahiorus.project.vending.core.model.dto.BinaryDataDTO;
-import me.dahiorus.project.vending.core.service.validation.ValidationResults;
+import me.dahiorus.project.vending.domain.model.dto.BinaryDataDTO;
+import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
 class MultipartFileUtilsTest
 {

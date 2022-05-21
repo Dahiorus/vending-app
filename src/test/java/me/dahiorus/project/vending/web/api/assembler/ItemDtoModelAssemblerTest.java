@@ -6,8 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.EntityModel;
 
-import me.dahiorus.project.vending.core.model.ItemType;
-import me.dahiorus.project.vending.core.model.dto.ItemDTO;
+import me.dahiorus.project.vending.domain.model.ItemType;
+import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
 import me.dahiorus.project.vending.util.ItemBuilder;
 
 class ItemDtoModelAssemblerTest

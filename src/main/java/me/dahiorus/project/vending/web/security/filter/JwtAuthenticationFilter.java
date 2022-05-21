@@ -20,7 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import me.dahiorus.project.vending.core.exception.AppRuntimeException;
+import me.dahiorus.project.vending.domain.exception.AppRuntimeException;
 import me.dahiorus.project.vending.web.api.model.AuthenticateRequest;
 import me.dahiorus.project.vending.web.api.model.AuthenticateResponse;
 import me.dahiorus.project.vending.web.exception.InvalidTokenCreation;

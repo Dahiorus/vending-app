@@ -22,12 +22,12 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.core.exception.EntityNotFound;
-import me.dahiorus.project.vending.core.exception.ValidationException;
-import me.dahiorus.project.vending.core.model.dto.ItemDTO;
-import me.dahiorus.project.vending.core.model.dto.StockDTO;
-import me.dahiorus.project.vending.core.service.ItemDtoService;
-import me.dahiorus.project.vending.core.service.StockDtoService;
+import me.dahiorus.project.vending.domain.exception.EntityNotFound;
+import me.dahiorus.project.vending.domain.exception.ValidationException;
+import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
+import me.dahiorus.project.vending.domain.model.dto.StockDTO;
+import me.dahiorus.project.vending.domain.service.ItemDtoService;
+import me.dahiorus.project.vending.domain.service.StockDtoService;
 import me.dahiorus.project.vending.web.api.AppWebService;
 import me.dahiorus.project.vending.web.api.model.ProvisionRequest;
 
