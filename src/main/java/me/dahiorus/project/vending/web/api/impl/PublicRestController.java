@@ -1,9 +1,11 @@
 package me.dahiorus.project.vending.web.api.impl;
 
+import static me.dahiorus.project.vending.web.api.response.ResponseUtils.buildLocation;
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.ok;
 
 import java.net.URI;
+import java.util.Collections;
 
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
@@ -15,7 +17,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -56,11 +57,9 @@ public class PublicRestController implements AppWebService
   {
     log.debug("Signing up a new user");
 
+    user.setRoles(Collections.emptyList()); // setting roles is forbidden in registration
     UserDTO createdUser = userDtoService.create(user);
-    URI location = MvcUriComponentsBuilder.fromController(UserRestController.class)
-      .path("/{id}")
-      .buildAndExpand(createdUser.getId())
-      .toUri();
+    URI location = buildLocation(createdUser, UserRestController.class);
 
     log.info("User registered: {}", location);
 

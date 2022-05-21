@@ -2,7 +2,9 @@ package me.dahiorus.project.vending.web.api.impl;
 
 import static me.dahiorus.project.vending.core.service.validation.FieldValidationError.emptyOrNullValue;
 import static me.dahiorus.project.vending.util.TestUtils.jsonValue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.endsWith;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -16,6 +18,8 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.hateoas.EntityModel;
@@ -50,35 +54,42 @@ class PublicRestControllerTest extends RestControllerTest
   @Nested
   class RegisterTests
   {
+    @Captor
+    ArgumentCaptor<UserDTO> userArg;
+
     @Test
     @WithAnonymousUser
     void registerUser() throws Exception
     {
+      UUID id = UUID.randomUUID();
       UserDTO dto = UserBuilder.builder()
         .email("user.test@yopmail.com")
         .firstName("User")
         .lastName("Test")
-        .roles(List.of())
         .buildDto();
 
-      when(userDtoService.create(dto)).then(invoc -> {
-        dto.setId(UUID.randomUUID());
-        return dto;
+      when(userDtoService.create(userArg.capture())).then(invoc -> {
+        UserDTO user = invoc.getArgument(0);
+        user.setId(id);
+        return user;
       });
 
-      when(modelAssembler.toModel(dto)).then(invoc -> EntityModel.of(invoc.getArgument(0)));
+      when(modelAssembler.toModel(any())).then(invoc -> EntityModel.of(invoc.getArgument(0)));
 
       mockMvc.perform(post("/api/v1/register").contentType(MediaType.APPLICATION_JSON)
         .content(jsonValue(dto)))
         .andExpect(status().isCreated())
         .andExpect(content().contentType(MediaTypes.HAL_JSON))
         .andExpect(result -> {
-          jsonPath("id").value(dto.getId());
+          jsonPath("id").value(id);
           jsonPath("email").value(dto.getEmail());
           jsonPath("firstName").value(dto.getFirstName());
           jsonPath("lastName").value(dto.getLastName());
         })
-        .andExpect(header().string(HttpHeaders.LOCATION, endsWith("/api/v1/users/" + dto.getId())));
+        .andExpect(header().string(HttpHeaders.LOCATION, endsWith("/api/v1/users/" + id)));
+
+      assertThat(userArg.getValue()
+        .getRoles()).isEmpty();
     }
 
     @Test
