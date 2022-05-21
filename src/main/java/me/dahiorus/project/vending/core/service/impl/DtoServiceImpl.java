@@ -147,6 +147,7 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     return Optional.ofNullable(dtoMapper.toDto(entity.orElse(null), getDomainClass()));
   }
 
+  @Nonnull
   protected ValidationResults validate(final D dto)
   {
     if (dtoValidator.isEmpty())
