@@ -30,7 +30,7 @@ import me.dahiorus.project.vending.web.api.AppWebService;
 @RestController
 @Tag(name = "Sale", description = "Operations on the sales of a vending machine")
 @RequestMapping(value = "/api/v1/vending-machines/{id}", produces = MediaTypes.HAL_JSON_VALUE)
-public class SaleRestService implements AppWebService
+public class SaleRestController implements AppWebService
 {
   private final SaleDtoService dtoService;
 

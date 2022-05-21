@@ -38,8 +38,8 @@ import me.dahiorus.project.vending.core.service.validation.ValidationResults;
 import me.dahiorus.project.vending.util.ItemBuilder;
 import me.dahiorus.project.vending.web.api.assembler.StockDtoModelAssembler;
 
-@WebMvcTest(StockRestService.class)
-class StockRestServiceTest extends RestControllerTest
+@WebMvcTest(StockRestController.class)
+class StockRestControllerTest extends RestControllerTest
 {
   @MockBean
   StockDtoServiceImpl stockDtoService;

@@ -22,8 +22,8 @@ import me.dahiorus.project.vending.core.service.impl.ItemDtoServiceImpl;
 import me.dahiorus.project.vending.core.service.impl.SaleDtoServiceImpl;
 import me.dahiorus.project.vending.util.ItemBuilder;
 
-@WebMvcTest(SaleRestService.class)
-class SaleRestServiceTest extends RestControllerTest
+@WebMvcTest(SaleRestController.class)
+class SaleRestControllerTest extends RestControllerTest
 {
   @MockBean
   SaleDtoServiceImpl saleDtoService;
