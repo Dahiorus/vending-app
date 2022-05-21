@@ -8,6 +8,7 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -25,7 +26,7 @@ import javax.persistence.UniqueConstraint;
 @Table(name = "vending_machine",
     uniqueConstraints = @UniqueConstraint(name = "UK_VENDING_MACHINE_SERIAL_NUMBER", columnNames = "serialNumber"),
     indexes = {
-        @Index(columnList = "address", name = "IDX_VENDING_MACHINE_ADDRESS"),
+        @Index(columnList = "streetAddress", name = "IDX_VENDING_MACHINE_ADDRESS"),
         @Index(columnList = "latitude, longitude", name = "IDX_VENDING_MACHINE_POSITION"),
         @Index(columnList = "place", name = "IDX_VENDING_MACHINE_PLACE"),
         @Index(columnList = "type", name = "IDX_VENDING_MACHINE_TYPE"),
@@ -36,13 +37,7 @@ public class VendingMachine extends AbstractEntity
 {
   private String serialNumber;
 
-  private Double latitude;
-
-  private Double longitude;
-
-  private String place;
-
-  private String address;
+  private Address address = new Address();
 
   private Instant lastIntervention;
 
@@ -77,46 +72,13 @@ public class VendingMachine extends AbstractEntity
     this.serialNumber = serialNumber;
   }
 
-  @Column(precision = 7)
-  public Double getLatitude()
-  {
-    return latitude;
-  }
-
-  public void setLatitude(final Double latitude)
-  {
-    this.latitude = latitude;
-  }
-
-  @Column(precision = 7)
-  public Double getLongitude()
-  {
-    return longitude;
-  }
-
-  public void setLongitude(final Double longitude)
-  {
-    this.longitude = longitude;
-  }
-
-  @Column
-  public String getPlace()
-  {
-    return place;
-  }
-
-  public void setPlace(final String place)
-  {
-    this.place = place;
-  }
-
-  @Column(nullable = false)
-  public String getAddress()
+  @Embedded
+  public Address getAddress()
   {
     return address;
   }
 
-  public void setAddress(final String address)
+  public void setAddress(final Address address)
   {
     this.address = address;
   }
@@ -326,10 +288,9 @@ public class VendingMachine extends AbstractEntity
   @Override
   public String toString()
   {
-    return super.toString() + "[serialNumber=" + serialNumber + ", latitude=" + latitude + ", longitude=" + longitude
-        + ", place=" + place + ", address=" + address + ", lastIntervention=" + lastIntervention + ", temperature="
-        + temperature + ", type=" + type + ", powerStatus=" + powerStatus + ", workingStatus=" + workingStatus
-        + ", rfidStatus=" + rfidStatus + ", smartCardStatus=" + smartCardStatus + ", changeMoneyStatus="
-        + changeMoneyStatus + "]";
+    return super.toString() + "[serialNumber=" + serialNumber + ", address=" + address + ", lastIntervention="
+        + lastIntervention + ", temperature=" + temperature + ", type=" + type + ", powerStatus=" + powerStatus
+        + ", workingStatus=" + workingStatus + ", rfidStatus=" + rfidStatus + ", smartCardStatus=" + smartCardStatus
+        + ", changeMoneyStatus=" + changeMoneyStatus + "]";
   }
 }

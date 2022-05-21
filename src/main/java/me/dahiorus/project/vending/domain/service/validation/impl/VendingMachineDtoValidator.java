@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.domain.dao.DAO;
+import me.dahiorus.project.vending.domain.model.Address;
+import me.dahiorus.project.vending.domain.model.Address_;
 import me.dahiorus.project.vending.domain.model.PowerStatus;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
 import me.dahiorus.project.vending.domain.model.VendingMachine_;
@@ -42,17 +44,23 @@ public class VendingMachineDtoValidator extends DtoValidatorImpl<VendingMachine,
     // validate all mandatory fields
     rejectIfBlank(VendingMachine_.SERIAL_NUMBER, dto.getSerialNumber(), results);
     rejectIfInvalidLength(VendingMachine_.SERIAL_NUMBER, dto.getSerialNumber(), 255, results);
-    rejectIfBlank(VendingMachine_.ADDRESS, dto.getAddress(), results);
-    rejectIfInvalidLength(VendingMachine_.ADDRESS, dto.getAddress(), 255, results);
-    rejectIfInvalidLength(VendingMachine_.PLACE, dto.getPlace(), 255, results);
     rejectIfEmpty(VendingMachine_.TYPE, dto.getType(), results);
     rejectIfEmpty(VendingMachine_.POWER_STATUS, dto.getPowerStatus(), results);
+    validateAddress(dto, results);
 
     // validate the serial number is unique
     checkSerialNumberUniqueness(results, dto);
 
     // validate working status consistency with power status
     checkWorkingStatus(results, dto);
+  }
+
+  private void validateAddress(final VendingMachineDTO dto, final ValidationResults results)
+  {
+    Address address = dto.getAddress();
+    rejectIfBlank(Address_.ADDRESS, address.getStreetAddress(), results);
+    rejectIfInvalidLength(Address_.ADDRESS, address.getStreetAddress(), 255, results);
+    rejectIfInvalidLength(Address_.PLACE, address.getPlace(), 255, results);
   }
 
   private void checkSerialNumberUniqueness(final ValidationResults validationResults, final VendingMachineDTO dto)

@@ -77,25 +77,29 @@ public class VendingMachineBuilder
 
   public VendingMachineBuilder latitude(final Double latitude)
   {
-    machine.setLatitude(latitude);
+    machine.getAddress()
+      .setLatitude(latitude);
     return this;
   }
 
   public VendingMachineBuilder longitude(final Double longitude)
   {
-    machine.setLongitude(longitude);
+    machine.getAddress()
+      .setLongitude(longitude);
     return this;
   }
 
   public VendingMachineBuilder place(final String place)
   {
-    machine.setPlace(place);
+    machine.getAddress()
+      .setPlace(place);
     return this;
   }
 
   public VendingMachineBuilder address(final String address)
   {
-    machine.setAddress(address);
+    machine.getAddress()
+      .setStreetAddress(address);
     return this;
   }
 

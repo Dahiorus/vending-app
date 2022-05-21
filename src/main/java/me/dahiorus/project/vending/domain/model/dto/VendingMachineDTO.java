@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import me.dahiorus.project.vending.domain.model.Address;
 import me.dahiorus.project.vending.domain.model.CardSystemStatus;
 import me.dahiorus.project.vending.domain.model.ChangeSystemStatus;
 import me.dahiorus.project.vending.domain.model.ItemType;
@@ -25,19 +26,7 @@ public class VendingMachineDTO extends AbstractDTO<VendingMachine>
 
   @Getter
   @Setter
-  private Double latitude;
-
-  @Getter
-  @Setter
-  private Double longitude;
-
-  @Getter
-  @Setter
-  private String place;
-
-  @Getter
-  @Setter
-  private String address;
+  private Address address = new Address();
 
   @Schema(accessMode = AccessMode.READ_ONLY)
   @Getter

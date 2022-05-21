@@ -120,7 +120,8 @@ class VendingMachineDtoValidatorTest
   {
     dto = buildDto("1234", "1 Fake Street", ItemType.FOOD, PowerStatus.ON,
         WorkingStatus.OK);
-    dto.setPlace(RandomStringUtils.randomAlphanumeric(256));
+    dto.getAddress()
+      .setPlace(RandomStringUtils.randomAlphanumeric(256));
 
     ValidationResults results = validator.validate(dto);
 

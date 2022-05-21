@@ -182,10 +182,12 @@
     "objectClass": "me.dahiorus.project.vending.domain.model.dto.VendingMachineDTO",
     "source": {
       "serialNumber": "123654789",
-      "latitude": 0,
-      "longitude": 0,
-      "place": "string",
-      "address": "string",
+      "address": {
+        "latitude": 0,
+        "longitude": 0,
+        "place": "string",
+        "streetAddress": "string"
+      },
       "lastIntervention": "2022-04-28T16:28:50.251Z",
       "temperature": 0,
       "type": "HOT_BAVERAGE",
@@ -204,10 +206,12 @@
     ],
     "expected": {
       "serialNumber": "123654789",
-      "latitude": 0,
-      "longitude": 0,
-      "place": "string",
-      "address": "string",
+      "address": {
+        "latitude": 0,
+        "longitude": 0,
+        "place": "string",
+        "streetAddress": "string"
+      },
       "lastIntervention": "2022-04-28T16:28:50.251Z",
       "temperature": 0,
       "type": "HOT_BAVERAGE",
