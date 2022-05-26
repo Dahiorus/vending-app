@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.domain.dao;
 
+import static me.dahiorus.project.vending.domain.model.Report.reportAt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
@@ -37,7 +38,7 @@ class ReportDaoTest
   @BeforeEach
   void initTestData()
   {
-    entity = dao.save(Report.of(VendingMachineBuilder.builder()
+    entity = dao.save(reportAt(VendingMachineBuilder.builder()
       .serialNumber("1234")
       .address("1 rue Bidon")
       .changeMoneyStatus(ChangeSystemStatus.FULL)
@@ -81,7 +82,7 @@ class ReportDaoTest
   @DisplayName("Always get the last generated report")
   void multipleReportOnMachineReturnLast()
   {
-    dao.save(Report.of(VendingMachineBuilder.builder()
+    dao.save(reportAt(VendingMachineBuilder.builder()
       .serialNumber("1234")
       .address("1 rue Bidon")
       .changeMoneyStatus(ChangeSystemStatus.NORMAL)

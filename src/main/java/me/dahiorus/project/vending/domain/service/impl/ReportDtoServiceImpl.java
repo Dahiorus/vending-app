@@ -1,5 +1,7 @@
 package me.dahiorus.project.vending.domain.service.impl;
 
+import static me.dahiorus.project.vending.domain.model.Report.reportAt;
+
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -51,7 +53,7 @@ public class ReportDtoServiceImpl extends DtoServiceImpl<Report, ReportDTO, Repo
     Optional<Report> lastReportOpt = dao.findLastGenerated(machineToReport);
     Instant lastReportingDate = lastReportOpt.map(Report::getCreatedAt)
       .orElse(null);
-    Report report = dao.save(Report.of(machineToReport, lastReportingDate));
+    Report report = dao.save(reportAt(machineToReport, lastReportingDate));
     ReportDTO dto = dtoMapper.toDto(report, getDomainClass());
 
     log.info("Report created for vending machine {} : {}", machineToReport.getId(), report);

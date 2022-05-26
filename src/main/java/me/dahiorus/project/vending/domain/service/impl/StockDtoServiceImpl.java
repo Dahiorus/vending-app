@@ -69,7 +69,7 @@ public class StockDtoServiceImpl implements StockDtoService
     {
       log.debug("Provisioning a new item to the vending machine {}: {} with quantity of {}", id,
         item, quantity);
-      Stock stock = Stock.of(itemToProvision, quantity);
+      Stock stock = Stock.fill(itemToProvision, quantity);
       machine.addStock(stock);
       dao.save(stock);
     }

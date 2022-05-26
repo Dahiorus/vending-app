@@ -43,7 +43,7 @@ public class Report extends AbstractEntity
 
   private ChangeSystemStatus changeMoneyStatus;
 
-  public static Report of(final VendingMachine machine, @Nullable final Instant lastReportingDate)
+  public static Report reportAt(final VendingMachine machine, @Nullable final Instant lastReportingDate)
   {
     Report report = new Report();
     report.machineSerialNumber = machine.getSerialNumber();
@@ -56,7 +56,7 @@ public class Report extends AbstractEntity
     report.changeMoneyStatus = machine.getChangeMoneyStatus();
     report.reportStocks = machine.getStocks()
       .stream()
-      .map(ReportStock::of)
+      .map(ReportStock::report)
       .toList();
     report.reportStocks.forEach(s -> s.setReport(report));
 

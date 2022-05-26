@@ -22,7 +22,7 @@ public class ReportStock extends AbstractEntity
 
   private Report report;
 
-  public static ReportStock of(final Stock stock)
+  public static ReportStock report(final Stock stock)
   {
     ReportStock reportStock = new ReportStock();
     reportStock.itemName = stock.getItem()

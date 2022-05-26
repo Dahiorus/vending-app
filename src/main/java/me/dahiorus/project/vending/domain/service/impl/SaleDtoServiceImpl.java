@@ -64,7 +64,7 @@ public class SaleDtoServiceImpl implements SaleDtoService
     log.debug("Adding a new sale of '{}' with amount of {} to the vending machine {}",
       item.getName(), item.getPrice(), id);
 
-    Sale sale = Sale.of(itemToPurchase, machine);
+    Sale sale = sell(itemToPurchase, machine);
     sale = dao.save(sale);
     machine.addSale(sale);
     VendingMachine updatedMachine = vendingMachineDao.save(machine);

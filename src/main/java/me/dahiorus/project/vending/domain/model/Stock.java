@@ -23,7 +23,7 @@ public class Stock extends AbstractEntity
 
   private Integer quantity;
 
-  public static Stock of(final Item item, final Integer quantity)
+  public static Stock fill(final Item item, final Integer quantity)
   {
     Stock stock = new Stock();
     stock.setItem(item);
