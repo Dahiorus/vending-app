@@ -28,6 +28,7 @@ import me.dahiorus.project.vending.domain.exception.ValidationException;
 import me.dahiorus.project.vending.domain.model.dto.UserDTO;
 import me.dahiorus.project.vending.domain.service.UserDtoService;
 import me.dahiorus.project.vending.web.api.AppWebService;
+import me.dahiorus.project.vending.web.api.CreateRestAPI;
 import me.dahiorus.project.vending.web.api.model.AuthenticateRequest;
 import me.dahiorus.project.vending.web.api.model.AuthenticateResponse;
 import me.dahiorus.project.vending.web.api.model.RefreshTokenRequest;
@@ -40,7 +41,7 @@ import me.dahiorus.project.vending.web.security.SecurityConstants;
 @RestController
 @Log4j2
 @RequiredArgsConstructor
-public class PublicRestController implements AppWebService
+public class PublicRestController implements CreateRestAPI<UserDTO>, AppWebService
 {
   private final UserDtoService userDtoService;
 
@@ -48,11 +49,12 @@ public class PublicRestController implements AppWebService
 
   private final JwtService jwtService;
 
+  @Override
   @Operation(description = "Register a user")
   @ApiResponse(responseCode = "201", description = "User registered")
   @PostMapping(value = SecurityConstants.REGISTER_ENDPOINT, consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaTypes.HAL_JSON_VALUE)
-  public ResponseEntity<EntityModel<UserDTO>> register(@RequestBody final UserDTO user)
+  public ResponseEntity<EntityModel<UserDTO>> create(@RequestBody final UserDTO user)
       throws ValidationException
   {
     log.debug("Signing up a new user");
