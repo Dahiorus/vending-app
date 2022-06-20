@@ -4,8 +4,6 @@ import static me.dahiorus.project.vending.domain.service.validation.FieldValidat
 import static me.dahiorus.project.vending.domain.service.validation.FieldValidationError.notUniqueValue;
 import static me.dahiorus.project.vending.domain.service.validation.ValidationError.getFullCode;
 
-import java.util.Objects;
-
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
@@ -46,19 +44,14 @@ public class ItemDtoValidator extends DtoValidatorImpl<Item, ItemDTO, DAO<Item>>
     if (price == null || price < .0)
     {
       results.addError(fieldError(Item_.PRICE, getFullCode("item.price_positive"),
-          "The price must be a positive number", price));
+        "The price must be a positive number", price));
     }
 
     // validate name is unique
-    if (!results.hasFieldError(Item_.NAME))
+    if (!results.hasFieldError(Item_.NAME) &&
+      otherExists(dto.getId(), (root, query, cb) -> cb.equal(root.get(Item_.name), name)))
     {
-      dao.findOne((root, query, cb) -> cb.equal(root.get(Item_.name), name))
-        .ifPresent(other -> {
-          if (!Objects.equals(dto.getId(), other.getId()))
-          {
-            results.addError(notUniqueValue(Item_.NAME, name));
-          }
-        });
+      results.addError(notUniqueValue(Item_.NAME, name));
     }
 
   }

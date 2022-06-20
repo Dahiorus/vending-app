@@ -3,20 +3,24 @@ package me.dahiorus.project.vending.domain.service.validation.impl;
 import static me.dahiorus.project.vending.domain.service.validation.FieldValidationError.emptyOrNullValue;
 import static me.dahiorus.project.vending.domain.service.validation.FieldValidationError.maxLength;
 
+import java.util.UUID;
+
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.jpa.domain.Specification;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import me.dahiorus.project.vending.common.HasLogger;
 import me.dahiorus.project.vending.domain.dao.DAO;
 import me.dahiorus.project.vending.domain.model.AbstractEntity;
+import me.dahiorus.project.vending.domain.model.AbstractEntity_;
 import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
 import me.dahiorus.project.vending.domain.service.validation.DtoValidator;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class DtoValidatorImpl<E extends AbstractEntity, D extends AbstractDTO<E>, R extends DAO<E>>
-    implements DtoValidator<D>, HasLogger
+  implements DtoValidator<D>, HasLogger
 {
   protected final R dao;
 
@@ -33,7 +37,8 @@ public abstract class DtoValidatorImpl<E extends AbstractEntity, D extends Abstr
     return results;
   }
 
-  protected void rejectIfEmpty(final String field, final Object value, final ValidationResults validationResults)
+  protected void rejectIfEmpty(final String field, final Object value,
+    final ValidationResults validationResults)
   {
     if (value == null)
     {
@@ -41,7 +46,8 @@ public abstract class DtoValidatorImpl<E extends AbstractEntity, D extends Abstr
     }
   }
 
-  protected void rejectIfBlank(final String field, final String value, final ValidationResults validationResults)
+  protected void rejectIfBlank(final String field, final String value,
+    final ValidationResults validationResults)
   {
     if (StringUtils.isBlank(value))
     {
@@ -50,12 +56,18 @@ public abstract class DtoValidatorImpl<E extends AbstractEntity, D extends Abstr
   }
 
   protected void rejectIfInvalidLength(final String field, final String value, final int maxLength,
-      final ValidationResults validationResults)
+    final ValidationResults validationResults)
   {
     if (StringUtils.length(value) > maxLength)
     {
       validationResults.addError(maxLength(field, maxLength));
     }
+  }
+
+  protected boolean otherExists(UUID id, Specification<E> specification)
+  {
+    return dao.count(Specification.where(specification)
+      .and((root, query, cb) -> cb.notEqual(root.get(AbstractEntity_.id), id))) != 0;
   }
 
   protected abstract void doValidate(D dto, ValidationResults results);

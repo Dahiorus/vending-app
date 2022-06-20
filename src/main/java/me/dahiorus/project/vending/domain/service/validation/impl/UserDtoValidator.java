@@ -2,8 +2,6 @@ package me.dahiorus.project.vending.domain.service.validation.impl;
 
 import static me.dahiorus.project.vending.domain.service.validation.FieldValidationError.notUniqueValue;
 
-import java.util.Objects;
-
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
@@ -39,16 +37,10 @@ public class UserDtoValidator extends DtoValidatorImpl<AppUser, UserDTO, UserDAO
     rejectIfBlank(AppUser_.LAST_NAME, dto.getLastName(), results);
     rejectIfInvalidLength(AppUser_.LAST_NAME, dto.getLastName(), 255, results);
 
-    if (!results.hasFieldError(AppUser_.EMAIL))
+    if (!results.hasFieldError(AppUser_.EMAIL) && otherExists(dto.getId(),
+      (root, query, cb) -> cb.equal(root.get(AppUser_.email), dto.getEmail())))
     {
-      log.trace("Validating email uniqueness...");
-      dao.findByEmail(dto.getEmail())
-        .ifPresent(other -> {
-          if (!Objects.equals(dto.getId(), other.getId()))
-          {
-            results.addError(notUniqueValue(AppUser_.EMAIL, dto.getEmail()));
-          }
-        });
+      results.addError(notUniqueValue(AppUser_.EMAIL, dto.getEmail()));
     }
   }
 }
