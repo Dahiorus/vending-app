@@ -3,6 +3,8 @@ package me.dahiorus.project.vending.util;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
+import java.util.Arrays;
+
 import org.springframework.data.jpa.domain.Specification;
 
 import io.swagger.v3.core.util.Json;
@@ -35,10 +37,12 @@ public class TestUtils
     assertThat(results.getFieldErrors(field)).isEmpty();
   }
 
-  public static void assertHasExactlyFieldErrors(final ValidationResults results, final String field,
-      final String... codes)
+  public static void assertHasExactlyFieldErrors(final ValidationResults results,
+    final String field, final String... codes)
   {
-    assertThat(results.getFieldErrors(field)).isNotEmpty()
+    assertThat(results.getFieldErrors(field))
+      .as("Expecting %s error(s) on field '%s'", Arrays.asList(codes), field)
+      .isNotEmpty()
       .extracting(FieldValidationError::getCode)
       .containsExactlyInAnyOrder(codes);
   }
