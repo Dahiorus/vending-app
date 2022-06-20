@@ -22,12 +22,12 @@ import me.dahiorus.project.vending.domain.service.ReportDtoService;
 @Log4j2
 @Service
 public class ReportDtoServiceImpl extends DtoServiceImpl<Report, ReportDTO, ReportDAO>
-    implements ReportDtoService
+  implements ReportDtoService
 {
   private final DAO<VendingMachine> vendingMachineDao;
 
   public ReportDtoServiceImpl(final ReportDAO dao, final DtoMapper dtoMapper,
-      final DAO<VendingMachine> vendingMachineDao)
+    final DAO<VendingMachine> vendingMachineDao)
   {
     super(dao, dtoMapper, null);
     this.vendingMachineDao = vendingMachineDao;
@@ -39,7 +39,7 @@ public class ReportDtoServiceImpl extends DtoServiceImpl<Report, ReportDTO, Repo
     return log;
   }
 
-  @Transactional(rollbackFor = EntityNotFound.class)
+  @Transactional
   @Override
   public ReportDTO report(final UUID vendingMachineId) throws EntityNotFound
   {
@@ -66,10 +66,11 @@ public class ReportDtoServiceImpl extends DtoServiceImpl<Report, ReportDTO, Repo
   }
 
   @Override
-  public ReportDTO update(final UUID id, final ReportDTO dto) throws EntityNotFound, ValidationException
+  public ReportDTO update(final UUID id, final ReportDTO dto)
+    throws EntityNotFound, ValidationException
   {
     throw new UnsupportedOperationException(
-        "Cannot update a report. Call report() to create a new report of a vending machine.");
+      "Cannot update a report. Call report() to create a new report of a vending machine.");
   }
 
   @Override

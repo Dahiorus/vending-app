@@ -22,11 +22,11 @@ import me.dahiorus.project.vending.domain.service.validation.DtoValidator;
 @Log4j2
 @Service
 public class VendingMachineDtoServiceImpl
-    extends DtoServiceImpl<VendingMachine, VendingMachineDTO, DAO<VendingMachine>>
-    implements VendingMachineDtoService
+  extends DtoServiceImpl<VendingMachine, VendingMachineDTO, DAO<VendingMachine>>
+  implements VendingMachineDtoService
 {
   public VendingMachineDtoServiceImpl(final DAO<VendingMachine> dao, final DtoMapper dtoMapper,
-      final DtoValidator<VendingMachineDTO> dtoValidator)
+    final DtoValidator<VendingMachineDTO> dtoValidator)
   {
     super(dao, dtoMapper, dtoValidator);
   }
@@ -43,7 +43,7 @@ public class VendingMachineDtoServiceImpl
     return VendingMachineDTO.class;
   }
 
-  @Transactional(rollbackFor = EntityNotFound.class)
+  @Transactional
   @Override
   public VendingMachineDTO resetStatus(final UUID id) throws EntityNotFound
   {

@@ -33,9 +33,10 @@ public class SaleDtoServiceImpl implements SaleDtoService
 
   private final DtoMapper dtoMapper;
 
-  @Transactional(rollbackFor = { EntityNotFound.class, ItemMissing.class })
+  @Transactional
   @Override
-  public SaleDTO purchaseItem(final UUID id, final ItemDTO item) throws EntityNotFound, ItemMissing
+  public SaleDTO purchaseItem(final UUID id, final ItemDTO item)
+    throws EntityNotFound, ItemMissing, VendingMachineNotWorking
   {
     log.traceEntry(() -> id, () -> item);
 
@@ -47,26 +48,23 @@ public class SaleDtoServiceImpl implements SaleDtoService
       throw new ItemMissing("Vending machine " + id + " does not have item " + item.getName());
     }
 
-    machine.getStocks()
-      .stream()
-      .filter(stock -> Objects.equals(stock.getItem(), itemToPurchase))
-      .findFirst()
+    machine.getStock(itemToPurchase)
       .ifPresent(stock -> {
         log.debug("Purchasing '{}' from the vending machine {}", item.getName(), id);
         stock.decrementQuantity();
         stockDao.save(stock);
       });
 
-    log.debug("Adding a new sale of '{}' with amount of {} to the vending machine {}", item.getName(), item.getPrice(),
-        id);
+    log.debug("Adding a new sale of '{}' with amount of {} to the vending machine {}",
+      item.getName(), item.getPrice(), id);
 
     Sale sale = Sale.of(itemToPurchase, machine);
     sale = dao.save(sale);
     machine.addSale(sale);
     VendingMachine updatedMachine = vendingMachineDao.save(machine);
 
-    log.info("Item '{}' purchased from vending machine {} for price {}", item.getName(), updatedMachine.getId(),
-        sale.getAmount());
+    log.info("Item '{}' purchased from vending machine {} for price {}", item.getName(),
+      updatedMachine.getId(), sale.getAmount());
 
     return log.traceExit(dtoMapper.toDto(sale, SaleDTO.class));
   }

@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.domain.service.impl;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,7 +26,7 @@ import me.dahiorus.project.vending.domain.service.validation.DtoValidator;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
 public abstract class DtoServiceImpl<E extends AbstractEntity, D extends AbstractDTO<E>, R extends DAO<E>>
-    implements DtoService<E, D>, HasLogger
+  implements DtoService<E, D>, HasLogger
 {
   protected final R dao;
 
@@ -35,7 +36,8 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
 
   protected final Class<E> entityClass;
 
-  protected DtoServiceImpl(final R dao, final DtoMapper dtoMapper, @Nullable final DtoValidator<D> dtoValidator)
+  protected DtoServiceImpl(final R dao, final DtoMapper dtoMapper,
+    @Nullable final DtoValidator<D> dtoValidator)
   {
     this.dao = dao;
     this.dtoMapper = dtoMapper;
@@ -43,7 +45,7 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     entityClass = dao.getDomainClass();
   }
 
-  @Transactional(rollbackFor = ValidationException.class)
+  @Transactional
   @Override
   public D create(final D dto) throws ValidationException
   {
@@ -62,7 +64,34 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     return createdDto;
   }
 
-  @Transactional(readOnly = true, rollbackFor = EntityNotFound.class)
+  @Transactional
+  @Override
+  public void createAll(final List<D> dtos)
+  {
+    long createCount = 0;
+
+    for (D dto : dtos)
+    {
+      try
+      {
+        create(dto);
+      }
+      catch (ValidationException e)
+      {
+        getLogger().error(e.getMessage());
+        continue;
+      }
+
+      createCount++;
+      if (createCount % 100 == 0)
+      {
+        getLogger().debug("Intermediate flushing after {} creation(s) of {}", createCount,
+          entityClass.getSimpleName());
+        dao.flush();
+      }
+    }
+  }
+
   @Override
   public D read(final UUID id) throws EntityNotFound
   {
@@ -72,7 +101,7 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     return dtoMapper.toDto(entity, getDomainClass());
   }
 
-  @Transactional(rollbackFor = { EntityNotFound.class, ValidationException.class })
+  @Transactional
   @Override
   public D update(final UUID id, final D dto) throws EntityNotFound, ValidationException
   {
@@ -93,7 +122,7 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     return updatedDto;
   }
 
-  @Transactional(rollbackFor = EntityNotFound.class)
+  @Transactional
   @Override
   public void delete(final UUID id) throws EntityNotFound
   {
@@ -106,17 +135,16 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     getLogger().info("{} deleted: ID {}", getDomainClass().getSimpleName(), id);
   }
 
-  @Transactional(readOnly = true)
   @Override
   public Page<D> list(@Nonnull final Pageable pageable, @Nullable final D criteria,
-      @Nullable final ExampleMatcher exampleMatcher)
+    @Nullable final ExampleMatcher exampleMatcher)
   {
     Page<E> entities;
 
     if (criteria != null)
     {
-      getLogger().debug("Getting page {} of {} matching criteria {}", pageable, getDomainClass().getSimpleName(),
-          criteria);
+      getLogger().debug("Getting page {} of {} matching criteria {}", pageable,
+        getDomainClass().getSimpleName(), criteria);
       Example<E> example = toExample(criteria, exampleMatcher);
       entities = dao.findAll(example, pageable);
     }
@@ -129,14 +157,14 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     return entities.map(entity -> dtoMapper.toDto(entity, getDomainClass()));
   }
 
-  private Example<E> toExample(@Nonnull final D criteria, @Nullable final ExampleMatcher exampleMatcher)
+  private Example<E> toExample(@Nonnull final D criteria,
+    @Nullable final ExampleMatcher exampleMatcher)
   {
     E probe = dtoMapper.toEntity(criteria, entityClass);
 
     return exampleMatcher == null ? Example.of(probe) : Example.of(probe, exampleMatcher);
   }
 
-  @Transactional(readOnly = true)
   @Override
   public Optional<D> findById(final UUID id)
   {
@@ -152,7 +180,8 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
   {
     if (dtoValidator.isEmpty())
     {
-      getLogger().debug("No available validator for {}. Skipping the validation", getDomainClass().getSimpleName());
+      getLogger().debug("No available validator for {}. Skipping the validation",
+        getDomainClass().getSimpleName());
       return new ValidationResults();
     }
 

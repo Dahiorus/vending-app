@@ -20,14 +20,15 @@ import me.dahiorus.project.vending.domain.service.validation.DtoValidator;
 
 @Log4j2
 @Service
-public class ItemDtoServiceImpl extends DtoServiceImpl<Item, ItemDTO, DAO<Item>> implements ItemDtoService
+public class ItemDtoServiceImpl extends DtoServiceImpl<Item, ItemDTO, DAO<Item>>
+  implements ItemDtoService
 {
   private final DAO<BinaryData> binaryDataDao;
 
-  public ItemDtoServiceImpl(final DAO<Item> manager, final DtoMapper dtoMapper,
-      final DtoValidator<ItemDTO> dtoValidator, final DAO<BinaryData> binaryDataDao)
+  public ItemDtoServiceImpl(final DAO<Item> dao, final DtoMapper dtoMapper,
+    final DtoValidator<ItemDTO> dtoValidator, final DAO<BinaryData> binaryDataDao)
   {
-    super(manager, dtoMapper, dtoValidator);
+    super(dao, dtoMapper, dtoValidator);
     this.binaryDataDao = binaryDataDao;
   }
 
@@ -43,7 +44,7 @@ public class ItemDtoServiceImpl extends DtoServiceImpl<Item, ItemDTO, DAO<Item>>
     return ItemDTO.class;
   }
 
-  @Transactional(rollbackFor = { EntityNotFound.class })
+  @Transactional
   @Override
   public ItemDTO uploadImage(final UUID id, final BinaryDataDTO picture) throws EntityNotFound
   {
@@ -62,7 +63,6 @@ public class ItemDtoServiceImpl extends DtoServiceImpl<Item, ItemDTO, DAO<Item>>
     return dtoMapper.toDto(updatedEntity, ItemDTO.class);
   }
 
-  @Transactional(readOnly = true)
   @Override
   public Optional<BinaryDataDTO> getImage(final UUID id) throws EntityNotFound
   {

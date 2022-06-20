@@ -31,7 +31,8 @@ import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
 @Log4j2
 @Service
-public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO> implements UserDtoService
+public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO>
+  implements UserDtoService
 {
   private static final String FIELD_PASSWORD = "password";
 
@@ -42,8 +43,8 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
   private final DAO<BinaryData> binaryDataDao;
 
   public UserDtoServiceImpl(final UserDAO dao, final DtoMapper dtoMapper,
-      final DtoValidator<UserDTO> dtoValidator, final PasswordValidator passwordValidator,
-      final PasswordEncoder passwordEncoder, final DAO<BinaryData> binaryDataDao)
+    final DtoValidator<UserDTO> dtoValidator, final PasswordValidator passwordValidator,
+    final PasswordEncoder passwordEncoder, final DAO<BinaryData> binaryDataDao)
   {
     super(dao, dtoMapper, dtoValidator);
     this.passwordValidator = passwordValidator;
@@ -80,15 +81,14 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
   @Override
   protected void doBeforeCallingDao(final AppUser entity, final CrudOperation operation)
   {
-    if ((operation == CrudOperation.CREATE
-        || operation == CrudOperation.UPDATE) && StringUtils.isNotEmpty(entity.getPassword()))
+    if ((operation == CrudOperation.CREATE || operation == CrudOperation.UPDATE) &&
+      StringUtils.isNotEmpty(entity.getPassword()))
     {
       log.debug("Encoding the password of the user {}", entity);
       entity.setEncodedPassword(passwordEncoder.encode(entity.getPassword()));
     }
   }
 
-  @Transactional(readOnly = true)
   @Override
   public UserDTO getByUsername(final String username) throws EntityNotFound
   {
@@ -97,10 +97,10 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
       .orElseThrow(() -> new EntityNotFound("No user exist with the username " + username));
   }
 
-  @Transactional(rollbackFor = { EntityNotFound.class, ValidationException.class })
+  @Transactional
   @Override
   public void updatePassword(final UUID id, final EditPasswordDTO editPassword)
-      throws EntityNotFound, ValidationException
+    throws EntityNotFound, ValidationException
   {
     log.debug("Updating the password of the user {}", id);
 
@@ -109,18 +109,19 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
 
     if (!passwordEncoder.matches(editPassword.oldPassword(), user.getEncodedPassword()))
     {
-      validationResults.addError(
-          fieldError("oldPassword", getFullCode("password.old-password-mismatch"),
-              "The old password must match the user's current password"));
+      validationResults
+        .addError(fieldError("oldPassword", getFullCode("password.old-password-mismatch"),
+          "The old password must match the user's current password"));
     }
     if (passwordEncoder.matches(editPassword.password(), user.getEncodedPassword()))
     {
-      validationResults.addError(
-          fieldError(FIELD_PASSWORD, getFullCode("password.new-password-match"),
-              "The new password must not match the user's current password"));
+      validationResults
+        .addError(fieldError(FIELD_PASSWORD, getFullCode("password.new-password-match"),
+          "The new password must not match the user's current password"));
     }
 
-    ValidationResults passwordValidation = passwordValidator.validate(FIELD_PASSWORD, editPassword.password());
+    ValidationResults passwordValidation =
+      passwordValidator.validate(FIELD_PASSWORD, editPassword.password());
     validationResults.mergeFieldErrors(passwordValidation);
     validationResults.throwIfError("Update password: errors found");
 
@@ -131,7 +132,6 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
     log.info("Password of {} updated", () -> dtoMapper.toDto(updatedUser, UserDTO.class));
   }
 
-  @Transactional(readOnly = true)
   @Override
   public Optional<BinaryDataDTO> getImage(final UUID id) throws EntityNotFound
   {
@@ -140,7 +140,7 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
     return Optional.ofNullable(dtoMapper.toDto(entity.getPicture(), BinaryDataDTO.class));
   }
 
-  @Transactional(rollbackFor = { EntityNotFound.class })
+  @Transactional
   @Override
   public UserDTO uploadImage(final UUID id, final BinaryDataDTO picture) throws EntityNotFound
   {

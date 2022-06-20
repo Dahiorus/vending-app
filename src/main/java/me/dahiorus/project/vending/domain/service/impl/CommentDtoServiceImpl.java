@@ -33,7 +33,7 @@ public class CommentDtoServiceImpl implements CommentDtoService
 
   private final DtoMapper dtoMapper;
 
-  @Transactional(readOnly = true, rollbackFor = EntityNotFound.class)
+  @Transactional(readOnly = true)
   @Override
   public List<CommentDTO> getComments(final UUID id) throws EntityNotFound
   {
@@ -47,7 +47,7 @@ public class CommentDtoServiceImpl implements CommentDtoService
     return comments;
   }
 
-  @Transactional(rollbackFor = { EntityNotFound.class, ValidationException.class })
+  @Transactional
   @Override
   public CommentDTO comment(final UUID id, final CommentDTO comment) throws EntityNotFound, ValidationException
   {
