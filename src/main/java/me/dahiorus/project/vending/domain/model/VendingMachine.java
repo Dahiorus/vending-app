@@ -4,9 +4,9 @@ import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -24,15 +24,14 @@ import javax.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "vending_machine",
-    uniqueConstraints = @UniqueConstraint(name = "UK_VENDING_MACHINE_SERIAL_NUMBER", columnNames = "serialNumber"),
-    indexes = {
-        @Index(columnList = "streetAddress", name = "IDX_VENDING_MACHINE_ADDRESS"),
-        @Index(columnList = "latitude, longitude", name = "IDX_VENDING_MACHINE_POSITION"),
-        @Index(columnList = "place", name = "IDX_VENDING_MACHINE_PLACE"),
-        @Index(columnList = "type", name = "IDX_VENDING_MACHINE_TYPE"),
-        @Index(columnList = "powerStatus", name = "IDX_VENDING_MACHINE_POWER_STATUS"),
-        @Index(columnList = "powerStatus, workingStatus", name = "IDX_VENDING_MACHINE_WORKING_STATUS")
-    })
+  uniqueConstraints = @UniqueConstraint(name = "UK_VENDING_MACHINE_SERIAL_NUMBER",
+    columnNames = "serialNumber"),
+  indexes = { @Index(columnList = "streetAddress", name = "IDX_VENDING_MACHINE_ADDRESS"),
+    @Index(columnList = "latitude, longitude", name = "IDX_VENDING_MACHINE_POSITION"),
+    @Index(columnList = "place", name = "IDX_VENDING_MACHINE_PLACE"),
+    @Index(columnList = "type", name = "IDX_VENDING_MACHINE_TYPE"),
+    @Index(columnList = "powerStatus", name = "IDX_VENDING_MACHINE_POWER_STATUS"), @Index(
+      columnList = "powerStatus, workingStatus", name = "IDX_VENDING_MACHINE_WORKING_STATUS") })
 public class VendingMachine extends AbstractEntity
 {
   private String serialNumber;
@@ -192,8 +191,8 @@ public class VendingMachine extends AbstractEntity
   @Transient
   public boolean isAllSystemClear()
   {
-    return isWorking() && rfidStatus == CardSystemStatus.NORMAL && smartCardStatus == CardSystemStatus.NORMAL
-        && changeMoneyStatus == ChangeSystemStatus.NORMAL;
+    return isWorking() && rfidStatus == CardSystemStatus.NORMAL &&
+      smartCardStatus == CardSystemStatus.NORMAL && changeMoneyStatus == ChangeSystemStatus.NORMAL;
   }
 
   public void setChangeMoneyStatus(final ChangeSystemStatus changeMoneyStatus)
@@ -201,9 +200,10 @@ public class VendingMachine extends AbstractEntity
     this.changeMoneyStatus = changeMoneyStatus;
   }
 
-  @OneToMany(orphanRemoval = true, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-  @JoinColumn(name = "vending_machine_id", foreignKey = @ForeignKey(name = "FK_VENDING_MACHINE_COMMENT"),
-      updatable = false, nullable = false)
+  @OneToMany(orphanRemoval = true, fetch = FetchType.LAZY)
+  @JoinColumn(name = "vending_machine_id",
+    foreignKey = @ForeignKey(name = "FK_VENDING_MACHINE_COMMENT"), updatable = false,
+    nullable = false)
   @OrderBy(value = "createdAt DESC")
   public List<Comment> getComments()
   {
@@ -220,9 +220,9 @@ public class VendingMachine extends AbstractEntity
     getComments().add(comment);
   }
 
-  @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.PERSIST)
+  @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
   @JoinColumn(name = "vending_machine_id", nullable = false, updatable = false,
-      foreignKey = @ForeignKey(name = "FK_STOCK_VENDING_MACHINE"))
+    foreignKey = @ForeignKey(name = "FK_STOCK_VENDING_MACHINE"))
   public List<Stock> getStocks()
   {
     return stocks;
@@ -233,6 +233,13 @@ public class VendingMachine extends AbstractEntity
     this.stocks = stocks;
   }
 
+  public Optional<Stock> getStock(final Item item)
+  {
+    return stocks.stream()
+      .filter(stock -> Objects.equals(stock.getItem(), item))
+      .findFirst();
+  }
+
   public void addStock(final Stock stock)
   {
     stocks.add(stock);
@@ -240,20 +247,16 @@ public class VendingMachine extends AbstractEntity
 
   public boolean hasItem(@Nonnull final Item item)
   {
-    return getStocks().stream()
-      .anyMatch(stock -> Objects.equals(stock.getItem(), item));
+    return getStock(item).isPresent();
   }
 
   public long getQuantityInStock(final Item item)
   {
-    return stocks.stream()
-      .filter(stock -> Objects.equals(stock.getItem(), item))
-      .findFirst()
-      .map(Stock::getQuantity)
+    return getStock(item).map(Stock::getQuantity)
       .orElse(0);
   }
 
-  @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "machine", cascade = CascadeType.MERGE)
+  @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "machine")
   @OrderBy(value = "createdAt DESC")
   public List<Sale> getSales()
   {
@@ -288,9 +291,10 @@ public class VendingMachine extends AbstractEntity
   @Override
   public String toString()
   {
-    return super.toString() + "[serialNumber=" + serialNumber + ", address=" + address + ", lastIntervention="
-        + lastIntervention + ", temperature=" + temperature + ", type=" + type + ", powerStatus=" + powerStatus
-        + ", workingStatus=" + workingStatus + ", rfidStatus=" + rfidStatus + ", smartCardStatus=" + smartCardStatus
-        + ", changeMoneyStatus=" + changeMoneyStatus + "]";
+    return super.toString() + "[serialNumber=" + serialNumber + ", address=" + address +
+      ", lastIntervention=" + lastIntervention + ", temperature=" + temperature + ", type=" + type +
+      ", powerStatus=" + powerStatus + ", workingStatus=" + workingStatus + ", rfidStatus=" +
+      rfidStatus + ", smartCardStatus=" + smartCardStatus + ", changeMoneyStatus=" +
+      changeMoneyStatus + "]";
   }
 }
