@@ -1,19 +1,17 @@
 package me.dahiorus.project.vending.domain.service.impl;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.domain.model.AbstractEntity;
 import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
 import me.dahiorus.project.vending.domain.service.DtoMapper;
 
+@Log4j2
 @Component
 public class DtoMapperImpl implements DtoMapper
 {
-  private static final Logger logger = LogManager.getLogger(DtoMapperImpl.class);
-
   private final ModelMapper mapper;
 
   public DtoMapperImpl()
@@ -22,9 +20,10 @@ public class DtoMapperImpl implements DtoMapper
   }
 
   @Override
-  public <E extends AbstractEntity, D extends AbstractDTO<E>> E toEntity(final D dto, final Class<E> targetClass)
+  public <E extends AbstractEntity, D extends AbstractDTO<E>> E toEntity(final D dto,
+    final Class<E> targetClass)
   {
-    logger.debug("Converting {} to instance of {}", dto, targetClass.getSimpleName());
+    log.debug("Converting {} to instance of {}", dto, targetClass.getSimpleName());
 
     if (dto == null)
     {
@@ -35,9 +34,10 @@ public class DtoMapperImpl implements DtoMapper
   }
 
   @Override
-  public <E extends AbstractEntity, D extends AbstractDTO<E>> D toDto(final E entity, final Class<D> targetClass)
+  public <E extends AbstractEntity, D extends AbstractDTO<E>> D toDto(final E entity,
+    final Class<D> targetClass)
   {
-    logger.debug("Converting {} to instance of {}", entity, targetClass.getSimpleName());
+    log.debug("Converting {} to instance of {}", entity, targetClass.getSimpleName());
 
     if (entity == null)
     {
@@ -48,7 +48,8 @@ public class DtoMapperImpl implements DtoMapper
   }
 
   @Override
-  public <E extends AbstractEntity, D extends AbstractDTO<E>> void patchEntity(final D dtoSource, final E entityTarget)
+  public <E extends AbstractEntity, D extends AbstractDTO<E>> void patchEntity(final D dtoSource,
+    final E entityTarget)
   {
     if (dtoSource == null)
     {
