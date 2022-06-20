@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ItemMissing;
+import me.dahiorus.project.vending.domain.exception.VendingMachineNotWorking;
 import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
 import me.dahiorus.project.vending.domain.model.dto.SaleDTO;
 import me.dahiorus.project.vending.domain.service.ItemDtoService;
@@ -40,7 +41,8 @@ public class SaleRestController implements AppWebService
   @ApiResponse(responseCode = "200", description = "Item purchased")
   @PostMapping("/purchase/{itemId}")
   public ResponseEntity<EntityModel<SaleDTO>> purchaseItem(@PathVariable("id") final UUID id,
-      @PathVariable("itemId") final UUID itemId) throws EntityNotFound, ItemMissing
+    @PathVariable("itemId") final UUID itemId)
+    throws EntityNotFound, ItemMissing, VendingMachineNotWorking
   {
     ItemDTO item = itemDtoService.read(itemId);
     SaleDTO sale = dtoService.purchaseItem(id, item);

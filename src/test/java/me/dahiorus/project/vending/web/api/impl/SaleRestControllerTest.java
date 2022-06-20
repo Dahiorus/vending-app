@@ -14,6 +14,7 @@ import org.springframework.hateoas.MediaTypes;
 
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ItemMissing;
+import me.dahiorus.project.vending.domain.exception.VendingMachineNotWorking;
 import me.dahiorus.project.vending.domain.model.Item;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
 import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
@@ -56,7 +57,8 @@ class SaleRestControllerTest extends RestControllerTest
       .price(2.5)
       .buildDto();
     when(itemDtoService.read(itemId)).thenReturn(item);
-    when(saleDtoService.purchaseItem(id, item)).thenThrow(new EntityNotFound(VendingMachine.class, id));
+    when(saleDtoService.purchaseItem(id, item))
+      .thenThrow(new EntityNotFound(VendingMachine.class, id));
 
     mockMvc.perform(post("/api/v1/vending-machines/{id}/purchase/{itemId}", id, itemId))
       .andExpect(status().isNotFound());
@@ -82,6 +84,22 @@ class SaleRestControllerTest extends RestControllerTest
       .buildDto();
     when(itemDtoService.read(itemId)).thenReturn(item);
     when(saleDtoService.purchaseItem(id, item)).thenThrow(new ItemMissing("Exception from test"));
+
+    mockMvc.perform(post("/api/v1/vending-machines/{id}/purchase/{itemId}", id, itemId))
+      .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void purchaseFromNotWorkingMachine() throws Exception
+  {
+    UUID id = UUID.randomUUID(), itemId = UUID.randomUUID();
+    ItemDTO item = ItemBuilder.builder()
+      .id(itemId)
+      .price(2.5)
+      .buildDto();
+    when(itemDtoService.read(itemId)).thenReturn(item);
+    when(saleDtoService.purchaseItem(id, item))
+      .thenThrow(new VendingMachineNotWorking("Exception from test"));
 
     mockMvc.perform(post("/api/v1/vending-machines/{id}/purchase/{itemId}", id, itemId))
       .andExpect(status().isBadRequest());

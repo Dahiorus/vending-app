@@ -16,6 +16,7 @@ import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ItemMissing;
 import me.dahiorus.project.vending.domain.exception.UserNotAuthenticated;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
+import me.dahiorus.project.vending.domain.exception.VendingMachineNotWorking;
 
 @RestControllerAdvice(basePackages = "me.dahiorus.project.vending.web")
 @NoArgsConstructor
@@ -46,9 +47,9 @@ public class RestResponseExceptionHandler
     return body;
   }
 
-  @ExceptionHandler(ItemMissing.class)
+  @ExceptionHandler({ ItemMissing.class, VendingMachineNotWorking.class })
   @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-  public Object handleItemMissing(final ItemMissing e)
+  public Object handleItemMissing(final Exception e)
   {
     log.error(e.getMessage());
 

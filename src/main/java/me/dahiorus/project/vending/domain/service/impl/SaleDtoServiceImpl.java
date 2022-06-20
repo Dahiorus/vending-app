@@ -1,6 +1,5 @@
 package me.dahiorus.project.vending.domain.service.impl;
 
-import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -11,6 +10,7 @@ import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.domain.dao.DAO;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ItemMissing;
+import me.dahiorus.project.vending.domain.exception.VendingMachineNotWorking;
 import me.dahiorus.project.vending.domain.model.Item;
 import me.dahiorus.project.vending.domain.model.Sale;
 import me.dahiorus.project.vending.domain.model.Stock;
@@ -41,6 +41,12 @@ public class SaleDtoServiceImpl implements SaleDtoService
     log.traceEntry(() -> id, () -> item);
 
     VendingMachine machine = vendingMachineDao.read(id);
+
+    if (!machine.isWorking())
+    {
+      throw new VendingMachineNotWorking("The vending machine " + id + " is not working");
+    }
+
     Item itemToPurchase = dtoMapper.toEntity(item, Item.class);
 
     if (!machine.hasItem(itemToPurchase) || machine.getQuantityInStock(itemToPurchase) == 0L)

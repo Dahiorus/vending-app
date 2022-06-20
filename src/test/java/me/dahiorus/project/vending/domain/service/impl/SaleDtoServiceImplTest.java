@@ -21,10 +21,13 @@ import me.dahiorus.project.vending.domain.dao.StockDAO;
 import me.dahiorus.project.vending.domain.dao.VendingMachineDAO;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ItemMissing;
+import me.dahiorus.project.vending.domain.exception.VendingMachineNotWorking;
 import me.dahiorus.project.vending.domain.model.Item;
 import me.dahiorus.project.vending.domain.model.ItemType;
+import me.dahiorus.project.vending.domain.model.PowerStatus;
 import me.dahiorus.project.vending.domain.model.Stock;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
+import me.dahiorus.project.vending.domain.model.WorkingStatus;
 import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
 import me.dahiorus.project.vending.domain.model.dto.SaleDTO;
 import me.dahiorus.project.vending.util.ItemBuilder;
@@ -67,9 +70,8 @@ class SaleDtoServiceImplTest
 
     SaleDTO sale = dtoService.purchaseItem(machine.getId(), itemToPurchase);
 
-    assertAll(
-        () -> assertThat(sale.getAmount()).isEqualTo(itemToPurchase.getPrice()),
-        () -> assertThat(machine.getSales()).isNotEmpty());
+    assertAll(() -> assertThat(sale.getAmount()).isEqualTo(itemToPurchase.getPrice()),
+      () -> assertThat(machine.getSales()).isNotEmpty());
   }
 
   @Test
@@ -120,6 +122,19 @@ class SaleDtoServiceImplTest
     verify(dao, never()).save(any());
   }
 
+  @Test
+  void purchaseFromNotWorkingMachine() throws Exception
+  {
+    VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.FOOD);
+    machine.setPowerStatus(PowerStatus.OFF);
+    when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
+
+    assertThatExceptionOfType(VendingMachineNotWorking.class)
+      .isThrownBy(() -> dtoService.purchaseItem(machine.getId(), new ItemDTO()));
+    verify(vendingMachineDao, never()).save(any());
+    verify(dao, never()).save(any());
+  }
+
   static Item buildItem(final String name, final ItemType type, final Double price)
   {
     return ItemBuilder.builder()
@@ -134,6 +149,8 @@ class SaleDtoServiceImplTest
     return VendingMachineBuilder.builder()
       .id(id)
       .itemType(itemType)
+      .powerStatus(PowerStatus.ON)
+      .workingStatus(WorkingStatus.OK)
       .build();
   }
 
