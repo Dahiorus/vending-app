@@ -1,17 +1,19 @@
 package me.dahiorus.project.vending.web.api.request;
 
+import static java.time.Duration.ofHours;
 import static me.dahiorus.project.vending.domain.service.validation.FieldValidationError.fieldError;
 import static org.apache.commons.io.FilenameUtils.getExtension;
+import static org.springframework.http.CacheControl.maxAge;
+import static org.springframework.http.ContentDisposition.inline;
+import static org.springframework.http.MediaType.parseMediaType;
 import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -53,9 +55,11 @@ public class MultipartFileUtils
 
   public static ResponseEntity<ByteArrayResource> convertToResponse(final Optional<BinaryDataDTO> dto)
   {
-    return dto.map(data -> ok().contentType(MediaType.parseMediaType(data.getContentType()))
-      .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + data.getName() + "\"")
-      .cacheControl(CacheControl.maxAge(Duration.ofHours(1))
+    return dto.map(data -> ok().contentType(parseMediaType(data.getContentType()))
+      .header(HttpHeaders.CONTENT_DISPOSITION, inline().filename(data.getName())
+        .build()
+        .toString())
+      .cacheControl(maxAge(ofHours(1))
         .cachePublic())
       .lastModified(data.getCreatedAt())
       .contentLength(data.getSize())
