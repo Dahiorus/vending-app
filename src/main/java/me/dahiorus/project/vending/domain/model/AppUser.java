@@ -17,12 +17,12 @@ import javax.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "app_user", uniqueConstraints = @UniqueConstraint(columnNames = "email", name = "UK_USER_EMAIL"),
-    indexes = {
-        @Index(columnList = "firstName, lastName", name = "IDX_USER_FIRST_NAME_LAST_NAME"),
-        @Index(columnList = "firstName", name = "IDX_USER_FIRST_NAME"),
-        @Index(columnList = "lastName", name = "IDX_USER_LAST_NAME"),
-        @Index(columnList = "email", name = "IDX_USER_EMAIL")
-    })
+  indexes = {
+    @Index(columnList = "firstName, lastName", name = "IDX_USER_FIRST_NAME_LAST_NAME"),
+    @Index(columnList = "firstName", name = "IDX_USER_FIRST_NAME"),
+    @Index(columnList = "lastName", name = "IDX_USER_LAST_NAME"),
+    @Index(columnList = "email", name = "IDX_USER_EMAIL")
+  })
 public class AppUser extends AbstractEntity
 {
   private String firstName;
@@ -107,7 +107,7 @@ public class AppUser extends AbstractEntity
 
   @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "app_user_role", indexes = @Index(columnList = "role_name", name = "IDX_USER_ROLE_NAME"),
-      joinColumns = @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_USER_ROLE_USER_ID")))
+    joinColumns = @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_USER_ROLE_USER_ID")))
   @Column(name = "role_name", nullable = false)
   public List<String> getRoles()
   {

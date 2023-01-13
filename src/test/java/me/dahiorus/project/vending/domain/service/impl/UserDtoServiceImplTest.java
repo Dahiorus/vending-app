@@ -106,9 +106,9 @@ class UserDtoServiceImplTest
       assertAll(() -> assertThat(createdUser).hasFieldOrPropertyWithValue("firstName", user.getFirstName())
         .hasFieldOrPropertyWithValue("lastName", user.getLastName())
         .hasFieldOrPropertyWithValue("email", user.getEmail()),
-          () -> assertThat(passwordEncoder.matches("Secret123", userArg.getValue()
-            .getEncodedPassword())).describedAs("Encoded password must match the raw password")
-              .isTrue());
+        () -> assertThat(passwordEncoder.matches("Secret123", userArg.getValue()
+          .getEncodedPassword())).describedAs("Encoded password must match the raw password")
+            .isTrue());
     }
 
     @Test
@@ -120,7 +120,7 @@ class UserDtoServiceImplTest
       when(passwordValidator.validate("password", user.getPassword())).then(invocation -> {
         ValidationResults results = new ValidationResults();
         results.addError(FieldValidationError.fieldError("password", "validation.constraints.password.min-length",
-            "Password too short", 12));
+          "Password too short", 12));
         return results;
       });
 
@@ -129,7 +129,7 @@ class UserDtoServiceImplTest
     }
 
     UserDTO buildUser(final String firstName, final String lastName, final String email,
-        final String rawPassword)
+      final String rawPassword)
     {
       return UserBuilder.builder()
         .firstName(firstName)
@@ -185,7 +185,7 @@ class UserDtoServiceImplTest
       dtoService.update(id, dto);
 
       assertAll(() -> assertThat(passwordEncoder.matches("Secret", user.getEncodedPassword())).isTrue(),
-          () -> assertThat(user.getPassword()).isNull());
+        () -> assertThat(user.getPassword()).isNull());
     }
   }
 
@@ -261,7 +261,7 @@ class UserDtoServiceImplTest
       when(passwordValidator.validate("password", editPwd.password())).then(invoc -> {
         ValidationResults results = new ValidationResults();
         results.addError(
-            fieldError(invoc.getArgument(0), "validation.constraints.password.min-length", "Pwd error from test"));
+          fieldError(invoc.getArgument(0), "validation.constraints.password.min-length", "Pwd error from test"));
         return results;
       });
 

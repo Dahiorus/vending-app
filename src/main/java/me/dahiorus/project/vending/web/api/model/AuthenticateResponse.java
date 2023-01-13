@@ -8,6 +8,6 @@ public record AuthenticateResponse(String accessToken, String refreshToken)
   public String toString()
   {
     return "AuthenticateResponse [accessToken=" + StringUtils.abbreviate(accessToken, 10) + ", refreshToken="
-        + StringUtils.abbreviate(refreshToken, 10) + "]";
+      + StringUtils.abbreviate(refreshToken, 10) + "]";
   }
 }

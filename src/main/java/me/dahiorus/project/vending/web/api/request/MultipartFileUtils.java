@@ -47,7 +47,7 @@ public class MultipartFileUtils
     if (!StringUtils.equalsAny(contentType, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE))
     {
       results.addError(fieldError(field, ValidationError.getFullCode("image.wrong-content-type"),
-          "The file must be a JPEG or a PNG", contentType));
+        "The file must be a JPEG or a PNG", contentType));
     }
 
     return results;

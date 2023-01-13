@@ -6,5 +6,5 @@ import me.dahiorus.project.vending.domain.model.VendingMachine;
 public interface StockValidator
 {
   ValidationResults validate(final Item item, final Integer quantity,
-      final VendingMachine machine);
+    final VendingMachine machine);
 }

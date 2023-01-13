@@ -74,12 +74,12 @@ class UserRestControllerTest extends RestControllerTest
           .getId())))
         .andExpect(content().contentType(MediaTypes.HAL_JSON))
         .andExpectAll(
-            jsonPath("id").value(userArg.getValue()
-              .getId()
-              .toString()),
-            jsonPath("firstName").value(user.getFirstName()),
-            jsonPath("lastName").value(user.getLastName()),
-            jsonPath("email").value(user.getEmail()));
+          jsonPath("id").value(userArg.getValue()
+            .getId()
+            .toString()),
+          jsonPath("firstName").value(user.getFirstName()),
+          jsonPath("lastName").value(user.getLastName()),
+          jsonPath("email").value(user.getEmail()));
 
       assertThat(userArg.getValue()
         .getRoles()).containsExactly("ROLE_ADMIN");

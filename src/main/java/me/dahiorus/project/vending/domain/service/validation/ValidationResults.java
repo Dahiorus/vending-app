@@ -39,7 +39,7 @@ public class ValidationResults
     // avoid duplicate error
     if (objectErrors.stream()
       .noneMatch(
-          err -> StringUtils.equals(err.getCode(), e.getCode())))
+        err -> StringUtils.equals(err.getCode(), e.getCode())))
     {
       objectErrors.add(e);
     }
@@ -50,7 +50,7 @@ public class ValidationResults
     // avoid duplicate error on a field
     if (fieldErrors.stream()
       .noneMatch(
-          err -> StringUtils.equals(err.getField(), e.getField()) && StringUtils.equals(err.getCode(), e.getCode())))
+        err -> StringUtils.equals(err.getField(), e.getField()) && StringUtils.equals(err.getCode(), e.getCode())))
     {
       fieldErrors.add(e);
     }
@@ -74,7 +74,7 @@ public class ValidationResults
   }
 
   public void throwIfError(final Object target, final CrudOperation operation)
-      throws ValidationException
+    throws ValidationException
   {
     if (hasError())
     {
@@ -83,7 +83,7 @@ public class ValidationResults
   }
 
   public void throwIfError(final String message)
-      throws ValidationException
+    throws ValidationException
   {
     if (hasError())
     {

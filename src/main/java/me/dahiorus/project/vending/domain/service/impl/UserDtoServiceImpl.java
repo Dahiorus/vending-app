@@ -120,8 +120,7 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
           "The new password must not match the user's current password"));
     }
 
-    ValidationResults passwordValidation =
-      passwordValidator.validate(FIELD_PASSWORD, editPassword.password());
+    ValidationResults passwordValidation = passwordValidator.validate(FIELD_PASSWORD, editPassword.password());
     validationResults.mergeFieldErrors(passwordValidation);
     validationResults.throwIfError("Update password: errors found");
 

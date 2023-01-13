@@ -118,10 +118,10 @@ class ReportDtoServiceImplTest
       ReportDTO report = dtoService.report(machine.getId());
 
       assertAll(
-          () -> assertReportHasMachineInfo(report, machine),
-          () -> assertThat(report.getReportStocks()
-            .get(0)).hasFieldOrPropertyWithValue("itemName", item.getName())
-              .hasFieldOrPropertyWithValue("quantity", stock.getQuantity()));
+        () -> assertReportHasMachineInfo(report, machine),
+        () -> assertThat(report.getReportStocks()
+          .get(0)).hasFieldOrPropertyWithValue("itemName", item.getName())
+            .hasFieldOrPropertyWithValue("quantity", stock.getQuantity()));
     }
 
     @Test
@@ -142,7 +142,7 @@ class ReportDtoServiceImplTest
       ReportDTO report = dtoService.report(machine.getId());
 
       assertAll(() -> assertReportHasMachineInfo(report, machine),
-          () -> assertThat(report.getTotalSaleAmount()).isEqualTo(sale1.getAmount() + sale2.getAmount()));
+        () -> assertThat(report.getTotalSaleAmount()).isEqualTo(sale1.getAmount() + sale2.getAmount()));
     }
 
     @Test
@@ -170,7 +170,7 @@ class ReportDtoServiceImplTest
       ReportDTO report = dtoService.report(machine.getId());
 
       assertAll(() -> assertReportHasMachineInfo(report, machine),
-          () -> assertThat(report.getTotalSaleAmount()).isEqualTo(sale2.getAmount()));
+        () -> assertThat(report.getTotalSaleAmount()).isEqualTo(sale2.getAmount()));
     }
 
     void mockSaveReport()

@@ -103,8 +103,8 @@ class CommentRestControllerTest extends RestControllerTest
     {
       mockMvc
         .perform(
-            post("/api/v1/vending-machines/{id}/comments", UUID.randomUUID()).contentType(MediaType.APPLICATION_JSON)
-              .content(jsonValue(buildComment("Comment", 0))))
+          post("/api/v1/vending-machines/{id}/comments", UUID.randomUUID()).contentType(MediaType.APPLICATION_JSON)
+            .content(jsonValue(buildComment("Comment", 0))))
         .andExpect(status().isForbidden());
     }
 
@@ -117,8 +117,8 @@ class CommentRestControllerTest extends RestControllerTest
 
       mockMvc
         .perform(
-            post("/api/v1/vending-machines/{id}/comments", id).contentType(MediaType.APPLICATION_JSON)
-              .content(jsonValue(buildComment("Comment", 0))))
+          post("/api/v1/vending-machines/{id}/comments", id).contentType(MediaType.APPLICATION_JSON)
+            .content(jsonValue(buildComment("Comment", 0))))
         .andExpect(status().isNotFound());
     }
 
@@ -132,8 +132,8 @@ class CommentRestControllerTest extends RestControllerTest
 
       mockMvc
         .perform(
-            post("/api/v1/vending-machines/{id}/comments", id).contentType(MediaType.APPLICATION_JSON)
-              .content(jsonValue(buildComment("Comment", 0))))
+          post("/api/v1/vending-machines/{id}/comments", id).contentType(MediaType.APPLICATION_JSON)
+            .content(jsonValue(buildComment("Comment", 0))))
         .andExpect(status().isBadRequest());
     }
   }

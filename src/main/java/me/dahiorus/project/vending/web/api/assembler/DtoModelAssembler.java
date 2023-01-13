@@ -17,7 +17,7 @@ import me.dahiorus.project.vending.domain.exception.AppException;
 import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
 
 public abstract class DtoModelAssembler<T extends AbstractDTO<?>>
-    implements SimpleRepresentationModelAssembler<T>, HasLogger
+  implements SimpleRepresentationModelAssembler<T>, HasLogger
 {
   @Override
   public void addLinks(final EntityModel<T> resource)

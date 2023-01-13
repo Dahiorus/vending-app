@@ -30,11 +30,11 @@ public class JwtRequestFilter extends OncePerRequestFilter
 
   @Override
   protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
-      final FilterChain filterChain)
-      throws ServletException, IOException
+    final FilterChain filterChain)
+    throws ServletException, IOException
   {
     if (StringUtils.equalsAny(request.getServletPath(), SecurityConstants.AUTHENTICATE_ENDPOINT,
-        SecurityConstants.REFRESH_TOKEN_ENDPOINT))
+      SecurityConstants.REFRESH_TOKEN_ENDPOINT))
     {
       log.trace("Requesting the authentication or the refresh token path");
       filterChain.doFilter(request, response);

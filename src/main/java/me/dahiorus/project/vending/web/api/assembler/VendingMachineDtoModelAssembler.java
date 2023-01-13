@@ -39,8 +39,8 @@ public class VendingMachineDtoModelAssembler extends DtoModelAssembler<VendingMa
   protected Iterable<Link> buildLinks(final VendingMachineDTO content) throws AppException
   {
     return List.of(linkTo(methodOn(StockRestController.class).getStocks(content.getId())).withRel("stocks"),
-        linkTo(methodOn(CommentRestController.class).getComments(content.getId())).withRel("comments"),
-        linkTo(methodOn(ReportRestController.class).report(content.getId())).withRel("report"),
-        linkTo(methodOn(VendingMachineRestController.class).resetStatus(content.getId())).withRel("reset"));
+      linkTo(methodOn(CommentRestController.class).getComments(content.getId())).withRel("comments"),
+      linkTo(methodOn(ReportRestController.class).report(content.getId())).withRel("report"),
+      linkTo(methodOn(VendingMachineRestController.class).resetStatus(content.getId())).withRel("reset"));
   }
 }

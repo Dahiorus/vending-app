@@ -43,8 +43,8 @@ import me.dahiorus.project.vending.web.api.request.MultipartFileUtils;
 public class ItemRestController extends RestControllerImpl<ItemDTO, ItemDtoService>
 {
   public ItemRestController(final ItemDtoService dtoService,
-      final RepresentationModelAssembler<ItemDTO, EntityModel<ItemDTO>> modelAssembler,
-      final PagedResourcesAssembler<ItemDTO> pageModelAssembler)
+    final RepresentationModelAssembler<ItemDTO, EntityModel<ItemDTO>> modelAssembler,
+    final PagedResourcesAssembler<ItemDTO> pageModelAssembler)
   {
     super(dtoService, modelAssembler, pageModelAssembler);
   }
@@ -72,7 +72,7 @@ public class ItemRestController extends RestControllerImpl<ItemDTO, ItemDtoServi
   @ApiResponse(responseCode = "200", description = "Picture uploaded")
   @PostMapping(value = "/{id}/picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<EntityModel<ItemDTO>> uploadPicture(@PathVariable final UUID id,
-      @RequestParam("file") final MultipartFile file) throws EntityNotFound, ValidationException
+    @RequestParam("file") final MultipartFile file) throws EntityNotFound, ValidationException
   {
     ValidationResults validationResults = MultipartFileUtils.validateImage("file", file);
     validationResults.throwIfError("Unable to upload the given file");

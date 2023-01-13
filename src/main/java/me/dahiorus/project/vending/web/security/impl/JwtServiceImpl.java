@@ -49,7 +49,7 @@ public class JwtServiceImpl implements JwtService
 
   @Override
   public String createAccessToken(final String username, final Collection<? extends GrantedAuthority> authorities)
-      throws InvalidTokenCreation
+    throws InvalidTokenCreation
   {
     Instant now = Instant.now();
     JWTClaimsSet claims = new JWTClaimsSet.Builder()
@@ -115,7 +115,7 @@ public class JwtServiceImpl implements JwtService
       // process the JWT to get the claims, verify the signature
       ConfigurableJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
       JWSKeySelector<SecurityContext> keySelector = new JWSVerificationKeySelector<>(ALGO,
-          new ImmutableSecret<>(secret.getBytes()));
+        new ImmutableSecret<>(secret.getBytes()));
       jwtProcessor.setJWSKeySelector(keySelector);
       jwtProcessor.process(signedJwt, null);
 
@@ -124,9 +124,9 @@ public class JwtServiceImpl implements JwtService
       List<String> roles = claims.getStringListClaim("roles");
 
       List<SimpleGrantedAuthority> authorities = roles == null ? Collections.emptyList()
-          : roles.stream()
-            .map(SimpleGrantedAuthority::new)
-            .toList();
+        : roles.stream()
+          .map(SimpleGrantedAuthority::new)
+          .toList();
 
       log.debug("Token parsed for username '{}'", username);
 

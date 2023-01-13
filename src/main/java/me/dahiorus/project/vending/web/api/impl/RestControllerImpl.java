@@ -48,7 +48,7 @@ import me.dahiorus.project.vending.web.api.request.ExampleMatcherAdapter;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @RequestMapping(produces = MediaTypes.HAL_JSON_VALUE)
 public abstract class RestControllerImpl<D extends AbstractDTO<?>, S extends DtoService<?, D>>
-    implements RestController<D>, HasLogger
+  implements RestController<D>, HasLogger
 {
   protected final S dtoService;
 
@@ -61,11 +61,11 @@ public abstract class RestControllerImpl<D extends AbstractDTO<?>, S extends Dto
   @GetMapping
   @Override
   public ResponseEntity<PagedModel<EntityModel<D>>> list(@ParameterObject final Pageable pageable,
-      @ParameterObject final D criteria,
-      @ParameterObject final ExampleMatcherAdapter exampleMatcherAdapter)
+    @ParameterObject final D criteria,
+    @ParameterObject final ExampleMatcherAdapter exampleMatcherAdapter)
   {
     getLogger().debug("Getting page {} of entities matching criteria [{}, matcher: {}]", pageable, criteria,
-        exampleMatcherAdapter);
+      exampleMatcherAdapter);
 
     Page<D> page = dtoService.list(pageable, criteria, exampleMatcherAdapter.toExampleMatcher());
 
@@ -107,7 +107,7 @@ public abstract class RestControllerImpl<D extends AbstractDTO<?>, S extends Dto
   @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
   @Override
   public ResponseEntity<EntityModel<D>> update(@PathVariable final UUID id, @RequestBody final D dto)
-      throws ValidationException
+    throws ValidationException
   {
     D updatedEntity;
     try
@@ -153,9 +153,9 @@ public abstract class RestControllerImpl<D extends AbstractDTO<?>, S extends Dto
   @PatchMapping(value = "/{id}", consumes = "application/json-patch+json")
   @Override
   public ResponseEntity<EntityModel<D>> patch(@PathVariable final UUID id,
-      @ArraySchema(schema = @Schema(implementation = JsonPatchOperation.class,
-          description = "JSON patch using RFC 6902")) @RequestBody final JsonPatch jsonPatch)
-      throws EntityNotFound, ValidationException
+    @ArraySchema(schema = @Schema(implementation = JsonPatchOperation.class,
+      description = "JSON patch using RFC 6902")) @RequestBody final JsonPatch jsonPatch)
+    throws EntityNotFound, ValidationException
   {
     getLogger().debug("Patching entity with ID {}: {}", id, jsonPatch);
 

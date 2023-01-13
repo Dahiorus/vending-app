@@ -23,14 +23,14 @@ public class StockValidatorImpl implements StockValidator
     if (machine.getType() != item.getType())
     {
       validationResults.addError(objectError(getFullCode("stock.invalid_item"),
-          "Unable to add a stock of " + item.getName() + " in the machine " + machine.getId(), item.getName(),
-          machine.getId()));
+        "Unable to add a stock of " + item.getName() + " in the machine " + machine.getId(), item.getName(),
+        machine.getId()));
     }
 
     if (quantity == null || quantity < 1L)
     {
       validationResults.addError(fieldError("quantity", getFullCode("stock.quantity_positive"),
-          "The quantity to provision must be positive", quantity));
+        "The quantity to provision must be positive", quantity));
     }
 
     return validationResults;

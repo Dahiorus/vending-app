@@ -9,8 +9,8 @@ import javax.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "binary_data",
-    uniqueConstraints = @UniqueConstraint(columnNames = "name", name = "UK_BINARY_DATA_NAME"),
-    indexes = @Index(columnList = "name, contentType", name = "IDX_BINARY_DATA_CONTENT_TYPE_NAME"))
+  uniqueConstraints = @UniqueConstraint(columnNames = "name", name = "UK_BINARY_DATA_NAME"),
+  indexes = @Index(columnList = "name, contentType", name = "IDX_BINARY_DATA_CONTENT_TYPE_NAME"))
 public class BinaryData extends AbstractEntity
 {
   private String name;

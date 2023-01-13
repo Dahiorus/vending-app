@@ -77,8 +77,8 @@ class PasswordValidatorImplTest
   void hasMultipleErrors()
   {
     testOn("secret", "validation.constraints.password.min-length",
-        "validation.constraints.password.min-uppercase-chars",
-        "validation.constraints.password.min-digits", "validation.constraints.password.min-special-chars");
+      "validation.constraints.password.min-uppercase-chars",
+      "validation.constraints.password.min-digits", "validation.constraints.password.min-special-chars");
   }
 
   @ParameterizedTest(name = "Empty password [{0}]")

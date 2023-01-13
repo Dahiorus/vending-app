@@ -52,7 +52,7 @@ class VendingMachineDtoServiceImplTest
     void machineNotWorking() throws Exception
     {
       VendingMachine machine = buildMachine(UUID.randomUUID(), PowerStatus.ON, WorkingStatus.ALERT,
-          CardSystemStatus.ERROR, CardSystemStatus.NORMAL, ChangeSystemStatus.FULL);
+        CardSystemStatus.ERROR, CardSystemStatus.NORMAL, ChangeSystemStatus.FULL);
 
       when(dao.read(machine.getId())).thenReturn(machine);
       when(dao.save(machine)).thenReturn(machine);
@@ -71,7 +71,7 @@ class VendingMachineDtoServiceImplTest
     void machineIsWorking() throws Exception
     {
       VendingMachine machine = buildMachine(UUID.randomUUID(), PowerStatus.ON, WorkingStatus.OK,
-          CardSystemStatus.NORMAL, CardSystemStatus.NORMAL, ChangeSystemStatus.NORMAL);
+        CardSystemStatus.NORMAL, CardSystemStatus.NORMAL, ChangeSystemStatus.NORMAL);
 
       when(dao.read(machine.getId())).thenReturn(machine);
 
@@ -97,8 +97,8 @@ class VendingMachineDtoServiceImplTest
   }
 
   static VendingMachine buildMachine(final UUID id, final PowerStatus powerStatus, final WorkingStatus workingStatus,
-      final CardSystemStatus rfidStatus, final CardSystemStatus smartCardStatus,
-      final ChangeSystemStatus changeSystemStatus)
+    final CardSystemStatus rfidStatus, final CardSystemStatus smartCardStatus,
+    final ChangeSystemStatus changeSystemStatus)
   {
     return VendingMachineBuilder.builder()
       .id(id)

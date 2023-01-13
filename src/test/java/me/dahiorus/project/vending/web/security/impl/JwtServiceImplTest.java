@@ -77,10 +77,10 @@ class JwtServiceImplTest
 
       JWTClaimsSet jwtClaimsSet = parsedJwt.getJWTClaimsSet();
       assertAll(() -> assertThat(jwtClaimsSet.getSubject()).isEqualTo(username),
-          () -> assertThat(jwtClaimsSet.getStringListClaim("roles")).containsExactly("ROLE_USER"),
-          () -> assertThat(jwtClaimsSet.getIssuer()).isEqualTo(jwtProperties.getIssuerUri()),
-          () -> assertThat(jwtClaimsSet.getExpirationTime()).isBefore(Instant.now()
-            .plus(jwtProperties.getAccessTokenDuration())));
+        () -> assertThat(jwtClaimsSet.getStringListClaim("roles")).containsExactly("ROLE_USER"),
+        () -> assertThat(jwtClaimsSet.getIssuer()).isEqualTo(jwtProperties.getIssuerUri()),
+        () -> assertThat(jwtClaimsSet.getExpirationTime()).isBefore(Instant.now()
+          .plus(jwtProperties.getAccessTokenDuration())));
     }
 
     @Test
@@ -112,8 +112,8 @@ class JwtServiceImplTest
 
       JWTClaimsSet jwtClaimsSet = parsedJwt.getJWTClaimsSet();
       assertAll(() -> assertThat(jwtClaimsSet.getSubject()).isEqualTo(username),
-          () -> assertThat(jwtClaimsSet.getExpirationTime()).isBefore(Instant.now()
-            .plus(jwtProperties.getRefreshTokenDuration())));
+        () -> assertThat(jwtClaimsSet.getExpirationTime()).isBefore(Instant.now()
+          .plus(jwtProperties.getRefreshTokenDuration())));
     }
 
     @Test
@@ -150,8 +150,8 @@ class JwtServiceImplTest
       Authentication parsedToken = jwtService.parseToken(accessToken);
 
       assertAll(() -> assertThat(parsedToken.getPrincipal()).isEqualTo(username),
-          () -> assertThat(parsedToken.getAuthorities()).map(GrantedAuthority::getAuthority)
-            .containsExactly("ROLE_USER"));
+        () -> assertThat(parsedToken.getAuthorities()).map(GrantedAuthority::getAuthority)
+          .containsExactly("ROLE_USER"));
     }
 
     @Test
@@ -162,7 +162,7 @@ class JwtServiceImplTest
       Authentication parsedToken = jwtService.parseToken(refreshToken);
 
       assertAll(() -> assertThat(parsedToken.getPrincipal()).isEqualTo(username),
-          () -> assertThat(parsedToken.getAuthorities()).isEmpty());
+        () -> assertThat(parsedToken.getAuthorities()).isEmpty());
     }
 
     @Test

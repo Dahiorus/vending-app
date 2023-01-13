@@ -34,6 +34,6 @@ class StockDtoModelAssemblerTest
 
     assertAll(() -> assertThat(model.getContent()).as("Model contains DTO")
       .isEqualTo(dto),
-        () -> assertRelationLinks(model, "machine", "item", "provision", "purchase"));
+      () -> assertRelationLinks(model, "machine", "item", "provision", "purchase"));
   }
 }

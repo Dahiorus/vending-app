@@ -96,8 +96,8 @@ class StockRestControllerTest extends RestControllerTest
 
       mockMvc
         .perform(
-            post("/api/v1/vending-machines/{id}/provision/{itemId}", id, itemId).contentType(MediaType.APPLICATION_JSON)
-              .content("{ \"quantity\": 10 }"))
+          post("/api/v1/vending-machines/{id}/provision/{itemId}", id, itemId).contentType(MediaType.APPLICATION_JSON)
+            .content("{ \"quantity\": 10 }"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaTypes.HAL_JSON))
         .andExpect(result -> {
@@ -115,8 +115,8 @@ class StockRestControllerTest extends RestControllerTest
 
       mockMvc
         .perform(
-            post("/api/v1/vending-machines/{id}/provision/{itemId}", id, itemId).contentType(MediaType.APPLICATION_JSON)
-              .content("{ \"quantity\": 10 }"))
+          post("/api/v1/vending-machines/{id}/provision/{itemId}", id, itemId).contentType(MediaType.APPLICATION_JSON)
+            .content("{ \"quantity\": 10 }"))
         .andExpect(status().isForbidden());
     }
 
@@ -128,8 +128,8 @@ class StockRestControllerTest extends RestControllerTest
 
       mockMvc
         .perform(
-            post("/api/v1/vending-machines/{id}/provision/{itemId}", id, itemId).contentType(MediaType.APPLICATION_JSON)
-              .content("{ \"quantity\": 10 }"))
+          post("/api/v1/vending-machines/{id}/provision/{itemId}", id, itemId).contentType(MediaType.APPLICATION_JSON)
+            .content("{ \"quantity\": 10 }"))
         .andExpect(status().isUnauthorized());
     }
 
@@ -147,8 +147,8 @@ class StockRestControllerTest extends RestControllerTest
 
       mockMvc
         .perform(
-            post("/api/v1/vending-machines/{id}/provision/{itemId}", id, itemId).contentType(MediaType.APPLICATION_JSON)
-              .content("{ \"quantity\": 10 }"))
+          post("/api/v1/vending-machines/{id}/provision/{itemId}", id, itemId).contentType(MediaType.APPLICATION_JSON)
+            .content("{ \"quantity\": 10 }"))
         .andExpect(status().isNotFound());
     }
 
@@ -161,8 +161,8 @@ class StockRestControllerTest extends RestControllerTest
 
       mockMvc
         .perform(
-            post("/api/v1/vending-machines/{id}/provision/{itemId}", id, itemId).contentType(MediaType.APPLICATION_JSON)
-              .content("{ \"quantity\": 10 }"))
+          post("/api/v1/vending-machines/{id}/provision/{itemId}", id, itemId).contentType(MediaType.APPLICATION_JSON)
+            .content("{ \"quantity\": 10 }"))
         .andExpect(status().isNotFound());
       verify(stockDtoService, never()).provisionStock(eq(id), any(), eq(10));
     }
@@ -181,8 +181,8 @@ class StockRestControllerTest extends RestControllerTest
 
       mockMvc
         .perform(
-            post("/api/v1/vending-machines/{id}/provision/{itemId}", id, itemId).contentType(MediaType.APPLICATION_JSON)
-              .content("{ \"quantity\": -1 }"))
+          post("/api/v1/vending-machines/{id}/provision/{itemId}", id, itemId).contentType(MediaType.APPLICATION_JSON)
+            .content("{ \"quantity\": -1 }"))
         .andExpect(status().isBadRequest());
     }
   }

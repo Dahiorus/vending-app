@@ -12,11 +12,11 @@ import javax.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "stock",
-    uniqueConstraints = @UniqueConstraint(name = "UK_STOCK_MACHINE_ITEM",
-        columnNames = { "vending_machine_id", "item_id" }),
-    indexes = {
-        @Index(name = "IDX_STOCK_VENDING_MACHINE", columnList = "vending_machine_id")
-    })
+  uniqueConstraints = @UniqueConstraint(name = "UK_STOCK_MACHINE_ITEM",
+    columnNames = { "vending_machine_id", "item_id" }),
+  indexes = {
+    @Index(name = "IDX_STOCK_VENDING_MACHINE", columnList = "vending_machine_id")
+  })
 public class Stock extends AbstractEntity
 {
   private Item item;

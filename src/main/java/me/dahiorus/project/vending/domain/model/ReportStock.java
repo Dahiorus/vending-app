@@ -56,7 +56,7 @@ public class ReportStock extends AbstractEntity
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "report_id", nullable = false, updatable = false,
-      foreignKey = @ForeignKey(name = "FK_REPORT_STOCK_ID"))
+    foreignKey = @ForeignKey(name = "FK_REPORT_STOCK_ID"))
   public Report getReport()
   {
     return report;

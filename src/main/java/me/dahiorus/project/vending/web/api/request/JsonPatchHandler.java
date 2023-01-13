@@ -29,7 +29,7 @@ public class JsonPatchHandler
 
   @SuppressWarnings("unchecked")
   public static <D extends AbstractDTO<? extends AbstractEntity>> D applyPatch(@Nonnull final D source,
-      @Nonnull final JsonPatch jsonPatch)
+    @Nonnull final JsonPatch jsonPatch)
   {
     try
     {

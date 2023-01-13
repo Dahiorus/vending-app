@@ -130,7 +130,7 @@ class ReportRestControllerTest extends RestControllerTest
       when(reportDtoService.list(eq(pageable), any(), any()))
         .thenReturn(page);
       when(pageModelAssembler.toModel(page, modelAssembler)).thenReturn(PagedModel.wrap(page.getContent(),
-          new PageMetadata(pageable.getPageSize(), pageable.getPageNumber(), page.getTotalElements())));
+        new PageMetadata(pageable.getPageSize(), pageable.getPageNumber(), page.getTotalElements())));
 
       mockMvc.perform(get("/api/v1/reports").queryParam("page", "2")
         .queryParam("size", "20")

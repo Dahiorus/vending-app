@@ -46,7 +46,7 @@ import me.dahiorus.project.vending.web.api.request.ExampleMatcherAdapter;
 @RequiredArgsConstructor
 @Log4j2
 public class ReportRestController
-    implements ReadOnlyRestController<ReportDTO>, DeleteRestAPI, HasLogger
+  implements ReadOnlyRestController<ReportDTO>, DeleteRestAPI, HasLogger
 {
   protected final ReportDtoService dtoService;
 
@@ -78,7 +78,7 @@ public class ReportRestController
   @Override
   @GetMapping("/api/v1/reports")
   public ResponseEntity<PagedModel<EntityModel<ReportDTO>>> list(@ParameterObject final Pageable pageable,
-      @ParameterObject final ReportDTO criteria, @ParameterObject final ExampleMatcherAdapter exampleMatcherAdapter)
+    @ParameterObject final ReportDTO criteria, @ParameterObject final ExampleMatcherAdapter exampleMatcherAdapter)
   {
     Page<ReportDTO> page = dtoService.list(pageable, criteria, exampleMatcherAdapter.toExampleMatcher());
 

@@ -72,9 +72,9 @@ class StockDtoServiceImplTest
       Stock stock = machine.getStocks()
         .get(0);
       assertAll(() -> assertThat(machine.getLastIntervention()).isNotNull(),
-          () -> assertThat(stock.getQuantity()).isEqualTo(10),
-          () -> assertThat(stock).extracting(Stock::getItem)
-            .hasFieldOrPropertyWithValue("name", itemDto.getName()));
+        () -> assertThat(stock.getQuantity()).isEqualTo(10),
+        () -> assertThat(stock).extracting(Stock::getItem)
+          .hasFieldOrPropertyWithValue("name", itemDto.getName()));
       verify(dao).save(stock);
     }
 
@@ -95,7 +95,7 @@ class StockDtoServiceImplTest
 
       assertThatNoException().isThrownBy(() -> dtoService.provisionStock(machine.getId(), itemDto, 10));
       assertAll(() -> assertThat(machine.getLastIntervention()).isNotNull(),
-          () -> assertThat(machine.getQuantityInStock(item)).isEqualTo(15L));
+        () -> assertThat(machine.getQuantityInStock(item)).isEqualTo(15L));
       verify(dao).save(any());
     }
 

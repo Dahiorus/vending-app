@@ -77,7 +77,7 @@ class VendingMachineDtoValidatorTest
   void serialNumberHasMaxLength()
   {
     dto = buildDto(RandomStringUtils.randomAlphabetic(256), "1 Fake Street", ItemType.FOOD, PowerStatus.ON,
-        WorkingStatus.OK);
+      WorkingStatus.OK);
 
     ValidationResults results = validator.validate(dto);
 
@@ -100,7 +100,7 @@ class VendingMachineDtoValidatorTest
   void addressHasMaxLength()
   {
     dto = buildDto("1234", RandomStringUtils.randomAlphanumeric(256), ItemType.FOOD, PowerStatus.ON,
-        WorkingStatus.OK);
+      WorkingStatus.OK);
 
     ValidationResults results = validator.validate(dto);
 
@@ -111,7 +111,7 @@ class VendingMachineDtoValidatorTest
   void placeHasMaxLength()
   {
     dto = buildDto("1234", "1 Fake Street", ItemType.FOOD, PowerStatus.ON,
-        WorkingStatus.OK);
+      WorkingStatus.OK);
     dto.getAddress()
       .setPlace(RandomStringUtils.randomAlphanumeric(256));
 
@@ -148,7 +148,7 @@ class VendingMachineDtoValidatorTest
     ValidationResults results = validator.validate(dto);
 
     assertHasExactlyFieldErrors(results, "workingStatus",
-        "validation.constraints.vending_machine.working_status_consistency");
+      "validation.constraints.vending_machine.working_status_consistency");
   }
 
   @Test
@@ -162,7 +162,7 @@ class VendingMachineDtoValidatorTest
   }
 
   VendingMachineDTO buildDto(final String serialNumber, final String address, final ItemType type,
-      final PowerStatus powerStatus, final WorkingStatus workingStatus)
+    final PowerStatus powerStatus, final WorkingStatus workingStatus)
   {
     return VendingMachineBuilder.builder()
       .serialNumber(serialNumber)

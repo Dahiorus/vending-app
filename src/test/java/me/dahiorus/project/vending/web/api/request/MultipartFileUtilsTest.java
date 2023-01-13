@@ -88,9 +88,9 @@ class MultipartFileUtilsTest
       assertThat(response).satisfies(r -> {
         assertThat(r.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(r.getHeaders()).containsEntry(HttpHeaders.CONTENT_TYPE,
-            List.of(dto.getContentType()))
+          List.of(dto.getContentType()))
           .containsEntry(HttpHeaders.LAST_MODIFIED,
-              List.of(DATE_FORMATTER.format(dto.getCreatedAt())))
+            List.of(DATE_FORMATTER.format(dto.getCreatedAt())))
           .containsEntry(HttpHeaders.CONTENT_DISPOSITION, List.of("inline; filename=\"" + dto.getName() + "\""))
           .containsEntry(HttpHeaders.CACHE_CONTROL, List.of("max-age=3600, public"))
           .containsEntry(HttpHeaders.CONTENT_LENGTH, List.of(dto.getSize()

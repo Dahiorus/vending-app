@@ -27,7 +27,7 @@ class StockValidatorImplTest
   void validStock()
   {
     ValidationResults results = validator.validate(buildItem(ItemType.COLD_BAVERAGE), 10,
-        buildMachine(ItemType.COLD_BAVERAGE));
+      buildMachine(ItemType.COLD_BAVERAGE));
 
     assertThat(results.count()).isZero();
   }
@@ -36,7 +36,7 @@ class StockValidatorImplTest
   void typeNotMatch()
   {
     ValidationResults results = validator.validate(buildItem(ItemType.FOOD), 10,
-        buildMachine(ItemType.COLD_BAVERAGE));
+      buildMachine(ItemType.COLD_BAVERAGE));
 
     assertThat(results.getObjectErrors()).extracting(ValidationError::getCode)
       .containsExactly("validation.constraints.stock.invalid_item");
@@ -46,7 +46,7 @@ class StockValidatorImplTest
   void quantityMustBePositive()
   {
     ValidationResults results = validator.validate(buildItem(ItemType.COLD_BAVERAGE), -1,
-        buildMachine(ItemType.COLD_BAVERAGE));
+      buildMachine(ItemType.COLD_BAVERAGE));
 
     assertThat(results.getFieldErrors("quantity")).extracting(ValidationError::getCode)
       .containsExactly("validation.constraints.stock.quantity_positive");

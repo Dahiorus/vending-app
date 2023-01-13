@@ -35,7 +35,7 @@ public class CommentDtoValidator extends DtoValidatorImpl<Comment, CommentDTO, D
     if (rate == null || rate < 0 || rate > 5)
     {
       results.addError(fieldError(Comment_.RATE, getFullCode("comment.rate_interval"),
-          "A comment rate must be between 0 and 5 (included)", rate));
+        "A comment rate must be between 0 and 5 (included)", rate));
     }
 
     rejectIfInvalidLength(Comment_.CONTENT, dto.getContent(), 1024, results);

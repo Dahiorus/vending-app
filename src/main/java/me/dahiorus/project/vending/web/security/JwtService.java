@@ -10,7 +10,8 @@ import me.dahiorus.project.vending.web.exception.UnparsableToken;
 
 public interface JwtService
 {
-  String createAccessToken(String username, Collection<? extends GrantedAuthority> authorities) throws InvalidTokenCreation;
+  String createAccessToken(String username, Collection<? extends GrantedAuthority> authorities)
+    throws InvalidTokenCreation;
 
   String createRefreshToken(String username) throws InvalidTokenCreation;
 

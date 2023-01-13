@@ -27,8 +27,8 @@ import me.dahiorus.project.vending.domain.service.UserDtoService;
 public class UserRestController extends RestControllerImpl<UserDTO, UserDtoService>
 {
   public UserRestController(final UserDtoService dtoService,
-      final RepresentationModelAssembler<UserDTO, EntityModel<UserDTO>> modelAssembler,
-      final PagedResourcesAssembler<UserDTO> pageModelAssembler)
+    final RepresentationModelAssembler<UserDTO, EntityModel<UserDTO>> modelAssembler,
+    final PagedResourcesAssembler<UserDTO> pageModelAssembler)
   {
     super(dtoService, modelAssembler, pageModelAssembler);
   }

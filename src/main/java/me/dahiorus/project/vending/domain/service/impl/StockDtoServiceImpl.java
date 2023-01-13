@@ -58,8 +58,7 @@ public class StockDtoServiceImpl implements StockDtoService
     VendingMachine machine = vendingMachineDao.read(id);
     Item itemToProvision = dtoMapper.toEntity(item, Item.class);
 
-    ValidationResults validationResults =
-      stockValidator.validate(itemToProvision, quantity, machine);
+    ValidationResults validationResults = stockValidator.validate(itemToProvision, quantity, machine);
     validationResults.throwIfError("Cannot provision " + item + " to vending machine " + id);
 
     log.debug("Provisioning a quantity of {} of item '{}' to vending machine {}", quantity,

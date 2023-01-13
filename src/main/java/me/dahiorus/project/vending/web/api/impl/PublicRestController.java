@@ -53,9 +53,9 @@ public class PublicRestController implements CreateRestAPI<UserDTO>, AppWebServi
   @Operation(description = "Register a user")
   @ApiResponse(responseCode = "201", description = "User registered")
   @PostMapping(value = SecurityConstants.REGISTER_ENDPOINT, consumes = MediaType.APPLICATION_JSON_VALUE,
-      produces = MediaTypes.HAL_JSON_VALUE)
+    produces = MediaTypes.HAL_JSON_VALUE)
   public ResponseEntity<EntityModel<UserDTO>> create(@RequestBody final UserDTO user)
-      throws ValidationException
+    throws ValidationException
   {
     log.debug("Signing up a new user");
 
@@ -72,7 +72,7 @@ public class PublicRestController implements CreateRestAPI<UserDTO>, AppWebServi
   @ApiResponse(responseCode = "200", description = "User authenticated")
   @ApiResponse(responseCode = "401", description = "Bad credentials")
   @PostMapping(value = SecurityConstants.AUTHENTICATE_ENDPOINT, consumes = MediaType.APPLICATION_JSON_VALUE,
-      produces = MediaType.APPLICATION_JSON_VALUE)
+    produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<AuthenticateResponse> authenticate(@RequestBody final AuthenticateRequest authRequest)
   {
     // marker method
@@ -83,9 +83,9 @@ public class PublicRestController implements CreateRestAPI<UserDTO>, AppWebServi
   @Operation(description = "Refresh a user access token")
   @ApiResponse(responseCode = "200", description = "Access token refreshed")
   @PostMapping(value = SecurityConstants.REFRESH_TOKEN_ENDPOINT, consumes = MediaType.APPLICATION_JSON_VALUE,
-      produces = MediaType.APPLICATION_JSON_VALUE)
+    produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<AuthenticateResponse> refreshToken(@RequestBody final RefreshTokenRequest request)
-      throws UnparsableToken, InvalidTokenCreation, EntityNotFound
+    throws UnparsableToken, InvalidTokenCreation, EntityNotFound
   {
     log.debug("Refreshing the access token of a user");
 
@@ -94,10 +94,10 @@ public class PublicRestController implements CreateRestAPI<UserDTO>, AppWebServi
     UserDTO user = userDtoService.getByUsername(username);
 
     String accessToken = jwtService.createAccessToken(username,
-        user.getRoles()
-          .stream()
-          .map(SimpleGrantedAuthority::new)
-          .toList());
+      user.getRoles()
+        .stream()
+        .map(SimpleGrantedAuthority::new)
+        .toList());
 
     log.info("Access token refreshed for the user '{}'", authentication.getPrincipal());
 

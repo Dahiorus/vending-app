@@ -12,14 +12,14 @@ public class FieldValidationError extends ValidationError
   private final String field;
 
   private FieldValidationError(final String field, final String code, final String defaultMessage,
-      final Object[] errorArgs)
+    final Object[] errorArgs)
   {
     super(code, defaultMessage, errorArgs);
     this.field = field;
   }
 
   public static FieldValidationError fieldError(final String field, final String code, final String defaultMessage,
-      final Object... errorArgs)
+    final Object... errorArgs)
   {
     return new FieldValidationError(field, code, defaultMessage, errorArgs);
   }
@@ -40,6 +40,6 @@ public class FieldValidationError extends ValidationError
   {
     CommonError maxLength = CommonError.MAX_LENGTH;
     return fieldError(field, maxLength.code, field + " must have a max length of " + length,
-        length);
+      length);
   }
 }

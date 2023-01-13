@@ -33,6 +33,6 @@ class CommentDtoModelAssemblerTest
 
     assertAll(() -> assertThat(model.getContent()).as("Model contains DTO")
       .isEqualTo(dto),
-        () -> assertRelationLinks(model, "machine"));
+      () -> assertRelationLinks(model, "machine"));
   }
 }

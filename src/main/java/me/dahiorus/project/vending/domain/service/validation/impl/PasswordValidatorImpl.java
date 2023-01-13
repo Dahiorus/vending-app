@@ -41,43 +41,43 @@ public class PasswordValidatorImpl implements PasswordValidator
     if (minLength != null && StringUtils.length(rawPassword) < minLength)
     {
       results.addError(fieldError(field, getFullCode("password.min-length"),
-          DEFAULT_MSG_PREFIX + minLength + " character(s)", minLength));
+        DEFAULT_MSG_PREFIX + minLength + " character(s)", minLength));
     }
 
     Integer maxLength = passwordPolicyProps.getMaxLength();
     if (maxLength != null && StringUtils.length(rawPassword) > maxLength)
     {
       results.addError(fieldError(field, getFullCode("password.max-length"),
-          "A password must contain at most " + maxLength + " character(s)", maxLength));
+        "A password must contain at most " + maxLength + " character(s)", maxLength));
     }
 
     Integer minLowerCaseCount = passwordPolicyProps.getMinLowerCaseCount();
     if (minLowerCaseCount != null && countCharType(rawPassword, Character::isLowerCase) < minLowerCaseCount)
     {
       results.addError(fieldError(field, getFullCode("password.min-lowercase-chars"),
-          DEFAULT_MSG_PREFIX + minLowerCaseCount + " lower case character(s)", minLowerCaseCount));
+        DEFAULT_MSG_PREFIX + minLowerCaseCount + " lower case character(s)", minLowerCaseCount));
     }
 
     Integer minUpperCaseCount = passwordPolicyProps.getMinUpperCaseCount();
     if (minUpperCaseCount != null && countCharType(rawPassword, Character::isUpperCase) < minUpperCaseCount)
     {
       results.addError(fieldError(field, getFullCode("password.min-uppercase-chars"),
-          DEFAULT_MSG_PREFIX + minUpperCaseCount + " upper case character(s)", minUpperCaseCount));
+        DEFAULT_MSG_PREFIX + minUpperCaseCount + " upper case character(s)", minUpperCaseCount));
     }
 
     Integer minDigitCount = passwordPolicyProps.getMinDigitCount();
     if (minDigitCount != null && countCharType(rawPassword, Character::isDigit) < minDigitCount)
     {
       results.addError(fieldError(field, getFullCode("password.min-digits"),
-          DEFAULT_MSG_PREFIX + minDigitCount + " digit(s)", minDigitCount));
+        DEFAULT_MSG_PREFIX + minDigitCount + " digit(s)", minDigitCount));
     }
 
     Integer minSpecialCharsCount = passwordPolicyProps.getMinSpecialCharsCount();
     if (minSpecialCharsCount != null
-        && countCharType(rawPassword, not(Character::isLetterOrDigit)) < minSpecialCharsCount)
+      && countCharType(rawPassword, not(Character::isLetterOrDigit)) < minSpecialCharsCount)
     {
       results.addError(fieldError(field, getFullCode("password.min-special-chars"),
-          DEFAULT_MSG_PREFIX + minSpecialCharsCount + " special character(s)", minSpecialCharsCount));
+        DEFAULT_MSG_PREFIX + minSpecialCharsCount + " special character(s)", minSpecialCharsCount));
     }
 
     log.debug("Validation results on password: {}", results);

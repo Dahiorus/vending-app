@@ -64,8 +64,7 @@ public class Address
   public String toString()
   {
     return "Address [latitude=" + latitude + ", longitude=" + longitude + ", place=" + place + ", streetAddress="
-        + streetAddress
-        + "]";
+      + streetAddress + "]";
   }
 
   @Override
@@ -87,6 +86,6 @@ public class Address
     }
     Address other = (Address) obj;
     return Objects.equals(latitude, other.latitude) && Objects.equals(longitude, other.longitude)
-        && Objects.equals(place, other.place) && Objects.equals(streetAddress, other.streetAddress);
+      && Objects.equals(place, other.place) && Objects.equals(streetAddress, other.streetAddress);
   }
 }

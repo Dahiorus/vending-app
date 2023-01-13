@@ -16,7 +16,7 @@ import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
 public interface DtoService<E extends AbstractEntity, D extends AbstractDTO<E>>
 {
   D create(D dto) throws ValidationException;
-  
+
   void createAll(List<D> dtos);
 
   D read(UUID id) throws EntityNotFound;

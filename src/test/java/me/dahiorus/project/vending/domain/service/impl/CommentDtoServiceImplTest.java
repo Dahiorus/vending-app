@@ -86,7 +86,7 @@ class CommentDtoServiceImplTest
       when(commentDtoValidator.validate(comment)).then(invoc -> {
         ValidationResults results = new ValidationResults();
         results.addError(fieldError("rate", "validation.constraints.comment.rate_interval",
-            "Error from test"));
+          "Error from test"));
         return results;
       });
 

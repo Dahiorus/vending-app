@@ -32,8 +32,8 @@ import me.dahiorus.project.vending.domain.service.VendingMachineDtoService;
 public class VendingMachineRestController extends RestControllerImpl<VendingMachineDTO, VendingMachineDtoService>
 {
   public VendingMachineRestController(final VendingMachineDtoService dtoService,
-      final RepresentationModelAssembler<VendingMachineDTO, EntityModel<VendingMachineDTO>> modelAssembler,
-      final PagedResourcesAssembler<VendingMachineDTO> pageModelAssembler)
+    final RepresentationModelAssembler<VendingMachineDTO, EntityModel<VendingMachineDTO>> modelAssembler,
+    final PagedResourcesAssembler<VendingMachineDTO> pageModelAssembler)
   {
     super(dtoService, modelAssembler, pageModelAssembler);
   }
@@ -48,7 +48,7 @@ public class VendingMachineRestController extends RestControllerImpl<VendingMach
   @ApiResponse(responseCode = "200", description = "Error statuses reset")
   @PostMapping(value = "/{id}/reset", produces = MediaTypes.HAL_JSON_VALUE)
   public ResponseEntity<EntityModel<VendingMachineDTO>> resetStatus(@PathVariable("id") final UUID id)
-      throws EntityNotFound
+    throws EntityNotFound
   {
     VendingMachineDTO updatedEntity = dtoService.resetStatus(id);
 

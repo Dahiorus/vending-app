@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
   @Override
   public Authentication attemptAuthentication(final HttpServletRequest request, final HttpServletResponse response)
-      throws AuthenticationException
+    throws AuthenticationException
   {
     AuthenticateRequest authRequest;
     try
@@ -55,15 +55,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     Authentication authentication = new UsernamePasswordAuthenticationToken(authRequest.username(),
-        authRequest.password());
+      authRequest.password());
 
     return getAuthenticationManager().authenticate(authentication);
   }
 
   @Override
   protected void successfulAuthentication(final HttpServletRequest request, final HttpServletResponse response,
-      final FilterChain chain,
-      final Authentication authentication) throws IOException, ServletException
+    final FilterChain chain,
+    final Authentication authentication) throws IOException, ServletException
   {
     UserDetails user = (UserDetails) authentication.getPrincipal();
     String accessToken;
@@ -87,7 +87,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
   @Override
   protected void unsuccessfulAuthentication(final HttpServletRequest request, final HttpServletResponse response,
-      final AuthenticationException failed) throws IOException, ServletException
+    final AuthenticationException failed) throws IOException, ServletException
   {
     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);

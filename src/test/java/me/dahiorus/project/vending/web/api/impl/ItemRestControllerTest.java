@@ -92,12 +92,12 @@ class ItemRestControllerTest extends RestControllerTest
         .andExpect(header().string(HttpHeaders.LOCATION, endsWith("/api/v1/items/" + item.getId())))
         .andExpect(content().contentType(MediaTypes.HAL_JSON))
         .andExpectAll(
-            jsonPath("id").value(item.getId()
-              .toString()),
-            jsonPath("name").value(item.getName()),
-            jsonPath("type").value(item.getType()
-              .name()),
-            jsonPath("price").value(item.getPrice()));
+          jsonPath("id").value(item.getId()
+            .toString()),
+          jsonPath("name").value(item.getName()),
+          jsonPath("type").value(item.getType()
+            .name()),
+          jsonPath("price").value(item.getPrice()));
     }
 
     @Test
@@ -154,12 +154,12 @@ class ItemRestControllerTest extends RestControllerTest
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaTypes.HAL_JSON))
         .andExpectAll(
-            jsonPath("id").value(item.getId()
-              .toString()),
-            jsonPath("name").value(item.getName()),
-            jsonPath("type").value(item.getType()
-              .name()),
-            jsonPath("price").value(item.getPrice()));
+          jsonPath("id").value(item.getId()
+            .toString()),
+          jsonPath("name").value(item.getName()),
+          jsonPath("type").value(item.getType()
+            .name()),
+          jsonPath("price").value(item.getPrice()));
     }
 
     @Test
@@ -194,12 +194,12 @@ class ItemRestControllerTest extends RestControllerTest
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaTypes.HAL_JSON))
         .andExpectAll(
-            jsonPath("id").value(item.getId()
-              .toString()),
-            jsonPath("name").value(item.getName()),
-            jsonPath("type").value(item.getType()
-              .name()),
-            jsonPath("price").value(item.getPrice()));
+          jsonPath("id").value(item.getId()
+            .toString()),
+          jsonPath("name").value(item.getName()),
+          jsonPath("type").value(item.getType()
+            .name()),
+          jsonPath("price").value(item.getPrice()));
     }
 
     @Test
@@ -237,12 +237,12 @@ class ItemRestControllerTest extends RestControllerTest
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaTypes.HAL_JSON))
         .andExpectAll(
-            jsonPath("id").value(item.getId()
-              .toString()),
-            jsonPath("name").value(item.getName()),
-            jsonPath("type").value(item.getType()
-              .name()),
-            jsonPath("price").value(item.getPrice()));
+          jsonPath("id").value(item.getId()
+            .toString()),
+          jsonPath("name").value(item.getName()),
+          jsonPath("type").value(item.getType()
+            .name()),
+          jsonPath("price").value(item.getPrice()));
     }
 
     @Test
@@ -334,12 +334,12 @@ class ItemRestControllerTest extends RestControllerTest
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaTypes.HAL_JSON))
         .andExpectAll(
-            jsonPath("id").value(item.getId()
-              .toString()),
-            jsonPath("name").value("Other"),
-            jsonPath("type").value(item.getType()
-              .name()),
-            jsonPath("price").value(item.getPrice()));
+          jsonPath("id").value(item.getId()
+            .toString()),
+          jsonPath("name").value("Other"),
+          jsonPath("type").value(item.getType()
+            .name()),
+          jsonPath("price").value(item.getPrice()));
     }
 
     @Test
@@ -419,7 +419,7 @@ class ItemRestControllerTest extends RestControllerTest
       PageImpl<ItemDTO> page = new PageImpl<>(content, pageable, 50);
       when(itemDtoService.list(eq(pageable), any(), any())).thenReturn(page);
       when(pageModelAssembler.toModel(page, modelAssembler)).thenReturn(PagedModel.wrap(content,
-          new PageMetadata(pageable.getPageSize(), pageable.getPageNumber(), page.getTotalElements())));
+        new PageMetadata(pageable.getPageSize(), pageable.getPageNumber(), page.getTotalElements())));
 
       mockMvc.perform(get("/api/v1/items").queryParam("page", "1")
         .queryParam("size", "20")

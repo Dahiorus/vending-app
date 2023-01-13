@@ -70,8 +70,8 @@ public class SelfServiceRestController implements AppWebService
   @ApiResponse(responseCode = "204", description = "Password updated")
   @PostMapping(value = "/password", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> updatePassword(final Authentication authentication,
-      @RequestBody final EditPasswordDTO editPassword)
-      throws ValidationException, UserNotAuthenticated
+    @RequestBody final EditPasswordDTO editPassword)
+    throws ValidationException, UserNotAuthenticated
   {
     UserDTO authenticatedUser = authenticationFacade.getAuthenticatedUser(authentication);
 
@@ -93,8 +93,8 @@ public class SelfServiceRestController implements AppWebService
   @ApiResponse(responseCode = "200", description = "Picture uploaded")
   @PostMapping(value = "picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<EntityModel<UserDTO>> uploadPicture(final Authentication authentication,
-      @RequestParam("file") final MultipartFile file)
-      throws UserNotAuthenticated, ValidationException
+    @RequestParam("file") final MultipartFile file)
+    throws UserNotAuthenticated, ValidationException
   {
     UserDTO authenticatedUser = authenticationFacade.getAuthenticatedUser(authentication);
 

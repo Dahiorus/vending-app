@@ -8,5 +8,4 @@ public class VendingMachineNotWorking extends AppException
   {
     super(message);
   }
-
 }

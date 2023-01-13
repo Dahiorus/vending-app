@@ -18,8 +18,8 @@ public interface ReportDAO extends DAO<Report>
   default Optional<Report> findLastGenerated(final VendingMachine machine)
   {
     Page<Report> reports = findAll(
-        (root, query, cb) -> cb.equal(root.get(Report_.machineSerialNumber), machine.getSerialNumber()),
-        PageRequest.of(0, 1, Direction.DESC, AbstractEntity_.CREATED_AT));
+      (root, query, cb) -> cb.equal(root.get(Report_.machineSerialNumber), machine.getSerialNumber()),
+      PageRequest.of(0, 1, Direction.DESC, AbstractEntity_.CREATED_AT));
 
     if (reports.isEmpty())
     {

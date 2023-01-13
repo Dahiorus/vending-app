@@ -44,7 +44,7 @@ public class CommentRestController implements AppWebService
   @ApiResponse(responseCode = "200", description = "Comments found")
   @GetMapping
   public ResponseEntity<CollectionModel<EntityModel<CommentDTO>>> getComments(@PathVariable final UUID id)
-      throws EntityNotFound
+    throws EntityNotFound
   {
     List<CommentDTO> comments = dtoService.getComments(id);
 
@@ -55,8 +55,8 @@ public class CommentRestController implements AppWebService
   @ApiResponse(responseCode = "200", description = "Comment added")
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<EntityModel<CommentDTO>> comment(@PathVariable final UUID id,
-      @RequestBody final CommentDTO comment)
-      throws EntityNotFound, ValidationException
+    @RequestBody final CommentDTO comment)
+    throws EntityNotFound, ValidationException
   {
     CommentDTO addedComment = dtoService.comment(id, comment);
 

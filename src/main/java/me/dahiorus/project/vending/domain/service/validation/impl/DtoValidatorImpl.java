@@ -20,7 +20,7 @@ import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class DtoValidatorImpl<E extends AbstractEntity, D extends AbstractDTO<E>, R extends DAO<E>>
-    implements DtoValidator<D>, HasLogger
+  implements DtoValidator<D>, HasLogger
 {
   protected final R dao;
 
@@ -38,7 +38,7 @@ public abstract class DtoValidatorImpl<E extends AbstractEntity, D extends Abstr
   }
 
   protected void rejectIfEmpty(final String field, final Object value,
-      final ValidationResults validationResults)
+    final ValidationResults validationResults)
   {
     if (value == null)
     {
@@ -47,7 +47,7 @@ public abstract class DtoValidatorImpl<E extends AbstractEntity, D extends Abstr
   }
 
   protected void rejectIfBlank(final String field, final String value,
-      final ValidationResults validationResults)
+    final ValidationResults validationResults)
   {
     if (StringUtils.isBlank(value))
     {
@@ -56,7 +56,7 @@ public abstract class DtoValidatorImpl<E extends AbstractEntity, D extends Abstr
   }
 
   protected void rejectIfInvalidLength(final String field, final String value, final int maxLength,
-      final ValidationResults validationResults)
+    final ValidationResults validationResults)
   {
     if (StringUtils.length(value) > maxLength)
     {

@@ -13,18 +13,18 @@ import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
 public final class Assertions
 {
   public static <D extends AbstractDTO<?>> void assertEntityModel(final EntityModel<D> model, final D dto,
-      final String... relations)
+    final String... relations)
   {
     assertAll(() -> assertThat(model.getContent()).as("Model contains DTO")
       .isEqualTo(dto),
-        () -> assertThat(model.getLink(IanaLinkRelations.SELF)).as("Model has self link")
-          .isNotEmpty(),
-        () -> assertRelationLinks(model, relations));
+      () -> assertThat(model.getLink(IanaLinkRelations.SELF)).as("Model has self link")
+        .isNotEmpty(),
+      () -> assertRelationLinks(model, relations));
 
   }
 
   public static <D extends AbstractDTO<?>> void assertRelationLinks(final EntityModel<D> model,
-      final String... relations)
+    final String... relations)
   {
     Stream.of(relations)
       .forEach(rel -> assertThat(model.getLink(rel)).as("Relation '%s' is present in %s", rel, model.getLinks())

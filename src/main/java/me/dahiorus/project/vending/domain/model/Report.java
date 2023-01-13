@@ -19,8 +19,8 @@ import org.hibernate.annotations.Immutable;
 
 @Entity
 @Table(name = "report", indexes = {
-    @Index(name = "IDX_REPORT_MACHINE_SERIAL_NUMBER", columnList = "machineSerialNumber"),
-    @Index(name = "IDX_REPORT_CREATED_AT", columnList = "createdAt")
+  @Index(name = "IDX_REPORT_MACHINE_SERIAL_NUMBER", columnList = "machineSerialNumber"),
+  @Index(name = "IDX_REPORT_CREATED_AT", columnList = "createdAt")
 })
 @Immutable
 public class Report extends AbstractEntity

@@ -15,7 +15,7 @@ import me.dahiorus.project.vending.web.api.ReadRestAPI;
 public class ResponseUtils
 {
   public static <D extends AbstractDTO<?>, A extends ReadRestAPI<D>> URI buildLocation(final D createdEntity,
-      final Class<A> apiClass)
+    final Class<A> apiClass)
   {
     try
     {

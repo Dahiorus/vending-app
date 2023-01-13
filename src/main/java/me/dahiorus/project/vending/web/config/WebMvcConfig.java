@@ -18,7 +18,7 @@ import me.dahiorus.project.vending.domain.model.AbstractEntity_;
 
 @Configuration
 @OpenAPIDefinition(
-    info = @Info(title = "Vending app API", description = "Simple vending application", version = "v1.0"))
+  info = @Info(title = "Vending app API", description = "Simple vending application", version = "v1.0"))
 @SecurityScheme(name = "bearerAuth", bearerFormat = "JWT", type = SecuritySchemeType.HTTP, scheme = "bearer")
 public class WebMvcConfig implements WebMvcConfigurer
 {

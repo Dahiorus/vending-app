@@ -48,7 +48,7 @@ public class StockRestController implements AppWebService
   @ApiResponse(responseCode = "200", description = "Stocks found")
   @GetMapping("/stocks")
   public ResponseEntity<CollectionModel<EntityModel<StockDTO>>> getStocks(@PathVariable final UUID id)
-      throws EntityNotFound
+    throws EntityNotFound
   {
     return ok(stockModelAssembler.toCollectionModel(dtoService.getStocks(id)));
   }
@@ -58,9 +58,9 @@ public class StockRestController implements AppWebService
   @ApiResponse(responseCode = "200", description = "Stock provisioned")
   @PostMapping("/provision/{itemId}")
   public ResponseEntity<CollectionModel<EntityModel<StockDTO>>> provisionStock(@PathVariable("id") final UUID id,
-      @PathVariable("itemId") final UUID itemId,
-      @RequestBody final ProvisionRequest provisionRequest)
-      throws EntityNotFound, ValidationException
+    @PathVariable("itemId") final UUID itemId,
+    @RequestBody final ProvisionRequest provisionRequest)
+    throws EntityNotFound, ValidationException
   {
     ItemDTO item = itemDtoService.read(itemId);
     dtoService.provisionStock(id, item, provisionRequest.quantity());

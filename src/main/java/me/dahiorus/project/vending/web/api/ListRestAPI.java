@@ -11,5 +11,5 @@ import me.dahiorus.project.vending.web.api.request.ExampleMatcherAdapter;
 public interface ListRestAPI<D extends AbstractDTO<?>>
 {
   ResponseEntity<PagedModel<EntityModel<D>>> list(Pageable pageable, D criteria,
-      ExampleMatcherAdapter exampleMatcherAdapter);
+    ExampleMatcherAdapter exampleMatcherAdapter);
 }

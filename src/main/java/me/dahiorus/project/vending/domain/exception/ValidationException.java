@@ -22,7 +22,7 @@ public class ValidationException extends AppException
   private final int count;
 
   public ValidationException(final CrudOperation operation, final Object target,
-      final ValidationResults validationResults)
+    final ValidationResults validationResults)
   {
     this(operation + ": " + validationResults.count() + " error(s) found on " + target, validationResults);
   }

@@ -85,9 +85,9 @@ class ItemDtoServiceImplTest
       ItemDTO createdDto = dtoService.create(dto);
 
       assertAll(() -> assertThat(createdDto.getId()).isNotNull(),
-          () -> assertThat(createdDto.getName()).isEqualTo(dto.getName()),
-          () -> assertThat(createdDto.getType()).isEqualTo(dto.getType()),
-          () -> assertThat(createdDto.getPrice()).isEqualTo(dto.getPrice()));
+        () -> assertThat(createdDto.getName()).isEqualTo(dto.getName()),
+        () -> assertThat(createdDto.getType()).isEqualTo(dto.getType()),
+        () -> assertThat(createdDto.getPrice()).isEqualTo(dto.getPrice()));
     }
 
     @Test
@@ -117,9 +117,9 @@ class ItemDtoServiceImplTest
       ItemDTO dto = dtoService.read(entity.getId());
 
       assertAll(() -> assertThat(dto.getId()).isEqualTo(entity.getId()),
-          () -> assertThat(dto.getName()).isEqualTo(entity.getName()),
-          () -> assertThat(dto.getType()).isEqualTo(entity.getType()),
-          () -> assertThat(dto.getPrice()).isEqualTo(entity.getPrice()));
+        () -> assertThat(dto.getName()).isEqualTo(entity.getName()),
+        () -> assertThat(dto.getType()).isEqualTo(entity.getType()),
+        () -> assertThat(dto.getPrice()).isEqualTo(entity.getPrice()));
     }
 
     @Test
@@ -148,9 +148,9 @@ class ItemDtoServiceImplTest
       ItemDTO updatedDto = dtoService.update(entity.getId(), dto);
 
       assertAll(() -> assertThat(updatedDto.getId()).isEqualTo(entity.getId()),
-          () -> assertThat(updatedDto.getName()).isEqualTo(dto.getName()),
-          () -> assertThat(updatedDto.getType()).isEqualTo(dto.getType()),
-          () -> assertThat(updatedDto.getPrice()).isEqualTo(dto.getPrice()));
+        () -> assertThat(updatedDto.getName()).isEqualTo(dto.getName()),
+        () -> assertThat(updatedDto.getType()).isEqualTo(dto.getType()),
+        () -> assertThat(updatedDto.getPrice()).isEqualTo(dto.getPrice()));
     }
 
     @Test
