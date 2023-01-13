@@ -1,5 +1,7 @@
 package me.dahiorus.project.vending.domain.service.impl;
 
+import static me.dahiorus.project.vending.domain.model.Sale.sell;
+
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
