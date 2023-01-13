@@ -5,9 +5,6 @@ import static me.dahiorus.project.vending.util.TestUtils.assertHasExactlyFieldEr
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import java.util.Optional;
-import java.util.UUID;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import me.dahiorus.project.vending.domain.dao.VendingMachineDAO;
 import me.dahiorus.project.vending.domain.model.ItemType;
 import me.dahiorus.project.vending.domain.model.PowerStatus;
-import me.dahiorus.project.vending.domain.model.VendingMachine;
 import me.dahiorus.project.vending.domain.model.WorkingStatus;
 import me.dahiorus.project.vending.domain.model.dto.VendingMachineDTO;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
@@ -70,11 +66,7 @@ class VendingMachineDtoValidatorTest
   void serialNumberIsUnique()
   {
     dto = buildDto("123456789", "1 Fake Street", ItemType.FOOD, PowerStatus.ON, WorkingStatus.OK);
-    VendingMachine duplicate = VendingMachineBuilder.builder()
-      .id(UUID.randomUUID())
-      .serialNumber(dto.getSerialNumber())
-      .build();
-    when(dao.findOne(anySpec())).thenReturn(Optional.of(duplicate));
+    when(dao.count(anySpec())).thenReturn(1L);
 
     ValidationResults results = validator.validate(dto);
 
@@ -101,7 +93,7 @@ class VendingMachineDtoValidatorTest
 
     ValidationResults results = validator.validate(dto);
 
-    assertHasExactlyFieldErrors(results, "address", "validation.constraints.empty_value");
+    assertHasExactlyFieldErrors(results, "address.streetAddress", "validation.constraints.empty_value");
   }
 
   @Test
@@ -112,7 +104,7 @@ class VendingMachineDtoValidatorTest
 
     ValidationResults results = validator.validate(dto);
 
-    assertHasExactlyFieldErrors(results, "address", "validation.constraints.max_length");
+    assertHasExactlyFieldErrors(results, "address.streetAddress", "validation.constraints.max_length");
   }
 
   @Test
@@ -125,7 +117,7 @@ class VendingMachineDtoValidatorTest
 
     ValidationResults results = validator.validate(dto);
 
-    assertHasExactlyFieldErrors(results, "place", "validation.constraints.max_length");
+    assertHasExactlyFieldErrors(results, "address.place", "validation.constraints.max_length");
   }
 
   @Test

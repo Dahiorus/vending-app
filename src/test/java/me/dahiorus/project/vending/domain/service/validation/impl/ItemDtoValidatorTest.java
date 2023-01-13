@@ -5,9 +5,6 @@ import static me.dahiorus.project.vending.util.TestUtils.assertHasExactlyFieldEr
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import java.util.Optional;
-import java.util.UUID;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import me.dahiorus.project.vending.domain.dao.ItemDAO;
-import me.dahiorus.project.vending.domain.model.Item;
 import me.dahiorus.project.vending.domain.model.ItemType;
 import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
@@ -68,13 +64,8 @@ class ItemDtoValidatorTest
   @Test
   void nameIsUnique()
   {
-    Item duplicate = ItemBuilder.builder()
-      .id(UUID.randomUUID())
-      .name("Item")
-      .build();
-    when(dao.findOne(anySpec())).thenReturn(Optional.of(duplicate));
-
-    dto = buildDto(duplicate.getName(), ItemType.FOOD, 1.3);
+    when(dao.count(anySpec())).thenReturn(1L);
+    dto = buildDto("Item", ItemType.FOOD, 1.3);
 
     ValidationResults results = validator.validate(dto);
 

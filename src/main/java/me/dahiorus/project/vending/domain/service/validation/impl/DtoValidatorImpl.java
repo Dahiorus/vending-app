@@ -20,7 +20,7 @@ import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class DtoValidatorImpl<E extends AbstractEntity, D extends AbstractDTO<E>, R extends DAO<E>>
-  implements DtoValidator<D>, HasLogger
+    implements DtoValidator<D>, HasLogger
 {
   protected final R dao;
 
@@ -38,7 +38,7 @@ public abstract class DtoValidatorImpl<E extends AbstractEntity, D extends Abstr
   }
 
   protected void rejectIfEmpty(final String field, final Object value,
-    final ValidationResults validationResults)
+      final ValidationResults validationResults)
   {
     if (value == null)
     {
@@ -47,7 +47,7 @@ public abstract class DtoValidatorImpl<E extends AbstractEntity, D extends Abstr
   }
 
   protected void rejectIfBlank(final String field, final String value,
-    final ValidationResults validationResults)
+      final ValidationResults validationResults)
   {
     if (StringUtils.isBlank(value))
     {
@@ -56,7 +56,7 @@ public abstract class DtoValidatorImpl<E extends AbstractEntity, D extends Abstr
   }
 
   protected void rejectIfInvalidLength(final String field, final String value, final int maxLength,
-    final ValidationResults validationResults)
+      final ValidationResults validationResults)
   {
     if (StringUtils.length(value) > maxLength)
     {
@@ -64,10 +64,20 @@ public abstract class DtoValidatorImpl<E extends AbstractEntity, D extends Abstr
     }
   }
 
-  protected boolean otherExists(UUID id, Specification<E> specification)
+  protected boolean otherExists(final UUID id, final Specification<E> specification)
   {
     return dao.count(Specification.where(specification)
-      .and((root, query, cb) -> cb.notEqual(root.get(AbstractEntity_.id), id))) != 0;
+      .and(idNotEqualOrNotNull(id))) != 0;
+  }
+
+  private Specification<E> idNotEqualOrNotNull(final UUID id)
+  {
+    if (id == null)
+    {
+      return (root, query, cb) -> cb.isNotNull(root.get(AbstractEntity_.id));
+    }
+
+    return (root, query, cb) -> cb.notEqual(root.get(AbstractEntity_.id), id);
   }
 
   protected abstract void doValidate(D dto, ValidationResults results);

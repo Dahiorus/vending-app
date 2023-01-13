@@ -1,11 +1,9 @@
 package me.dahiorus.project.vending.domain.service.validation.impl;
 
+import static me.dahiorus.project.vending.util.TestUtils.anySpec;
 import static me.dahiorus.project.vending.util.TestUtils.assertHasExactlyFieldErrors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-
-import java.util.Optional;
-import java.util.UUID;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import me.dahiorus.project.vending.domain.dao.UserDAO;
-import me.dahiorus.project.vending.domain.model.AppUser;
 import me.dahiorus.project.vending.domain.model.dto.UserDTO;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
@@ -117,11 +114,7 @@ class UserDtoValidatorTest
   void emailIsUnique()
   {
     UserDTO dto = buildDto("User", "test", "user@yopmail.com");
-    AppUser duplicate = new AppUser();
-    duplicate.setId(UUID.randomUUID());
-    duplicate.setEmail(dto.getEmail());
-
-    when(dao.findByEmail(dto.getEmail())).thenReturn(Optional.of(duplicate));
+    when(dao.count(anySpec())).thenReturn(1L);
 
     ValidationResults results = validator.validate(dto);
 
