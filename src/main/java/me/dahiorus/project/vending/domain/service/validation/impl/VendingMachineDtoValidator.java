@@ -6,7 +6,6 @@ import static me.dahiorus.project.vending.domain.service.validation.FieldValidat
 import static me.dahiorus.project.vending.domain.service.validation.ValidationError.getFullCode;
 
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.log4j.Log4j2;
@@ -25,7 +24,6 @@ import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 public class VendingMachineDtoValidator
   extends DtoValidatorImpl<VendingMachine, VendingMachineDTO, DAO<VendingMachine>>
 {
-  @Autowired
   public VendingMachineDtoValidator(final DAO<VendingMachine> dao)
   {
     super(dao);

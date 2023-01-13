@@ -82,7 +82,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
   }
 
   @Bean
-  public AccessDeniedHandler restAccessDeniedHandler()
+  AccessDeniedHandler restAccessDeniedHandler()
   {
     return (request, response, accessDeniedException) -> {
       response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -94,7 +94,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
   }
 
   @Bean
-  public PasswordEncoder passwordEncoder()
+  PasswordEncoder passwordEncoder()
   {
     return new BCryptPasswordEncoder(BCryptVersion.$2A, 13);
   }

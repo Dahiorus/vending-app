@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import me.dahiorus.project.vending.domain.model.AbstractEntity_;
@@ -13,7 +12,6 @@ import me.dahiorus.project.vending.domain.model.Report;
 import me.dahiorus.project.vending.domain.model.Report_;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
 
-@Repository
 public interface ReportDAO extends DAO<Report>
 {
   @Transactional(readOnly = true)
