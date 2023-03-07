@@ -79,7 +79,7 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
   }
 
   @Override
-  protected void doBeforeCallingDao(final AppUser entity, final CrudOperation operation)
+  protected void prepareEntity(final AppUser entity, final CrudOperation operation)
   {
     if ((operation == CrudOperation.CREATE || operation == CrudOperation.UPDATE) &&
       StringUtils.isNotEmpty(entity.getPassword()))
