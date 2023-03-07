@@ -14,19 +14,18 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder.BCryptVersion;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import lombok.RequiredArgsConstructor;
 import me.dahiorus.project.vending.web.security.JwtService;
 import me.dahiorus.project.vending.web.security.SecurityConstants;
 import me.dahiorus.project.vending.web.security.filter.JwtAuthenticationFilter;
@@ -34,55 +33,41 @@ import me.dahiorus.project.vending.web.security.filter.JwtRequestFilter;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter
+public class WebSecurityConfig
 {
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
-  private final UserDetailsService userDetailsService;
-
-  private final JwtService jwtService;
-
-  @Override
-  protected void configure(final AuthenticationManagerBuilder auth) throws Exception
-  {
-    auth.userDetailsService(userDetailsService)
-      .passwordEncoder(passwordEncoder());
-  }
-
-  @Override
-  protected void configure(final HttpSecurity http) throws Exception
+  @Bean
+  SecurityFilterChain filterChain(final HttpSecurity http, final AuthenticationManager authenticationManager,
+    final JwtService jwtService)
+    throws Exception
   {
     // @formatter:off
-    http
+    return http
       .csrf().disable()
       .httpBasic().disable()
+      .logout().disable()
       .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
       .and()
-        .logout().disable()
-        // request permissions
-        .authorizeRequests()
-          .mvcMatchers(SecurityConstants.AUTHENTICATE_ENDPOINT, SecurityConstants.REFRESH_TOKEN_ENDPOINT).permitAll()
-          .antMatchers(HttpMethod.GET, "/api/v1/vending-machines/**", "/api/v1/items/{.+}/**").permitAll()
-          .antMatchers(HttpMethod.POST, "/api/v1/vending-machines/{.+}/purchase/**").permitAll()
-          .antMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
-          .mvcMatchers(SecurityConstants.REGISTER_ENDPOINT).anonymous()
-          .antMatchers("/api/v1/me/**").authenticated()
-          .anyRequest().hasAuthority("ROLE_ADMIN")
-      .and()
-        // exception handling
-        .exceptionHandling()
-          .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-          .accessDeniedHandler(restAccessDeniedHandler())
-      .and()
-        // request filters
-        .addFilter(new JwtAuthenticationFilter(authenticationManagerBean(), jwtService))
-        .addFilterBefore(new JwtRequestFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
+      // request permissions
+      .authorizeRequests(customizer -> customizer.mvcMatchers(SecurityConstants.AUTHENTICATE_ENDPOINT, SecurityConstants.REFRESH_TOKEN_ENDPOINT).permitAll()
+        .antMatchers(HttpMethod.GET, "/api/v1/vending-machines/**", "/api/v1/items/{.+}/**").permitAll()
+        .antMatchers(HttpMethod.POST, "/api/v1/vending-machines/{.+}/purchase/**").permitAll()
+        .antMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
+        .mvcMatchers(SecurityConstants.REGISTER_ENDPOINT).anonymous()
+        .antMatchers("/api/v1/me/**").authenticated()
+        .anyRequest().hasAuthority("ROLE_ADMIN"))
+      // exception handling
+      .exceptionHandling(customizer -> customizer.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+        .accessDeniedHandler(restAccessDeniedHandler()))
+      // request filters
+      .addFilter(new JwtAuthenticationFilter(authenticationManager, jwtService))
+      .addFilterBefore(new JwtRequestFilter(jwtService), UsernamePasswordAuthenticationFilter.class)
+      .build();
     // @formatter:on
   }
 
-  @Bean
-  AccessDeniedHandler restAccessDeniedHandler()
+  private static AccessDeniedHandler restAccessDeniedHandler()
   {
     return (request, response, accessDeniedException) -> {
       response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -94,15 +79,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
   }
 
   @Bean
-  PasswordEncoder passwordEncoder()
+  AuthenticationManager authenticationManager(final HttpSecurity http, final UserDetailsService userDetailsService,
+    final PasswordEncoder passwordEncoder) throws Exception
   {
-    return new BCryptPasswordEncoder(BCryptVersion.$2A, 13);
+    AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
+    builder.userDetailsService(userDetailsService)
+      .passwordEncoder(passwordEncoder);
+
+    return builder.build();
   }
 
   @Bean
-  @Override
-  public AuthenticationManager authenticationManagerBean() throws Exception
+  PasswordEncoder passwordEncoder()
   {
-    return super.authenticationManagerBean();
+    return new BCryptPasswordEncoder(BCryptVersion.$2A, 13);
   }
 }
