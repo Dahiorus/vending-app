@@ -26,8 +26,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.domain.exception.AppRuntimeException;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
+import me.dahiorus.project.vending.domain.exception.UnexpectedNonImageFile;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
 import me.dahiorus.project.vending.domain.model.dto.BinaryDataDTO;
 import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
@@ -86,7 +86,7 @@ public class ItemRestController extends RestControllerImpl<ItemDTO, ItemDtoServi
     }
     catch (IOException e)
     {
-      throw new AppRuntimeException("Unable to get the file to upload", e);
+      throw new UnexpectedNonImageFile("Unable to get the file to upload", e);
     }
   }
 }

@@ -27,8 +27,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.domain.exception.AppRuntimeException;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
+import me.dahiorus.project.vending.domain.exception.UnexpectedNonImageFile;
 import me.dahiorus.project.vending.domain.exception.UserNotAuthenticated;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
 import me.dahiorus.project.vending.domain.model.dto.BinaryDataDTO;
@@ -57,7 +57,7 @@ public class SelfServiceRestController implements AppWebService
   @Operation(description = "Get the authenticated user")
   @ApiResponse(responseCode = "200", description = "Authenticated user found")
   @GetMapping(produces = MediaTypes.HAL_JSON_VALUE)
-  public ResponseEntity<EntityModel<UserDTO>> get(final Authentication authentication) throws UserNotAuthenticated
+  public ResponseEntity<EntityModel<UserDTO>> get(final Authentication authentication)
   {
     UserDTO authenticatedUser = authenticationFacade.getAuthenticatedUser(authentication);
 
@@ -94,7 +94,7 @@ public class SelfServiceRestController implements AppWebService
   @PostMapping(value = "picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<EntityModel<UserDTO>> uploadPicture(final Authentication authentication,
     @RequestParam("file") final MultipartFile file)
-    throws UserNotAuthenticated, ValidationException
+    throws ValidationException
   {
     UserDTO authenticatedUser = authenticationFacade.getAuthenticatedUser(authentication);
 
@@ -110,7 +110,7 @@ public class SelfServiceRestController implements AppWebService
     }
     catch (IOException e)
     {
-      throw new AppRuntimeException("Unable to get the file to upload", e);
+      throw new UnexpectedNonImageFile("Unable to get the file to upload", e);
     }
     catch (EntityNotFound e)
     {
@@ -122,7 +122,7 @@ public class SelfServiceRestController implements AppWebService
   @ApiResponse(responseCode = "200", description = "User picture found")
   @ApiResponse(responseCode = "404", description = "No picture found")
   @GetMapping("/picture")
-  public ResponseEntity<ByteArrayResource> getPicture(final Authentication authentication) throws UserNotAuthenticated
+  public ResponseEntity<ByteArrayResource> getPicture(final Authentication authentication)
   {
     UserDTO authenticatedUser = authenticationFacade.getAuthenticatedUser(authentication);
     try

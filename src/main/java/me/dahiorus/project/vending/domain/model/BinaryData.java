@@ -17,8 +17,6 @@ public class BinaryData extends AbstractEntity
 
   private String contentType;
 
-  private Long size;
-
   private byte[] content;
 
   @Column(nullable = false)
@@ -41,17 +39,6 @@ public class BinaryData extends AbstractEntity
   public void setContentType(final String contentType)
   {
     this.contentType = contentType;
-  }
-
-  @Column(nullable = false)
-  public Long getSize()
-  {
-    return size;
-  }
-
-  public void setSize(final Long size)
-  {
-    this.size = size;
   }
 
   @Lob

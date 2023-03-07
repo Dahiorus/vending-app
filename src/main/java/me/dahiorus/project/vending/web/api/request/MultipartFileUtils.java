@@ -33,7 +33,6 @@ public class MultipartFileUtils
     BinaryDataDTO dto = new BinaryDataDTO();
     dto.setName(System.currentTimeMillis() + "." + getExtension(file.getOriginalFilename()));
     dto.setContentType(file.getContentType());
-    dto.setSize(file.getSize());
     dto.setContent(file.getBytes());
 
     return dto;

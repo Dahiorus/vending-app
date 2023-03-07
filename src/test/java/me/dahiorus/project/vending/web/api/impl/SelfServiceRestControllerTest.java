@@ -177,7 +177,6 @@ class SelfServiceRestControllerTest extends RestControllerTest
       dto.setName("picture.jpg");
       dto.setContentType(MediaType.IMAGE_JPEG_VALUE);
       dto.setContent(new byte[32]);
-      dto.setSize(1235L);
       dto.setCreatedAt(Instant.now());
 
       mockGetAuthenticatedUser();
@@ -301,7 +300,7 @@ class SelfServiceRestControllerTest extends RestControllerTest
     }
   }
 
-  void mockGetAuthenticatedUser() throws UserNotAuthenticated
+  void mockGetAuthenticatedUser()
   {
     when(authenticationFacade.getAuthenticatedUser(any())).then(invoc -> {
       Authentication auth = invoc.getArgument(0, Authentication.class);

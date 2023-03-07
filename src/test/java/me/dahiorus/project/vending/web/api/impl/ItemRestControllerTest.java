@@ -459,7 +459,6 @@ class ItemRestControllerTest extends RestControllerTest
       dto.setName("picture.jpg");
       dto.setContentType(MediaType.IMAGE_JPEG_VALUE);
       dto.setContent(new byte[32]);
-      dto.setSize(1235L);
       dto.setCreatedAt(Instant.now());
       when(itemDtoService.getImage(id)).thenReturn(Optional.of(dto));
 
@@ -469,7 +468,7 @@ class ItemRestControllerTest extends RestControllerTest
         .andExpect(content().bytes(dto.getContent()))
         .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"picture.jpg\""))
         .andExpect(header().string(HttpHeaders.CACHE_CONTROL, "max-age=3600, public"))
-        .andExpect(header().string(HttpHeaders.CONTENT_LENGTH, "1235"));
+        .andExpect(header().longValue(HttpHeaders.CONTENT_LENGTH, dto.getSize()));
     }
 
     @Test

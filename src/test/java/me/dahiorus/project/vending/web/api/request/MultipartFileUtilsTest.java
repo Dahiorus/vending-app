@@ -36,7 +36,6 @@ class MultipartFileUtilsTest
 
     assertThat(binaryDataDto).hasFieldOrPropertyWithValue("contentType", file.getContentType())
       .hasFieldOrPropertyWithValue("content", file.getBytes())
-      .hasFieldOrPropertyWithValue("size", file.getSize())
       .satisfies(dto -> assertThat(dto.getName()).endsWith(".jpg")
         .isNotEqualTo(file.getOriginalFilename()));
   }
@@ -79,7 +78,6 @@ class MultipartFileUtilsTest
       BinaryDataDTO dto = new BinaryDataDTO();
       dto.setName("image.jpg");
       dto.setContentType(MediaType.IMAGE_JPEG_VALUE);
-      dto.setSize(123456L);
       dto.setContent(new byte[32]);
       dto.setCreatedAt(Instant.now());
 
@@ -93,8 +91,7 @@ class MultipartFileUtilsTest
             List.of(DATE_FORMATTER.format(dto.getCreatedAt())))
           .containsEntry(HttpHeaders.CONTENT_DISPOSITION, List.of("inline; filename=\"" + dto.getName() + "\""))
           .containsEntry(HttpHeaders.CACHE_CONTROL, List.of("max-age=3600, public"))
-          .containsEntry(HttpHeaders.CONTENT_LENGTH, List.of(dto.getSize()
-            .toString()));
+          .containsEntry(HttpHeaders.CONTENT_LENGTH, List.of(Integer.toString(dto.getSize())));
       });
     }
 
