@@ -49,11 +49,13 @@ public abstract class DtoModelAssembler<T extends AbstractDTO<?>>
     resources.add(Link.of(requestUri.toString()));
   }
 
+  @SuppressWarnings({ "java:S1172", "java:S1130" })
   protected Optional<Link> selfLink(final T content) throws AppException
   {
     return Optional.empty();
   }
 
+  @SuppressWarnings("java:S1130")
   protected Iterable<Link> buildLinks(@Nonnull final T content) throws AppException
   {
     getLogger().trace("Building links for {}", content);
