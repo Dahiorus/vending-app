@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.fge.jsonpatch.JsonPatch;
 
@@ -22,12 +23,10 @@ import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
 
 class JsonPatchHandlerTest
 {
-  static ObjectMapper MAPPER = new ObjectMapper();
-  static
-  {
-    MAPPER.registerModule(new JavaTimeModule());
-    MAPPER.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-  }
+  static ObjectMapper MAPPER = JsonMapper.builder()
+    .addModule(new JavaTimeModule())
+    .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+    .build();
 
   static class JsonPatchArgumentProvider implements ArgumentsProvider
   {
