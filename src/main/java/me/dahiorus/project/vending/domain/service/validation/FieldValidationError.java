@@ -26,20 +26,17 @@ public class FieldValidationError extends ValidationError
 
   public static FieldValidationError emptyOrNullValue(final String field)
   {
-    CommonError emptyValue = CommonError.EMPTY_VALUE;
-    return fieldError(field, emptyValue.code, field + " is mandatory");
+    return fieldError(field, CommonError.EMPTY_VALUE.code, field + " is mandatory");
   }
 
   public static FieldValidationError notUniqueValue(final String field, final Object value)
   {
-    CommonError notUnique = CommonError.NOT_UNIQUE;
-    return fieldError(field, notUnique.code, field + " must be unique", value);
+    return fieldError(field, CommonError.NOT_UNIQUE.code, field + " must be unique", value);
   }
 
   public static FieldValidationError maxLength(final String field, final int length)
   {
-    CommonError maxLength = CommonError.MAX_LENGTH;
-    return fieldError(field, maxLength.code, field + " must have a max length of " + length,
+    return fieldError(field, CommonError.MAX_LENGTH.code, field + " must have a max length of " + length,
       length);
   }
 }
