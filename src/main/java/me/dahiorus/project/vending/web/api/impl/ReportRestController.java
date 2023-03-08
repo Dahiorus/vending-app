@@ -80,7 +80,7 @@ public class ReportRestController
   public ResponseEntity<PagedModel<EntityModel<ReportDTO>>> list(@ParameterObject final Pageable pageable,
     @ParameterObject final ReportDTO criteria, @ParameterObject final ExampleMatcherAdapter exampleMatcherAdapter)
   {
-    Page<ReportDTO> page = dtoService.list(pageable, criteria, exampleMatcherAdapter.toExampleMatcher());
+    Page<ReportDTO> page = dtoService.list(pageable, criteria, exampleMatcherAdapter.get());
 
     return ok(pageModelAssembler.toModel(page, modelAssembler));
   }

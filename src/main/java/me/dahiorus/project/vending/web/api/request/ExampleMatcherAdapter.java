@@ -33,7 +33,7 @@ public class ExampleMatcherAdapter
   @Setter
   private boolean ignoreCase = true;
 
-  public ExampleMatcher toExampleMatcher()
+  public ExampleMatcher get()
   {
     ExampleMatcher matcher = matchMode == MatchMode.ANY ? ExampleMatcher.matchingAny() : ExampleMatcher.matchingAll();
 

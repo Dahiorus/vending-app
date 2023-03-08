@@ -67,7 +67,7 @@ public abstract class RestControllerImpl<D extends AbstractDTO<?>, S extends Dto
     getLogger().debug("Getting page {} of entities matching criteria [{}, matcher: {}]", pageable, criteria,
       exampleMatcherAdapter);
 
-    Page<D> page = dtoService.list(pageable, criteria, exampleMatcherAdapter.toExampleMatcher());
+    Page<D> page = dtoService.list(pageable, criteria, exampleMatcherAdapter.get());
 
     return ok(pageModelAssembler.toModel(page, modelAssembler));
   }
