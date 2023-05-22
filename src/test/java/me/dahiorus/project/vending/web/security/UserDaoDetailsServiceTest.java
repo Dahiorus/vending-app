@@ -21,9 +21,9 @@ import me.dahiorus.project.vending.domain.model.AppUser;
 import me.dahiorus.project.vending.util.UserBuilder;
 
 @ExtendWith(MockitoExtension.class)
-class AppUserDetailsServiceTest
+class UserDaoDetailsServiceTest
 {
-  AppUserDetailsService userDetailsService;
+  UserDaoDetailsService userDetailsService;
 
   @Mock
   UserDAO userDao;
@@ -31,7 +31,7 @@ class AppUserDetailsServiceTest
   @BeforeEach
   void setUp()
   {
-    userDetailsService = new AppUserDetailsService(userDao);
+    userDetailsService = new UserDaoDetailsService(userDao);
   }
 
   @Test

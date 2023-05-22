@@ -11,7 +11,7 @@ import me.dahiorus.project.vending.domain.dao.UserDAO;
 
 @Component
 @RequiredArgsConstructor
-public class AppUserDetailsService implements UserDetailsService
+public class UserDaoDetailsService implements UserDetailsService
 {
   private final UserDAO userDao;
 

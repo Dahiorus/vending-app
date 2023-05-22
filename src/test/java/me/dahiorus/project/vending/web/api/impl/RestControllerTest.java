@@ -11,14 +11,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
 import me.dahiorus.project.vending.web.config.WebSecurityConfig;
-import me.dahiorus.project.vending.web.security.AppUserDetailsService;
+import me.dahiorus.project.vending.web.security.UserDaoDetailsService;
 import me.dahiorus.project.vending.web.security.impl.JwtServiceImpl;
 
 @Import(WebSecurityConfig.class)
 public abstract class RestControllerTest
 {
   @MockBean
-  AppUserDetailsService userDetailsService;
+  UserDaoDetailsService userDetailsService;
 
   @MockBean
   JwtServiceImpl jwtService;
