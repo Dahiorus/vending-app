@@ -27,6 +27,6 @@ public class JwtProperties
 
   @Getter
   @Setter
-  @DurationUnit(ChronoUnit.YEARS)
-  private Period refreshTokenDuration = Period.ofYears(1);
+  @DurationUnit(ChronoUnit.DAYS)
+  private Period refreshTokenDuration = Period.ofDays(365);
 }
