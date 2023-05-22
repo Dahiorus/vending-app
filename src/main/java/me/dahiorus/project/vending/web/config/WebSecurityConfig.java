@@ -14,6 +14,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -44,19 +47,19 @@ public class WebSecurityConfig
   {
     // @formatter:off
     return http
-      .csrf().disable()
-      .httpBasic().disable()
-      .logout().disable()
-      .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-      .and()
+      .csrf(CsrfConfigurer::disable)
+      .httpBasic(HttpBasicConfigurer::disable)
+      .logout(LogoutConfigurer::disable)
+      .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
       // request permissions
-      .authorizeRequests(customizer -> customizer.mvcMatchers(SecurityConstants.AUTHENTICATE_ENDPOINT, SecurityConstants.REFRESH_TOKEN_ENDPOINT).permitAll()
+      .authorizeHttpRequests(customizer -> customizer
+        .mvcMatchers(SecurityConstants.AUTHENTICATE_ENDPOINT, SecurityConstants.REFRESH_TOKEN_ENDPOINT).permitAll()
         .antMatchers(HttpMethod.GET, "/api/v1/vending-machines/**", "/api/v1/items/{.+}/**").permitAll()
         .antMatchers(HttpMethod.POST, "/api/v1/vending-machines/{.+}/purchase/**").permitAll()
         .antMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
-        .mvcMatchers(SecurityConstants.REGISTER_ENDPOINT).anonymous()
+        .mvcMatchers(SecurityConstants.REGISTER_ENDPOINT).hasRole("ANONYMOUS")
         .antMatchers("/api/v1/me/**").authenticated()
-        .anyRequest().hasAuthority("ROLE_ADMIN"))
+        .anyRequest().hasRole("ADMIN"))
       // exception handling
       .exceptionHandling(customizer -> customizer.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
         .accessDeniedHandler(restAccessDeniedHandler()))
