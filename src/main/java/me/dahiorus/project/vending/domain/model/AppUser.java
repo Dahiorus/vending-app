@@ -118,4 +118,11 @@ public class AppUser extends AbstractEntity
   {
     this.roles = roles;
   }
+
+  @Override
+  public String toString()
+  {
+    return super.toString() + "[firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", roles="
+      + roles + "]";
+  }
 }
