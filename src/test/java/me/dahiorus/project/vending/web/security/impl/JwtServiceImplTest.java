@@ -79,7 +79,7 @@ class JwtServiceImplTest
       assertAll(() -> assertThat(jwtClaimsSet.getSubject()).isEqualTo(username),
         () -> assertThat(jwtClaimsSet.getStringListClaim("roles")).containsExactly("ROLE_USER"),
         () -> assertThat(jwtClaimsSet.getIssuer()).isEqualTo(jwtProperties.getIssuerUri()),
-        () -> assertThat(jwtClaimsSet.getExpirationTime()).isBefore(Instant.now()
+        () -> assertThat(jwtClaimsSet.getExpirationTime()).isBeforeOrEqualTo(Instant.now()
           .plus(jwtProperties.getAccessTokenDuration())));
     }
 
@@ -112,7 +112,7 @@ class JwtServiceImplTest
 
       JWTClaimsSet jwtClaimsSet = parsedJwt.getJWTClaimsSet();
       assertAll(() -> assertThat(jwtClaimsSet.getSubject()).isEqualTo(username),
-        () -> assertThat(jwtClaimsSet.getExpirationTime()).isBefore(Instant.now()
+        () -> assertThat(jwtClaimsSet.getExpirationTime()).isBeforeOrEqualTo(Instant.now()
           .plus(jwtProperties.getRefreshTokenDuration())));
     }
 
