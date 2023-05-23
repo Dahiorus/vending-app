@@ -12,6 +12,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -73,7 +74,7 @@ class ItemDtoServiceImplTest
     @Test
     void createValidDto() throws Exception
     {
-      ItemDTO dto = buildDto("Item", ItemType.FOOD, 2.0);
+      ItemDTO dto = buildDto("Item", ItemType.FOOD, BigDecimal.valueOf(1.5));
 
       when(dtoValidator.validate(dto)).thenReturn(successResults());
       when(dao.save(any())).then(invocation -> {
@@ -140,7 +141,7 @@ class ItemDtoServiceImplTest
     {
       Item entity = mockRead(UUID.randomUUID());
 
-      ItemDTO dto = buildDto("Item", ItemType.FOOD, 2.5);
+      ItemDTO dto = buildDto("Item", ItemType.FOOD, BigDecimal.valueOf(2.5));
       when(dtoValidator.validate(dto)).thenReturn(successResults());
 
       when(dao.save(any())).then(invocation -> invocation.getArgument(0));
@@ -158,7 +159,7 @@ class ItemDtoServiceImplTest
     {
       Item entity = mockRead(UUID.randomUUID());
 
-      ItemDTO dto = buildDto("Item", ItemType.FOOD, 2.5);
+      ItemDTO dto = buildDto("Item", ItemType.FOOD, BigDecimal.valueOf(1.5));
       when(dtoValidator.validate(dto)).then(invocation -> {
         ValidationResults results = new ValidationResults();
         results.addError(emptyOrNullValue("name"));
@@ -201,7 +202,7 @@ class ItemDtoServiceImplTest
       when(dao.read(id)).thenThrow(new EntityNotFound(Item.class, id));
 
       assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.delete(id));
-      verify(dao, never()).delete(any());
+      verify(dao, never()).delete(any(Item.class));
     }
   }
 
@@ -219,7 +220,7 @@ class ItemDtoServiceImplTest
     void setUp()
     {
       entities = IntStream.range(0, 20)
-        .mapToObj(i -> buildEntity("Item-" + i, ItemType.FOOD, 1.5))
+        .mapToObj(i -> buildEntity("Item-" + i, ItemType.FOOD, BigDecimal.valueOf(1.5)))
         .toList();
       entities.forEach(entity -> entity.setId(UUID.randomUUID()));
 
@@ -280,7 +281,7 @@ class ItemDtoServiceImplTest
     @Test
     void findDtoById() throws Exception
     {
-      Item entity = buildEntity("Item", ItemType.FOOD, 2.0);
+      Item entity = buildEntity("Item", ItemType.FOOD, BigDecimal.valueOf(2));
       entity.setId(UUID.randomUUID());
       when(dao.findById(entity.getId())).thenReturn(Optional.of(entity));
 
@@ -313,7 +314,7 @@ class ItemDtoServiceImplTest
     @Test
     void getPicture() throws Exception
     {
-      Item entity = buildEntity("Item", ItemType.FOOD, 2.0);
+      Item entity = buildEntity("Item", ItemType.FOOD, BigDecimal.valueOf(2));
       entity.setId(UUID.randomUUID());
       entity.setPicture(new BinaryData());
       when(dao.read(entity.getId())).thenReturn(entity);
@@ -387,7 +388,7 @@ class ItemDtoServiceImplTest
     }
   }
 
-  Item buildEntity(final String name, final ItemType type, final Double price)
+  Item buildEntity(final String name, final ItemType type, final BigDecimal price)
   {
     return ItemBuilder.builder()
       .name(name)
@@ -396,7 +397,7 @@ class ItemDtoServiceImplTest
       .build();
   }
 
-  ItemDTO buildDto(final String name, final ItemType type, final Double price)
+  ItemDTO buildDto(final String name, final ItemType type, final BigDecimal price)
   {
     return ItemBuilder.builder()
       .name(name)
@@ -407,7 +408,7 @@ class ItemDtoServiceImplTest
 
   Item mockRead(final UUID id) throws Exception
   {
-    Item entity = buildEntity("Item", ItemType.FOOD, 2.0);
+    Item entity = buildEntity("Item", ItemType.FOOD, BigDecimal.valueOf(2.0));
     entity.setId(id);
     when(dao.read(entity.getId())).thenReturn(entity);
 

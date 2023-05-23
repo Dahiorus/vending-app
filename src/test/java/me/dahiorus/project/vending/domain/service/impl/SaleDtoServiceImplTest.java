@@ -9,6 +9,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -50,7 +51,7 @@ class SaleDtoServiceImplTest
   void purchaseItem() throws Exception
   {
     VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.FOOD);
-    Item item = buildItem("Chips", machine.getType(), 1.5);
+    Item item = buildItem("Chips", machine.getType(), BigDecimal.valueOf(1.5));
     addStock(machine, item, 10);
 
     when(manager.getWorkingMachine(machine.getId())).thenReturn(machine);
@@ -70,7 +71,7 @@ class SaleDtoServiceImplTest
   void purchaseItemFromEmptyMachine() throws Exception
   {
     VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.FOOD);
-    Item item = buildItem("Chips", machine.getType(), 1.5);
+    Item item = buildItem("Chips", machine.getType(), BigDecimal.valueOf(1.5));
     addStock(machine, item, 0);
 
     when(manager.getWorkingMachine(machine.getId())).thenReturn(machine);
@@ -123,7 +124,7 @@ class SaleDtoServiceImplTest
     verify(manager, never()).purchaseItem(any(), any());
   }
 
-  static Item buildItem(final String name, final ItemType type, final Double price)
+  static Item buildItem(final String name, final ItemType type, final BigDecimal price)
   {
     return ItemBuilder.builder()
       .name(name)

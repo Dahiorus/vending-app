@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.domain.model;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
@@ -7,20 +8,21 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "vending_machine",
@@ -245,7 +247,7 @@ public class VendingMachine extends AbstractEntity
     stocks.add(stock);
   }
 
-  public boolean hasStock(@Nonnull Item item)
+  public boolean hasStock(@Nonnull final Item item)
   {
     return getQuantityInStock(item) > 0;
   }
@@ -273,19 +275,19 @@ public class VendingMachine extends AbstractEntity
     sales.add(sale);
   }
 
-  public Double computeTotalAmountSince(final Instant lastReportingDate)
+  public BigDecimal computeTotalAmountSince(final Instant lastReportingDate)
   {
     if (lastReportingDate == null)
     {
       return sales.stream()
-        .mapToDouble(Sale::getAmount)
-        .sum();
+        .map(Sale::getAmount)
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     return sales.stream()
       .filter(s -> lastReportingDate.isBefore(s.getCreatedAt()))
-      .mapToDouble(Sale::getAmount)
-      .sum();
+      .map(Sale::getAmount)
+      .reduce(BigDecimal.ZERO, BigDecimal::add);
   }
 
   @Override

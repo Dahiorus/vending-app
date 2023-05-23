@@ -1,9 +1,9 @@
 package me.dahiorus.project.vending.web.config;
 
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
 import java.time.Instant;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +21,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder.BCryptVersion;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -29,6 +30,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.servlet.http.HttpServletResponse;
 import me.dahiorus.project.vending.web.security.JwtService;
 import me.dahiorus.project.vending.web.security.SecurityConstants;
 import me.dahiorus.project.vending.web.security.filter.JwtAuthenticationFilter;
@@ -39,6 +41,8 @@ import me.dahiorus.project.vending.web.security.filter.JwtRequestFilter;
 public class WebSecurityConfig
 {
   private static final ObjectMapper MAPPER = new ObjectMapper();
+
+  private static final String DEFAULT_PWD_ENCODER_PREFIX = "bcrypt";
 
   @Bean
   SecurityFilterChain filterChain(final HttpSecurity http, final AuthenticationManager authenticationManager,
@@ -53,12 +57,12 @@ public class WebSecurityConfig
       .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
       // request permissions
       .authorizeHttpRequests(customizer -> customizer
-        .mvcMatchers(SecurityConstants.AUTHENTICATE_ENDPOINT, SecurityConstants.REFRESH_TOKEN_ENDPOINT).permitAll()
-        .antMatchers(HttpMethod.GET, "/api/v1/vending-machines/**", "/api/v1/items/{.+}/**").permitAll()
-        .antMatchers(HttpMethod.POST, "/api/v1/vending-machines/{.+}/purchase/**").permitAll()
-        .antMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
-        .mvcMatchers(SecurityConstants.REGISTER_ENDPOINT).hasRole("ANONYMOUS")
-        .antMatchers("/api/v1/me/**").authenticated()
+        .requestMatchers(SecurityConstants.AUTHENTICATE_ENDPOINT, SecurityConstants.REFRESH_TOKEN_ENDPOINT).permitAll()
+        .requestMatchers(antMatcher(HttpMethod.GET, "/api/v1/vending-machines/**"), antMatcher(HttpMethod.GET, "/api/v1/items/{.+}/**")).permitAll()
+        .requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/vending-machines/{.+}/purchase/**")).permitAll()
+        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
+        .requestMatchers(SecurityConstants.REGISTER_ENDPOINT).hasRole("ANONYMOUS")
+        .requestMatchers("/api/v1/me/**").authenticated()
         .anyRequest().hasRole("ADMIN"))
       // exception handling
       .exceptionHandling(customizer -> customizer.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
@@ -95,6 +99,7 @@ public class WebSecurityConfig
   @Bean
   PasswordEncoder passwordEncoder()
   {
-    return new BCryptPasswordEncoder(BCryptVersion.$2A, 13);
+    return new DelegatingPasswordEncoder(DEFAULT_PWD_ENCODER_PREFIX,
+      Map.of(DEFAULT_PWD_ENCODER_PREFIX, new BCryptPasswordEncoder(BCryptVersion.$2A, 13)));
   }
 }

@@ -5,6 +5,8 @@ import static me.dahiorus.project.vending.util.ValidationTestUtils.assertHasExac
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +43,7 @@ class ItemDtoValidatorTest
   @Test
   void dtoIsValid()
   {
-    dto = buildDto("Item", ItemType.FOOD, 1.3);
+    dto = buildDto("Item", ItemType.FOOD, BigDecimal.valueOf(1.3));
 
     ValidationResults results = validator.validate(dto);
 
@@ -54,7 +56,7 @@ class ItemDtoValidatorTest
   @ValueSource(strings = "  ")
   void nameIsMandatory(final String name)
   {
-    dto = buildDto(name, ItemType.FOOD, 1.3);
+    dto = buildDto(name, ItemType.FOOD, BigDecimal.valueOf(1.3));
 
     ValidationResults results = validator.validate(dto);
 
@@ -65,7 +67,7 @@ class ItemDtoValidatorTest
   void nameIsUnique()
   {
     when(dao.count(anySpec())).thenReturn(1L);
-    dto = buildDto("Item", ItemType.FOOD, 1.3);
+    dto = buildDto("Item", ItemType.FOOD, BigDecimal.valueOf(1.3));
 
     ValidationResults results = validator.validate(dto);
 
@@ -75,7 +77,7 @@ class ItemDtoValidatorTest
   @Test
   void nameHasMaxLength()
   {
-    dto = buildDto(RandomStringUtils.randomAlphanumeric(256), ItemType.FOOD, 1.5);
+    dto = buildDto(RandomStringUtils.randomAlphanumeric(256), ItemType.FOOD, BigDecimal.valueOf(1.5));
 
     ValidationResults results = validator.validate(dto);
 
@@ -85,7 +87,7 @@ class ItemDtoValidatorTest
   @Test
   void typeIsMandatory()
   {
-    dto = buildDto("Drink", null, 1.3);
+    dto = buildDto("Drink", null, BigDecimal.valueOf(1.3));
 
     ValidationResults results = validator.validate(dto);
 
@@ -97,14 +99,14 @@ class ItemDtoValidatorTest
   @ValueSource(doubles = -1.5)
   void priceMustBePositiveAndIsMandatory(final Double price)
   {
-    dto = buildDto("Drink", ItemType.COLD_BAVERAGE, null);
+    dto = buildDto("Drink", ItemType.COLD_BAVERAGE, price == null ? null : BigDecimal.valueOf(price));
 
     ValidationResults results = validator.validate(dto);
 
     assertHasExactlyFieldErrors(results, "price", "validation.constraints.item.price_positive");
   }
 
-  ItemDTO buildDto(final String name, final ItemType type, final Double price)
+  ItemDTO buildDto(final String name, final ItemType type, final BigDecimal price)
   {
     return ItemBuilder.builder()
       .name(name)

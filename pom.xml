@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.7.12</version>
+    <version>3.0.7</version>
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
   <groupId>me.dahiorus.project</groupId>
@@ -21,7 +21,7 @@
     <json-patch.version>1.13</json-patch.version>
     <maven-processor-plugin.version>4.5-jdk8</maven-processor-plugin.version>
     <modelmapper.version>3.1.0</modelmapper.version>
-    <spring.openapi.version>1.6.8</spring.openapi.version>
+    <spring.openapi.version>2.1.0</spring.openapi.version>
     <nimbus-jose-jwt.version>9.22</nimbus-jose-jwt.version>
     <apache.commons-io.version>1.3.2</apache.commons-io.version>
   </properties>
@@ -113,14 +113,10 @@
     <!-- Open API Specification -->
     <dependency>
       <groupId>org.springdoc</groupId>
-      <artifactId>springdoc-openapi-ui</artifactId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
       <version>${spring.openapi.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.springdoc</groupId>
-      <artifactId>springdoc-openapi-data-rest</artifactId>
-      <version>${spring.openapi.version}</version>
-    </dependency>
+
 
     <dependency>
       <groupId>org.springframework.boot</groupId>

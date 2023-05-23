@@ -1,19 +1,21 @@
 package me.dahiorus.project.vending.domain.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import java.math.BigDecimal;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "sale", indexes = @Index(name = "IDX_SALE_VENDING_MACHINE", columnList = "vending_machine_id"))
 public class Sale extends AbstractEntity
 {
-  private Double amount;
+  private BigDecimal amount;
 
   private VendingMachine machine;
 
@@ -27,12 +29,12 @@ public class Sale extends AbstractEntity
   }
 
   @Column(nullable = false, scale = 2, precision = 4)
-  public Double getAmount()
+  public BigDecimal getAmount()
   {
     return amount;
   }
 
-  public void setAmount(final Double amount)
+  public void setAmount(final BigDecimal amount)
   {
     this.amount = amount;
   }

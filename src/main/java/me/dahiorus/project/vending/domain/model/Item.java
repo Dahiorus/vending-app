@@ -1,16 +1,18 @@
 package me.dahiorus.project.vending.domain.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import java.math.BigDecimal;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "item",
@@ -25,7 +27,7 @@ public class Item extends AbstractEntity
 
   private ItemType type;
 
-  private Double price;
+  private BigDecimal price;
 
   private BinaryData picture;
 
@@ -53,12 +55,12 @@ public class Item extends AbstractEntity
   }
 
   @Column(nullable = false, scale = 2, precision = 4)
-  public Double getPrice()
+  public BigDecimal getPrice()
   {
     return price;
   }
 
-  public void setPrice(final Double price)
+  public void setPrice(final BigDecimal price)
   {
     this.price = price;
   }

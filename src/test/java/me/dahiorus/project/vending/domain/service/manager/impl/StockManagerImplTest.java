@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -90,7 +91,7 @@ class StockManagerImplTest
       item = ItemBuilder.builder()
         .id(UUID.randomUUID())
         .name("item")
-        .price(1.5)
+        .price(BigDecimal.valueOf(1.5))
         .build();
 
       assertThat(machine.getLastIntervention()).isNull();
@@ -100,9 +101,9 @@ class StockManagerImplTest
     void provisionNewStock()
     {
       when(dao.save(any())).then(returnsFirstArg());
-      
+
       manager.provision(machine, item, 10);
-      
+
       assertAll(() -> assertThat(machine.getQuantityInStock(item)).isEqualTo(10),
         () -> assertThat(machine.getLastIntervention()).isNotNull());
       verify(vendingMachineDao).save(machine);

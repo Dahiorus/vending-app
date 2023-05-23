@@ -20,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -68,6 +69,16 @@ class ItemRestControllerTest extends RestControllerTest
   @MockBean
   PagedResourcesAssembler<ItemDTO> pageModelAssembler;
 
+  static ItemDTO buildItem()
+  {
+    return ItemBuilder.builder()
+      .id(UUID.randomUUID())
+      .name("Item")
+      .type(ItemType.COLD_BAVERAGE)
+      .price(BigDecimal.valueOf(1.2))
+      .buildDto();
+  }
+
   @Nested
   class CreateTests
   {
@@ -75,11 +86,7 @@ class ItemRestControllerTest extends RestControllerTest
     @WithMockUser(username = "admin", password = "secret", roles = "ADMIN")
     void adminCanCreateItem() throws Exception
     {
-      ItemDTO item = ItemBuilder.builder()
-        .name("Item")
-        .type(ItemType.COLD_BAVERAGE)
-        .price(1.2)
-        .buildDto();
+      ItemDTO item = buildItem();
       when(itemDtoService.create(item)).then(invoc -> {
         item.setId(UUID.randomUUID());
         return item;
@@ -141,12 +148,7 @@ class ItemRestControllerTest extends RestControllerTest
     @Test
     void getItem() throws Exception
     {
-      ItemDTO item = ItemBuilder.builder()
-        .id(UUID.randomUUID())
-        .name("Item")
-        .type(ItemType.COLD_BAVERAGE)
-        .price(1.2)
-        .buildDto();
+      ItemDTO item = buildItem();
       when(itemDtoService.read(item.getId())).thenReturn(item);
       when(modelAssembler.toModel(item)).thenReturn(EntityModel.of(item));
 
@@ -180,12 +182,7 @@ class ItemRestControllerTest extends RestControllerTest
     @WithMockUser(username = "admin", password = "secret", roles = "ADMIN")
     void adminCanUpdateItem() throws Exception
     {
-      ItemDTO item = ItemBuilder.builder()
-        .id(UUID.randomUUID())
-        .name("Item")
-        .type(ItemType.COLD_BAVERAGE)
-        .price(1.2)
-        .buildDto();
+      ItemDTO item = buildItem();
       when(itemDtoService.update(item.getId(), item)).thenReturn(item);
       when(modelAssembler.toModel(item)).thenReturn(EntityModel.of(item));
 
@@ -221,12 +218,7 @@ class ItemRestControllerTest extends RestControllerTest
     @WithMockUser(username = "admin", password = "secret", roles = "ADMIN")
     void createItemWithId() throws Exception
     {
-      ItemDTO item = ItemBuilder.builder()
-        .id(UUID.randomUUID())
-        .name("Item")
-        .type(ItemType.COLD_BAVERAGE)
-        .price(1.2)
-        .buildDto();
+      ItemDTO item = buildItem();
       when(itemDtoService.update(item.getId(), item))
         .thenThrow(new EntityNotFound(Item.class, item.getId()));
       when(itemDtoService.create(item)).thenReturn(item);
@@ -319,12 +311,7 @@ class ItemRestControllerTest extends RestControllerTest
     @WithMockUser(username = "admin", password = "secret", roles = "ADMIN")
     void adminCanUpdateItem() throws Exception
     {
-      ItemDTO item = ItemBuilder.builder()
-        .id(UUID.randomUUID())
-        .name("Item")
-        .type(ItemType.COLD_BAVERAGE)
-        .price(1.2)
-        .buildDto();
+      ItemDTO item = buildItem();
       when(itemDtoService.read(item.getId())).thenReturn(item);
       when(itemDtoService.update(eq(item.getId()), any())).then(invoc -> invoc.getArgument(1));
       when(modelAssembler.toModel(any())).then(invoc -> EntityModel.of(invoc.getArgument(0)));
@@ -412,10 +399,7 @@ class ItemRestControllerTest extends RestControllerTest
     void getItems() throws Exception
     {
       Pageable pageable = PageRequest.of(0, 20, Direction.DESC, "name");
-      List<ItemDTO> content = List.of(ItemBuilder.builder()
-        .id(UUID.randomUUID())
-        .name("Item")
-        .buildDto());
+      List<ItemDTO> content = List.of(buildItem());
       PageImpl<ItemDTO> page = new PageImpl<>(content, pageable, 50);
       when(itemDtoService.list(eq(pageable), any(), any())).thenReturn(page);
       when(pageModelAssembler.toModel(page, modelAssembler)).thenReturn(PagedModel.wrap(content,
@@ -499,12 +483,7 @@ class ItemRestControllerTest extends RestControllerTest
     @WithMockUser(username = "admin", password = "secret", roles = "ADMIN")
     void uploadPicture() throws Exception
     {
-      ItemDTO item = ItemBuilder.builder()
-        .id(UUID.randomUUID())
-        .name("Item")
-        .type(ItemType.COLD_BAVERAGE)
-        .price(1.2)
-        .buildDto();
+      ItemDTO item = buildItem();
       when(itemDtoService.uploadImage(eq(item.getId()), any())).thenReturn(item);
 
       mockMvc

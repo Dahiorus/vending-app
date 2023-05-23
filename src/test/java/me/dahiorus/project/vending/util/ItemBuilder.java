@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.util;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import lombok.AccessLevel;
@@ -35,7 +36,7 @@ public class ItemBuilder
     return this;
   }
 
-  public ItemBuilder price(final Double price)
+  public ItemBuilder price(final BigDecimal price)
   {
     item.setPrice(price);
     return this;

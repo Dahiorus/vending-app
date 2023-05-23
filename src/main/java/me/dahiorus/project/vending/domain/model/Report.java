@@ -1,21 +1,23 @@
 package me.dahiorus.project.vending.domain.model;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Index;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
 
 import org.hibernate.annotations.Immutable;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "report", indexes = {
@@ -29,7 +31,7 @@ public class Report extends AbstractEntity
 
   private Integer mesuredTemperature;
 
-  private Double totalSaleAmount;
+  private BigDecimal totalSaleAmount;
 
   private PowerStatus powerStatus;
 
@@ -86,12 +88,12 @@ public class Report extends AbstractEntity
   }
 
   @Column(scale = 3)
-  public Double getTotalSaleAmount()
+  public BigDecimal getTotalSaleAmount()
   {
     return totalSaleAmount;
   }
 
-  public void setTotalSaleAmount(final Double totalSaleAmount)
+  public void setTotalSaleAmount(final BigDecimal totalSaleAmount)
   {
     this.totalSaleAmount = totalSaleAmount;
   }

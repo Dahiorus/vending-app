@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -38,7 +39,7 @@ class SaleRestControllerTest extends RestControllerTest
     UUID id = UUID.randomUUID(), itemId = UUID.randomUUID();
     ItemDTO item = ItemBuilder.builder()
       .id(itemId)
-      .price(2.5)
+      .price(BigDecimal.valueOf(1.5))
       .buildDto();
     when(itemDtoService.read(itemId)).thenReturn(item);
     when(saleDtoService.purchaseItem(id, item)).thenReturn(new SaleDTO());
@@ -54,7 +55,7 @@ class SaleRestControllerTest extends RestControllerTest
     UUID id = UUID.randomUUID(), itemId = UUID.randomUUID();
     ItemDTO item = ItemBuilder.builder()
       .id(itemId)
-      .price(2.5)
+      .price(BigDecimal.valueOf(1.5))
       .buildDto();
     when(itemDtoService.read(itemId)).thenReturn(item);
     when(saleDtoService.purchaseItem(id, item))
@@ -80,7 +81,7 @@ class SaleRestControllerTest extends RestControllerTest
     UUID id = UUID.randomUUID(), itemId = UUID.randomUUID();
     ItemDTO item = ItemBuilder.builder()
       .id(itemId)
-      .price(2.5)
+      .price(BigDecimal.valueOf(1.5))
       .buildDto();
     when(itemDtoService.read(itemId)).thenReturn(item);
     when(saleDtoService.purchaseItem(id, item)).thenThrow(new ItemMissing("Exception from test"));
@@ -95,7 +96,7 @@ class SaleRestControllerTest extends RestControllerTest
     UUID id = UUID.randomUUID(), itemId = UUID.randomUUID();
     ItemDTO item = ItemBuilder.builder()
       .id(itemId)
-      .price(2.5)
+      .price(BigDecimal.valueOf(1.5))
       .buildDto();
     when(itemDtoService.read(itemId)).thenReturn(item);
     when(saleDtoService.purchaseItem(id, item))

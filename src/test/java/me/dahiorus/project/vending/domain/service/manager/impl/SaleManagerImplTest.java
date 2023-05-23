@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -59,7 +60,7 @@ class SaleManagerImplTest
     Item item = ItemBuilder.builder()
       .id(UUID.randomUUID())
       .name("item")
-      .price(1.5)
+      .price(BigDecimal.valueOf(1.5))
       .build();
     machine.addStock(fill(item, 5));
 
@@ -68,7 +69,7 @@ class SaleManagerImplTest
 
     Sale sale = manager.purchaseItem(machine, item);
 
-    assertAll(() -> assertThat(sale).hasFieldOrPropertyWithValue("amount", 1.5)
+    assertAll(() -> assertThat(sale).hasFieldOrPropertyWithValue("amount", BigDecimal.valueOf(1.5))
       .hasFieldOrPropertyWithValue("machine", machine),
       () -> assertThat(machine.getQuantityInStock(item)).isEqualTo(4));
     verify(vendingMachineDao).save(machine);

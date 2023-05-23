@@ -4,6 +4,8 @@ import static me.dahiorus.project.vending.domain.service.validation.FieldValidat
 import static me.dahiorus.project.vending.domain.service.validation.FieldValidationError.notUniqueValue;
 import static me.dahiorus.project.vending.domain.service.validation.ValidationError.getFullCode;
 
+import java.math.BigDecimal;
+
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
@@ -40,8 +42,8 @@ public class ItemDtoValidator extends DtoValidatorImpl<Item, ItemDTO, DAO<Item>>
     rejectIfEmpty(Item_.TYPE, dto.getType(), results);
 
     // validate price is positive
-    Double price = dto.getPrice();
-    if (price == null || price < .0)
+    BigDecimal price = dto.getPrice();
+    if (price == null || price.compareTo(BigDecimal.ZERO) <= 0)
     {
       results.addError(fieldError(Item_.PRICE, getFullCode("item.price_positive"),
         "The price must be a positive number", price));

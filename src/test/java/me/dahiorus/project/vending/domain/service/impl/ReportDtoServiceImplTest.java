@@ -8,6 +8,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -104,7 +105,7 @@ class ReportDtoServiceImplTest
       Item item = new Item();
       item.setId(UUID.randomUUID());
       item.setName("Mars");
-      item.setPrice(1.2);
+      item.setPrice(BigDecimal.valueOf(1.2));
       item.setType(machine.getType());
       Stock stock = Stock.fill(item, 12);
       stock.setId(UUID.randomUUID());
@@ -127,10 +128,10 @@ class ReportDtoServiceImplTest
     {
       VendingMachine machine = buildMachine(UUID.randomUUID());
       Sale sale1 = new Sale();
-      sale1.setAmount(1.2);
+      sale1.setAmount(BigDecimal.valueOf(1.2));
       sale1.setMachine(machine);
       Sale sale2 = new Sale();
-      sale2.setAmount(1.5);
+      sale2.setAmount(BigDecimal.valueOf(1.5));
       sale2.setMachine(machine);
       machine.setSales(List.of(sale1, sale2));
 
@@ -140,7 +141,8 @@ class ReportDtoServiceImplTest
       ReportDTO report = dtoService.report(machine.getId());
 
       assertAll(() -> assertReportHasMachineInfo(report, machine),
-        () -> assertThat(report.getTotalSaleAmount()).isEqualTo(sale1.getAmount() + sale2.getAmount()));
+        () -> assertThat(report.getTotalSaleAmount()).isEqualTo(sale1.getAmount()
+          .add(sale2.getAmount())));
     }
 
     @Test
@@ -148,11 +150,11 @@ class ReportDtoServiceImplTest
     {
       VendingMachine machine = buildMachine(UUID.randomUUID());
       Sale sale1 = new Sale();
-      sale1.setAmount(1.2);
+      sale1.setAmount(BigDecimal.valueOf(1.2));
       sale1.setMachine(machine);
       sale1.setCreatedAt(Instant.parse("2022-04-01T10:15:30Z"));
       Sale sale2 = new Sale();
-      sale2.setAmount(1.5);
+      sale2.setAmount(BigDecimal.valueOf(1.5));
       sale2.setMachine(machine);
       sale2.setCreatedAt(Instant.parse("2022-04-10T10:15:30Z"));
       machine.setSales(List.of(sale1, sale2));

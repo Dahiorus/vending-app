@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.domain.model.dto;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -25,7 +26,7 @@ public class ItemDTO extends AbstractDTO<Item>
 
   @Getter
   @Setter
-  private Double price;
+  private BigDecimal price;
 
   @JsonIgnore
   @Getter

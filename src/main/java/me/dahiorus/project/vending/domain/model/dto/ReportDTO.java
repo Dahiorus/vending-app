@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.domain.model.dto;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class ReportDTO extends AbstractDTO<Report>
 
   @Getter
   @Setter
-  private Double totalSaleAmount;
+  private BigDecimal totalSaleAmount;
 
   @Getter
   @Setter

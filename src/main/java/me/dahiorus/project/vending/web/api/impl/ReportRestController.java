@@ -9,7 +9,7 @@ import java.net.URI;
 import java.util.UUID;
 
 import org.apache.logging.log4j.Logger;
-import org.springdoc.api.annotations.ParameterObject;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;

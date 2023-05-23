@@ -9,7 +9,7 @@ import static org.springframework.http.ResponseEntity.ok;
 import java.net.URI;
 import java.util.UUID;
 
-import org.springdoc.api.annotations.ParameterObject;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;

@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.domain.model.dto;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -16,7 +17,7 @@ public class SaleDTO extends AbstractDTO<Sale>
 {
   @Getter
   @Setter
-  private Double amount;
+  private BigDecimal amount;
 
   @JsonIgnore
   @Getter
