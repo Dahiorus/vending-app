@@ -59,8 +59,9 @@ class AuthenticationFacadeImplTest
     String username = "user.test";
     when(userDtoService.getByUsername(username)).thenThrow(new EntityNotFound("No user found"));
 
+    Authentication auth = mockAuthentication(username);
     assertThatExceptionOfType(UserNotAuthenticated.class)
-      .isThrownBy(() -> authenticationFacade.getAuthenticatedUser(mockAuthentication(username)));
+      .isThrownBy(() -> authenticationFacade.getAuthenticatedUser(auth));
   }
 
   Authentication mockAuthentication(final String username)
