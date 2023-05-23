@@ -1,6 +1,6 @@
 package me.dahiorus.project.vending.domain.service.validation.impl;
 
-import static me.dahiorus.project.vending.util.TestUtils.assertHasExactlyFieldErrors;
+import static me.dahiorus.project.vending.util.ValidationTestUtils.assertHasExactlyFieldErrors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.apache.commons.lang3.RandomStringUtils;

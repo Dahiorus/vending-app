@@ -1,7 +1,7 @@
 package me.dahiorus.project.vending.domain.service.impl;
 
 import static me.dahiorus.project.vending.domain.service.validation.FieldValidationError.emptyOrNullValue;
-import static me.dahiorus.project.vending.util.TestUtils.successResults;
+import static me.dahiorus.project.vending.util.ValidationTestUtils.successResults;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNoException;

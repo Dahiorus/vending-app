@@ -1,7 +1,7 @@
 package me.dahiorus.project.vending.web.api.request;
 
-import static me.dahiorus.project.vending.util.TestUtils.assertHasExactlyFieldErrors;
-import static me.dahiorus.project.vending.util.TestUtils.assertNoFieldError;
+import static me.dahiorus.project.vending.util.ValidationTestUtils.assertHasExactlyFieldErrors;
+import static me.dahiorus.project.vending.util.ValidationTestUtils.assertNoFieldError;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Instant;

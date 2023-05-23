@@ -1,7 +1,7 @@
 package me.dahiorus.project.vending.domain.service.validation.impl;
 
-import static me.dahiorus.project.vending.util.TestUtils.assertHasExactlyFieldErrors;
-import static me.dahiorus.project.vending.util.TestUtils.assertNoFieldError;
+import static me.dahiorus.project.vending.util.ValidationTestUtils.assertHasExactlyFieldErrors;
+import static me.dahiorus.project.vending.util.ValidationTestUtils.assertNoFieldError;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 

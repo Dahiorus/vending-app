@@ -40,7 +40,7 @@ class StockDtoServiceImplTest
 {
   @Mock
   StockManager manager;
-  
+
   StockDtoServiceImpl dtoService;
 
   @BeforeEach
