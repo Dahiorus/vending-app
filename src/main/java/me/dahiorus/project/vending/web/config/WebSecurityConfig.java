@@ -61,7 +61,7 @@ public class WebSecurityConfig
         .requestMatchers(antMatcher(HttpMethod.GET, "/api/v1/vending-machines/**"), antMatcher(HttpMethod.GET, "/api/v1/items/{.+}/**")).permitAll()
         .requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/vending-machines/{.+}/purchase/**")).permitAll()
         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
-        .requestMatchers(SecurityConstants.REGISTER_ENDPOINT).hasRole("ANONYMOUS")
+        .requestMatchers(SecurityConstants.REGISTER_ENDPOINT).anonymous()
         .requestMatchers("/api/v1/me/**").authenticated()
         .anyRequest().hasRole("ADMIN"))
       // exception handling
