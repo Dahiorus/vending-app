@@ -11,6 +11,6 @@ import me.dahiorus.project.vending.domain.model.VendingMachine;
 public interface SaleManager
 {
   VendingMachine getWorkingMachine(UUID id) throws EntityNotFound, VendingMachineNotWorking;
-  
+
   Sale purchaseItem(VendingMachine vendingMachine, Item itemToPurchase);
 }

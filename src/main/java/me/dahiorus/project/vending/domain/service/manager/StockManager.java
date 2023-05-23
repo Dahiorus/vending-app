@@ -9,6 +9,6 @@ import me.dahiorus.project.vending.domain.model.VendingMachine;
 public interface StockManager
 {
   VendingMachine getMachine(UUID id) throws EntityNotFound;
-  
+
   void provision(VendingMachine vendingMachine, Item item, Integer quantity);
 }

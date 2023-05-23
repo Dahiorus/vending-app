@@ -92,7 +92,7 @@ class StockManagerImplTest
         .name("item")
         .price(1.5)
         .build();
-      
+
       assertThat(machine.getLastIntervention()).isNull();
     }
 
@@ -113,9 +113,9 @@ class StockManagerImplTest
     {
       machine.addStock(Stock.fill(item, 5));
       when(dao.save(any())).then(returnsFirstArg());
-      
+
       manager.provision(machine, item, 10);
-      
+
       assertAll(() -> assertThat(machine.getQuantityInStock(item)).isEqualTo(15),
         () -> assertThat(machine.getLastIntervention()).isNotNull());
       verify(vendingMachineDao).save(machine);

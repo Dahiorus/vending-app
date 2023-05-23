@@ -10,10 +10,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import lombok.EqualsAndHashCode;
 import lombok.EqualsAndHashCode.CacheStrategy;
-import me.dahiorus.project.vending.domain.model.AbstractEntity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import me.dahiorus.project.vending.domain.model.AbstractEntity;
 
 @EqualsAndHashCode(of = "id", cacheStrategy = CacheStrategy.LAZY)
 @ToString(of = { "id", "createdAt" })
