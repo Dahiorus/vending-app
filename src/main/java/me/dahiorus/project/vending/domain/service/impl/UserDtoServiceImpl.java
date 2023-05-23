@@ -114,7 +114,7 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
     log.info("Password of {} updated", () -> dtoMapper.toDto(updatedUser, UserDTO.class));
   }
 
-  private ValidationResults validatePassword(final EditPasswordDTO editPassword, AppUser user)
+  private ValidationResults validatePassword(final EditPasswordDTO editPassword, final AppUser user)
   {
     ValidationResults validationResults = new ValidationResults();
 
@@ -137,6 +137,7 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
     return validationResults;
   }
 
+  @Transactional(readOnly = true)
   @Override
   public Optional<BinaryDataDTO> getImage(final UUID id) throws EntityNotFound
   {

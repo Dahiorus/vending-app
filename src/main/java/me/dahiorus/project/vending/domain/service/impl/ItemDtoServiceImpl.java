@@ -63,6 +63,7 @@ public class ItemDtoServiceImpl extends DtoServiceImpl<Item, ItemDTO, DAO<Item>>
     return dtoMapper.toDto(updatedEntity, ItemDTO.class);
   }
 
+  @Transactional(readOnly = true)
   @Override
   public Optional<BinaryDataDTO> getImage(final UUID id) throws EntityNotFound
   {
