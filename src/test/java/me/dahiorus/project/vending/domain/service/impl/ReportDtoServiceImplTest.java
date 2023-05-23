@@ -106,10 +106,8 @@ class ReportDtoServiceImplTest
       item.setName("Mars");
       item.setPrice(1.2);
       item.setType(machine.getType());
-      Stock stock = new Stock();
+      Stock stock = Stock.fill(item, 12);
       stock.setId(UUID.randomUUID());
-      stock.setItem(item);
-      stock.setQuantity(12);
       machine.setStocks(List.of(stock));
 
       when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
