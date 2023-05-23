@@ -2,6 +2,7 @@ package me.dahiorus.project.vending.domain.service.manager.impl;
 
 import java.util.UUID;
 
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import me.dahiorus.project.vending.domain.service.manager.StockManager;
 
 @Log4j2
 @RequiredArgsConstructor
+@Component
 public class StockManagerImpl implements StockManager
 {
   private final DAO<Stock> dao;
