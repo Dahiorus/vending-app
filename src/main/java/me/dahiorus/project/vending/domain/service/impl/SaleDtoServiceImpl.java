@@ -1,7 +1,5 @@
 package me.dahiorus.project.vending.domain.service.impl;
 
-import static me.dahiorus.project.vending.domain.model.Sale.sell;
-
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -9,29 +7,24 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.domain.dao.DAO;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ItemMissing;
 import me.dahiorus.project.vending.domain.exception.VendingMachineNotWorking;
 import me.dahiorus.project.vending.domain.model.Item;
 import me.dahiorus.project.vending.domain.model.Sale;
-import me.dahiorus.project.vending.domain.model.Stock;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
 import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
 import me.dahiorus.project.vending.domain.model.dto.SaleDTO;
 import me.dahiorus.project.vending.domain.service.DtoMapper;
 import me.dahiorus.project.vending.domain.service.SaleDtoService;
+import me.dahiorus.project.vending.domain.service.manager.SaleManager;
 
 @Log4j2
 @RequiredArgsConstructor
 @Service
 public class SaleDtoServiceImpl implements SaleDtoService
 {
-  private final DAO<Sale> dao;
-
-  private final DAO<VendingMachine> vendingMachineDao;
-
-  private final DAO<Stock> stockDao;
+  private final SaleManager manager;
 
   private final DtoMapper dtoMapper;
 
@@ -42,37 +35,17 @@ public class SaleDtoServiceImpl implements SaleDtoService
   {
     log.traceEntry(() -> id, () -> item);
 
-    VendingMachine machine = vendingMachineDao.read(id);
-
-    if (!machine.isWorking())
-    {
-      throw new VendingMachineNotWorking("The vending machine " + id + " is not working");
-    }
-
+    VendingMachine machine = manager.getWorkingMachine(id);
     Item itemToPurchase = dtoMapper.toEntity(item, Item.class);
-
-    if (!machine.hasItem(itemToPurchase) || machine.getQuantityInStock(itemToPurchase) == 0L)
+    if (!machine.hasStock(itemToPurchase))
     {
       throw new ItemMissing("Vending machine " + id + " does not have item " + item.getName());
     }
 
-    machine.getStock(itemToPurchase)
-      .ifPresent(stock -> {
-        log.debug("Purchasing '{}' from the vending machine {}", item.getName(), id);
-        stock.decrementQuantity();
-        stockDao.save(stock);
-      });
-
-    log.debug("Adding a new sale of '{}' with amount of {} to the vending machine {}",
-      item.getName(), item.getPrice(), id);
-
-    Sale sale = sell(itemToPurchase, machine);
-    sale = dao.save(sale);
-    machine.addSale(sale);
-    VendingMachine updatedMachine = vendingMachineDao.save(machine);
+    Sale sale = manager.purchaseItem(machine, itemToPurchase);
 
     log.info("Item '{}' purchased from vending machine {} for price {}", item.getName(),
-      updatedMachine.getId(), sale.getAmount());
+      id, sale.getAmount());
 
     return log.traceExit(dtoMapper.toDto(sale, SaleDTO.class));
   }

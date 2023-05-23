@@ -233,7 +233,7 @@ public class VendingMachine extends AbstractEntity
     this.stocks = stocks;
   }
 
-  public Optional<Stock> getStock(final Item item)
+  public Optional<Stock> findStock(final Item item)
   {
     return stocks.stream()
       .filter(stock -> Objects.equals(stock.getItem(), item))
@@ -245,14 +245,14 @@ public class VendingMachine extends AbstractEntity
     stocks.add(stock);
   }
 
-  public boolean hasItem(@Nonnull final Item item)
+  public boolean hasStock(@Nonnull Item item)
   {
-    return getStock(item).isPresent();
+    return getQuantityInStock(item) > 0;
   }
 
   public long getQuantityInStock(final Item item)
   {
-    return getStock(item).map(Stock::getQuantity)
+    return findStock(item).map(Stock::getQuantity)
       .orElse(0);
   }
 

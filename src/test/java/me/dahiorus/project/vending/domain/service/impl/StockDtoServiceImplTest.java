@@ -3,8 +3,8 @@ package me.dahiorus.project.vending.domain.service.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNoException;
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,8 +22,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import me.dahiorus.project.vending.domain.dao.StockDAO;
-import me.dahiorus.project.vending.domain.dao.VendingMachineDAO;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
 import me.dahiorus.project.vending.domain.model.Item;
@@ -32,6 +30,7 @@ import me.dahiorus.project.vending.domain.model.Stock;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
 import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
 import me.dahiorus.project.vending.domain.model.dto.StockDTO;
+import me.dahiorus.project.vending.domain.service.manager.StockManager;
 import me.dahiorus.project.vending.domain.service.validation.impl.StockValidatorImpl;
 import me.dahiorus.project.vending.util.ItemBuilder;
 import me.dahiorus.project.vending.util.VendingMachineBuilder;
@@ -40,53 +39,27 @@ import me.dahiorus.project.vending.util.VendingMachineBuilder;
 class StockDtoServiceImplTest
 {
   @Mock
-  StockDAO dao;
-
-  @Mock
-  VendingMachineDAO vendingMachineDao;
-
+  StockManager manager;
+  
   StockDtoServiceImpl dtoService;
 
   @BeforeEach
   void setUp()
   {
-    dtoService = new StockDtoServiceImpl(dao, vendingMachineDao, new StockValidatorImpl(), new DtoMapperImpl());
+    dtoService = new StockDtoServiceImpl(manager, new StockValidatorImpl(), new DtoMapperImpl());
   }
 
   @Nested
   class ProvisionTests
   {
     @Test
-    void provisionNewItem() throws Exception
-    {
-      VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.COLD_BAVERAGE);
-      ItemDTO itemDto = new ItemDTO();
-      itemDto.setName("CocaCola");
-      itemDto.setType(machine.getType());
-
-      when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
-      when(vendingMachineDao.save(machine)).thenReturn(machine);
-
-      assertThatNoException().isThrownBy(() -> dtoService.provisionStock(machine.getId(), itemDto, 10));
-
-      Stock stock = machine.getStocks()
-        .get(0);
-      assertAll(() -> assertThat(machine.getLastIntervention()).isNotNull(),
-        () -> assertThat(stock.getQuantity()).isEqualTo(10),
-        () -> assertThat(stock).extracting(Stock::getItem)
-          .hasFieldOrPropertyWithValue("name", itemDto.getName()));
-      verify(dao).save(stock);
-    }
-
-    @Test
-    void provisionExistingItem() throws Exception
+    void provisionValidItem() throws Exception
     {
       VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.COLD_BAVERAGE);
       Item item = buildItem(UUID.randomUUID(), "CocaCola", ItemType.COLD_BAVERAGE);
       addStock(machine, item, 5);
 
-      when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
-      when(vendingMachineDao.save(machine)).thenReturn(machine);
+      when(manager.getMachine(machine.getId())).thenReturn(machine);
 
       ItemDTO itemDto = new ItemDTO();
       itemDto.setId(item.getId());
@@ -94,9 +67,7 @@ class StockDtoServiceImplTest
       itemDto.setType(machine.getType());
 
       assertThatNoException().isThrownBy(() -> dtoService.provisionStock(machine.getId(), itemDto, 10));
-      assertAll(() -> assertThat(machine.getLastIntervention()).isNotNull(),
-        () -> assertThat(machine.getQuantityInStock(item)).isEqualTo(15L));
-      verify(dao).save(any());
+      verify(manager).provision(machine, item, 10);
     }
 
     @Test
@@ -107,24 +78,22 @@ class StockDtoServiceImplTest
       itemDto.setName("Lays");
       itemDto.setType(ItemType.FOOD);
 
-      when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
+      when(manager.getMachine(machine.getId())).thenReturn(machine);
 
       assertThatExceptionOfType(ValidationException.class)
         .isThrownBy(() -> dtoService.provisionStock(machine.getId(), itemDto, 10));
-      verify(vendingMachineDao, never()).save(machine);
-      verify(dao, never()).save(any());
+      verify(manager, never()).provision(eq(machine), any(), eq(10));
     }
 
     @Test
     void cannotProvisionUnknownMachine() throws Exception
     {
       UUID id = UUID.randomUUID();
-      when(vendingMachineDao.read(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
+      when(manager.getMachine(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
 
       assertThatExceptionOfType(EntityNotFound.class)
         .isThrownBy(() -> dtoService.provisionStock(id, new ItemDTO(), 15));
-      verify(vendingMachineDao, never()).save(any());
-      verify(dao, never()).save(any());
+      verify(manager, never()).provision(any(), any(), eq(15));
     }
 
     @ParameterizedTest(name = "Cannot provision {0} quantity of item")
@@ -133,7 +102,7 @@ class StockDtoServiceImplTest
     void canOnlyProvisiongPositiveQuantity(final Integer quantity) throws Exception
     {
       VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.COLD_BAVERAGE);
-      when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
+      when(manager.getMachine(machine.getId())).thenReturn(machine);
 
       ItemDTO itemDto = new ItemDTO();
       itemDto.setName("CocaCola");
@@ -142,7 +111,7 @@ class StockDtoServiceImplTest
       assertThatExceptionOfType(ValidationException.class)
         .isThrownBy(() -> dtoService.provisionStock(machine.getId(), itemDto, quantity));
 
-      verify(dao, never()).save(any());
+      verify(manager, never()).provision(any(), any(), eq(quantity));
     }
   }
 
@@ -156,7 +125,7 @@ class StockDtoServiceImplTest
       addStock(machine, buildItem(null, "Item1", machine.getType()), 12);
       addStock(machine, buildItem(null, "Item2", machine.getType()), 0);
 
-      when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
+      when(manager.getMachine(machine.getId())).thenReturn(machine);
 
       List<StockDTO> stocks = dtoService.getStocks(machine.getId());
 
@@ -171,7 +140,7 @@ class StockDtoServiceImplTest
     void getStocksOfNonExistingMachine() throws Exception
     {
       UUID id = UUID.randomUUID();
-      when(vendingMachineDao.read(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
+      when(manager.getMachine(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
 
       assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.getStocks(id));
     }
@@ -179,12 +148,9 @@ class StockDtoServiceImplTest
 
   static void addStock(final VendingMachine machine, final Item item, final int quantity)
   {
-    Stock stock = new Stock();
+    Stock stock = Stock.fill(item, quantity);
     stock.setId(UUID.randomUUID());
-    stock.setItem(item);
-    stock.setQuantity(quantity);
-    machine.getStocks()
-      .add(stock);
+    machine.addStock(stock);
   }
 
   static VendingMachine buildMachine(final UUID randomUUID, final ItemType type)

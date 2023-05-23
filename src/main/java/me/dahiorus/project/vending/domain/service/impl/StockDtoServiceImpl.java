@@ -8,16 +8,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.domain.dao.DAO;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
 import me.dahiorus.project.vending.domain.model.Item;
-import me.dahiorus.project.vending.domain.model.Stock;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
 import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
 import me.dahiorus.project.vending.domain.model.dto.StockDTO;
 import me.dahiorus.project.vending.domain.service.DtoMapper;
 import me.dahiorus.project.vending.domain.service.StockDtoService;
+import me.dahiorus.project.vending.domain.service.manager.StockManager;
 import me.dahiorus.project.vending.domain.service.validation.StockValidator;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
@@ -27,9 +26,7 @@ import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 @Service
 public class StockDtoServiceImpl implements StockDtoService
 {
-  private final DAO<Stock> dao;
-
-  private final DAO<VendingMachine> vendingMachineDao;
+  private final StockManager manager;
 
   private final StockValidator stockValidator;
 
@@ -38,7 +35,7 @@ public class StockDtoServiceImpl implements StockDtoService
   @Override
   public List<StockDTO> getStocks(final UUID id) throws EntityNotFound
   {
-    VendingMachine entity = vendingMachineDao.read(id);
+    VendingMachine entity = manager.getMachine(id);
     List<StockDTO> stocks = entity.getStocks()
       .stream()
       .map(stock -> dtoMapper.toDto(stock, StockDTO.class))
@@ -55,38 +52,15 @@ public class StockDtoServiceImpl implements StockDtoService
   {
     log.traceEntry(() -> id, () -> item, () -> quantity);
 
-    VendingMachine machine = vendingMachineDao.read(id);
+    VendingMachine machine = manager.getMachine(id);
     Item itemToProvision = dtoMapper.toEntity(item, Item.class);
 
     ValidationResults validationResults = stockValidator.validate(itemToProvision, quantity, machine);
     validationResults.throwIfError("Cannot provision " + item + " to vending machine " + id);
 
-    log.debug("Provisioning a quantity of {} of item '{}' to vending machine {}", quantity,
-      item.getName(), id);
+    manager.provision(machine, itemToProvision, quantity);
 
-    if (!machine.hasItem(itemToProvision))
-    {
-      log.debug("Provisioning a new item to the vending machine {}: {} with quantity of {}", id,
-        item, quantity);
-      Stock stock = Stock.fill(itemToProvision, quantity);
-      machine.addStock(stock);
-      dao.save(stock);
-    }
-    else
-    {
-      machine.getStock(itemToProvision)
-        .ifPresent(s -> {
-          s.addQuantity(quantity);
-          log.debug("Provisioned stock of item '{}': stock quantity updated to {}", item.getName(),
-            s.getQuantity());
-          dao.save(s);
-        });
-    }
-
-    machine.markIntervention();
-    VendingMachine updatedMachine = vendingMachineDao.save(machine);
-
-    log.info("Vending machine {} stock of '{}' increased by {}", updatedMachine.getId(),
+    log.info("Vending machine {} stock of '{}' increased by {}", id,
       item.getName(), quantity);
   }
 }

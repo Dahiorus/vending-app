@@ -1,9 +1,10 @@
 package me.dahiorus.project.vending.domain.service.impl;
 
+import static me.dahiorus.project.vending.domain.model.Sale.sell;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -16,9 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import me.dahiorus.project.vending.domain.dao.SaleDAO;
-import me.dahiorus.project.vending.domain.dao.StockDAO;
-import me.dahiorus.project.vending.domain.dao.VendingMachineDAO;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ItemMissing;
 import me.dahiorus.project.vending.domain.exception.VendingMachineNotWorking;
@@ -30,6 +28,7 @@ import me.dahiorus.project.vending.domain.model.VendingMachine;
 import me.dahiorus.project.vending.domain.model.WorkingStatus;
 import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
 import me.dahiorus.project.vending.domain.model.dto.SaleDTO;
+import me.dahiorus.project.vending.domain.service.manager.SaleManager;
 import me.dahiorus.project.vending.util.ItemBuilder;
 import me.dahiorus.project.vending.util.VendingMachineBuilder;
 
@@ -37,20 +36,14 @@ import me.dahiorus.project.vending.util.VendingMachineBuilder;
 class SaleDtoServiceImplTest
 {
   @Mock
-  SaleDAO dao;
-
-  @Mock
-  StockDAO stockDao;
-
-  @Mock
-  VendingMachineDAO vendingMachineDao;
+  SaleManager manager;
 
   SaleDtoServiceImpl dtoService;
 
   @BeforeEach
   void setUp()
   {
-    dtoService = new SaleDtoServiceImpl(dao, vendingMachineDao, stockDao, new DtoMapperImpl());
+    dtoService = new SaleDtoServiceImpl(manager, new DtoMapperImpl());
   }
 
   @Test
@@ -60,18 +53,17 @@ class SaleDtoServiceImplTest
     Item item = buildItem("Chips", machine.getType(), 1.5);
     addStock(machine, item, 10);
 
-    when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
-    when(vendingMachineDao.save(machine)).thenReturn(machine);
-    when(dao.save(any())).then(invocation -> invocation.getArgument(0));
+    when(manager.getWorkingMachine(machine.getId())).thenReturn(machine);
+    when(manager.purchaseItem(machine, item)).thenReturn(sell(item, machine));
 
     ItemDTO itemToPurchase = new ItemDTO();
     itemToPurchase.setId(item.getId());
+    itemToPurchase.setName(item.getName());
     itemToPurchase.setPrice(item.getPrice());
 
     SaleDTO sale = dtoService.purchaseItem(machine.getId(), itemToPurchase);
 
-    assertAll(() -> assertThat(sale.getAmount()).isEqualTo(itemToPurchase.getPrice()),
-      () -> assertThat(machine.getSales()).isNotEmpty());
+    assertThat(sale.getAmount()).isEqualTo(itemToPurchase.getPrice());
   }
 
   @Test
@@ -81,45 +73,42 @@ class SaleDtoServiceImplTest
     Item item = buildItem("Chips", machine.getType(), 1.5);
     addStock(machine, item, 0);
 
-    when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
+    when(manager.getWorkingMachine(machine.getId())).thenReturn(machine);
 
     ItemDTO itemToPurchase = new ItemDTO();
     itemToPurchase.setId(item.getId());
 
     assertThatExceptionOfType(ItemMissing.class)
       .isThrownBy(() -> dtoService.purchaseItem(machine.getId(), itemToPurchase));
-    verify(vendingMachineDao, never()).save(machine);
-    verify(dao, never()).save(any());
+    verify(manager, never()).purchaseItem(machine, item);
   }
 
   @Test
   void purchaseUnknownItem() throws Exception
   {
     VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.FOOD);
-    when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
+    when(manager.getWorkingMachine(machine.getId())).thenReturn(machine);
 
     ItemDTO itemToPurchase = new ItemDTO();
     itemToPurchase.setId(UUID.randomUUID());
 
     assertThatExceptionOfType(ItemMissing.class)
       .isThrownBy(() -> dtoService.purchaseItem(machine.getId(), itemToPurchase));
-    verify(vendingMachineDao, never()).save(machine);
-    verify(dao, never()).save(any());
+    verify(manager, never()).purchaseItem(eq(machine), any());
   }
 
   @Test
   void purchaseFromUnknownMachine() throws Exception
   {
     UUID id = UUID.randomUUID();
-    when(vendingMachineDao.read(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
+    when(manager.getWorkingMachine(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
 
     ItemDTO itemToPurchase = new ItemDTO();
     itemToPurchase.setId(UUID.randomUUID());
 
     assertThatExceptionOfType(EntityNotFound.class)
       .isThrownBy(() -> dtoService.purchaseItem(id, itemToPurchase));
-    verify(vendingMachineDao, never()).save(any());
-    verify(dao, never()).save(any());
+    verify(manager, never()).purchaseItem(any(), any());
   }
 
   @Test
@@ -127,12 +116,11 @@ class SaleDtoServiceImplTest
   {
     VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.FOOD);
     machine.setPowerStatus(PowerStatus.OFF);
-    when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
+    when(manager.getWorkingMachine(machine.getId())).thenThrow(new VendingMachineNotWorking("Machine not working"));
 
     assertThatExceptionOfType(VendingMachineNotWorking.class)
       .isThrownBy(() -> dtoService.purchaseItem(machine.getId(), new ItemDTO()));
-    verify(vendingMachineDao, never()).save(any());
-    verify(dao, never()).save(any());
+    verify(manager, never()).purchaseItem(any(), any());
   }
 
   static Item buildItem(final String name, final ItemType type, final Double price)
@@ -159,11 +147,8 @@ class SaleDtoServiceImplTest
     machine.getStocks()
       .clear();
 
-    Stock stock = new Stock();
+    Stock stock = Stock.fill(item, quantity);
     stock.setId(UUID.randomUUID());
-    stock.setItem(item);
-    stock.setQuantity(quantity);
-    machine.getStocks()
-      .add(stock);
+    machine.addStock(stock);
   }
 }
