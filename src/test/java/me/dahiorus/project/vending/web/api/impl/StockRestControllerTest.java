@@ -64,7 +64,7 @@ class StockRestControllerTest extends RestControllerTest
       mockMvc.perform(get("/api/v1/vending-machines/{id}/stocks", id))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaTypes.HAL_JSON))
-        .andExpect(jsonPath("_embedded.stockDTOes[0]").isNotEmpty());
+        .andExpect(jsonPath("_embedded.stockDTOList[0]").isNotEmpty());
     }
 
     @Test

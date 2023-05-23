@@ -410,7 +410,7 @@ class ItemRestControllerTest extends RestControllerTest
         .queryParam("sort", "name,desc"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaTypes.HAL_JSON))
-        .andExpect(jsonPath("_embedded.itemDTOes").isArray());
+        .andExpect(jsonPath("_embedded.itemDTOList").isArray());
     }
 
     @Test
