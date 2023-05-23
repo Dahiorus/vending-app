@@ -81,8 +81,7 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
   @Override
   protected void prepareEntity(final AppUser entity, final CrudOperation operation)
   {
-    if ((operation == CrudOperation.CREATE || operation == CrudOperation.UPDATE) &&
-      StringUtils.isNotEmpty(entity.getPassword()))
+    if (operation.isCreateOrUpdate() && StringUtils.isNotEmpty(entity.getPassword()))
     {
       log.debug("Encoding the password of the user {}", entity);
       entity.setEncodedPassword(passwordEncoder.encode(entity.getPassword()));
@@ -105,6 +104,18 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
     log.debug("Updating the password of the user {}", id);
 
     AppUser user = dao.read(id);
+    ValidationResults validationResults = validatePassword(editPassword, user);
+    validationResults.throwIfError("Update password: errors found");
+
+    log.debug("No validation error found. Updating the password of {}", user);
+    user.setEncodedPassword(passwordEncoder.encode(editPassword.password()));
+    AppUser updatedUser = dao.save(user);
+
+    log.info("Password of {} updated", () -> dtoMapper.toDto(updatedUser, UserDTO.class));
+  }
+
+  private ValidationResults validatePassword(final EditPasswordDTO editPassword, AppUser user)
+  {
     ValidationResults validationResults = new ValidationResults();
 
     if (!passwordEncoder.matches(editPassword.oldPassword(), user.getEncodedPassword()))
@@ -120,15 +131,11 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
           "The new password must not match the user's current password"));
     }
 
-    ValidationResults passwordValidation = passwordValidator.validate(FIELD_PASSWORD, editPassword.password());
+    ValidationResults passwordValidation =
+      passwordValidator.validate(FIELD_PASSWORD, editPassword.password());
     validationResults.mergeFieldErrors(passwordValidation);
-    validationResults.throwIfError("Update password: errors found");
 
-    log.debug("No validation error found. Updating the password of {}", user);
-    user.setEncodedPassword(passwordEncoder.encode(editPassword.password()));
-    AppUser updatedUser = dao.save(user);
-
-    log.info("Password of {} updated", () -> dtoMapper.toDto(updatedUser, UserDTO.class));
+    return validationResults;
   }
 
   @Override

@@ -5,4 +5,9 @@ public enum CrudOperation
   CREATE,
   UPDATE,
   DELETE;
+  
+  public boolean isCreateOrUpdate()
+  {
+    return this == CREATE || this == UPDATE;
+  }
 }
