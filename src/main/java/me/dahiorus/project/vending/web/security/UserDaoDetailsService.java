@@ -19,8 +19,7 @@ public class UserDaoDetailsService implements UserDetailsService
   public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException
   {
     return userDao.findByEmail(username)
-      .map(user -> User.builder()
-        .username(user.getEmail())
+      .map(user -> User.withUsername(user.getEmail())
         .password(user.getEncodedPassword())
         .authorities(user.getRoles()
           .toArray(String[]::new))
