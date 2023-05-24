@@ -1,4 +1,4 @@
-package me.dahiorus.project.vending.web;
+package me.dahiorus.project.vending;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
