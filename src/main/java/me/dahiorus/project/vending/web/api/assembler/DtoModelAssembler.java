@@ -34,7 +34,7 @@ public abstract class DtoModelAssembler<T extends AbstractDTO<?>>
       selfLink(content).ifPresent(resource::add);
       resource.add(buildLinks(content));
     }
-    catch (AppException e)
+    catch (Exception e)
     {
       getLogger().error("Unable to build links for {}: {}", content, e.getMessage());
     }
