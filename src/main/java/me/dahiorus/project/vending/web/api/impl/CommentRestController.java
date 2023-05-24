@@ -30,7 +30,7 @@ import me.dahiorus.project.vending.domain.service.CommentDtoService;
 import me.dahiorus.project.vending.web.api.AppWebService;
 
 @SecurityRequirement(name = "bearerAuth")
-@Tag(name = "Comment", description = "Operation on a vending machine comments")
+@Tag(name = "VendingMachine")
 @RestController
 @RequestMapping(value = "/api/v1/vending-machines/{id}/comments", produces = MediaTypes.HAL_JSON_VALUE)
 @RequiredArgsConstructor

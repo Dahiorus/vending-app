@@ -34,7 +34,7 @@ import me.dahiorus.project.vending.web.api.model.ProvisionRequest;
 @Log4j2
 @RequiredArgsConstructor
 @RestController
-@Tag(name = "Stock", description = "Operations on the stocks of a vending machine")
+@Tag(name = "VendingMachine")
 @RequestMapping(value = "/api/v1/vending-machines/{id}", produces = MediaTypes.HAL_JSON_VALUE)
 public class StockRestController implements AppWebService
 {
