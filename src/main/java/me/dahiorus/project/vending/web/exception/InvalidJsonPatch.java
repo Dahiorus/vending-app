@@ -1,4 +1,6 @@
-package me.dahiorus.project.vending.domain.exception;
+package me.dahiorus.project.vending.web.exception;
+
+import me.dahiorus.project.vending.domain.exception.AppRuntimeException;
 
 public class InvalidJsonPatch extends AppRuntimeException
 {
