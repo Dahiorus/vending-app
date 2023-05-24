@@ -4,15 +4,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import me.dahiorus.project.vending.common.HasLogger;
 import me.dahiorus.project.vending.domain.dao.DAO;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;

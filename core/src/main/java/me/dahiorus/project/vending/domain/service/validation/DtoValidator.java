@@ -1,7 +1,6 @@
 package me.dahiorus.project.vending.domain.service.validation;
 
-import javax.annotation.Nonnull;
-
+import jakarta.annotation.Nonnull;
 import me.dahiorus.project.vending.domain.model.AbstractEntity;
 import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
 
