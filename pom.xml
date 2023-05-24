@@ -12,14 +12,20 @@
   <groupId>me.dahiorus.project</groupId>
   <artifactId>vending-app</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
   <name>Vending App</name>
   <description>Vending machine project test</description>
+  
+  <modules>
+    <module>core</module>
+    <module>web</module>
+  </modules>
 
   <properties>
     <java.version>17</java.version>
     <commons-collections4.version>4.4</commons-collections4.version>
     <json-patch.version>1.13</json-patch.version>
-    <maven-processor-plugin.version>5.0-jdk8-rc3</maven-processor-plugin.version>
+    <maven-processor-plugin.version>5.0-rc3</maven-processor-plugin.version>
     <modelmapper.version>3.1.1</modelmapper.version>
     <spring.openapi.version>2.1.0</spring.openapi.version>
     <nimbus-jose-jwt.version>9.31</nimbus-jose-jwt.version>
@@ -137,19 +143,6 @@
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <exclude>
-              <groupId>org.projectlombok</groupId>
-              <artifactId>lombok</artifactId>
-            </exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-
       <!-- compile sources and generate "delomboked" classes -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -167,56 +160,6 @@
           </annotationProcessorPaths>
         </configuration>
       </plugin>
-
-      <!-- generate JPA metamodel -->
-      <plugin>
-        <groupId>org.bsc.maven</groupId>
-        <artifactId>maven-processor-plugin</artifactId>
-        <version>${maven-processor-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>generate-jpametamodel</id>
-            <goals>
-              <goal>process</goal>
-            </goals>
-            <phase>generate-sources</phase>
-            <configuration>
-              <processors>
-                <processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
-              </processors>
-              <outputDirectory>${project.build.directory}/generated-sources/apt</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-jpamodelgen</artifactId>
-            <version>${hibernate.version}</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-
-      <!-- add the JPA metamodel sources to the classpath -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>add-source</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>add-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>target/generated-sources/apt</source>
-              </sources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
-
 </project>
