@@ -3,6 +3,7 @@ package me.dahiorus.project.vending.domain.service.manager.impl;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
@@ -23,14 +24,14 @@ public class StockManagerImpl implements StockManager
 
   private final DAO<VendingMachine> vendingMachineDao;
 
-  @Transactional(readOnly = true)
+  @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
   @Override
   public VendingMachine getMachine(final UUID id) throws EntityNotFound
   {
     return vendingMachineDao.read(id);
   }
 
-  @Transactional
+  @Transactional(propagation = Propagation.MANDATORY)
   @Override
   public void provision(final VendingMachine vendingMachine, final Item itemToProvision,
     final Integer quantity)

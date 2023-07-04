@@ -5,6 +5,7 @@ import static me.dahiorus.project.vending.domain.model.Sale.sell;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class SaleManagerImpl implements SaleManager
 
   private final DAO<Stock> stockDao;
 
-  @Transactional(readOnly = true)
+  @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
   @Override
   public VendingMachine getWorkingMachine(final UUID id) throws EntityNotFound, VendingMachineNotWorking
   {
@@ -43,7 +44,7 @@ public class SaleManagerImpl implements SaleManager
     return machine;
   }
 
-  @Transactional
+  @Transactional(propagation = Propagation.MANDATORY)
   @Override
   public Sale purchaseItem(final VendingMachine vendingMachine, final Item itemToPurchase)
   {
