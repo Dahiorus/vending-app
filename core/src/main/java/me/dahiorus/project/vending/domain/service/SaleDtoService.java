@@ -5,22 +5,22 @@ import java.util.UUID;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ItemMissing;
 import me.dahiorus.project.vending.domain.exception.VendingMachineNotWorking;
-import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
-import me.dahiorus.project.vending.domain.model.dto.SaleDTO;
-import me.dahiorus.project.vending.domain.model.dto.VendingMachineDTO;
+import me.dahiorus.project.vending.domain.model.dto.ItemDto;
+import me.dahiorus.project.vending.domain.model.dto.SaleDto;
+import me.dahiorus.project.vending.domain.model.dto.VendingMachineDto;
 
 public interface SaleDtoService
 {
   /**
    * Purchase an item from a vending machine
    * 
-   * @param id   The ID of the {@link VendingMachineDTO vending machine}
-   * @param item The {@link ItemDTO item} to purchase
-   * @return A {@link SaleDTO sale} of the item
+   * @param id   The ID of the {@link VendingMachineDto vending machine}
+   * @param item The {@link ItemDto item} to purchase
+   * @return A {@link SaleDto sale} of the item
    * @throws EntityNotFound           if no vending machine match the ID
    * @throws ItemMissing              if the item to purchase is not in the machine
    * @throws VendingMachineNotWorking if the vending machine is not working
    */
-  SaleDTO purchaseItem(UUID id, ItemDTO item)
+  SaleDto purchaseItem(UUID id, ItemDto item)
     throws EntityNotFound, ItemMissing, VendingMachineNotWorking;
 }

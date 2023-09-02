@@ -21,16 +21,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import me.dahiorus.project.vending.domain.model.dto.BinaryDataDTO;
+import me.dahiorus.project.vending.domain.model.dto.BinaryDataDto;
 import me.dahiorus.project.vending.domain.service.validation.ValidationError;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MultipartFileUtils
 {
-  public static BinaryDataDTO convert(final MultipartFile file) throws IOException
+  public static BinaryDataDto convert(final MultipartFile file) throws IOException
   {
-    BinaryDataDTO dto = new BinaryDataDTO();
+    BinaryDataDto dto = new BinaryDataDto();
     dto.setName(System.currentTimeMillis() + "." + getExtension(file.getOriginalFilename()));
     dto.setContentType(file.getContentType());
     dto.setContent(file.getBytes());
@@ -52,7 +52,7 @@ public class MultipartFileUtils
     return results;
   }
 
-  public static ResponseEntity<ByteArrayResource> convertToResponse(final Optional<BinaryDataDTO> dto)
+  public static ResponseEntity<ByteArrayResource> convertToResponse(final Optional<BinaryDataDto> dto)
   {
     return dto.map(data -> ok().contentType(parseMediaType(data.getContentType()))
       .header(HttpHeaders.CONTENT_DISPOSITION, inline().filename(data.getName())

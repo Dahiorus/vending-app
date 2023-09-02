@@ -23,7 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-import me.dahiorus.project.vending.domain.model.dto.BinaryDataDTO;
+import me.dahiorus.project.vending.domain.model.dto.BinaryDataDto;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
 class MultipartFileUtilsTest
@@ -32,7 +32,7 @@ class MultipartFileUtilsTest
   void convertMultipartFileToBinaryDataDto() throws Exception
   {
     MultipartFile file = new MockMultipartFile("file", "image.jpg", MediaType.IMAGE_JPEG_VALUE, new byte[32]);
-    BinaryDataDTO binaryDataDto = MultipartFileUtils.convert(file);
+    BinaryDataDto binaryDataDto = MultipartFileUtils.convert(file);
 
     assertThat(binaryDataDto).hasFieldOrPropertyWithValue("contentType", file.getContentType())
       .hasFieldOrPropertyWithValue("content", file.getBytes())
@@ -75,7 +75,7 @@ class MultipartFileUtilsTest
     @Test
     void convertDtoToResponse()
     {
-      BinaryDataDTO dto = new BinaryDataDTO();
+      BinaryDataDto dto = new BinaryDataDto();
       dto.setName("image.jpg");
       dto.setContentType(MediaType.IMAGE_JPEG_VALUE);
       dto.setContent(new byte[32]);

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import me.dahiorus.project.vending.domain.model.BinaryData;
 import me.dahiorus.project.vending.domain.model.Item;
 import me.dahiorus.project.vending.domain.model.ItemType;
-import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
+import me.dahiorus.project.vending.domain.model.dto.ItemDto;
 import me.dahiorus.project.vending.domain.service.DtoMapper;
 import me.dahiorus.project.vending.domain.service.impl.DtoMapperImpl;
 
@@ -64,8 +64,8 @@ public class ItemBuilder
     return item;
   }
 
-  public ItemDTO buildDto()
+  public ItemDto buildDto()
   {
-    return dtoMapper.toDto(item, ItemDTO.class);
+    return dtoMapper.toDto(item, ItemDto.class);
   }
 }

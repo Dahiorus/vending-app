@@ -4,9 +4,9 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 
 import me.dahiorus.project.vending.domain.exception.ValidationException;
-import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
+import me.dahiorus.project.vending.domain.model.dto.AbstractDto;
 
-public interface CreateRestAPI<D extends AbstractDTO<?>>
+public interface CreateRestApi<D extends AbstractDto<?>>
 {
   ResponseEntity<EntityModel<D>> create(D dto) throws ValidationException;
 }

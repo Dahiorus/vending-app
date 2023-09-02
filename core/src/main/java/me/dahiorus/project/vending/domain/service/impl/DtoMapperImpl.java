@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.domain.model.AbstractEntity;
-import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
+import me.dahiorus.project.vending.domain.model.dto.AbstractDto;
 import me.dahiorus.project.vending.domain.service.DtoMapper;
 
 @Log4j2
@@ -20,7 +20,7 @@ public class DtoMapperImpl implements DtoMapper
   }
 
   @Override
-  public <E extends AbstractEntity, D extends AbstractDTO<E>> E toEntity(final D dto,
+  public <E extends AbstractEntity, D extends AbstractDto<E>> E toEntity(final D dto,
     final Class<E> targetClass)
   {
     log.debug("Converting {} to instance of {}", dto, targetClass.getSimpleName());
@@ -34,7 +34,7 @@ public class DtoMapperImpl implements DtoMapper
   }
 
   @Override
-  public <E extends AbstractEntity, D extends AbstractDTO<E>> D toDto(final E entity,
+  public <E extends AbstractEntity, D extends AbstractDto<E>> D toDto(final E entity,
     final Class<D> targetClass)
   {
     log.debug("Converting {} to instance of {}", entity, targetClass.getSimpleName());
@@ -48,7 +48,7 @@ public class DtoMapperImpl implements DtoMapper
   }
 
   @Override
-  public <E extends AbstractEntity, D extends AbstractDTO<E>> void patchEntity(final D dtoSource,
+  public <E extends AbstractEntity, D extends AbstractDto<E>> void patchEntity(final D dtoSource,
     final E entityTarget)
   {
     if (dtoSource == null)

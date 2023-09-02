@@ -19,7 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import me.dahiorus.project.vending.domain.dao.DAO;
+import me.dahiorus.project.vending.domain.dao.Dao;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.VendingMachineNotWorking;
 import me.dahiorus.project.vending.domain.model.Item;
@@ -35,13 +35,13 @@ import me.dahiorus.project.vending.util.VendingMachineBuilder;
 class SaleManagerImplTest
 {
   @Mock
-  DAO<Sale> dao;
+  Dao<Sale> dao;
 
   @Mock
-  DAO<VendingMachine> vendingMachineDao;
+  Dao<VendingMachine> vendingMachineDao;
 
   @Mock
-  DAO<Stock> stockDao;
+  Dao<Stock> stockDao;
 
   SaleManagerImpl manager;
 

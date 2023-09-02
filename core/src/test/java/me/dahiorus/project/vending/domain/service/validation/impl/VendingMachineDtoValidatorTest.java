@@ -15,11 +15,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import me.dahiorus.project.vending.domain.dao.VendingMachineDAO;
+import me.dahiorus.project.vending.domain.dao.VendingMachineDao;
 import me.dahiorus.project.vending.domain.model.ItemType;
 import me.dahiorus.project.vending.domain.model.PowerStatus;
 import me.dahiorus.project.vending.domain.model.WorkingStatus;
-import me.dahiorus.project.vending.domain.model.dto.VendingMachineDTO;
+import me.dahiorus.project.vending.domain.model.dto.VendingMachineDto;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 import me.dahiorus.project.vending.util.VendingMachineBuilder;
 
@@ -27,11 +27,11 @@ import me.dahiorus.project.vending.util.VendingMachineBuilder;
 class VendingMachineDtoValidatorTest
 {
   @Mock
-  VendingMachineDAO dao;
+  VendingMachineDao dao;
 
   VendingMachineDtoValidator validator;
 
-  VendingMachineDTO dto;
+  VendingMachineDto dto;
 
   @BeforeEach
   void setUp() throws Exception
@@ -161,7 +161,7 @@ class VendingMachineDtoValidatorTest
     assertHasExactlyFieldErrors(results, "workingStatus", "validation.constraints.empty_value");
   }
 
-  VendingMachineDTO buildDto(final String serialNumber, final String address, final ItemType type,
+  VendingMachineDto buildDto(final String serialNumber, final String address, final ItemType type,
     final PowerStatus powerStatus, final WorkingStatus workingStatus)
   {
     return VendingMachineBuilder.builder()

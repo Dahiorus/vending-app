@@ -4,17 +4,17 @@ import java.util.UUID;
 
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.model.Report;
-import me.dahiorus.project.vending.domain.model.dto.ReportDTO;
-import me.dahiorus.project.vending.domain.model.dto.VendingMachineDTO;
+import me.dahiorus.project.vending.domain.model.dto.ReportDto;
+import me.dahiorus.project.vending.domain.model.dto.VendingMachineDto;
 
-public interface ReportDtoService extends DtoService<Report, ReportDTO>
+public interface ReportDtoService extends DtoService<Report, ReportDto>
 {
   /**
    * Create a report of a vending machine at this instant
    *
-   * @param vendingMachineId The ID of the {@link VendingMachineDTO vending machine}
-   * @return The created {@link ReportDTO report} for the machine
+   * @param vendingMachineId The ID of the {@link VendingMachineDto vending machine}
+   * @return The created {@link ReportDto report} for the machine
    * @throws EntityNotFound if no vending machine match the ID
    */
-  ReportDTO report(UUID vendingMachineId) throws EntityNotFound;
+  ReportDto report(UUID vendingMachineId) throws EntityNotFound;
 }

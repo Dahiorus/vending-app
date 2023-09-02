@@ -25,7 +25,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
-import me.dahiorus.project.vending.domain.model.dto.CommentDTO;
+import me.dahiorus.project.vending.domain.model.dto.CommentDto;
 import me.dahiorus.project.vending.domain.service.CommentDtoService;
 import me.dahiorus.project.vending.web.api.AppWebService;
 
@@ -38,15 +38,15 @@ public class CommentRestController implements AppWebService
 {
   private final CommentDtoService dtoService;
 
-  private final RepresentationModelAssembler<CommentDTO, EntityModel<CommentDTO>> commentModelAssembler;
+  private final RepresentationModelAssembler<CommentDto, EntityModel<CommentDto>> commentModelAssembler;
 
   @Operation(description = "Get the comments of a vending machine")
   @ApiResponse(responseCode = "200", description = "Comments found")
   @GetMapping
-  public ResponseEntity<CollectionModel<EntityModel<CommentDTO>>> getComments(@PathVariable final UUID id)
+  public ResponseEntity<CollectionModel<EntityModel<CommentDto>>> getComments(@PathVariable final UUID id)
     throws EntityNotFound
   {
-    List<CommentDTO> comments = dtoService.getComments(id);
+    List<CommentDto> comments = dtoService.getComments(id);
 
     return ok(commentModelAssembler.toCollectionModel(comments));
   }
@@ -54,11 +54,11 @@ public class CommentRestController implements AppWebService
   @Operation(description = "Comment a vending machine")
   @ApiResponse(responseCode = "200", description = "Comment added")
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<EntityModel<CommentDTO>> comment(@PathVariable final UUID id,
-    @RequestBody final CommentDTO comment)
+  public ResponseEntity<EntityModel<CommentDto>> comment(@PathVariable final UUID id,
+    @RequestBody final CommentDto comment)
     throws EntityNotFound, ValidationException
   {
-    CommentDTO addedComment = dtoService.comment(id, comment);
+    CommentDto addedComment = dtoService.comment(id, comment);
 
     return ok(commentModelAssembler.toModel(addedComment));
   }

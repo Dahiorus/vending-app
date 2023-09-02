@@ -21,14 +21,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import me.dahiorus.project.vending.domain.dao.CommentDAO;
-import me.dahiorus.project.vending.domain.dao.VendingMachineDAO;
+import me.dahiorus.project.vending.domain.dao.CommentDao;
+import me.dahiorus.project.vending.domain.dao.VendingMachineDao;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
 import me.dahiorus.project.vending.domain.model.Comment;
 import me.dahiorus.project.vending.domain.model.ItemType;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
-import me.dahiorus.project.vending.domain.model.dto.CommentDTO;
+import me.dahiorus.project.vending.domain.model.dto.CommentDto;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 import me.dahiorus.project.vending.domain.service.validation.impl.CommentDtoValidator;
 import me.dahiorus.project.vending.util.VendingMachineBuilder;
@@ -37,10 +37,10 @@ import me.dahiorus.project.vending.util.VendingMachineBuilder;
 class CommentDtoServiceImplTest
 {
   @Mock
-  CommentDAO dao;
+  CommentDao dao;
 
   @Mock
-  VendingMachineDAO vendingMachineDao;
+  VendingMachineDao vendingMachineDao;
 
   @Mock
   CommentDtoValidator commentDtoValidator;
@@ -63,7 +63,7 @@ class CommentDtoServiceImplTest
       when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
       when(vendingMachineDao.save(machine)).thenReturn(machine);
 
-      CommentDTO comment = new CommentDTO();
+      CommentDto comment = new CommentDto();
       comment.setRate(5);
       comment.setContent("This is a comment");
       when(commentDtoValidator.validate(comment)).thenReturn(successResults());
@@ -80,7 +80,7 @@ class CommentDtoServiceImplTest
       VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.FOOD);
       when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
 
-      CommentDTO comment = new CommentDTO();
+      CommentDto comment = new CommentDto();
       comment.setContent("This is a comment");
 
       when(commentDtoValidator.validate(comment)).then(invoc -> {
@@ -103,7 +103,7 @@ class CommentDtoServiceImplTest
       when(vendingMachineDao.read(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
 
       assertThatExceptionOfType(EntityNotFound.class)
-        .isThrownBy(() -> dtoService.comment(id, new CommentDTO()));
+        .isThrownBy(() -> dtoService.comment(id, new CommentDto()));
       verify(vendingMachineDao, never()).save(any());
       verify(dao, never()).save(any());
     }
@@ -123,7 +123,7 @@ class CommentDtoServiceImplTest
 
       when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
 
-      List<CommentDTO> comments = dtoService.getComments(machine.getId());
+      List<CommentDto> comments = dtoService.getComments(machine.getId());
 
       assertThat(comments).hasSize(1)
         .anySatisfy(c -> assertThat(c).hasFieldOrPropertyWithValue("content", comment.getContent())

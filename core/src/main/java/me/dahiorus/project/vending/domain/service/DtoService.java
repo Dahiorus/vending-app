@@ -11,9 +11,9 @@ import org.springframework.data.domain.Pageable;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
 import me.dahiorus.project.vending.domain.model.AbstractEntity;
-import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
+import me.dahiorus.project.vending.domain.model.dto.AbstractDto;
 
-public interface DtoService<E extends AbstractEntity, D extends AbstractDTO<E>>
+public interface DtoService<E extends AbstractEntity, D extends AbstractDto<E>>
 {
   D create(D dto) throws ValidationException;
 

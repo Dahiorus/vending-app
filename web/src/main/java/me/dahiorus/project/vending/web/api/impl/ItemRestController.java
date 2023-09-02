@@ -29,8 +29,8 @@ import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.UnexpectedNonImageFile;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
-import me.dahiorus.project.vending.domain.model.dto.BinaryDataDTO;
-import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
+import me.dahiorus.project.vending.domain.model.dto.BinaryDataDto;
+import me.dahiorus.project.vending.domain.model.dto.ItemDto;
 import me.dahiorus.project.vending.domain.service.ItemDtoService;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 import me.dahiorus.project.vending.web.api.request.MultipartFileUtils;
@@ -40,11 +40,11 @@ import me.dahiorus.project.vending.web.api.request.MultipartFileUtils;
 @RestController
 @RequestMapping(value = "/api/v1/items")
 @Log4j2
-public class ItemRestController extends RestControllerImpl<ItemDTO, ItemDtoService>
+public class ItemRestController extends RestControllerImpl<ItemDto, ItemDtoService>
 {
   public ItemRestController(final ItemDtoService dtoService,
-    final RepresentationModelAssembler<ItemDTO, EntityModel<ItemDTO>> modelAssembler,
-    final PagedResourcesAssembler<ItemDTO> pageModelAssembler)
+    final RepresentationModelAssembler<ItemDto, EntityModel<ItemDto>> modelAssembler,
+    final PagedResourcesAssembler<ItemDto> pageModelAssembler)
   {
     super(dtoService, modelAssembler, pageModelAssembler);
   }
@@ -61,7 +61,7 @@ public class ItemRestController extends RestControllerImpl<ItemDTO, ItemDtoServi
   @GetMapping("/{id}/picture")
   public ResponseEntity<ByteArrayResource> getPicture(@PathVariable final UUID id) throws EntityNotFound
   {
-    Optional<BinaryDataDTO> picture = dtoService.getImage(id);
+    Optional<BinaryDataDto> picture = dtoService.getImage(id);
 
     log.info("Picture for item {}: {}", id, picture);
 
@@ -71,7 +71,7 @@ public class ItemRestController extends RestControllerImpl<ItemDTO, ItemDtoServi
   @Operation(description = "Upload a picture to an item")
   @ApiResponse(responseCode = "200", description = "Picture uploaded")
   @PostMapping(value = "/{id}/picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<EntityModel<ItemDTO>> uploadPicture(@PathVariable final UUID id,
+  public ResponseEntity<EntityModel<ItemDto>> uploadPicture(@PathVariable final UUID id,
     @RequestParam("file") final MultipartFile file) throws EntityNotFound, ValidationException
   {
     ValidationResults validationResults = MultipartFileUtils.validateImage("file", file);
@@ -79,8 +79,8 @@ public class ItemRestController extends RestControllerImpl<ItemDTO, ItemDtoServi
 
     try
     {
-      BinaryDataDTO picture = MultipartFileUtils.convert(file);
-      ItemDTO updatedItem = dtoService.uploadImage(id, picture);
+      BinaryDataDto picture = MultipartFileUtils.convert(file);
+      ItemDto updatedItem = dtoService.uploadImage(id, picture);
 
       return ok(modelAssembler.toModel(updatedItem));
     }

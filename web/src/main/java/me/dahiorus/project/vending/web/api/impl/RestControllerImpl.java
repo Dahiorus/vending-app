@@ -40,14 +40,14 @@ import lombok.RequiredArgsConstructor;
 import me.dahiorus.project.vending.common.HasLogger;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
-import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
+import me.dahiorus.project.vending.domain.model.dto.AbstractDto;
 import me.dahiorus.project.vending.domain.service.DtoService;
 import me.dahiorus.project.vending.web.api.RestController;
 import me.dahiorus.project.vending.web.api.request.ExampleMatcherAdapter;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @RequestMapping(produces = MediaTypes.HAL_JSON_VALUE)
-public abstract class RestControllerImpl<D extends AbstractDTO<?>, S extends DtoService<?, D>>
+public abstract class RestControllerImpl<D extends AbstractDto<?>, S extends DtoService<?, D>>
   implements RestController<D>, HasLogger
 {
   protected final S dtoService;

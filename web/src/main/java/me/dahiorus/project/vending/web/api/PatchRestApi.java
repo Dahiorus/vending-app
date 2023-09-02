@@ -9,9 +9,9 @@ import com.github.fge.jsonpatch.JsonPatch;
 
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
-import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
+import me.dahiorus.project.vending.domain.model.dto.AbstractDto;
 
-public interface PatchRestAPI<D extends AbstractDTO<?>>
+public interface PatchRestApi<D extends AbstractDto<?>>
 {
   ResponseEntity<EntityModel<D>> patch(UUID id, JsonPatch jsonPatch) throws EntityNotFound, ValidationException;
 }

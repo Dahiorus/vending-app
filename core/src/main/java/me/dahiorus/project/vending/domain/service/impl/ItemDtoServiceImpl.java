@@ -8,25 +8,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.domain.dao.DAO;
+import me.dahiorus.project.vending.domain.dao.Dao;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.model.BinaryData;
 import me.dahiorus.project.vending.domain.model.Item;
-import me.dahiorus.project.vending.domain.model.dto.BinaryDataDTO;
-import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
+import me.dahiorus.project.vending.domain.model.dto.BinaryDataDto;
+import me.dahiorus.project.vending.domain.model.dto.ItemDto;
 import me.dahiorus.project.vending.domain.service.DtoMapper;
 import me.dahiorus.project.vending.domain.service.ItemDtoService;
 import me.dahiorus.project.vending.domain.service.validation.DtoValidator;
 
 @Log4j2
 @Service
-public class ItemDtoServiceImpl extends DtoServiceImpl<Item, ItemDTO, DAO<Item>>
+public class ItemDtoServiceImpl extends DtoServiceImpl<Item, ItemDto, Dao<Item>>
   implements ItemDtoService
 {
-  private final DAO<BinaryData> binaryDataDao;
+  private final Dao<BinaryData> binaryDataDao;
 
-  public ItemDtoServiceImpl(final DAO<Item> dao, final DtoMapper dtoMapper,
-    final DtoValidator<ItemDTO> dtoValidator, final DAO<BinaryData> binaryDataDao)
+  public ItemDtoServiceImpl(final Dao<Item> dao, final DtoMapper dtoMapper,
+    final DtoValidator<ItemDto> dtoValidator, final Dao<BinaryData> binaryDataDao)
   {
     super(dao, dtoMapper, dtoValidator);
     this.binaryDataDao = binaryDataDao;
@@ -39,14 +39,14 @@ public class ItemDtoServiceImpl extends DtoServiceImpl<Item, ItemDTO, DAO<Item>>
   }
 
   @Override
-  protected Class<ItemDTO> getDomainClass()
+  protected Class<ItemDto> getDomainClass()
   {
-    return ItemDTO.class;
+    return ItemDto.class;
   }
 
   @Transactional
   @Override
-  public ItemDTO uploadImage(final UUID id, final BinaryDataDTO picture) throws EntityNotFound
+  public ItemDto uploadImage(final UUID id, final BinaryDataDto picture) throws EntityNotFound
   {
     log.debug("Uploading a picture for the item {}", id);
 
@@ -60,17 +60,17 @@ public class ItemDtoServiceImpl extends DtoServiceImpl<Item, ItemDTO, DAO<Item>>
 
     log.info("New picture uploaded for the item {}", id);
 
-    return dtoMapper.toDto(updatedEntity, ItemDTO.class);
+    return dtoMapper.toDto(updatedEntity, ItemDto.class);
   }
 
   @Transactional(readOnly = true)
   @Override
-  public Optional<BinaryDataDTO> getImage(final UUID id) throws EntityNotFound
+  public Optional<BinaryDataDto> getImage(final UUID id) throws EntityNotFound
   {
     log.debug("Getting the picture of the item {}", id);
 
     Item entity = dao.read(id);
 
-    return Optional.ofNullable(dtoMapper.toDto(entity.getPicture(), BinaryDataDTO.class));
+    return Optional.ofNullable(dtoMapper.toDto(entity.getPicture(), BinaryDataDto.class));
   }
 }

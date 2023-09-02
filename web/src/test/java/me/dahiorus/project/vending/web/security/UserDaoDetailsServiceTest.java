@@ -16,7 +16,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import me.dahiorus.project.vending.domain.dao.UserDAO;
+import me.dahiorus.project.vending.domain.dao.UserDao;
 import me.dahiorus.project.vending.domain.model.AppUser;
 import me.dahiorus.project.vending.util.UserBuilder;
 
@@ -26,7 +26,7 @@ class UserDaoDetailsServiceTest
   UserDaoDetailsService userDetailsService;
 
   @Mock
-  UserDAO userDao;
+  UserDao userDao;
 
   @BeforeEach
   void setUp()

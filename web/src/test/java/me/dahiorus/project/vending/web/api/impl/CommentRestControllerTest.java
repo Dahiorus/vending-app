@@ -26,7 +26,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
-import me.dahiorus.project.vending.domain.model.dto.CommentDTO;
+import me.dahiorus.project.vending.domain.model.dto.CommentDto;
 import me.dahiorus.project.vending.domain.service.impl.CommentDtoServiceImpl;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 import me.dahiorus.project.vending.web.api.assembler.CommentDtoModelAssembler;
@@ -47,7 +47,7 @@ class CommentRestControllerTest extends RestControllerTest
     void getMachineComments() throws Exception
     {
       UUID id = UUID.randomUUID();
-      List<CommentDTO> comments = List.of(buildComment("Comment 1", 2), buildComment("Comment 2", 3));
+      List<CommentDto> comments = List.of(buildComment("Comment 1", 2), buildComment("Comment 2", 3));
       when(commentDtoService.getComments(id)).thenReturn(comments);
       when(modelAssembler.toCollectionModel(comments)).thenReturn(CollectionModel.wrap(comments));
 
@@ -79,7 +79,7 @@ class CommentRestControllerTest extends RestControllerTest
     void commentMachine() throws Exception
     {
       UUID id = UUID.randomUUID();
-      CommentDTO comment = buildComment("Comment", 5);
+      CommentDto comment = buildComment("Comment", 5);
 
       when(commentDtoService.comment(id, comment)).then(invoc -> {
         comment.setId(UUID.randomUUID());
@@ -138,9 +138,9 @@ class CommentRestControllerTest extends RestControllerTest
     }
   }
 
-  CommentDTO buildComment(final String content, final int rate)
+  CommentDto buildComment(final String content, final int rate)
   {
-    CommentDTO comment = new CommentDTO();
+    CommentDto comment = new CommentDto();
     comment.setContent(content);
     comment.setRate(rate);
 

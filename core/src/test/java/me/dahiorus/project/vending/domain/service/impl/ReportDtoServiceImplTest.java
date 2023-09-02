@@ -23,8 +23,8 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import me.dahiorus.project.vending.domain.dao.ReportDAO;
-import me.dahiorus.project.vending.domain.dao.VendingMachineDAO;
+import me.dahiorus.project.vending.domain.dao.ReportDao;
+import me.dahiorus.project.vending.domain.dao.VendingMachineDao;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.model.ChangeSystemStatus;
 import me.dahiorus.project.vending.domain.model.Item;
@@ -35,17 +35,17 @@ import me.dahiorus.project.vending.domain.model.Sale;
 import me.dahiorus.project.vending.domain.model.Stock;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
 import me.dahiorus.project.vending.domain.model.WorkingStatus;
-import me.dahiorus.project.vending.domain.model.dto.ReportDTO;
+import me.dahiorus.project.vending.domain.model.dto.ReportDto;
 import me.dahiorus.project.vending.util.VendingMachineBuilder;
 
 @ExtendWith(MockitoExtension.class)
 class ReportDtoServiceImplTest
 {
   @Mock
-  ReportDAO dao;
+  ReportDao dao;
 
   @Mock
-  VendingMachineDAO vendingMachineDao;
+  VendingMachineDao vendingMachineDao;
 
   ReportDtoServiceImpl dtoService;
 
@@ -62,14 +62,14 @@ class ReportDtoServiceImplTest
   @Test
   void createIsUnsupported()
   {
-    assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> dtoService.create(new ReportDTO()));
+    assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> dtoService.create(new ReportDto()));
   }
 
   @Test
   void updateIsUnsupported()
   {
     assertThatExceptionOfType(UnsupportedOperationException.class)
-      .isThrownBy(() -> dtoService.update(UUID.randomUUID(), new ReportDTO()));
+      .isThrownBy(() -> dtoService.update(UUID.randomUUID(), new ReportDto()));
   }
 
   @Nested
@@ -93,7 +93,7 @@ class ReportDtoServiceImplTest
       when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
       mockSaveReport();
 
-      ReportDTO report = dtoService.report(machine.getId());
+      ReportDto report = dtoService.report(machine.getId());
 
       assertReportHasMachineInfo(report, machine);
     }
@@ -114,7 +114,7 @@ class ReportDtoServiceImplTest
       when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
       mockSaveReport();
 
-      ReportDTO report = dtoService.report(machine.getId());
+      ReportDto report = dtoService.report(machine.getId());
 
       assertAll(
         () -> assertReportHasMachineInfo(report, machine),
@@ -138,7 +138,7 @@ class ReportDtoServiceImplTest
       when(vendingMachineDao.read(machine.getId())).thenReturn(machine);
       mockSaveReport();
 
-      ReportDTO report = dtoService.report(machine.getId());
+      ReportDto report = dtoService.report(machine.getId());
 
       assertAll(() -> assertReportHasMachineInfo(report, machine),
         () -> assertThat(report.getTotalSaleAmount()).isEqualTo(sale1.getAmount()
@@ -167,7 +167,7 @@ class ReportDtoServiceImplTest
       });
       mockSaveReport();
 
-      ReportDTO report = dtoService.report(machine.getId());
+      ReportDto report = dtoService.report(machine.getId());
 
       assertAll(() -> assertReportHasMachineInfo(report, machine),
         () -> assertThat(report.getTotalSaleAmount()).isEqualTo(sale2.getAmount()));
@@ -200,7 +200,7 @@ class ReportDtoServiceImplTest
       .build();
   }
 
-  private static void assertReportHasMachineInfo(final ReportDTO report, final VendingMachine machine)
+  private static void assertReportHasMachineInfo(final ReportDto report, final VendingMachine machine)
   {
     assertThat(report).hasFieldOrPropertyWithValue("machineSerialNumber", machine.getSerialNumber())
       .hasFieldOrPropertyWithValue("mesuredTemperature", machine.getTemperature())

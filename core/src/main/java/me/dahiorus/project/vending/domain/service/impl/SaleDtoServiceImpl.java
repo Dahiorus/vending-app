@@ -13,8 +13,8 @@ import me.dahiorus.project.vending.domain.exception.VendingMachineNotWorking;
 import me.dahiorus.project.vending.domain.model.Item;
 import me.dahiorus.project.vending.domain.model.Sale;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
-import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
-import me.dahiorus.project.vending.domain.model.dto.SaleDTO;
+import me.dahiorus.project.vending.domain.model.dto.ItemDto;
+import me.dahiorus.project.vending.domain.model.dto.SaleDto;
 import me.dahiorus.project.vending.domain.service.DtoMapper;
 import me.dahiorus.project.vending.domain.service.SaleDtoService;
 import me.dahiorus.project.vending.domain.service.manager.SaleManager;
@@ -30,7 +30,7 @@ public class SaleDtoServiceImpl implements SaleDtoService
 
   @Transactional
   @Override
-  public SaleDTO purchaseItem(final UUID id, final ItemDTO item)
+  public SaleDto purchaseItem(final UUID id, final ItemDto item)
     throws EntityNotFound, ItemMissing, VendingMachineNotWorking
   {
     log.traceEntry(() -> id, () -> item);
@@ -47,6 +47,6 @@ public class SaleDtoServiceImpl implements SaleDtoService
     log.info("Item '{}' purchased from vending machine {} for price {}", item.getName(),
       id, sale.getAmount());
 
-    return log.traceExit(dtoMapper.toDto(sale, SaleDTO.class));
+    return log.traceExit(dtoMapper.toDto(sale, SaleDto.class));
   }
 }

@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import me.dahiorus.project.vending.domain.model.AppUser;
 
 @Transactional(readOnly = true)
-public interface UserDAO extends DAO<AppUser>
+public interface UserDao extends Dao<AppUser>
 {
   Optional<AppUser> findByEmail(final String email);
 }

@@ -31,7 +31,7 @@ import me.dahiorus.project.vending.util.VendingMachineBuilder;
 class ReportDaoTest
 {
   @Autowired
-  ReportDAO dao;
+  ReportDao dao;
 
   Report entity;
 

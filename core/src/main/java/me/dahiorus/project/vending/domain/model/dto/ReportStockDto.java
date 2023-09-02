@@ -8,7 +8,7 @@ import me.dahiorus.project.vending.domain.model.ReportStock;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class ReportStockDTO extends AbstractDTO<ReportStock>
+public class ReportStockDto extends AbstractDto<ReportStock>
 {
   @Getter
   @Setter

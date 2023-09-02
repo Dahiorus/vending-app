@@ -11,25 +11,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.domain.dao.DAO;
-import me.dahiorus.project.vending.domain.dao.ReportDAO;
+import me.dahiorus.project.vending.domain.dao.Dao;
+import me.dahiorus.project.vending.domain.dao.ReportDao;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
 import me.dahiorus.project.vending.domain.model.Report;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
-import me.dahiorus.project.vending.domain.model.dto.ReportDTO;
+import me.dahiorus.project.vending.domain.model.dto.ReportDto;
 import me.dahiorus.project.vending.domain.service.DtoMapper;
 import me.dahiorus.project.vending.domain.service.ReportDtoService;
 
 @Log4j2
 @Service
-public class ReportDtoServiceImpl extends DtoServiceImpl<Report, ReportDTO, ReportDAO>
+public class ReportDtoServiceImpl extends DtoServiceImpl<Report, ReportDto, ReportDao>
   implements ReportDtoService
 {
-  private final DAO<VendingMachine> vendingMachineDao;
+  private final Dao<VendingMachine> vendingMachineDao;
 
-  public ReportDtoServiceImpl(final ReportDAO dao, final DtoMapper dtoMapper,
-    final DAO<VendingMachine> vendingMachineDao)
+  public ReportDtoServiceImpl(final ReportDao dao, final DtoMapper dtoMapper,
+    final Dao<VendingMachine> vendingMachineDao)
   {
     super(dao, dtoMapper, null);
     this.vendingMachineDao = vendingMachineDao;
@@ -43,7 +43,7 @@ public class ReportDtoServiceImpl extends DtoServiceImpl<Report, ReportDTO, Repo
 
   @Transactional
   @Override
-  public ReportDTO report(final UUID vendingMachineId) throws EntityNotFound
+  public ReportDto report(final UUID vendingMachineId) throws EntityNotFound
   {
     log.traceEntry(() -> vendingMachineId);
 
@@ -54,7 +54,7 @@ public class ReportDtoServiceImpl extends DtoServiceImpl<Report, ReportDTO, Repo
     Instant lastReportingDate = lastReportOpt.map(Report::getCreatedAt)
       .orElse(null);
     Report report = dao.save(reportAt(machineToReport, lastReportingDate));
-    ReportDTO dto = dtoMapper.toDto(report, getDomainClass());
+    ReportDto dto = dtoMapper.toDto(report, getDomainClass());
 
     log.info("Report created for vending machine {} : {}", machineToReport.getId(), report);
 
@@ -62,13 +62,13 @@ public class ReportDtoServiceImpl extends DtoServiceImpl<Report, ReportDTO, Repo
   }
 
   @Override
-  public ReportDTO create(final ReportDTO dto) throws ValidationException
+  public ReportDto create(final ReportDto dto) throws ValidationException
   {
     throw new UnsupportedOperationException("Cannot directly call create. Call report() instead.");
   }
 
   @Override
-  public ReportDTO update(final UUID id, final ReportDTO dto)
+  public ReportDto update(final UUID id, final ReportDto dto)
     throws EntityNotFound, ValidationException
   {
     throw new UnsupportedOperationException(
@@ -76,8 +76,8 @@ public class ReportDtoServiceImpl extends DtoServiceImpl<Report, ReportDTO, Repo
   }
 
   @Override
-  protected Class<ReportDTO> getDomainClass()
+  protected Class<ReportDto> getDomainClass()
   {
-    return ReportDTO.class;
+    return ReportDto.class;
   }
 }

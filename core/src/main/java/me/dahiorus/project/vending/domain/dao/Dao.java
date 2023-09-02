@@ -10,7 +10,7 @@ import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.model.AbstractEntity;
 
 @NoRepositoryBean
-public interface DAO<E extends AbstractEntity>
+public interface Dao<E extends AbstractEntity>
   extends JpaRepository<E, UUID>, JpaSpecificationExecutor<E>
 {
   E read(final UUID id) throws EntityNotFound;

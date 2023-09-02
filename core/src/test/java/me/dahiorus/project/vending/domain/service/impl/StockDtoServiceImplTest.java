@@ -28,8 +28,8 @@ import me.dahiorus.project.vending.domain.model.Item;
 import me.dahiorus.project.vending.domain.model.ItemType;
 import me.dahiorus.project.vending.domain.model.Stock;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
-import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
-import me.dahiorus.project.vending.domain.model.dto.StockDTO;
+import me.dahiorus.project.vending.domain.model.dto.ItemDto;
+import me.dahiorus.project.vending.domain.model.dto.StockDto;
 import me.dahiorus.project.vending.domain.service.manager.StockManager;
 import me.dahiorus.project.vending.domain.service.validation.impl.StockValidatorImpl;
 import me.dahiorus.project.vending.util.ItemBuilder;
@@ -61,7 +61,7 @@ class StockDtoServiceImplTest
 
       when(manager.getMachine(machine.getId())).thenReturn(machine);
 
-      ItemDTO itemDto = new ItemDTO();
+      ItemDto itemDto = new ItemDto();
       itemDto.setId(item.getId());
       itemDto.setName(item.getName());
       itemDto.setType(machine.getType());
@@ -74,7 +74,7 @@ class StockDtoServiceImplTest
     void cannotProvisionOtherItemType() throws Exception
     {
       VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.COLD_BAVERAGE);
-      ItemDTO itemDto = new ItemDTO();
+      ItemDto itemDto = new ItemDto();
       itemDto.setName("Lays");
       itemDto.setType(ItemType.FOOD);
 
@@ -92,7 +92,7 @@ class StockDtoServiceImplTest
       when(manager.getMachine(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
 
       assertThatExceptionOfType(EntityNotFound.class)
-        .isThrownBy(() -> dtoService.provisionStock(id, new ItemDTO(), 15));
+        .isThrownBy(() -> dtoService.provisionStock(id, new ItemDto(), 15));
       verify(manager, never()).provision(any(), any(), eq(15));
     }
 
@@ -104,7 +104,7 @@ class StockDtoServiceImplTest
       VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.COLD_BAVERAGE);
       when(manager.getMachine(machine.getId())).thenReturn(machine);
 
-      ItemDTO itemDto = new ItemDTO();
+      ItemDto itemDto = new ItemDto();
       itemDto.setName("CocaCola");
       itemDto.setType(machine.getType());
 
@@ -127,7 +127,7 @@ class StockDtoServiceImplTest
 
       when(manager.getMachine(machine.getId())).thenReturn(machine);
 
-      List<StockDTO> stocks = dtoService.getStocks(machine.getId());
+      List<StockDto> stocks = dtoService.getStocks(machine.getId());
 
       assertThat(stocks).hasSize(2)
         .anySatisfy(s -> assertThat(s).hasFieldOrPropertyWithValue("itemName", "Item1")

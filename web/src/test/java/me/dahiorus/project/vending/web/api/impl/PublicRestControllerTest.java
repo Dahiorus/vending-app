@@ -32,7 +32,7 @@ import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
-import me.dahiorus.project.vending.domain.model.dto.UserDTO;
+import me.dahiorus.project.vending.domain.model.dto.UserDto;
 import me.dahiorus.project.vending.domain.service.impl.UserDtoServiceImpl;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 import me.dahiorus.project.vending.util.UserBuilder;
@@ -55,21 +55,21 @@ class PublicRestControllerTest extends RestControllerTest
   class RegisterTests
   {
     @Captor
-    ArgumentCaptor<UserDTO> userArg;
+    ArgumentCaptor<UserDto> userArg;
 
     @Test
     @WithAnonymousUser
     void registerUser() throws Exception
     {
       UUID id = UUID.randomUUID();
-      UserDTO dto = UserBuilder.builder()
+      UserDto dto = UserBuilder.builder()
         .email("user.test@yopmail.com")
         .firstName("User")
         .lastName("Test")
         .buildDto();
 
       when(userDtoService.create(userArg.capture())).then(invoc -> {
-        UserDTO user = invoc.getArgument(0);
+        UserDto user = invoc.getArgument(0);
         user.setId(id);
         return user;
       });
@@ -96,7 +96,7 @@ class PublicRestControllerTest extends RestControllerTest
     @WithAnonymousUser
     void registerInvalidUser() throws Exception
     {
-      UserDTO dto = UserBuilder.builder()
+      UserDto dto = UserBuilder.builder()
         .firstName("User")
         .lastName("Test")
         .roles(List.of())

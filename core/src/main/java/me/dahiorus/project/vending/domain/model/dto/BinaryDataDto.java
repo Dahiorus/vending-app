@@ -8,7 +8,7 @@ import me.dahiorus.project.vending.domain.model.BinaryData;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true, of = { "name", "contentType" })
-public class BinaryDataDTO extends AbstractDTO<BinaryData>
+public class BinaryDataDto extends AbstractDto<BinaryData>
 {
   @Getter
   @Setter

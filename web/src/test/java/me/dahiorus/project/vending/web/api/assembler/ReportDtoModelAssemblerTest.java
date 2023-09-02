@@ -7,8 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.EntityModel;
 
-import me.dahiorus.project.vending.domain.model.dto.ReportDTO;
-import me.dahiorus.project.vending.domain.model.dto.ReportStockDTO;
+import me.dahiorus.project.vending.domain.model.dto.ReportDto;
+import me.dahiorus.project.vending.domain.model.dto.ReportStockDto;
 
 class ReportDtoModelAssemblerTest
 {
@@ -23,11 +23,11 @@ class ReportDtoModelAssemblerTest
   @Test
   void dtoToEntityModel()
   {
-    ReportDTO dto = new ReportDTO();
+    ReportDto dto = new ReportDto();
     dto.setId(UUID.randomUUID());
-    dto.setReportStocks(List.of(new ReportStockDTO()));
+    dto.setReportStocks(List.of(new ReportStockDto()));
 
-    EntityModel<ReportDTO> model = modelAssembler.toModel(dto);
+    EntityModel<ReportDto> model = modelAssembler.toModel(dto);
 
     Assertions.assertEntityModel(model, dto);
   }

@@ -26,15 +26,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import me.dahiorus.project.vending.domain.dao.BinaryDataDAO;
-import me.dahiorus.project.vending.domain.dao.UserDAO;
+import me.dahiorus.project.vending.domain.dao.BinaryDataDao;
+import me.dahiorus.project.vending.domain.dao.UserDao;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
 import me.dahiorus.project.vending.domain.model.AppUser;
 import me.dahiorus.project.vending.domain.model.BinaryData;
-import me.dahiorus.project.vending.domain.model.dto.BinaryDataDTO;
-import me.dahiorus.project.vending.domain.model.dto.EditPasswordDTO;
-import me.dahiorus.project.vending.domain.model.dto.UserDTO;
+import me.dahiorus.project.vending.domain.model.dto.BinaryDataDto;
+import me.dahiorus.project.vending.domain.model.dto.EditPasswordDto;
+import me.dahiorus.project.vending.domain.model.dto.UserDto;
 import me.dahiorus.project.vending.domain.service.validation.FieldValidationError;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 import me.dahiorus.project.vending.domain.service.validation.impl.PasswordValidatorImpl;
@@ -48,7 +48,7 @@ class UserDtoServiceImplTest
   ArgumentCaptor<AppUser> userArg;
 
   @Mock
-  UserDAO dao;
+  UserDao dao;
 
   @Mock
   UserDtoValidator dtoValidator;
@@ -57,7 +57,7 @@ class UserDtoServiceImplTest
   PasswordValidatorImpl passwordValidator;
 
   @Mock
-  BinaryDataDAO binaryDataDao;
+  BinaryDataDao binaryDataDao;
 
   PasswordEncoder passwordEncoder;
 
@@ -75,12 +75,12 @@ class UserDtoServiceImplTest
   @Test
   void createUserWithoutPassword() throws Exception
   {
-    UserDTO dto = UserBuilder.builder()
+    UserDto dto = UserBuilder.builder()
       .buildDto();
     when(dtoValidator.validate(dto)).thenReturn(successResults());
     when(dao.save(any())).then(returnsFirstArg());
 
-    UserDTO createdUser = dtoService.create(dto);
+    UserDto createdUser = dtoService.create(dto);
 
     assertThat(createdUser.getPassword()).isNull();
   }
@@ -91,7 +91,7 @@ class UserDtoServiceImplTest
     @Test
     void createUserWithPassword() throws Exception
     {
-      UserDTO user = buildUser("User", "Test", "email@yopmail.com", "Secret123");
+      UserDto user = buildUser("User", "Test", "email@yopmail.com", "Secret123");
 
       when(dtoValidator.validate(user)).thenReturn(successResults());
       when(passwordValidator.validate("password", user.getPassword())).thenReturn(successResults());
@@ -101,7 +101,7 @@ class UserDtoServiceImplTest
         return toCreate;
       });
 
-      UserDTO createdUser = dtoService.create(user);
+      UserDto createdUser = dtoService.create(user);
 
       assertAll(() -> assertThat(createdUser).hasFieldOrPropertyWithValue("firstName", user.getFirstName())
         .hasFieldOrPropertyWithValue("lastName", user.getLastName())
@@ -114,7 +114,7 @@ class UserDtoServiceImplTest
     @Test
     void passwordMustRespectPolicy() throws Exception
     {
-      UserDTO user = buildUser("User", "Test", "email@yopmail.com", "Secret123");
+      UserDto user = buildUser("User", "Test", "email@yopmail.com", "Secret123");
 
       when(dtoValidator.validate(user)).thenReturn(successResults());
       when(passwordValidator.validate("password", user.getPassword())).then(invocation -> {
@@ -128,7 +128,7 @@ class UserDtoServiceImplTest
       verify(dao, never()).save(any());
     }
 
-    UserDTO buildUser(final String firstName, final String lastName, final String email,
+    UserDto buildUser(final String firstName, final String lastName, final String email,
       final String rawPassword)
     {
       return UserBuilder.builder()
@@ -147,7 +147,7 @@ class UserDtoServiceImplTest
     void updateUserWithPassword() throws Exception
     {
       UUID id = UUID.randomUUID();
-      UserDTO dto = UserBuilder.builder()
+      UserDto dto = UserBuilder.builder()
         .id(id)
         .password("Secret123")
         .buildDto();
@@ -170,7 +170,7 @@ class UserDtoServiceImplTest
     void updateUserWithoutPassword() throws Exception
     {
       UUID id = UUID.randomUUID();
-      UserDTO dto = UserBuilder.builder()
+      UserDto dto = UserBuilder.builder()
         .id(id)
         .buildDto();
       AppUser user = UserBuilder.builder()
@@ -197,7 +197,7 @@ class UserDtoServiceImplTest
     {
       AppUser user = buildUser(UUID.randomUUID(), "Secret123");
 
-      EditPasswordDTO editPwd = new EditPasswordDTO("Secret123", "Secret1234");
+      EditPasswordDto editPwd = new EditPasswordDto("Secret123", "Secret1234");
 
       when(dao.read(user.getId())).thenReturn(user);
       when(passwordValidator.validate("password", editPwd.password())).thenReturn(successResults());
@@ -215,7 +215,7 @@ class UserDtoServiceImplTest
     {
       AppUser user = buildUser(UUID.randomUUID(), "Secret123");
 
-      EditPasswordDTO editPwd = new EditPasswordDTO("Azertyui", "Secret1234");
+      EditPasswordDto editPwd = new EditPasswordDto("Azertyui", "Secret1234");
 
       when(dao.read(user.getId())).thenReturn(user);
       when(passwordValidator.validate("password", editPwd.password())).thenReturn(successResults());
@@ -235,7 +235,7 @@ class UserDtoServiceImplTest
     {
       AppUser user = buildUser(UUID.randomUUID(), "Secret123");
 
-      EditPasswordDTO editPwd = new EditPasswordDTO("Secret123", "Secret123");
+      EditPasswordDto editPwd = new EditPasswordDto("Secret123", "Secret123");
 
       when(dao.read(user.getId())).thenReturn(user);
       when(passwordValidator.validate("password", editPwd.password())).thenReturn(successResults());
@@ -255,7 +255,7 @@ class UserDtoServiceImplTest
     {
       AppUser user = buildUser(UUID.randomUUID(), "Secret123");
 
-      EditPasswordDTO editPwd = new EditPasswordDTO("Secret123", "Secret1234");
+      EditPasswordDto editPwd = new EditPasswordDto("Secret123", "Secret1234");
 
       when(dao.read(user.getId())).thenReturn(user);
       when(passwordValidator.validate("password", editPwd.password())).then(invoc -> {
@@ -277,7 +277,7 @@ class UserDtoServiceImplTest
       when(dao.read(id)).thenThrow(new EntityNotFound(AppUser.class, id));
 
       assertThatExceptionOfType(EntityNotFound.class)
-        .isThrownBy(() -> dtoService.updatePassword(id, new EditPasswordDTO(null, null)));
+        .isThrownBy(() -> dtoService.updatePassword(id, new EditPasswordDto(null, null)));
       verify(dao, never()).save(any());
     }
 
@@ -299,7 +299,7 @@ class UserDtoServiceImplTest
       AppUser user = buildUser("user@test.fr");
       when(dao.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
-      UserDTO userDto = dtoService.getByUsername(user.getEmail());
+      UserDto userDto = dtoService.getByUsername(user.getEmail());
 
       assertThat(userDto.getEmail()).isEqualTo(user.getEmail());
     }
@@ -330,7 +330,7 @@ class UserDtoServiceImplTest
       AppUser user = buildUser(UUID.randomUUID(), "picture.jpg", "image/jpg");
       when(dao.read(user.getId())).thenReturn(user);
 
-      Optional<BinaryDataDTO> image = dtoService.getImage(user.getId());
+      Optional<BinaryDataDto> image = dtoService.getImage(user.getId());
 
       assertThat(image).isNotEmpty();
     }
@@ -342,7 +342,7 @@ class UserDtoServiceImplTest
       user.setPicture(null);
       when(dao.read(user.getId())).thenReturn(user);
 
-      Optional<BinaryDataDTO> image = dtoService.getImage(user.getId());
+      Optional<BinaryDataDto> image = dtoService.getImage(user.getId());
 
       assertThat(image).isEmpty();
     }
@@ -381,8 +381,8 @@ class UserDtoServiceImplTest
       });
       when(dao.save(user)).thenReturn(user);
 
-      BinaryDataDTO dto = buildBinary("picture.jpg", "image/jpg");
-      UserDTO updatedUser = dtoService.uploadImage(user.getId(), dto);
+      BinaryDataDto dto = buildBinary("picture.jpg", "image/jpg");
+      UserDto updatedUser = dtoService.uploadImage(user.getId(), dto);
 
       assertThat(updatedUser.getPictureId()).isEqualTo(user.getPicture()
         .getId());
@@ -395,7 +395,7 @@ class UserDtoServiceImplTest
       when(dao.read(id)).thenThrow(new EntityNotFound(AppUser.class, id));
 
       assertThatExceptionOfType(EntityNotFound.class)
-        .isThrownBy(() -> dtoService.uploadImage(id, new BinaryDataDTO()));
+        .isThrownBy(() -> dtoService.uploadImage(id, new BinaryDataDto()));
       verify(binaryDataDao, never()).save(any());
       verify(dao, never()).save(any());
     }
@@ -407,9 +407,9 @@ class UserDtoServiceImplTest
         .build();
     }
 
-    BinaryDataDTO buildBinary(final String name, final String contentType)
+    BinaryDataDto buildBinary(final String name, final String contentType)
     {
-      BinaryDataDTO dto = new BinaryDataDTO();
+      BinaryDataDto dto = new BinaryDataDto();
       dto.setName(name);
       dto.setContentType(contentType);
       dto.setContent(new byte[0]);

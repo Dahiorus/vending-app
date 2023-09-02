@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 
-public interface DeleteRestAPI
+public interface DeleteRestApi
 {
   ResponseEntity<Void> delete(UUID id);
 }

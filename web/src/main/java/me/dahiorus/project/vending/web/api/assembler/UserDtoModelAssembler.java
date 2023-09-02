@@ -18,8 +18,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.domain.exception.AppException;
 import me.dahiorus.project.vending.domain.exception.UserNotAuthenticated;
-import me.dahiorus.project.vending.domain.model.dto.EditPasswordDTO;
-import me.dahiorus.project.vending.domain.model.dto.UserDTO;
+import me.dahiorus.project.vending.domain.model.dto.EditPasswordDto;
+import me.dahiorus.project.vending.domain.model.dto.UserDto;
 import me.dahiorus.project.vending.web.api.impl.SelfServiceRestController;
 import me.dahiorus.project.vending.web.api.impl.UserRestController;
 import me.dahiorus.project.vending.web.security.AuthenticationFacade;
@@ -27,7 +27,7 @@ import me.dahiorus.project.vending.web.security.AuthenticationFacade;
 @Log4j2
 @RequiredArgsConstructor
 @Component
-public class UserDtoModelAssembler extends DtoModelAssembler<UserDTO>
+public class UserDtoModelAssembler extends DtoModelAssembler<UserDto>
 {
   private final AuthenticationFacade authenticationFacade;
 
@@ -38,14 +38,14 @@ public class UserDtoModelAssembler extends DtoModelAssembler<UserDTO>
   }
 
   @Override
-  protected Optional<Link> selfLink(final UserDTO content) throws AppException
+  protected Optional<Link> selfLink(final UserDto content) throws AppException
   {
     Link selfLink = linkTo(methodOn(UserRestController.class).read(content.getId())).withSelfRel();
     return Optional.of(selfLink);
   }
 
   @Override
-  protected Iterable<Link> buildLinks(final UserDTO content) throws AppException
+  protected Iterable<Link> buildLinks(final UserDto content) throws AppException
   {
     Collection<Link> links = new LinkedList<>();
 
@@ -53,12 +53,12 @@ public class UserDtoModelAssembler extends DtoModelAssembler<UserDTO>
     {
       Authentication authentication = SecurityContextHolder.getContext()
         .getAuthentication();
-      UserDTO authenticatedUser = authenticationFacade.getAuthenticatedUser(authentication);
+      UserDto authenticatedUser = authenticationFacade.getAuthenticatedUser(authentication);
       if (content.equals(authenticatedUser))
       {
         Link selfServiceLink = linkTo(methodOn(SelfServiceRestController.class).get(null)).withRel("me:get");
         Link updatePassword = linkTo(
-          methodOn(SelfServiceRestController.class).updatePassword(null, new EditPasswordDTO(null, null)))
+          methodOn(SelfServiceRestController.class).updatePassword(null, new EditPasswordDto(null, null)))
             .withRel("me:update-password");
         Link pictureLink = linkTo(methodOn(SelfServiceRestController.class).getPicture(null)).withRel("me:picture");
         links.addAll(List.of(selfServiceLink, updatePassword, pictureLink));

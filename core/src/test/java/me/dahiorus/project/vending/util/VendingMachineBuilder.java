@@ -11,7 +11,7 @@ import me.dahiorus.project.vending.domain.model.ItemType;
 import me.dahiorus.project.vending.domain.model.PowerStatus;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
 import me.dahiorus.project.vending.domain.model.WorkingStatus;
-import me.dahiorus.project.vending.domain.model.dto.VendingMachineDTO;
+import me.dahiorus.project.vending.domain.model.dto.VendingMachineDto;
 import me.dahiorus.project.vending.domain.service.DtoMapper;
 import me.dahiorus.project.vending.domain.service.impl.DtoMapperImpl;
 
@@ -120,8 +120,8 @@ public class VendingMachineBuilder
     return machine;
   }
 
-  public VendingMachineDTO buildDto()
+  public VendingMachineDto buildDto()
   {
-    return dtoMapper.toDto(machine, VendingMachineDTO.class);
+    return dtoMapper.toDto(machine, VendingMachineDto.class);
   }
 }

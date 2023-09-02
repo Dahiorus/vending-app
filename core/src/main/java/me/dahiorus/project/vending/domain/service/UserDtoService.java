@@ -5,12 +5,12 @@ import java.util.UUID;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
 import me.dahiorus.project.vending.domain.model.AppUser;
-import me.dahiorus.project.vending.domain.model.dto.EditPasswordDTO;
-import me.dahiorus.project.vending.domain.model.dto.UserDTO;
+import me.dahiorus.project.vending.domain.model.dto.EditPasswordDto;
+import me.dahiorus.project.vending.domain.model.dto.UserDto;
 
-public interface UserDtoService extends DtoService<AppUser, UserDTO>, BinaryDataDtoService<UserDTO>
+public interface UserDtoService extends DtoService<AppUser, UserDto>, BinaryDataDtoService<UserDto>
 {
-  UserDTO getByUsername(String username) throws EntityNotFound;
+  UserDto getByUsername(String username) throws EntityNotFound;
 
-  void updatePassword(UUID id, EditPasswordDTO editPassword) throws EntityNotFound, ValidationException;
+  void updatePassword(UUID id, EditPasswordDto editPassword) throws EntityNotFound, ValidationException;
 }

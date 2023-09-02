@@ -37,9 +37,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.UserNotAuthenticated;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
-import me.dahiorus.project.vending.domain.model.dto.BinaryDataDTO;
-import me.dahiorus.project.vending.domain.model.dto.EditPasswordDTO;
-import me.dahiorus.project.vending.domain.model.dto.UserDTO;
+import me.dahiorus.project.vending.domain.model.dto.BinaryDataDto;
+import me.dahiorus.project.vending.domain.model.dto.EditPasswordDto;
+import me.dahiorus.project.vending.domain.model.dto.UserDto;
 import me.dahiorus.project.vending.domain.service.impl.UserDtoServiceImpl;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 import me.dahiorus.project.vending.util.UserBuilder;
@@ -62,7 +62,7 @@ class SelfServiceRestControllerTest extends RestControllerTest
   class GetTests
   {
     @Captor
-    ArgumentCaptor<UserDTO> userArg;
+    ArgumentCaptor<UserDto> userArg;
 
     @Test
     @WithMockUser(username = "user.test", password = "Secret")
@@ -100,7 +100,7 @@ class SelfServiceRestControllerTest extends RestControllerTest
   class UpdatePasswordTests
   {
     @Captor
-    ArgumentCaptor<EditPasswordDTO> editPasswordArg;
+    ArgumentCaptor<EditPasswordDto> editPasswordArg;
 
     @Test
     @WithMockUser(username = "user.test", password = "secret")
@@ -173,7 +173,7 @@ class SelfServiceRestControllerTest extends RestControllerTest
     @WithMockUser(username = "user.test", password = "secret")
     void userHasPicture() throws Exception
     {
-      BinaryDataDTO dto = new BinaryDataDTO();
+      BinaryDataDto dto = new BinaryDataDto();
       dto.setName("picture.jpg");
       dto.setContentType(MediaType.IMAGE_JPEG_VALUE);
       dto.setContent(new byte[32]);

@@ -8,13 +8,13 @@ import java.net.URI;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
-import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
-import me.dahiorus.project.vending.web.api.ReadRestAPI;
+import me.dahiorus.project.vending.domain.model.dto.AbstractDto;
+import me.dahiorus.project.vending.web.api.ReadRestApi;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ResponseUtils
 {
-  public static <D extends AbstractDTO<?>, A extends ReadRestAPI<D>> URI buildLocation(final D createdEntity,
+  public static <D extends AbstractDto<?>, A extends ReadRestApi<D>> URI buildLocation(final D createdEntity,
     final Class<A> apiClass)
   {
     try

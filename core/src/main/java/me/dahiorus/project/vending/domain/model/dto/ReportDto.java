@@ -17,7 +17,7 @@ import me.dahiorus.project.vending.domain.model.WorkingStatus;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true, exclude = "reportStocks")
-public class ReportDTO extends AbstractDTO<Report>
+public class ReportDto extends AbstractDto<Report>
 {
   @Getter
   @Setter
@@ -42,7 +42,7 @@ public class ReportDTO extends AbstractDTO<Report>
   @Parameter(hidden = true)
   @Getter
   @Setter
-  private List<ReportStockDTO> reportStocks = new ArrayList<>();
+  private List<ReportStockDto> reportStocks = new ArrayList<>();
 
   @Getter
   @Setter

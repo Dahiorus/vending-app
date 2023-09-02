@@ -5,28 +5,28 @@ import java.util.UUID;
 
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
-import me.dahiorus.project.vending.domain.model.dto.CommentDTO;
-import me.dahiorus.project.vending.domain.model.dto.VendingMachineDTO;
+import me.dahiorus.project.vending.domain.model.dto.CommentDto;
+import me.dahiorus.project.vending.domain.model.dto.VendingMachineDto;
 
 public interface CommentDtoService
 {
   /**
    * Get the comments of a vending machine
    *
-   * @param id The ID of the {@link VendingMachineDTO vending machine}
-   * @return The {@link CommentDTO comments} of the vending machine
+   * @param id The ID of the {@link VendingMachineDto vending machine}
+   * @return The {@link CommentDto comments} of the vending machine
    * @throws EntityNotFound if no vending machine match the ID
    */
-  List<CommentDTO> getComments(UUID id) throws EntityNotFound;
+  List<CommentDto> getComments(UUID id) throws EntityNotFound;
 
   /**
    * Add a comment to a vending machine
    *
-   * @param id      The ID of the {@link VendingMachineDTO vending machine}
-   * @param comment The {@link CommentDTO comment} to add
+   * @param id      The ID of the {@link VendingMachineDto vending machine}
+   * @param comment The {@link CommentDto comment} to add
    * @return The new comment
    * @throws EntityNotFound      if no vending machine match the ID
    * @throws ValidationException if the comment contains invalid data
    */
-  CommentDTO comment(UUID id, CommentDTO comment) throws EntityNotFound, ValidationException;
+  CommentDto comment(UUID id, CommentDto comment) throws EntityNotFound, ValidationException;
 }

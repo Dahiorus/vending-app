@@ -12,8 +12,8 @@ import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
 import me.dahiorus.project.vending.domain.model.Item;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
-import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
-import me.dahiorus.project.vending.domain.model.dto.StockDTO;
+import me.dahiorus.project.vending.domain.model.dto.ItemDto;
+import me.dahiorus.project.vending.domain.model.dto.StockDto;
 import me.dahiorus.project.vending.domain.service.DtoMapper;
 import me.dahiorus.project.vending.domain.service.StockDtoService;
 import me.dahiorus.project.vending.domain.service.manager.StockManager;
@@ -33,12 +33,12 @@ public class StockDtoServiceImpl implements StockDtoService
   private final DtoMapper dtoMapper;
 
   @Override
-  public List<StockDTO> getStocks(final UUID id) throws EntityNotFound
+  public List<StockDto> getStocks(final UUID id) throws EntityNotFound
   {
     VendingMachine entity = manager.getMachine(id);
-    List<StockDTO> stocks = entity.getStocks()
+    List<StockDto> stocks = entity.getStocks()
       .stream()
-      .map(stock -> dtoMapper.toDto(stock, StockDTO.class))
+      .map(stock -> dtoMapper.toDto(stock, StockDto.class))
       .toList();
     stocks.forEach(stock -> stock.setVendingMachineId(id));
 
@@ -47,7 +47,7 @@ public class StockDtoServiceImpl implements StockDtoService
 
   @Transactional
   @Override
-  public void provisionStock(final UUID id, final ItemDTO item, final Integer quantity)
+  public void provisionStock(final UUID id, final ItemDto item, final Integer quantity)
     throws EntityNotFound, ValidationException
   {
     log.traceEntry(() -> id, () -> item, () -> quantity);

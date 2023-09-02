@@ -12,7 +12,7 @@ import me.dahiorus.project.vending.domain.model.Report;
 import me.dahiorus.project.vending.domain.model.Report_;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
 
-public interface ReportDAO extends DAO<Report>
+public interface ReportDao extends Dao<Report>
 {
   @Transactional(readOnly = true)
   default Optional<Report> findLastGenerated(final VendingMachine machine)

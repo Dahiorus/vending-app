@@ -27,8 +27,8 @@ import me.dahiorus.project.vending.domain.model.PowerStatus;
 import me.dahiorus.project.vending.domain.model.Stock;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
 import me.dahiorus.project.vending.domain.model.WorkingStatus;
-import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
-import me.dahiorus.project.vending.domain.model.dto.SaleDTO;
+import me.dahiorus.project.vending.domain.model.dto.ItemDto;
+import me.dahiorus.project.vending.domain.model.dto.SaleDto;
 import me.dahiorus.project.vending.domain.service.manager.SaleManager;
 import me.dahiorus.project.vending.util.ItemBuilder;
 import me.dahiorus.project.vending.util.VendingMachineBuilder;
@@ -57,12 +57,12 @@ class SaleDtoServiceImplTest
     when(manager.getWorkingMachine(machine.getId())).thenReturn(machine);
     when(manager.purchaseItem(machine, item)).thenReturn(sell(item, machine));
 
-    ItemDTO itemToPurchase = new ItemDTO();
+    ItemDto itemToPurchase = new ItemDto();
     itemToPurchase.setId(item.getId());
     itemToPurchase.setName(item.getName());
     itemToPurchase.setPrice(item.getPrice());
 
-    SaleDTO sale = dtoService.purchaseItem(machine.getId(), itemToPurchase);
+    SaleDto sale = dtoService.purchaseItem(machine.getId(), itemToPurchase);
 
     assertThat(sale.getAmount()).isEqualTo(itemToPurchase.getPrice());
   }
@@ -76,7 +76,7 @@ class SaleDtoServiceImplTest
 
     when(manager.getWorkingMachine(machine.getId())).thenReturn(machine);
 
-    ItemDTO itemToPurchase = new ItemDTO();
+    ItemDto itemToPurchase = new ItemDto();
     itemToPurchase.setId(item.getId());
 
     assertThatExceptionOfType(ItemMissing.class)
@@ -90,7 +90,7 @@ class SaleDtoServiceImplTest
     VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.FOOD);
     when(manager.getWorkingMachine(machine.getId())).thenReturn(machine);
 
-    ItemDTO itemToPurchase = new ItemDTO();
+    ItemDto itemToPurchase = new ItemDto();
     itemToPurchase.setId(UUID.randomUUID());
 
     assertThatExceptionOfType(ItemMissing.class)
@@ -104,7 +104,7 @@ class SaleDtoServiceImplTest
     UUID id = UUID.randomUUID();
     when(manager.getWorkingMachine(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
 
-    ItemDTO itemToPurchase = new ItemDTO();
+    ItemDto itemToPurchase = new ItemDto();
     itemToPurchase.setId(UUID.randomUUID());
 
     assertThatExceptionOfType(EntityNotFound.class)
@@ -120,7 +120,7 @@ class SaleDtoServiceImplTest
     when(manager.getWorkingMachine(machine.getId())).thenThrow(new VendingMachineNotWorking("Machine not working"));
 
     assertThatExceptionOfType(VendingMachineNotWorking.class)
-      .isThrownBy(() -> dtoService.purchaseItem(machine.getId(), new ItemDTO()));
+      .isThrownBy(() -> dtoService.purchaseItem(machine.getId(), new ItemDto()));
     verify(manager, never()).purchaseItem(any(), any());
   }
 

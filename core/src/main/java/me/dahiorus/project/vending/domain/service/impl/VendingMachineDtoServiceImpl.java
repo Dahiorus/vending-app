@@ -7,14 +7,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.domain.dao.DAO;
+import me.dahiorus.project.vending.domain.dao.Dao;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.model.CardSystemStatus;
 import me.dahiorus.project.vending.domain.model.ChangeSystemStatus;
 import me.dahiorus.project.vending.domain.model.PowerStatus;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
 import me.dahiorus.project.vending.domain.model.WorkingStatus;
-import me.dahiorus.project.vending.domain.model.dto.VendingMachineDTO;
+import me.dahiorus.project.vending.domain.model.dto.VendingMachineDto;
 import me.dahiorus.project.vending.domain.service.DtoMapper;
 import me.dahiorus.project.vending.domain.service.VendingMachineDtoService;
 import me.dahiorus.project.vending.domain.service.validation.DtoValidator;
@@ -22,11 +22,11 @@ import me.dahiorus.project.vending.domain.service.validation.DtoValidator;
 @Log4j2
 @Service
 public class VendingMachineDtoServiceImpl
-  extends DtoServiceImpl<VendingMachine, VendingMachineDTO, DAO<VendingMachine>>
+  extends DtoServiceImpl<VendingMachine, VendingMachineDto, Dao<VendingMachine>>
   implements VendingMachineDtoService
 {
-  public VendingMachineDtoServiceImpl(final DAO<VendingMachine> dao, final DtoMapper dtoMapper,
-    final DtoValidator<VendingMachineDTO> dtoValidator)
+  public VendingMachineDtoServiceImpl(final Dao<VendingMachine> dao, final DtoMapper dtoMapper,
+    final DtoValidator<VendingMachineDto> dtoValidator)
   {
     super(dao, dtoMapper, dtoValidator);
   }
@@ -38,14 +38,14 @@ public class VendingMachineDtoServiceImpl
   }
 
   @Override
-  protected Class<VendingMachineDTO> getDomainClass()
+  protected Class<VendingMachineDto> getDomainClass()
   {
-    return VendingMachineDTO.class;
+    return VendingMachineDto.class;
   }
 
   @Transactional
   @Override
-  public VendingMachineDTO resetStatus(final UUID id) throws EntityNotFound
+  public VendingMachineDto resetStatus(final UUID id) throws EntityNotFound
   {
     VendingMachine entity = dao.read(id);
 

@@ -31,9 +31,9 @@ import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.UnexpectedNonImageFile;
 import me.dahiorus.project.vending.domain.exception.UserNotAuthenticated;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
-import me.dahiorus.project.vending.domain.model.dto.BinaryDataDTO;
-import me.dahiorus.project.vending.domain.model.dto.EditPasswordDTO;
-import me.dahiorus.project.vending.domain.model.dto.UserDTO;
+import me.dahiorus.project.vending.domain.model.dto.BinaryDataDto;
+import me.dahiorus.project.vending.domain.model.dto.EditPasswordDto;
+import me.dahiorus.project.vending.domain.model.dto.UserDto;
 import me.dahiorus.project.vending.domain.service.UserDtoService;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 import me.dahiorus.project.vending.web.api.AppWebService;
@@ -52,14 +52,14 @@ public class SelfServiceRestController implements AppWebService
 
   private final UserDtoService userDtoService;
 
-  private final RepresentationModelAssembler<UserDTO, EntityModel<UserDTO>> userModelAssembler;
+  private final RepresentationModelAssembler<UserDto, EntityModel<UserDto>> userModelAssembler;
 
   @Operation(description = "Get the authenticated user")
   @ApiResponse(responseCode = "200", description = "Authenticated user found")
   @GetMapping(produces = MediaTypes.HAL_JSON_VALUE)
-  public ResponseEntity<EntityModel<UserDTO>> get(final Authentication authentication)
+  public ResponseEntity<EntityModel<UserDto>> get(final Authentication authentication)
   {
-    UserDTO authenticatedUser = authenticationFacade.getAuthenticatedUser(authentication);
+    UserDto authenticatedUser = authenticationFacade.getAuthenticatedUser(authentication);
 
     log.info("Got authenticated user {}", authenticatedUser);
 
@@ -70,10 +70,10 @@ public class SelfServiceRestController implements AppWebService
   @ApiResponse(responseCode = "204", description = "Password updated")
   @PostMapping(value = "/password", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> updatePassword(final Authentication authentication,
-    @RequestBody final EditPasswordDTO editPassword)
+    @RequestBody final EditPasswordDto editPassword)
     throws ValidationException, UserNotAuthenticated
   {
-    UserDTO authenticatedUser = authenticationFacade.getAuthenticatedUser(authentication);
+    UserDto authenticatedUser = authenticationFacade.getAuthenticatedUser(authentication);
 
     try
     {
@@ -92,19 +92,19 @@ public class SelfServiceRestController implements AppWebService
   @Operation(description = "Upload a profile picture to the authenticated user")
   @ApiResponse(responseCode = "200", description = "Picture uploaded")
   @PostMapping(value = "picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<EntityModel<UserDTO>> uploadPicture(final Authentication authentication,
+  public ResponseEntity<EntityModel<UserDto>> uploadPicture(final Authentication authentication,
     @RequestParam("file") final MultipartFile file)
     throws ValidationException
   {
-    UserDTO authenticatedUser = authenticationFacade.getAuthenticatedUser(authentication);
+    UserDto authenticatedUser = authenticationFacade.getAuthenticatedUser(authentication);
 
     ValidationResults validationResults = MultipartFileUtils.validateImage("file", file);
     validationResults.throwIfError("Unable to upload the given file");
 
     try
     {
-      BinaryDataDTO picture = MultipartFileUtils.convert(file);
-      UserDTO updatedUser = userDtoService.uploadImage(authenticatedUser.getId(), picture);
+      BinaryDataDto picture = MultipartFileUtils.convert(file);
+      UserDto updatedUser = userDtoService.uploadImage(authenticatedUser.getId(), picture);
 
       return ok(userModelAssembler.toModel(updatedUser));
     }
@@ -124,10 +124,10 @@ public class SelfServiceRestController implements AppWebService
   @GetMapping("/picture")
   public ResponseEntity<ByteArrayResource> getPicture(final Authentication authentication)
   {
-    UserDTO authenticatedUser = authenticationFacade.getAuthenticatedUser(authentication);
+    UserDto authenticatedUser = authenticationFacade.getAuthenticatedUser(authentication);
     try
     {
-      Optional<BinaryDataDTO> picture = userDtoService.getImage(authenticatedUser.getId());
+      Optional<BinaryDataDto> picture = userDtoService.getImage(authenticatedUser.getId());
 
       log.info("Picture for the authenticated user: {}", picture);
 

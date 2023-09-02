@@ -25,10 +25,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
-import me.dahiorus.project.vending.domain.model.dto.UserDTO;
+import me.dahiorus.project.vending.domain.model.dto.UserDto;
 import me.dahiorus.project.vending.domain.service.UserDtoService;
 import me.dahiorus.project.vending.web.api.AppWebService;
-import me.dahiorus.project.vending.web.api.CreateRestAPI;
+import me.dahiorus.project.vending.web.api.CreateRestApi;
 import me.dahiorus.project.vending.web.api.model.AuthenticateRequest;
 import me.dahiorus.project.vending.web.api.model.AuthenticateResponse;
 import me.dahiorus.project.vending.web.api.model.RefreshTokenRequest;
@@ -41,11 +41,11 @@ import me.dahiorus.project.vending.web.security.SecurityConstants;
 @RestController
 @Log4j2
 @RequiredArgsConstructor
-public class PublicRestController implements CreateRestAPI<UserDTO>, AppWebService
+public class PublicRestController implements CreateRestApi<UserDto>, AppWebService
 {
   private final UserDtoService userDtoService;
 
-  private final RepresentationModelAssembler<UserDTO, EntityModel<UserDTO>> userModelAssembler;
+  private final RepresentationModelAssembler<UserDto, EntityModel<UserDto>> userModelAssembler;
 
   private final JwtService jwtService;
 
@@ -54,13 +54,13 @@ public class PublicRestController implements CreateRestAPI<UserDTO>, AppWebServi
   @ApiResponse(responseCode = "201", description = "User registered")
   @PostMapping(value = SecurityConstants.REGISTER_ENDPOINT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = MediaTypes.HAL_JSON_VALUE)
-  public ResponseEntity<EntityModel<UserDTO>> create(@RequestBody final UserDTO user)
+  public ResponseEntity<EntityModel<UserDto>> create(@RequestBody final UserDto user)
     throws ValidationException
   {
     log.debug("Signing up a new user");
 
     user.setRoles(Collections.emptyList()); // setting roles is forbidden in registration
-    UserDTO createdUser = userDtoService.create(user);
+    UserDto createdUser = userDtoService.create(user);
     URI location = buildLocation(createdUser, UserRestController.class);
 
     log.info("User registered: {}", location);
@@ -91,7 +91,7 @@ public class PublicRestController implements CreateRestAPI<UserDTO>, AppWebServi
 
     Authentication authentication = jwtService.parseToken(request.token());
     String username = (String) authentication.getPrincipal();
-    UserDTO user = userDtoService.getByUsername(username);
+    UserDto user = userDtoService.getByUsername(username);
 
     String accessToken = jwtService.createAccessToken(username,
       user.getRoles()

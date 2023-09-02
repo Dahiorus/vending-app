@@ -4,9 +4,9 @@ import java.util.UUID;
 
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
-import me.dahiorus.project.vending.domain.model.dto.VendingMachineDTO;
+import me.dahiorus.project.vending.domain.model.dto.VendingMachineDto;
 
-public interface VendingMachineDtoService extends DtoService<VendingMachine, VendingMachineDTO>
+public interface VendingMachineDtoService extends DtoService<VendingMachine, VendingMachineDto>
 {
   /**
    * Reset all a vending machine status to OK. If the power status is OFF, the machine is restarted.
@@ -15,5 +15,5 @@ public interface VendingMachineDtoService extends DtoService<VendingMachine, Ven
    * @return The reset machine
    * @throws EntityNotFound if no vending machine match the ID
    */
-  VendingMachineDTO resetStatus(UUID id) throws EntityNotFound;
+  VendingMachineDto resetStatus(UUID id) throws EntityNotFound;
 }

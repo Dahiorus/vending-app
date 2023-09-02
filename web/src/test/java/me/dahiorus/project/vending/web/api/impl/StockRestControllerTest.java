@@ -30,8 +30,8 @@ import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
 import me.dahiorus.project.vending.domain.model.Item;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
-import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
-import me.dahiorus.project.vending.domain.model.dto.StockDTO;
+import me.dahiorus.project.vending.domain.model.dto.ItemDto;
+import me.dahiorus.project.vending.domain.model.dto.StockDto;
 import me.dahiorus.project.vending.domain.service.impl.ItemDtoServiceImpl;
 import me.dahiorus.project.vending.domain.service.impl.StockDtoServiceImpl;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
@@ -86,7 +86,7 @@ class StockRestControllerTest extends RestControllerTest
     void provisionItem() throws Exception
     {
       UUID id = UUID.randomUUID(), itemId = UUID.randomUUID();
-      ItemDTO item = ItemBuilder.builder()
+      ItemDto item = ItemBuilder.builder()
         .id(itemId)
         .buildDto();
       when(itemDtoService.read(itemId)).thenReturn(item);
@@ -138,7 +138,7 @@ class StockRestControllerTest extends RestControllerTest
     void provisionNonExistingMachine() throws Exception
     {
       UUID id = UUID.randomUUID(), itemId = UUID.randomUUID();
-      ItemDTO item = ItemBuilder.builder()
+      ItemDto item = ItemBuilder.builder()
         .id(itemId)
         .buildDto();
       when(itemDtoService.read(itemId)).thenReturn(item);
@@ -172,7 +172,7 @@ class StockRestControllerTest extends RestControllerTest
     void provisionWrongStock() throws Exception
     {
       UUID id = UUID.randomUUID(), itemId = UUID.randomUUID();
-      ItemDTO item = ItemBuilder.builder()
+      ItemDto item = ItemBuilder.builder()
         .id(itemId)
         .buildDto();
       when(itemDtoService.read(itemId)).thenReturn(item);
@@ -187,9 +187,9 @@ class StockRestControllerTest extends RestControllerTest
     }
   }
 
-  static StockDTO buildStock(final UUID itemId, final int quantity)
+  static StockDto buildStock(final UUID itemId, final int quantity)
   {
-    StockDTO stock = new StockDTO();
+    StockDto stock = new StockDto();
     stock.setId(UUID.randomUUID());
     stock.setItemId(itemId);
     stock.setQuantity(quantity);

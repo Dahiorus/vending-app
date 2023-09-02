@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.domain.dao.DAO;
+import me.dahiorus.project.vending.domain.dao.Dao;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.model.Item;
 import me.dahiorus.project.vending.domain.model.Stock;
@@ -20,9 +20,9 @@ import me.dahiorus.project.vending.domain.service.manager.StockManager;
 @Component
 public class StockManagerImpl implements StockManager
 {
-  private final DAO<Stock> dao;
+  private final Dao<Stock> dao;
 
-  private final DAO<VendingMachine> vendingMachineDao;
+  private final Dao<VendingMachine> vendingMachineDao;
 
   @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
   @Override

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.EntityModel;
 
-import me.dahiorus.project.vending.domain.model.dto.StockDTO;
+import me.dahiorus.project.vending.domain.model.dto.StockDto;
 
 class StockDtoModelAssemblerTest
 {
@@ -25,12 +25,12 @@ class StockDtoModelAssemblerTest
   @Test
   void dtoToEntityModel()
   {
-    StockDTO dto = new StockDTO();
+    StockDto dto = new StockDto();
     dto.setId(UUID.randomUUID());
     dto.setVendingMachineId(UUID.randomUUID());
     dto.setItemId(UUID.randomUUID());
 
-    EntityModel<StockDTO> model = modelAssembler.toModel(dto);
+    EntityModel<StockDto> model = modelAssembler.toModel(dto);
 
     assertAll(() -> assertThat(model.getContent()).as("Model contains DTO")
       .isEqualTo(dto),

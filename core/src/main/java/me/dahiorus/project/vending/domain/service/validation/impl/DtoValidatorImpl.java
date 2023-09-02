@@ -11,15 +11,15 @@ import org.springframework.data.jpa.domain.Specification;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import me.dahiorus.project.vending.common.HasLogger;
-import me.dahiorus.project.vending.domain.dao.DAO;
+import me.dahiorus.project.vending.domain.dao.Dao;
 import me.dahiorus.project.vending.domain.model.AbstractEntity;
 import me.dahiorus.project.vending.domain.model.AbstractEntity_;
-import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
+import me.dahiorus.project.vending.domain.model.dto.AbstractDto;
 import me.dahiorus.project.vending.domain.service.validation.DtoValidator;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class DtoValidatorImpl<E extends AbstractEntity, D extends AbstractDTO<E>, R extends DAO<E>>
+public abstract class DtoValidatorImpl<E extends AbstractEntity, D extends AbstractDto<E>, R extends Dao<E>>
   implements DtoValidator<D>, HasLogger
 {
   protected final R dao;

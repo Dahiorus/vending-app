@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.UserNotAuthenticated;
-import me.dahiorus.project.vending.domain.model.dto.UserDTO;
+import me.dahiorus.project.vending.domain.model.dto.UserDto;
 import me.dahiorus.project.vending.domain.service.UserDtoService;
 import me.dahiorus.project.vending.web.security.AuthenticationFacade;
 
@@ -19,7 +19,7 @@ public class AuthenticationFacadeImpl implements AuthenticationFacade
   private final UserDtoService userDtoService;
 
   @Override
-  public UserDTO getAuthenticatedUser(final Authentication authentication) throws UserNotAuthenticated
+  public UserDto getAuthenticatedUser(final Authentication authentication) throws UserNotAuthenticated
   {
     log.debug("Get the authenticated user");
 

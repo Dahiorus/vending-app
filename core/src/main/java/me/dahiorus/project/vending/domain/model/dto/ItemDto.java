@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.domain.model.dto;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -8,33 +9,33 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import me.dahiorus.project.vending.domain.model.Stock;
+import me.dahiorus.project.vending.domain.model.Item;
+import me.dahiorus.project.vending.domain.model.ItemType;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class StockDTO extends AbstractDTO<Stock>
+public class ItemDto extends AbstractDto<Item>
 {
-  @JsonIgnore
   @Getter
   @Setter
-  private UUID vendingMachineId;
+  private String name;
+
+  @Getter
+  @Setter
+  private ItemType type;
+
+  @Getter
+  @Setter
+  private BigDecimal price;
 
   @JsonIgnore
   @Getter
   @Setter
-  private UUID itemId;
-
-  @Getter
-  @Setter
-  private String itemName;
-
-  @Getter
-  @Setter
-  private Integer quantity;
+  private UUID pictureId;
 
   @Override
-  public Class<Stock> getEntityClass()
+  public Class<Item> getEntityClass()
   {
-    return Stock.class;
+    return Item.class;
   }
 }

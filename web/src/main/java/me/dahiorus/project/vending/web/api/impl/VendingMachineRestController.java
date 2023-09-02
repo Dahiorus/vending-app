@@ -21,7 +21,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
-import me.dahiorus.project.vending.domain.model.dto.VendingMachineDTO;
+import me.dahiorus.project.vending.domain.model.dto.VendingMachineDto;
 import me.dahiorus.project.vending.domain.service.VendingMachineDtoService;
 
 @SecurityRequirement(name = "bearerAuth")
@@ -29,11 +29,11 @@ import me.dahiorus.project.vending.domain.service.VendingMachineDtoService;
 @RestController
 @RequestMapping(value = "/api/v1/vending-machines")
 @Log4j2
-public class VendingMachineRestController extends RestControllerImpl<VendingMachineDTO, VendingMachineDtoService>
+public class VendingMachineRestController extends RestControllerImpl<VendingMachineDto, VendingMachineDtoService>
 {
   public VendingMachineRestController(final VendingMachineDtoService dtoService,
-    final RepresentationModelAssembler<VendingMachineDTO, EntityModel<VendingMachineDTO>> modelAssembler,
-    final PagedResourcesAssembler<VendingMachineDTO> pageModelAssembler)
+    final RepresentationModelAssembler<VendingMachineDto, EntityModel<VendingMachineDto>> modelAssembler,
+    final PagedResourcesAssembler<VendingMachineDto> pageModelAssembler)
   {
     super(dtoService, modelAssembler, pageModelAssembler);
   }
@@ -47,10 +47,10 @@ public class VendingMachineRestController extends RestControllerImpl<VendingMach
   @Operation(description = "Reset all error statuses of a vending machine")
   @ApiResponse(responseCode = "200", description = "Error statuses reset")
   @PostMapping(value = "/{id}/reset", produces = MediaTypes.HAL_JSON_VALUE)
-  public ResponseEntity<EntityModel<VendingMachineDTO>> resetStatus(@PathVariable("id") final UUID id)
+  public ResponseEntity<EntityModel<VendingMachineDto>> resetStatus(@PathVariable("id") final UUID id)
     throws EntityNotFound
   {
-    VendingMachineDTO updatedEntity = dtoService.resetStatus(id);
+    VendingMachineDto updatedEntity = dtoService.resetStatus(id);
 
     log.info("Status of the vending machine has been reset: {}", updatedEntity);
 

@@ -15,21 +15,21 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import me.dahiorus.project.vending.domain.dao.UserDAO;
-import me.dahiorus.project.vending.domain.model.dto.UserDTO;
+import me.dahiorus.project.vending.domain.dao.UserDao;
+import me.dahiorus.project.vending.domain.model.dto.UserDto;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
 @ExtendWith(MockitoExtension.class)
 class UserDtoValidatorTest
 {
   @Mock
-  UserDAO dao;
+  UserDao dao;
 
   UserDtoValidator validator;
 
-  UserDTO buildDto(final String firstName, final String lastName, final String email)
+  UserDto buildDto(final String firstName, final String lastName, final String email)
   {
-    UserDTO dto = new UserDTO();
+    UserDto dto = new UserDto();
     dto.setEmail(email);
     dto.setFirstName(firstName);
     dto.setLastName(lastName);
@@ -46,7 +46,7 @@ class UserDtoValidatorTest
   @Test
   void dtoIsValid()
   {
-    UserDTO dto = buildDto("User", "Test", "user.test@yopmail.com");
+    UserDto dto = buildDto("User", "Test", "user.test@yopmail.com");
 
     ValidationResults results = validator.validate(dto);
 
@@ -59,7 +59,7 @@ class UserDtoValidatorTest
   @ValueSource(strings = "   ")
   void firstNameIsMandatory(final String firstName)
   {
-    UserDTO dto = buildDto(firstName, "Test", "user.test@yopmail.com");
+    UserDto dto = buildDto(firstName, "Test", "user.test@yopmail.com");
 
     ValidationResults results = validator.validate(dto);
 
@@ -69,7 +69,7 @@ class UserDtoValidatorTest
   @Test
   void firstNameHasMaxLength()
   {
-    UserDTO dto = buildDto(RandomStringUtils.random(256), "Test", "user.test@yopmail.com");
+    UserDto dto = buildDto(RandomStringUtils.random(256), "Test", "user.test@yopmail.com");
 
     ValidationResults results = validator.validate(dto);
 
@@ -81,7 +81,7 @@ class UserDtoValidatorTest
   @ValueSource(strings = "   ")
   void lastNameIsMandatory(final String lastName)
   {
-    UserDTO dto = buildDto("User", lastName, "user.test@yopmail.com");
+    UserDto dto = buildDto("User", lastName, "user.test@yopmail.com");
 
     ValidationResults results = validator.validate(dto);
 
@@ -91,7 +91,7 @@ class UserDtoValidatorTest
   @Test
   void lastNameHasMaxLength()
   {
-    UserDTO dto = buildDto("User", RandomStringUtils.random(256), "user.test@yopmail.com");
+    UserDto dto = buildDto("User", RandomStringUtils.random(256), "user.test@yopmail.com");
 
     ValidationResults results = validator.validate(dto);
 
@@ -103,7 +103,7 @@ class UserDtoValidatorTest
   @ValueSource(strings = "   ")
   void emailIsMandatory(final String email)
   {
-    UserDTO dto = buildDto("User", "Test", email);
+    UserDto dto = buildDto("User", "Test", email);
 
     ValidationResults results = validator.validate(dto);
 
@@ -113,7 +113,7 @@ class UserDtoValidatorTest
   @Test
   void emailIsUnique()
   {
-    UserDTO dto = buildDto("User", "test", "user@yopmail.com");
+    UserDto dto = buildDto("User", "test", "user@yopmail.com");
     when(dao.count(anySpec())).thenReturn(1L);
 
     ValidationResults results = validator.validate(dto);
@@ -124,7 +124,7 @@ class UserDtoValidatorTest
   @Test
   void emailHasMaxLength()
   {
-    UserDTO dto = buildDto("User", "Test", RandomStringUtils.random(256));
+    UserDto dto = buildDto("User", "Test", RandomStringUtils.random(256));
 
     ValidationResults results = validator.validate(dto);
 

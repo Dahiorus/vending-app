@@ -14,7 +14,7 @@ import org.springframework.security.core.Authentication;
 
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.UserNotAuthenticated;
-import me.dahiorus.project.vending.domain.model.dto.UserDTO;
+import me.dahiorus.project.vending.domain.model.dto.UserDto;
 import me.dahiorus.project.vending.domain.service.impl.UserDtoServiceImpl;
 import me.dahiorus.project.vending.util.UserBuilder;
 
@@ -40,7 +40,7 @@ class AuthenticationFacadeImplTest
       .email(username)
       .buildDto());
 
-    UserDTO authenticatedUser = authenticationFacade.getAuthenticatedUser(mockAuthentication(username));
+    UserDto authenticatedUser = authenticationFacade.getAuthenticatedUser(mockAuthentication(username));
 
     assertThat(authenticatedUser).isNotNull()
       .hasFieldOrPropertyWithValue("email", username);

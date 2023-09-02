@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.domain.exception.AppException;
-import me.dahiorus.project.vending.domain.model.dto.CommentDTO;
+import me.dahiorus.project.vending.domain.model.dto.CommentDto;
 import me.dahiorus.project.vending.web.api.impl.VendingMachineRestController;
 
 @Log4j2
 @Component
-public class CommentDtoModelAssembler extends DtoModelAssembler<CommentDTO>
+public class CommentDtoModelAssembler extends DtoModelAssembler<CommentDto>
 {
   @Override
   public Logger getLogger()
@@ -25,7 +25,7 @@ public class CommentDtoModelAssembler extends DtoModelAssembler<CommentDTO>
   }
 
   @Override
-  protected Iterable<Link> buildLinks(final CommentDTO content) throws AppException
+  protected Iterable<Link> buildLinks(final CommentDto content) throws AppException
   {
     return List
       .of(linkTo(methodOn(VendingMachineRestController.class).read(content.getVendingMachineId())).withRel("machine"));

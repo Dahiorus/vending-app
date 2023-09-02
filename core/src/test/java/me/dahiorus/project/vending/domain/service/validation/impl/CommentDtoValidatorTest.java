@@ -13,19 +13,19 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import me.dahiorus.project.vending.domain.dao.CommentDAO;
-import me.dahiorus.project.vending.domain.model.dto.CommentDTO;
+import me.dahiorus.project.vending.domain.dao.CommentDao;
+import me.dahiorus.project.vending.domain.model.dto.CommentDto;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
 @ExtendWith(MockitoExtension.class)
 class CommentDtoValidatorTest
 {
   @Mock
-  CommentDAO dao;
+  CommentDao dao;
 
   CommentDtoValidator validator;
 
-  CommentDTO dto;
+  CommentDto dto;
 
   @BeforeEach
   void setUp() throws Exception
@@ -33,9 +33,9 @@ class CommentDtoValidatorTest
     validator = new CommentDtoValidator(dao);
   }
 
-  CommentDTO buildDto(final Integer rate, final String content)
+  CommentDto buildDto(final Integer rate, final String content)
   {
-    CommentDTO dto = new CommentDTO();
+    CommentDto dto = new CommentDto();
     dto.setRate(rate);
     dto.setContent(content);
 

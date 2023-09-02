@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.domain.dao.DAO;
+import me.dahiorus.project.vending.domain.dao.Dao;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.VendingMachineNotWorking;
 import me.dahiorus.project.vending.domain.model.Item;
@@ -24,11 +24,11 @@ import me.dahiorus.project.vending.domain.service.manager.SaleManager;
 @Component
 public class SaleManagerImpl implements SaleManager
 {
-  private final DAO<Sale> dao;
+  private final Dao<Sale> dao;
 
-  private final DAO<VendingMachine> vendingMachineDao;
+  private final Dao<VendingMachine> vendingMachineDao;
 
-  private final DAO<Stock> stockDao;
+  private final Dao<Stock> stockDao;
 
   @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
   @Override

@@ -18,7 +18,7 @@ import me.dahiorus.project.vending.domain.model.WorkingStatus;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class VendingMachineDTO extends AbstractDTO<VendingMachine>
+public class VendingMachineDto extends AbstractDto<VendingMachine>
 {
   @Getter
   @Setter

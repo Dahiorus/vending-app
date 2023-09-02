@@ -12,14 +12,14 @@ import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 
 import me.dahiorus.project.vending.domain.exception.AppException;
-import me.dahiorus.project.vending.domain.model.dto.StockDTO;
+import me.dahiorus.project.vending.domain.model.dto.StockDto;
 import me.dahiorus.project.vending.web.api.impl.ItemRestController;
 import me.dahiorus.project.vending.web.api.impl.SaleRestController;
 import me.dahiorus.project.vending.web.api.impl.StockRestController;
 import me.dahiorus.project.vending.web.api.impl.VendingMachineRestController;
 
 @Component
-public class StockDtoModelAssembler extends DtoModelAssembler<StockDTO>
+public class StockDtoModelAssembler extends DtoModelAssembler<StockDto>
 {
   private static final Logger logger = LogManager.getLogger(StockDtoModelAssembler.class);
 
@@ -30,7 +30,7 @@ public class StockDtoModelAssembler extends DtoModelAssembler<StockDTO>
   }
 
   @Override
-  protected Iterable<Link> buildLinks(final StockDTO content) throws AppException
+  protected Iterable<Link> buildLinks(final StockDto content) throws AppException
   {
     UUID vendingMachineId = content.getVendingMachineId();
     Link machineLink = linkTo(methodOn(VendingMachineRestController.class).read(vendingMachineId)).withRel("machine");

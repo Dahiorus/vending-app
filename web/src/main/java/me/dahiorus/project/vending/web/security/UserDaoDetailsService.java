@@ -7,13 +7,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import me.dahiorus.project.vending.domain.dao.UserDAO;
+import me.dahiorus.project.vending.domain.dao.UserDao;
 
 @Component
 @RequiredArgsConstructor
 public class UserDaoDetailsService implements UserDetailsService
 {
-  private final UserDAO userDao;
+  private final UserDao userDao;
 
   @Override
   public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException

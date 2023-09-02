@@ -17,7 +17,7 @@ import me.dahiorus.project.vending.domain.model.AppUser;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true, exclude = { "password" })
-public class UserDTO extends AbstractDTO<AppUser>
+public class UserDto extends AbstractDto<AppUser>
 {
   @Getter
   @Setter

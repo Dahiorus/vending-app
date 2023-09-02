@@ -4,12 +4,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
-import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
-import me.dahiorus.project.vending.domain.model.dto.BinaryDataDTO;
+import me.dahiorus.project.vending.domain.model.dto.AbstractDto;
+import me.dahiorus.project.vending.domain.model.dto.BinaryDataDto;
 
-public interface BinaryDataDtoService<D extends AbstractDTO<?>>
+public interface BinaryDataDtoService<D extends AbstractDto<?>>
 {
-  D uploadImage(UUID id, BinaryDataDTO picture) throws EntityNotFound;
+  D uploadImage(UUID id, BinaryDataDto picture) throws EntityNotFound;
 
-  Optional<BinaryDataDTO> getImage(UUID id) throws EntityNotFound;
+  Optional<BinaryDataDto> getImage(UUID id) throws EntityNotFound;
 }

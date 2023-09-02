@@ -24,8 +24,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
-import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
-import me.dahiorus.project.vending.domain.model.dto.StockDTO;
+import me.dahiorus.project.vending.domain.model.dto.ItemDto;
+import me.dahiorus.project.vending.domain.model.dto.StockDto;
 import me.dahiorus.project.vending.domain.service.ItemDtoService;
 import me.dahiorus.project.vending.domain.service.StockDtoService;
 import me.dahiorus.project.vending.web.api.AppWebService;
@@ -42,12 +42,12 @@ public class StockRestController implements AppWebService
 
   private final ItemDtoService itemDtoService;
 
-  private final RepresentationModelAssembler<StockDTO, EntityModel<StockDTO>> stockModelAssembler;
+  private final RepresentationModelAssembler<StockDto, EntityModel<StockDto>> stockModelAssembler;
 
   @Operation(description = "Get the stocks of a vending machine")
   @ApiResponse(responseCode = "200", description = "Stocks found")
   @GetMapping("/stocks")
-  public ResponseEntity<CollectionModel<EntityModel<StockDTO>>> getStocks(@PathVariable final UUID id)
+  public ResponseEntity<CollectionModel<EntityModel<StockDto>>> getStocks(@PathVariable final UUID id)
     throws EntityNotFound
   {
     return ok(stockModelAssembler.toCollectionModel(dtoService.getStocks(id)));
@@ -57,12 +57,12 @@ public class StockRestController implements AppWebService
   @Operation(description = "Provision a stock of one item to a vending machine")
   @ApiResponse(responseCode = "200", description = "Stock provisioned")
   @PostMapping("/provision/{itemId}")
-  public ResponseEntity<CollectionModel<EntityModel<StockDTO>>> provisionStock(@PathVariable("id") final UUID id,
+  public ResponseEntity<CollectionModel<EntityModel<StockDto>>> provisionStock(@PathVariable("id") final UUID id,
     @PathVariable("itemId") final UUID itemId,
     @RequestBody final ProvisionRequest provisionRequest)
     throws EntityNotFound, ValidationException
   {
-    ItemDTO item = itemDtoService.read(itemId);
+    ItemDto item = itemDtoService.read(itemId);
     dtoService.provisionStock(id, item, provisionRequest.quantity());
 
     log.info("Provisioned stock of {} for vending machine {} with {}", itemId, id, provisionRequest);

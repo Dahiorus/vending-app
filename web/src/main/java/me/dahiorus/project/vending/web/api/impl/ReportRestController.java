@@ -33,9 +33,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.common.HasLogger;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
-import me.dahiorus.project.vending.domain.model.dto.ReportDTO;
+import me.dahiorus.project.vending.domain.model.dto.ReportDto;
 import me.dahiorus.project.vending.domain.service.ReportDtoService;
-import me.dahiorus.project.vending.web.api.DeleteRestAPI;
+import me.dahiorus.project.vending.web.api.DeleteRestApi;
 import me.dahiorus.project.vending.web.api.ReadOnlyRestController;
 import me.dahiorus.project.vending.web.api.request.ExampleMatcherAdapter;
 
@@ -46,13 +46,13 @@ import me.dahiorus.project.vending.web.api.request.ExampleMatcherAdapter;
 @RequiredArgsConstructor
 @Log4j2
 public class ReportRestController
-  implements ReadOnlyRestController<ReportDTO>, DeleteRestAPI, HasLogger
+  implements ReadOnlyRestController<ReportDto>, DeleteRestApi, HasLogger
 {
   protected final ReportDtoService dtoService;
 
-  protected final RepresentationModelAssembler<ReportDTO, EntityModel<ReportDTO>> modelAssembler;
+  protected final RepresentationModelAssembler<ReportDto, EntityModel<ReportDto>> modelAssembler;
 
-  protected final PagedResourcesAssembler<ReportDTO> pageModelAssembler;
+  protected final PagedResourcesAssembler<ReportDto> pageModelAssembler;
 
   @Override
   public Logger getLogger()
@@ -63,9 +63,9 @@ public class ReportRestController
   @Operation(description = "Create a report of a vending machine at this instant")
   @ApiResponse(responseCode = "201", description = "Report created")
   @PostMapping("/api/v1/vending-machines/{id}/report")
-  public ResponseEntity<EntityModel<ReportDTO>> report(@PathVariable final UUID id) throws EntityNotFound
+  public ResponseEntity<EntityModel<ReportDto>> report(@PathVariable final UUID id) throws EntityNotFound
   {
-    ReportDTO report = dtoService.report(id);
+    ReportDto report = dtoService.report(id);
     URI location = buildLocation(report, ReportRestController.class);
 
     log.info("Created report of vending machine {}: {}", id, location);
@@ -77,10 +77,10 @@ public class ReportRestController
   @ApiResponse(responseCode = "200", description = "Reports found")
   @Override
   @GetMapping("/api/v1/reports")
-  public ResponseEntity<PagedModel<EntityModel<ReportDTO>>> list(@ParameterObject final Pageable pageable,
-    @ParameterObject final ReportDTO criteria, @ParameterObject final ExampleMatcherAdapter exampleMatcherAdapter)
+  public ResponseEntity<PagedModel<EntityModel<ReportDto>>> list(@ParameterObject final Pageable pageable,
+    @ParameterObject final ReportDto criteria, @ParameterObject final ExampleMatcherAdapter exampleMatcherAdapter)
   {
-    Page<ReportDTO> page = dtoService.list(pageable, criteria, exampleMatcherAdapter.get());
+    Page<ReportDto> page = dtoService.list(pageable, criteria, exampleMatcherAdapter.get());
 
     return ok(pageModelAssembler.toModel(page, modelAssembler));
   }
@@ -89,9 +89,9 @@ public class ReportRestController
   @ApiResponse(responseCode = "200", description = "Report found")
   @Override
   @GetMapping("/api/v1/reports/{id}")
-  public ResponseEntity<EntityModel<ReportDTO>> read(@PathVariable final UUID id) throws EntityNotFound
+  public ResponseEntity<EntityModel<ReportDto>> read(@PathVariable final UUID id) throws EntityNotFound
   {
-    ReportDTO entity = dtoService.read(id);
+    ReportDto entity = dtoService.read(id);
 
     return ok(modelAssembler.toModel(entity));
   }

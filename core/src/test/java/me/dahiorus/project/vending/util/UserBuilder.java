@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import me.dahiorus.project.vending.domain.model.AppUser;
 import me.dahiorus.project.vending.domain.model.BinaryData;
-import me.dahiorus.project.vending.domain.model.dto.UserDTO;
+import me.dahiorus.project.vending.domain.model.dto.UserDto;
 import me.dahiorus.project.vending.domain.service.DtoMapper;
 import me.dahiorus.project.vending.domain.service.impl.DtoMapperImpl;
 
@@ -78,8 +78,8 @@ public class UserBuilder
     return user;
   }
 
-  public UserDTO buildDto()
+  public UserDto buildDto()
   {
-    return dtoMapper.toDto(user, UserDTO.class);
+    return dtoMapper.toDto(user, UserDto.class);
   }
 }

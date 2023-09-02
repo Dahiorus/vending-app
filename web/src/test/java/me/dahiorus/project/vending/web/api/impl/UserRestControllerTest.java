@@ -26,7 +26,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 
-import me.dahiorus.project.vending.domain.model.dto.UserDTO;
+import me.dahiorus.project.vending.domain.model.dto.UserDto;
 import me.dahiorus.project.vending.domain.service.impl.UserDtoServiceImpl;
 import me.dahiorus.project.vending.util.UserBuilder;
 import me.dahiorus.project.vending.web.api.assembler.UserDtoModelAssembler;
@@ -41,19 +41,19 @@ class UserRestControllerTest extends RestControllerTest
   UserDtoModelAssembler modelAssembler;
 
   @MockBean
-  PagedResourcesAssembler<UserDTO> pageModelAssembler;
+  PagedResourcesAssembler<UserDto> pageModelAssembler;
 
   @Nested
   class CreateTests
   {
     @Captor
-    ArgumentCaptor<UserDTO> userArg;
+    ArgumentCaptor<UserDto> userArg;
 
     @Test
     @WithMockUser(username = "admin", password = "secret", roles = "ADMIN")
     void createdUserHasAdminRole() throws Exception
     {
-      UserDTO user = UserBuilder.builder()
+      UserDto user = UserBuilder.builder()
         .firstName("User")
         .lastName("Test")
         .password("secret")
@@ -61,7 +61,7 @@ class UserRestControllerTest extends RestControllerTest
         .buildDto();
 
       when(userDtoService.create(userArg.capture())).then(invoc -> {
-        UserDTO arg = invoc.getArgument(0);
+        UserDto arg = invoc.getArgument(0);
         arg.setId(UUID.randomUUID());
         return arg;
       });

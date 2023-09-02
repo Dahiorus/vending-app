@@ -10,17 +10,17 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.domain.dao.DAO;
+import me.dahiorus.project.vending.domain.dao.Dao;
 import me.dahiorus.project.vending.domain.model.Item;
 import me.dahiorus.project.vending.domain.model.Item_;
-import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
+import me.dahiorus.project.vending.domain.model.dto.ItemDto;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
 @Log4j2
 @Component
-public class ItemDtoValidator extends DtoValidatorImpl<Item, ItemDTO, DAO<Item>>
+public class ItemDtoValidator extends DtoValidatorImpl<Item, ItemDto, Dao<Item>>
 {
-  public ItemDtoValidator(final DAO<Item> dao)
+  public ItemDtoValidator(final Dao<Item> dao)
   {
     super(dao);
   }
@@ -32,7 +32,7 @@ public class ItemDtoValidator extends DtoValidatorImpl<Item, ItemDTO, DAO<Item>>
   }
 
   @Override
-  protected void doValidate(final ItemDTO dto, final ValidationResults results)
+  protected void doValidate(final ItemDto dto, final ValidationResults results)
   {
     String name = dto.getName();
 

@@ -18,8 +18,8 @@ import me.dahiorus.project.vending.domain.exception.ItemMissing;
 import me.dahiorus.project.vending.domain.exception.VendingMachineNotWorking;
 import me.dahiorus.project.vending.domain.model.Item;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
-import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
-import me.dahiorus.project.vending.domain.model.dto.SaleDTO;
+import me.dahiorus.project.vending.domain.model.dto.ItemDto;
+import me.dahiorus.project.vending.domain.model.dto.SaleDto;
 import me.dahiorus.project.vending.domain.service.impl.ItemDtoServiceImpl;
 import me.dahiorus.project.vending.domain.service.impl.SaleDtoServiceImpl;
 import me.dahiorus.project.vending.util.ItemBuilder;
@@ -37,12 +37,12 @@ class SaleRestControllerTest extends RestControllerTest
   void purchaseItem() throws Exception
   {
     UUID id = UUID.randomUUID(), itemId = UUID.randomUUID();
-    ItemDTO item = ItemBuilder.builder()
+    ItemDto item = ItemBuilder.builder()
       .id(itemId)
       .price(BigDecimal.valueOf(1.5))
       .buildDto();
     when(itemDtoService.read(itemId)).thenReturn(item);
-    when(saleDtoService.purchaseItem(id, item)).thenReturn(new SaleDTO());
+    when(saleDtoService.purchaseItem(id, item)).thenReturn(new SaleDto());
 
     mockMvc.perform(post("/api/v1/vending-machines/{id}/purchase/{itemId}", id, itemId))
       .andExpect(status().isOk())
@@ -53,7 +53,7 @@ class SaleRestControllerTest extends RestControllerTest
   void purchaseFromNonExistingMachine() throws Exception
   {
     UUID id = UUID.randomUUID(), itemId = UUID.randomUUID();
-    ItemDTO item = ItemBuilder.builder()
+    ItemDto item = ItemBuilder.builder()
       .id(itemId)
       .price(BigDecimal.valueOf(1.5))
       .buildDto();
@@ -79,7 +79,7 @@ class SaleRestControllerTest extends RestControllerTest
   void itemMissingFromMachine() throws Exception
   {
     UUID id = UUID.randomUUID(), itemId = UUID.randomUUID();
-    ItemDTO item = ItemBuilder.builder()
+    ItemDto item = ItemBuilder.builder()
       .id(itemId)
       .price(BigDecimal.valueOf(1.5))
       .buildDto();
@@ -94,7 +94,7 @@ class SaleRestControllerTest extends RestControllerTest
   void purchaseFromNotWorkingMachine() throws Exception
   {
     UUID id = UUID.randomUUID(), itemId = UUID.randomUUID();
-    ItemDTO item = ItemBuilder.builder()
+    ItemDto item = ItemBuilder.builder()
       .id(itemId)
       .price(BigDecimal.valueOf(1.5))
       .buildDto();

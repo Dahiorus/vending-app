@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.EntityModel;
 
 import me.dahiorus.project.vending.domain.model.ItemType;
-import me.dahiorus.project.vending.domain.model.dto.VendingMachineDTO;
+import me.dahiorus.project.vending.domain.model.dto.VendingMachineDto;
 import me.dahiorus.project.vending.util.VendingMachineBuilder;
 
 class VendingMachineDtoModelAssemblerTest
@@ -23,14 +23,14 @@ class VendingMachineDtoModelAssemblerTest
   @Test
   void dtoToEntityModel()
   {
-    VendingMachineDTO dto = VendingMachineBuilder.builder()
+    VendingMachineDto dto = VendingMachineBuilder.builder()
       .id(UUID.randomUUID())
       .address("1 rune Bidon")
       .itemType(ItemType.COLD_BAVERAGE)
       .serialNumber("1230456")
       .buildDto();
 
-    EntityModel<VendingMachineDTO> model = modelAssembler.toModel(dto);
+    EntityModel<VendingMachineDto> model = modelAssembler.toModel(dto);
 
     Assertions.assertEntityModel(model, dto, "stocks", "comments", "report", "reset");
   }

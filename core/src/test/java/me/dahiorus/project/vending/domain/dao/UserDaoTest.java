@@ -25,7 +25,7 @@ import me.dahiorus.project.vending.util.UserBuilder;
 class UserDaoTest
 {
   @Autowired
-  UserDAO dao;
+  UserDao dao;
 
   AppUser entity;
 

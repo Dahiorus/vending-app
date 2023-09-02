@@ -17,7 +17,7 @@ import me.dahiorus.project.vending.domain.model.AbstractEntity;
 
 @EqualsAndHashCode(of = "id", cacheStrategy = CacheStrategy.LAZY)
 @ToString(of = { "id", "createdAt" })
-public abstract class AbstractDTO<E extends AbstractEntity>
+public abstract class AbstractDto<E extends AbstractEntity>
 {
   @Parameter(hidden = true)
   @Schema(accessMode = AccessMode.READ_ONLY)

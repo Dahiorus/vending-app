@@ -40,7 +40,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.model.Report;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
-import me.dahiorus.project.vending.domain.model.dto.ReportDTO;
+import me.dahiorus.project.vending.domain.model.dto.ReportDto;
 import me.dahiorus.project.vending.domain.service.impl.ReportDtoServiceImpl;
 import me.dahiorus.project.vending.web.api.assembler.ReportDtoModelAssembler;
 
@@ -54,13 +54,13 @@ class ReportRestControllerTest extends RestControllerTest
   ReportDtoModelAssembler modelAssembler;
 
   @MockBean
-  PagedResourcesAssembler<ReportDTO> pageModelAssembler;
+  PagedResourcesAssembler<ReportDto> pageModelAssembler;
 
   @Nested
   class ReportTests
   {
     @Captor
-    ArgumentCaptor<ReportDTO> reportArg;
+    ArgumentCaptor<ReportDto> reportArg;
 
     @Test
     @WithMockUser(username = "admin", password = "secret", roles = "ADMIN")
@@ -68,7 +68,7 @@ class ReportRestControllerTest extends RestControllerTest
     {
       UUID id = UUID.randomUUID();
       when(reportDtoService.report(id)).then(invoc -> {
-        ReportDTO report = new ReportDTO();
+        ReportDto report = new ReportDto();
         report.setId(UUID.randomUUID());
         return report;
       });
@@ -126,7 +126,7 @@ class ReportRestControllerTest extends RestControllerTest
     void adminCanListReports() throws Exception
     {
       Pageable pageable = PageRequest.of(1, 20, Direction.DESC, "createdAt");
-      PageImpl<ReportDTO> page = new PageImpl<>(List.of(new ReportDTO()), pageable, 1L);
+      PageImpl<ReportDto> page = new PageImpl<>(List.of(new ReportDto()), pageable, 1L);
       when(reportDtoService.list(eq(pageable), any(), any()))
         .thenReturn(page);
       when(pageModelAssembler.toModel(page, modelAssembler)).thenReturn(PagedModel.wrap(page.getContent(),
@@ -169,7 +169,7 @@ class ReportRestControllerTest extends RestControllerTest
     void adminCanGetReport() throws Exception
     {
       UUID id = UUID.randomUUID();
-      ReportDTO report = new ReportDTO();
+      ReportDto report = new ReportDto();
       report.setId(id);
       when(reportDtoService.read(id)).thenReturn(report);
       when(modelAssembler.toModel(report)).then(invoc -> EntityModel.of(invoc.getArgument(0)));

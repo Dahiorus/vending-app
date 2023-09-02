@@ -16,14 +16,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import me.dahiorus.project.vending.domain.dao.VendingMachineDAO;
+import me.dahiorus.project.vending.domain.dao.VendingMachineDao;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.model.CardSystemStatus;
 import me.dahiorus.project.vending.domain.model.ChangeSystemStatus;
 import me.dahiorus.project.vending.domain.model.PowerStatus;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
 import me.dahiorus.project.vending.domain.model.WorkingStatus;
-import me.dahiorus.project.vending.domain.model.dto.VendingMachineDTO;
+import me.dahiorus.project.vending.domain.model.dto.VendingMachineDto;
 import me.dahiorus.project.vending.domain.service.validation.impl.VendingMachineDtoValidator;
 import me.dahiorus.project.vending.util.VendingMachineBuilder;
 
@@ -31,7 +31,7 @@ import me.dahiorus.project.vending.util.VendingMachineBuilder;
 class VendingMachineDtoServiceImplTest
 {
   @Mock
-  VendingMachineDAO dao;
+  VendingMachineDao dao;
 
   @Mock
   VendingMachineDtoValidator dtoValidator;
@@ -57,7 +57,7 @@ class VendingMachineDtoServiceImplTest
       when(dao.read(machine.getId())).thenReturn(machine);
       when(dao.save(machine)).thenReturn(machine);
 
-      VendingMachineDTO updatedMachine = dtoService.resetStatus(machine.getId());
+      VendingMachineDto updatedMachine = dtoService.resetStatus(machine.getId());
 
       assertThat(updatedMachine).hasFieldOrPropertyWithValue("powerStatus", PowerStatus.ON)
         .hasFieldOrPropertyWithValue("workingStatus", WorkingStatus.OK)
@@ -75,7 +75,7 @@ class VendingMachineDtoServiceImplTest
 
       when(dao.read(machine.getId())).thenReturn(machine);
 
-      VendingMachineDTO updatedMachine = dtoService.resetStatus(machine.getId());
+      VendingMachineDto updatedMachine = dtoService.resetStatus(machine.getId());
 
       assertThat(updatedMachine).hasFieldOrPropertyWithValue("powerStatus", PowerStatus.ON)
         .hasFieldOrPropertyWithValue("workingStatus", WorkingStatus.OK)

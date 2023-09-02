@@ -13,7 +13,7 @@ import com.github.fge.jsonpatch.JsonPatchException;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
+import me.dahiorus.project.vending.domain.model.dto.AbstractDto;
 import me.dahiorus.project.vending.web.exception.InvalidJsonPatch;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -25,7 +25,7 @@ public class JsonPatchHandler
     .build();
 
   @SuppressWarnings("unchecked")
-  public static <D extends AbstractDTO<?>> D applyPatch(@Nonnull final D source,
+  public static <D extends AbstractDto<?>> D applyPatch(@Nonnull final D source,
     @Nonnull final JsonPatch jsonPatch)
   {
     try

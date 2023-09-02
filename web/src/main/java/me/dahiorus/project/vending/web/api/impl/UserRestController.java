@@ -16,7 +16,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
-import me.dahiorus.project.vending.domain.model.dto.UserDTO;
+import me.dahiorus.project.vending.domain.model.dto.UserDto;
 import me.dahiorus.project.vending.domain.service.UserDtoService;
 
 @SecurityRequirement(name = "bearerAuth")
@@ -24,18 +24,18 @@ import me.dahiorus.project.vending.domain.service.UserDtoService;
 @RestController
 @RequestMapping(value = "/api/v1/users")
 @Log4j2
-public class UserRestController extends RestControllerImpl<UserDTO, UserDtoService>
+public class UserRestController extends RestControllerImpl<UserDto, UserDtoService>
 {
   public UserRestController(final UserDtoService dtoService,
-    final RepresentationModelAssembler<UserDTO, EntityModel<UserDTO>> modelAssembler,
-    final PagedResourcesAssembler<UserDTO> pageModelAssembler)
+    final RepresentationModelAssembler<UserDto, EntityModel<UserDto>> modelAssembler,
+    final PagedResourcesAssembler<UserDto> pageModelAssembler)
   {
     super(dtoService, modelAssembler, pageModelAssembler);
   }
 
   @Operation(description = "Create a new admin user")
   @Override
-  public ResponseEntity<EntityModel<UserDTO>> create(@RequestBody final UserDTO dto) throws ValidationException
+  public ResponseEntity<EntityModel<UserDto>> create(@RequestBody final UserDto dto) throws ValidationException
   {
     log.debug("Create a new admin: {}", dto);
     dto.setRoles(List.of("ROLE_ADMIN"));

@@ -9,22 +9,22 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.domain.dao.DAO;
+import me.dahiorus.project.vending.domain.dao.Dao;
 import me.dahiorus.project.vending.domain.model.Address;
 import me.dahiorus.project.vending.domain.model.Address_;
 import me.dahiorus.project.vending.domain.model.PowerStatus;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
 import me.dahiorus.project.vending.domain.model.VendingMachine_;
 import me.dahiorus.project.vending.domain.model.WorkingStatus;
-import me.dahiorus.project.vending.domain.model.dto.VendingMachineDTO;
+import me.dahiorus.project.vending.domain.model.dto.VendingMachineDto;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
 @Log4j2
 @Component
 public class VendingMachineDtoValidator
-  extends DtoValidatorImpl<VendingMachine, VendingMachineDTO, DAO<VendingMachine>>
+  extends DtoValidatorImpl<VendingMachine, VendingMachineDto, Dao<VendingMachine>>
 {
-  public VendingMachineDtoValidator(final DAO<VendingMachine> dao)
+  public VendingMachineDtoValidator(final Dao<VendingMachine> dao)
   {
     super(dao);
   }
@@ -36,7 +36,7 @@ public class VendingMachineDtoValidator
   }
 
   @Override
-  protected void doValidate(final VendingMachineDTO dto, final ValidationResults results)
+  protected void doValidate(final VendingMachineDto dto, final ValidationResults results)
   {
     // validate all mandatory fields
     rejectIfBlank(VendingMachine_.SERIAL_NUMBER, dto.getSerialNumber(), results);
@@ -52,7 +52,7 @@ public class VendingMachineDtoValidator
     checkWorkingStatus(results, dto);
   }
 
-  private void validateAddress(final VendingMachineDTO dto, final ValidationResults results)
+  private void validateAddress(final VendingMachineDto dto, final ValidationResults results)
   {
     Address address = dto.getAddress();
     rejectIfBlank(String.join(".", VendingMachine_.ADDRESS, Address_.STREET_ADDRESS),
@@ -64,7 +64,7 @@ public class VendingMachineDtoValidator
   }
 
   private void checkSerialNumberUniqueness(final ValidationResults validationResults,
-    final VendingMachineDTO dto)
+    final VendingMachineDto dto)
   {
     String serialNumber = dto.getSerialNumber();
 
@@ -76,7 +76,7 @@ public class VendingMachineDtoValidator
   }
 
   private static void checkWorkingStatus(final ValidationResults validationResults,
-    final VendingMachineDTO dto)
+    final VendingMachineDto dto)
   {
     final WorkingStatus workingStatus = dto.getWorkingStatus();
     final PowerStatus powerStatus = dto.getPowerStatus();

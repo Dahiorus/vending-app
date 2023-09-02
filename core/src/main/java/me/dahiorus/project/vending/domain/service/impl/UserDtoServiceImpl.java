@@ -13,15 +13,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.domain.dao.DAO;
-import me.dahiorus.project.vending.domain.dao.UserDAO;
+import me.dahiorus.project.vending.domain.dao.Dao;
+import me.dahiorus.project.vending.domain.dao.UserDao;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
 import me.dahiorus.project.vending.domain.model.AppUser;
 import me.dahiorus.project.vending.domain.model.BinaryData;
-import me.dahiorus.project.vending.domain.model.dto.BinaryDataDTO;
-import me.dahiorus.project.vending.domain.model.dto.EditPasswordDTO;
-import me.dahiorus.project.vending.domain.model.dto.UserDTO;
+import me.dahiorus.project.vending.domain.model.dto.BinaryDataDto;
+import me.dahiorus.project.vending.domain.model.dto.EditPasswordDto;
+import me.dahiorus.project.vending.domain.model.dto.UserDto;
 import me.dahiorus.project.vending.domain.service.DtoMapper;
 import me.dahiorus.project.vending.domain.service.UserDtoService;
 import me.dahiorus.project.vending.domain.service.validation.CrudOperation;
@@ -31,7 +31,7 @@ import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
 @Log4j2
 @Service
-public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO>
+public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDto, UserDao>
   implements UserDtoService
 {
   private static final String FIELD_PASSWORD = "password";
@@ -40,11 +40,11 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
 
   private final PasswordEncoder passwordEncoder;
 
-  private final DAO<BinaryData> binaryDataDao;
+  private final Dao<BinaryData> binaryDataDao;
 
-  public UserDtoServiceImpl(final UserDAO dao, final DtoMapper dtoMapper,
-    final DtoValidator<UserDTO> dtoValidator, final PasswordValidator passwordValidator,
-    final PasswordEncoder passwordEncoder, final DAO<BinaryData> binaryDataDao)
+  public UserDtoServiceImpl(final UserDao dao, final DtoMapper dtoMapper,
+    final DtoValidator<UserDto> dtoValidator, final PasswordValidator passwordValidator,
+    final PasswordEncoder passwordEncoder, final Dao<BinaryData> binaryDataDao)
   {
     super(dao, dtoMapper, dtoValidator);
     this.passwordValidator = passwordValidator;
@@ -59,13 +59,13 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
   }
 
   @Override
-  protected Class<UserDTO> getDomainClass()
+  protected Class<UserDto> getDomainClass()
   {
-    return UserDTO.class;
+    return UserDto.class;
   }
 
   @Override
-  protected ValidationResults validate(final UserDTO dto)
+  protected ValidationResults validate(final UserDto dto)
   {
     ValidationResults results = super.validate(dto);
 
@@ -89,16 +89,16 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
   }
 
   @Override
-  public UserDTO getByUsername(final String username) throws EntityNotFound
+  public UserDto getByUsername(final String username) throws EntityNotFound
   {
     return dao.findByEmail(username)
-      .map(user -> dtoMapper.toDto(user, UserDTO.class))
+      .map(user -> dtoMapper.toDto(user, UserDto.class))
       .orElseThrow(() -> new EntityNotFound("No user exist with the username " + username));
   }
 
   @Transactional
   @Override
-  public void updatePassword(final UUID id, final EditPasswordDTO editPassword)
+  public void updatePassword(final UUID id, final EditPasswordDto editPassword)
     throws EntityNotFound, ValidationException
   {
     log.debug("Updating the password of the user {}", id);
@@ -111,10 +111,10 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
     user.setEncodedPassword(passwordEncoder.encode(editPassword.password()));
     AppUser updatedUser = dao.save(user);
 
-    log.info("Password of {} updated", () -> dtoMapper.toDto(updatedUser, UserDTO.class));
+    log.info("Password of {} updated", () -> dtoMapper.toDto(updatedUser, UserDto.class));
   }
 
-  private ValidationResults validatePassword(final EditPasswordDTO editPassword, final AppUser user)
+  private ValidationResults validatePassword(final EditPasswordDto editPassword, final AppUser user)
   {
     ValidationResults validationResults = new ValidationResults();
 
@@ -139,16 +139,16 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
 
   @Transactional(readOnly = true)
   @Override
-  public Optional<BinaryDataDTO> getImage(final UUID id) throws EntityNotFound
+  public Optional<BinaryDataDto> getImage(final UUID id) throws EntityNotFound
   {
     AppUser entity = dao.read(id);
 
-    return Optional.ofNullable(dtoMapper.toDto(entity.getPicture(), BinaryDataDTO.class));
+    return Optional.ofNullable(dtoMapper.toDto(entity.getPicture(), BinaryDataDto.class));
   }
 
   @Transactional
   @Override
-  public UserDTO uploadImage(final UUID id, final BinaryDataDTO picture) throws EntityNotFound
+  public UserDto uploadImage(final UUID id, final BinaryDataDto picture) throws EntityNotFound
   {
     log.debug("Uploading a picture for the user {}", id);
 
@@ -162,6 +162,6 @@ public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDTO, UserDAO
 
     log.info("New picture uploaded for the user {}", id);
 
-    return dtoMapper.toDto(updatedEntity, UserDTO.class);
+    return dtoMapper.toDto(updatedEntity, UserDto.class);
   }
 }

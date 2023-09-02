@@ -33,16 +33,16 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import me.dahiorus.project.vending.domain.dao.BinaryDataDAO;
-import me.dahiorus.project.vending.domain.dao.ItemDAO;
+import me.dahiorus.project.vending.domain.dao.BinaryDataDao;
+import me.dahiorus.project.vending.domain.dao.ItemDao;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
 import me.dahiorus.project.vending.domain.model.AppUser;
 import me.dahiorus.project.vending.domain.model.BinaryData;
 import me.dahiorus.project.vending.domain.model.Item;
 import me.dahiorus.project.vending.domain.model.ItemType;
-import me.dahiorus.project.vending.domain.model.dto.BinaryDataDTO;
-import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
+import me.dahiorus.project.vending.domain.model.dto.BinaryDataDto;
+import me.dahiorus.project.vending.domain.model.dto.ItemDto;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 import me.dahiorus.project.vending.domain.service.validation.impl.ItemDtoValidator;
 import me.dahiorus.project.vending.util.ItemBuilder;
@@ -51,13 +51,13 @@ import me.dahiorus.project.vending.util.ItemBuilder;
 class ItemDtoServiceImplTest
 {
   @Mock
-  ItemDAO dao;
+  ItemDao dao;
 
   @Mock
   ItemDtoValidator dtoValidator;
 
   @Mock
-  BinaryDataDAO binaryDataDao;
+  BinaryDataDao binaryDataDao;
 
   ItemDtoServiceImpl dtoService;
 
@@ -74,7 +74,7 @@ class ItemDtoServiceImplTest
     @Test
     void createValidDto() throws Exception
     {
-      ItemDTO dto = buildDto("Item", ItemType.FOOD, BigDecimal.valueOf(1.5));
+      ItemDto dto = buildDto("Item", ItemType.FOOD, BigDecimal.valueOf(1.5));
 
       when(dtoValidator.validate(dto)).thenReturn(successResults());
       when(dao.save(any())).then(invocation -> {
@@ -83,7 +83,7 @@ class ItemDtoServiceImplTest
         return item;
       });
 
-      ItemDTO createdDto = dtoService.create(dto);
+      ItemDto createdDto = dtoService.create(dto);
 
       assertAll(() -> assertThat(createdDto.getId()).isNotNull(),
         () -> assertThat(createdDto.getName()).isEqualTo(dto.getName()),
@@ -94,7 +94,7 @@ class ItemDtoServiceImplTest
     @Test
     void createInvalidDto()
     {
-      ItemDTO dto = buildDto("", ItemType.FOOD, null);
+      ItemDto dto = buildDto("", ItemType.FOOD, null);
       when(dtoValidator.validate(dto)).then(invocation -> {
         ValidationResults results = new ValidationResults();
         results.addError(emptyOrNullValue("name"));
@@ -115,7 +115,7 @@ class ItemDtoServiceImplTest
     {
       Item entity = mockRead(UUID.randomUUID());
 
-      ItemDTO dto = dtoService.read(entity.getId());
+      ItemDto dto = dtoService.read(entity.getId());
 
       assertAll(() -> assertThat(dto.getId()).isEqualTo(entity.getId()),
         () -> assertThat(dto.getName()).isEqualTo(entity.getName()),
@@ -141,12 +141,12 @@ class ItemDtoServiceImplTest
     {
       Item entity = mockRead(UUID.randomUUID());
 
-      ItemDTO dto = buildDto("Item", ItemType.FOOD, BigDecimal.valueOf(2.5));
+      ItemDto dto = buildDto("Item", ItemType.FOOD, BigDecimal.valueOf(2.5));
       when(dtoValidator.validate(dto)).thenReturn(successResults());
 
       when(dao.save(any())).then(invocation -> invocation.getArgument(0));
 
-      ItemDTO updatedDto = dtoService.update(entity.getId(), dto);
+      ItemDto updatedDto = dtoService.update(entity.getId(), dto);
 
       assertAll(() -> assertThat(updatedDto.getId()).isEqualTo(entity.getId()),
         () -> assertThat(updatedDto.getName()).isEqualTo(dto.getName()),
@@ -159,7 +159,7 @@ class ItemDtoServiceImplTest
     {
       Item entity = mockRead(UUID.randomUUID());
 
-      ItemDTO dto = buildDto("Item", ItemType.FOOD, BigDecimal.valueOf(1.5));
+      ItemDto dto = buildDto("Item", ItemType.FOOD, BigDecimal.valueOf(1.5));
       when(dtoValidator.validate(dto)).then(invocation -> {
         ValidationResults results = new ValidationResults();
         results.addError(emptyOrNullValue("name"));
@@ -177,7 +177,7 @@ class ItemDtoServiceImplTest
       UUID id = UUID.randomUUID();
       when(dao.read(id)).thenThrow(new EntityNotFound(Item.class, id));
 
-      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.update(id, new ItemDTO()));
+      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.update(id, new ItemDto()));
       verify(dtoValidator, never()).validate(any());
       verify(dao, never()).save(any());
     }
@@ -232,7 +232,7 @@ class ItemDtoServiceImplTest
     {
       when(dao.findAll(pageable)).thenReturn(new PageImpl<>(entities, pageable, 50));
 
-      Page<ItemDTO> page = dtoService.list(pageable, null, null);
+      Page<ItemDto> page = dtoService.list(pageable, null, null);
 
       assertAll(
           () -> assertThat(page.getContent()).hasSameSizeAs(entities),
@@ -245,7 +245,7 @@ class ItemDtoServiceImplTest
       when(dao.findAll(exampleArg.capture(), eq(pageable)))
         .thenReturn(new PageImpl<>(entities, pageable, 50));
 
-      ItemDTO criteria = buildDto("item", ItemType.FOOD, null);
+      ItemDto criteria = buildDto("item", ItemType.FOOD, null);
       dtoService.list(pageable, criteria, null);
 
       Example<Item> example = exampleArg.getValue();
@@ -261,7 +261,7 @@ class ItemDtoServiceImplTest
       when(dao.findAll(exampleArg.capture(), eq(pageable)))
         .thenReturn(new PageImpl<>(entities, pageable, 50));
 
-      ItemDTO criteria = buildDto(null, ItemType.FOOD, null);
+      ItemDto criteria = buildDto(null, ItemType.FOOD, null);
       ExampleMatcher exampleMatcher = ExampleMatcher.matchingAny()
         .withIgnoreCase()
         .withIgnoreNullValues();
@@ -285,7 +285,7 @@ class ItemDtoServiceImplTest
       entity.setId(UUID.randomUUID());
       when(dao.findById(entity.getId())).thenReturn(Optional.of(entity));
 
-      Optional<ItemDTO> dtoOpt = dtoService.findById(entity.getId());
+      Optional<ItemDto> dtoOpt = dtoService.findById(entity.getId());
 
       assertThat(dtoOpt).isNotEmpty()
         .hasValueSatisfying(dto -> {
@@ -302,7 +302,7 @@ class ItemDtoServiceImplTest
       UUID id = UUID.randomUUID();
       when(dao.findById(id)).thenReturn(Optional.empty());
 
-      Optional<ItemDTO> dtoOpt = dtoService.findById(id);
+      Optional<ItemDto> dtoOpt = dtoService.findById(id);
 
       assertThat(dtoOpt).isEmpty();
     }
@@ -319,7 +319,7 @@ class ItemDtoServiceImplTest
       entity.setPicture(new BinaryData());
       when(dao.read(entity.getId())).thenReturn(entity);
 
-      Optional<BinaryDataDTO> image = dtoService.getImage(entity.getId());
+      Optional<BinaryDataDto> image = dtoService.getImage(entity.getId());
 
       assertThat(image).isNotEmpty();
     }
@@ -329,7 +329,7 @@ class ItemDtoServiceImplTest
     {
       Item item = mockRead(UUID.randomUUID());
 
-      Optional<BinaryDataDTO> image = dtoService.getImage(item.getId());
+      Optional<BinaryDataDto> image = dtoService.getImage(item.getId());
 
       assertThat(image).isEmpty();
     }
@@ -359,8 +359,8 @@ class ItemDtoServiceImplTest
       });
       when(dao.save(item)).thenReturn(item);
 
-      BinaryDataDTO dto = buildBinary("picture.jpg", "image/jpg");
-      ItemDTO updatedItem = dtoService.uploadImage(item.getId(), dto);
+      BinaryDataDto dto = buildBinary("picture.jpg", "image/jpg");
+      ItemDto updatedItem = dtoService.uploadImage(item.getId(), dto);
 
       assertThat(updatedItem.getPictureId()).isEqualTo(item.getPicture()
         .getId());
@@ -372,14 +372,14 @@ class ItemDtoServiceImplTest
       UUID id = UUID.randomUUID();
       when(dao.read(id)).thenThrow(new EntityNotFound(AppUser.class, id));
 
-      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.uploadImage(id, new BinaryDataDTO()));
+      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.uploadImage(id, new BinaryDataDto()));
       verify(binaryDataDao, never()).save(any());
       verify(dao, never()).save(any());
     }
 
-    BinaryDataDTO buildBinary(final String name, final String contentType)
+    BinaryDataDto buildBinary(final String name, final String contentType)
     {
-      BinaryDataDTO dto = new BinaryDataDTO();
+      BinaryDataDto dto = new BinaryDataDto();
       dto.setName(name);
       dto.setContentType(contentType);
       dto.setContent(new byte[0]);
@@ -397,7 +397,7 @@ class ItemDtoServiceImplTest
       .build();
   }
 
-  ItemDTO buildDto(final String name, final ItemType type, final BigDecimal price)
+  ItemDto buildDto(final String name, final ItemType type, final BigDecimal price)
   {
     return ItemBuilder.builder()
       .name(name)

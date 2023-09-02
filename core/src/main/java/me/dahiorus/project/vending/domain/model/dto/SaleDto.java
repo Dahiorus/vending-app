@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.domain.model.dto;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -8,28 +9,24 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import me.dahiorus.project.vending.domain.model.Comment;
+import me.dahiorus.project.vending.domain.model.Sale;
 
 @EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true, exclude = "content")
-public class CommentDTO extends AbstractDTO<Comment>
+@ToString(callSuper = true)
+public class SaleDto extends AbstractDto<Sale>
 {
   @Getter
   @Setter
-  private String content;
-
-  @Getter
-  @Setter
-  private Integer rate;
+  private BigDecimal amount;
 
   @JsonIgnore
   @Getter
   @Setter
-  private UUID vendingMachineId;
+  private UUID machineId;
 
   @Override
-  public Class<Comment> getEntityClass()
+  public Class<Sale> getEntityClass()
   {
-    return Comment.class;
+    return Sale.class;
   }
 }

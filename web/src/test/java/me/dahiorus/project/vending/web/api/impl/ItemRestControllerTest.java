@@ -49,8 +49,8 @@ import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
 import me.dahiorus.project.vending.domain.model.Item;
 import me.dahiorus.project.vending.domain.model.ItemType;
-import me.dahiorus.project.vending.domain.model.dto.BinaryDataDTO;
-import me.dahiorus.project.vending.domain.model.dto.ItemDTO;
+import me.dahiorus.project.vending.domain.model.dto.BinaryDataDto;
+import me.dahiorus.project.vending.domain.model.dto.ItemDto;
 import me.dahiorus.project.vending.domain.service.impl.ItemDtoServiceImpl;
 import me.dahiorus.project.vending.domain.service.validation.CrudOperation;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
@@ -67,9 +67,9 @@ class ItemRestControllerTest extends RestControllerTest
   ItemDtoModelAssembler modelAssembler;
 
   @MockBean
-  PagedResourcesAssembler<ItemDTO> pageModelAssembler;
+  PagedResourcesAssembler<ItemDto> pageModelAssembler;
 
-  static ItemDTO buildItem()
+  static ItemDto buildItem()
   {
     return ItemBuilder.builder()
       .id(UUID.randomUUID())
@@ -86,7 +86,7 @@ class ItemRestControllerTest extends RestControllerTest
     @WithMockUser(username = "admin", password = "secret", roles = "ADMIN")
     void adminCanCreateItem() throws Exception
     {
-      ItemDTO item = buildItem();
+      ItemDto item = buildItem();
       when(itemDtoService.create(item)).then(invoc -> {
         item.setId(UUID.randomUUID());
         return item;
@@ -111,7 +111,7 @@ class ItemRestControllerTest extends RestControllerTest
     @WithMockUser(username = "admin", password = "secret", roles = "ADMIN")
     void validationExceptionIsThrown() throws Exception
     {
-      ItemDTO item = ItemBuilder.builder()
+      ItemDto item = ItemBuilder.builder()
         .buildDto();
       when(itemDtoService.create(item))
         .thenThrow(new ValidationException(CrudOperation.CREATE, item, new ValidationResults()));
@@ -148,7 +148,7 @@ class ItemRestControllerTest extends RestControllerTest
     @Test
     void getItem() throws Exception
     {
-      ItemDTO item = buildItem();
+      ItemDto item = buildItem();
       when(itemDtoService.read(item.getId())).thenReturn(item);
       when(modelAssembler.toModel(item)).thenReturn(EntityModel.of(item));
 
@@ -182,7 +182,7 @@ class ItemRestControllerTest extends RestControllerTest
     @WithMockUser(username = "admin", password = "secret", roles = "ADMIN")
     void adminCanUpdateItem() throws Exception
     {
-      ItemDTO item = buildItem();
+      ItemDto item = buildItem();
       when(itemDtoService.update(item.getId(), item)).thenReturn(item);
       when(modelAssembler.toModel(item)).thenReturn(EntityModel.of(item));
 
@@ -203,7 +203,7 @@ class ItemRestControllerTest extends RestControllerTest
     @WithMockUser(username = "admin", password = "secret", roles = "ADMIN")
     void validationExceptionIsThrown() throws Exception
     {
-      ItemDTO item = ItemBuilder.builder()
+      ItemDto item = ItemBuilder.builder()
         .id(UUID.randomUUID())
         .buildDto();
       when(itemDtoService.update(item.getId(), item))
@@ -218,7 +218,7 @@ class ItemRestControllerTest extends RestControllerTest
     @WithMockUser(username = "admin", password = "secret", roles = "ADMIN")
     void createItemWithId() throws Exception
     {
-      ItemDTO item = buildItem();
+      ItemDto item = buildItem();
       when(itemDtoService.update(item.getId(), item))
         .thenThrow(new EntityNotFound(Item.class, item.getId()));
       when(itemDtoService.create(item)).thenReturn(item);
@@ -311,7 +311,7 @@ class ItemRestControllerTest extends RestControllerTest
     @WithMockUser(username = "admin", password = "secret", roles = "ADMIN")
     void adminCanUpdateItem() throws Exception
     {
-      ItemDTO item = buildItem();
+      ItemDto item = buildItem();
       when(itemDtoService.read(item.getId())).thenReturn(item);
       when(itemDtoService.update(eq(item.getId()), any())).then(invoc -> invoc.getArgument(1));
       when(modelAssembler.toModel(any())).then(invoc -> EntityModel.of(invoc.getArgument(0)));
@@ -333,7 +333,7 @@ class ItemRestControllerTest extends RestControllerTest
     @WithMockUser(username = "admin", password = "secret", roles = "ADMIN")
     void validationExceptionIsThrown() throws Exception
     {
-      ItemDTO item = ItemBuilder.builder()
+      ItemDto item = ItemBuilder.builder()
         .id(UUID.randomUUID())
         .buildDto();
       when(itemDtoService.read(item.getId())).thenReturn(item);
@@ -399,8 +399,8 @@ class ItemRestControllerTest extends RestControllerTest
     void getItems() throws Exception
     {
       Pageable pageable = PageRequest.of(0, 20, Direction.DESC, "name");
-      List<ItemDTO> content = List.of(buildItem());
-      PageImpl<ItemDTO> page = new PageImpl<>(content, pageable, 50);
+      List<ItemDto> content = List.of(buildItem());
+      PageImpl<ItemDto> page = new PageImpl<>(content, pageable, 50);
       when(itemDtoService.list(eq(pageable), any(), any())).thenReturn(page);
       when(pageModelAssembler.toModel(page, modelAssembler)).thenReturn(PagedModel.wrap(content,
         new PageMetadata(pageable.getPageSize(), pageable.getPageNumber(), page.getTotalElements())));
@@ -439,7 +439,7 @@ class ItemRestControllerTest extends RestControllerTest
     void getItemPicture() throws Exception
     {
       UUID id = UUID.randomUUID();
-      BinaryDataDTO dto = new BinaryDataDTO();
+      BinaryDataDto dto = new BinaryDataDto();
       dto.setName("picture.jpg");
       dto.setContentType(MediaType.IMAGE_JPEG_VALUE);
       dto.setContent(new byte[32]);
@@ -483,7 +483,7 @@ class ItemRestControllerTest extends RestControllerTest
     @WithMockUser(username = "admin", password = "secret", roles = "ADMIN")
     void uploadPicture() throws Exception
     {
-      ItemDTO item = buildItem();
+      ItemDto item = buildItem();
       when(itemDtoService.uploadImage(eq(item.getId()), any())).thenReturn(item);
 
       mockMvc

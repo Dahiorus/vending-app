@@ -6,17 +6,17 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.log4j.Log4j2;
-import me.dahiorus.project.vending.domain.dao.UserDAO;
+import me.dahiorus.project.vending.domain.dao.UserDao;
 import me.dahiorus.project.vending.domain.model.AppUser;
 import me.dahiorus.project.vending.domain.model.AppUser_;
-import me.dahiorus.project.vending.domain.model.dto.UserDTO;
+import me.dahiorus.project.vending.domain.model.dto.UserDto;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
 @Log4j2
 @Component
-public class UserDtoValidator extends DtoValidatorImpl<AppUser, UserDTO, UserDAO>
+public class UserDtoValidator extends DtoValidatorImpl<AppUser, UserDto, UserDao>
 {
-  public UserDtoValidator(final UserDAO dao)
+  public UserDtoValidator(final UserDao dao)
   {
     super(dao);
   }
@@ -28,7 +28,7 @@ public class UserDtoValidator extends DtoValidatorImpl<AppUser, UserDTO, UserDAO
   }
 
   @Override
-  protected void doValidate(final UserDTO dto, final ValidationResults results)
+  protected void doValidate(final UserDto dto, final ValidationResults results)
   {
     rejectIfBlank(AppUser_.EMAIL, dto.getEmail(), results);
     rejectIfInvalidLength(AppUser_.EMAIL, dto.getEmail(), 255, results);

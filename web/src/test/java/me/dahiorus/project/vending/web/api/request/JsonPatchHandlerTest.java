@@ -19,7 +19,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.fge.jsonpatch.JsonPatch;
 
 import me.dahiorus.project.vending.domain.model.AbstractEntity;
-import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
+import me.dahiorus.project.vending.domain.model.dto.AbstractDto;
 
 class JsonPatchHandlerTest
 {
@@ -49,7 +49,7 @@ class JsonPatchHandlerTest
     String description;
 
     @JsonProperty
-    Class<? extends AbstractDTO<?>> objectClass;
+    Class<? extends AbstractDto<?>> objectClass;
 
     @JsonProperty
     Object source;
@@ -66,12 +66,12 @@ class JsonPatchHandlerTest
       return description;
     }
 
-    <D extends AbstractDTO<?>> D source()
+    <D extends AbstractDto<?>> D source()
     {
       return (D) MAPPER.convertValue(source, objectClass);
     }
 
-    <D extends AbstractDTO<?>> D expected()
+    <D extends AbstractDto<?>> D expected()
     {
       return (D) MAPPER.convertValue(expected, objectClass);
     }
@@ -81,7 +81,7 @@ class JsonPatchHandlerTest
   @ArgumentsSource(JsonPatchArgumentProvider.class)
   void patchDto(final JsonPatchTestArgument arg)
   {
-    AbstractDTO<? extends AbstractEntity> patched = JsonPatchHandler.applyPatch(arg.source(), arg.patch);
+    AbstractDto<? extends AbstractEntity> patched = JsonPatchHandler.applyPatch(arg.source(), arg.patch);
     assertThat(patched).isEqualTo(arg.expected());
   }
 }

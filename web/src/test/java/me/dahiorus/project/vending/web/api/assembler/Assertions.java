@@ -8,11 +8,11 @@ import java.util.stream.Stream;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 
-import me.dahiorus.project.vending.domain.model.dto.AbstractDTO;
+import me.dahiorus.project.vending.domain.model.dto.AbstractDto;
 
 public final class Assertions
 {
-  public static <D extends AbstractDTO<?>> void assertEntityModel(final EntityModel<D> model, final D dto,
+  public static <D extends AbstractDto<?>> void assertEntityModel(final EntityModel<D> model, final D dto,
     final String... relations)
   {
     assertAll(() -> assertThat(model.getContent()).as("Model contains DTO")
@@ -23,7 +23,7 @@ public final class Assertions
 
   }
 
-  public static <D extends AbstractDTO<?>> void assertRelationLinks(final EntityModel<D> model,
+  public static <D extends AbstractDto<?>> void assertRelationLinks(final EntityModel<D> model,
     final String... relations)
   {
     Stream.of(relations)
