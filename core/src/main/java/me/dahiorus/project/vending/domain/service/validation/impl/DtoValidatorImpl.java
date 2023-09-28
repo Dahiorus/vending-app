@@ -24,6 +24,53 @@ public abstract class DtoValidatorImpl<E extends AbstractEntity, D extends Abstr
 {
   protected final R dao;
 
+  protected abstract void doValidate(D dto, ValidationResults results);
+
+  private Specification<E> idNotEqualOrNotNull(final UUID id)
+  {
+    if (id == null)
+    {
+      return (root, query, cb) -> cb.isNotNull(root.get(AbstractEntity_.id));
+    }
+
+    return (root, query, cb) -> cb.notEqual(root.get(AbstractEntity_.id), id);
+  }
+
+  protected boolean otherExists(final UUID id,
+    final Specification<E> specification)
+  {
+    return dao.count(Specification.where(specification)
+      .and(idNotEqualOrNotNull(id))) != 0;
+  }
+
+  protected void rejectIfBlank(final String field, final String value,
+    final ValidationResults validationResults)
+  {
+    if (StringUtils.isBlank(value))
+    {
+      validationResults.addError(emptyOrNullValue(field));
+    }
+  }
+
+  protected void rejectIfEmpty(final String field, final Object value,
+    final ValidationResults validationResults)
+  {
+    if (value == null)
+    {
+      validationResults.addError(emptyOrNullValue(field));
+    }
+  }
+
+  protected void rejectIfInvalidLength(final String field, final String value,
+    final int maxLength,
+    final ValidationResults validationResults)
+  {
+    if (StringUtils.length(value) > maxLength)
+    {
+      validationResults.addError(maxLength(field, maxLength));
+    }
+  }
+
   @Override
   public ValidationResults validate(final D dto)
   {
@@ -36,49 +83,4 @@ public abstract class DtoValidatorImpl<E extends AbstractEntity, D extends Abstr
 
     return results;
   }
-
-  protected void rejectIfEmpty(final String field, final Object value,
-    final ValidationResults validationResults)
-  {
-    if (value == null)
-    {
-      validationResults.addError(emptyOrNullValue(field));
-    }
-  }
-
-  protected void rejectIfBlank(final String field, final String value,
-    final ValidationResults validationResults)
-  {
-    if (StringUtils.isBlank(value))
-    {
-      validationResults.addError(emptyOrNullValue(field));
-    }
-  }
-
-  protected void rejectIfInvalidLength(final String field, final String value, final int maxLength,
-    final ValidationResults validationResults)
-  {
-    if (StringUtils.length(value) > maxLength)
-    {
-      validationResults.addError(maxLength(field, maxLength));
-    }
-  }
-
-  protected boolean otherExists(final UUID id, final Specification<E> specification)
-  {
-    return dao.count(Specification.where(specification)
-      .and(idNotEqualOrNotNull(id))) != 0;
-  }
-
-  private Specification<E> idNotEqualOrNotNull(final UUID id)
-  {
-    if (id == null)
-    {
-      return (root, query, cb) -> cb.isNotNull(root.get(AbstractEntity_.id));
-    }
-
-    return (root, query, cb) -> cb.notEqual(root.get(AbstractEntity_.id), id);
-  }
-
-  protected abstract void doValidate(D dto, ValidationResults results);
 }

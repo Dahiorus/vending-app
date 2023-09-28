@@ -28,10 +28,10 @@ import me.dahiorus.project.vending.domain.exception.ValidationException;
 import me.dahiorus.project.vending.domain.model.Comment;
 import me.dahiorus.project.vending.domain.model.ItemType;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
+import me.dahiorus.project.vending.domain.model.VendingMachineBuilder;
 import me.dahiorus.project.vending.domain.model.dto.CommentDto;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 import me.dahiorus.project.vending.domain.service.validation.impl.CommentDtoValidator;
-import me.dahiorus.project.vending.util.VendingMachineBuilder;
 
 @ExtendWith(MockitoExtension.class)
 class CommentDtoServiceImplTest
@@ -50,7 +50,8 @@ class CommentDtoServiceImplTest
   @BeforeEach
   void setUp()
   {
-    dtoService = new CommentDtoServiceImpl(dao, vendingMachineDao, commentDtoValidator, new DtoMapperImpl());
+    dtoService = new CommentDtoServiceImpl(dao, vendingMachineDao,
+      commentDtoValidator, new DtoMapperImpl());
   }
 
   @Nested
@@ -69,7 +70,8 @@ class CommentDtoServiceImplTest
       when(commentDtoValidator.validate(comment)).thenReturn(successResults());
       when(dao.save(any())).then(returnsFirstArg());
 
-      assertThatNoException().isThrownBy(() -> dtoService.comment(machine.getId(), comment));
+      assertThatNoException()
+        .isThrownBy(() -> dtoService.comment(machine.getId(), comment));
       assertThat(machine.getComments()).isNotEmpty();
       verify(dao).save(any());
     }
@@ -85,8 +87,9 @@ class CommentDtoServiceImplTest
 
       when(commentDtoValidator.validate(comment)).then(invoc -> {
         ValidationResults results = new ValidationResults();
-        results.addError(fieldError("rate", "validation.constraints.comment.rate_interval",
-          "Error from test"));
+        results.addError(
+          fieldError("rate", "validation.constraints.comment.rate_interval",
+            "Error from test"));
         return results;
       });
 
@@ -100,7 +103,8 @@ class CommentDtoServiceImplTest
     void commentUnknownMachine() throws Exception
     {
       UUID id = UUID.randomUUID();
-      when(vendingMachineDao.read(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
+      when(vendingMachineDao.read(id))
+        .thenThrow(new EntityNotFound(VendingMachine.class, id));
 
       assertThatExceptionOfType(EntityNotFound.class)
         .isThrownBy(() -> dtoService.comment(id, new CommentDto()));
@@ -126,7 +130,8 @@ class CommentDtoServiceImplTest
       List<CommentDto> comments = dtoService.getComments(machine.getId());
 
       assertThat(comments).hasSize(1)
-        .anySatisfy(c -> assertThat(c).hasFieldOrPropertyWithValue("content", comment.getContent())
+        .anySatisfy(c -> assertThat(c)
+          .hasFieldOrPropertyWithValue("content", comment.getContent())
           .hasFieldOrPropertyWithValue("rate", comment.getRate()));
     }
 
@@ -134,9 +139,11 @@ class CommentDtoServiceImplTest
     void getCommentsOfNonExistingMachine() throws Exception
     {
       UUID id = UUID.randomUUID();
-      when(vendingMachineDao.read(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
+      when(vendingMachineDao.read(id))
+        .thenThrow(new EntityNotFound(VendingMachine.class, id));
 
-      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.getComments(id));
+      assertThatExceptionOfType(EntityNotFound.class)
+        .isThrownBy(() -> dtoService.getComments(id));
     }
   }
 

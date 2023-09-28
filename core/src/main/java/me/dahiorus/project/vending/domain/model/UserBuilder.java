@@ -1,19 +1,14 @@
-package me.dahiorus.project.vending.util;
+package me.dahiorus.project.vending.domain.model;
 
 import java.util.List;
 import java.util.UUID;
 
-import me.dahiorus.project.vending.domain.model.AppUser;
-import me.dahiorus.project.vending.domain.model.BinaryData;
 import me.dahiorus.project.vending.domain.model.dto.UserDto;
-import me.dahiorus.project.vending.domain.service.DtoMapper;
-import me.dahiorus.project.vending.domain.service.impl.DtoMapperImpl;
 
 public class UserBuilder
 {
-  private final DtoMapper dtoMapper = new DtoMapperImpl();
-
   private AppUser user = new AppUser();
+  private UserDto dto = new UserDto();
 
   public static UserBuilder builder()
   {
@@ -23,24 +18,28 @@ public class UserBuilder
   public UserBuilder id(final UUID id)
   {
     user.setId(id);
+    dto.setId(id);
     return this;
   }
 
   public UserBuilder firstName(final String firstName)
   {
     user.setFirstName(firstName);
+    dto.setFirstName(firstName);
     return this;
   }
 
   public UserBuilder lastName(final String lastName)
   {
     user.setLastName(lastName);
+    dto.setLastName(lastName);
     return this;
   }
 
   public UserBuilder email(final String email)
   {
     user.setEmail(email);
+    dto.setEmail(email);
     return this;
   }
 
@@ -53,6 +52,7 @@ public class UserBuilder
   public UserBuilder password(final String password)
   {
     user.setPassword(password);
+    dto.setPassword(password);
     return this;
   }
 
@@ -70,6 +70,7 @@ public class UserBuilder
   public UserBuilder roles(final List<String> roles)
   {
     user.setRoles(roles);
+    dto.setRoles(roles);
     return this;
   }
 
@@ -80,6 +81,6 @@ public class UserBuilder
 
   public UserDto buildDto()
   {
-    return dtoMapper.toDto(user, UserDto.class);
+    return dto;
   }
 }

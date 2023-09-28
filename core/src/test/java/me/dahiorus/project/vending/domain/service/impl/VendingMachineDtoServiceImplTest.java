@@ -22,10 +22,10 @@ import me.dahiorus.project.vending.domain.model.CardSystemStatus;
 import me.dahiorus.project.vending.domain.model.ChangeSystemStatus;
 import me.dahiorus.project.vending.domain.model.PowerStatus;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
+import me.dahiorus.project.vending.domain.model.VendingMachineBuilder;
 import me.dahiorus.project.vending.domain.model.WorkingStatus;
 import me.dahiorus.project.vending.domain.model.dto.VendingMachineDto;
 import me.dahiorus.project.vending.domain.service.validation.impl.VendingMachineDtoValidator;
-import me.dahiorus.project.vending.util.VendingMachineBuilder;
 
 @ExtendWith(MockitoExtension.class)
 class VendingMachineDtoServiceImplTest
@@ -51,37 +51,47 @@ class VendingMachineDtoServiceImplTest
     @Test
     void machineNotWorking() throws Exception
     {
-      VendingMachine machine = buildMachine(UUID.randomUUID(), PowerStatus.ON, WorkingStatus.ALERT,
-        CardSystemStatus.ERROR, CardSystemStatus.NORMAL, ChangeSystemStatus.FULL);
+      VendingMachine machine = buildMachine(UUID.randomUUID(), PowerStatus.ON,
+        WorkingStatus.ALERT,
+        CardSystemStatus.ERROR, CardSystemStatus.NORMAL,
+        ChangeSystemStatus.FULL);
 
       when(dao.read(machine.getId())).thenReturn(machine);
       when(dao.save(machine)).thenReturn(machine);
 
-      VendingMachineDto updatedMachine = dtoService.resetStatus(machine.getId());
+      VendingMachineDto updatedMachine = dtoService
+        .resetStatus(machine.getId());
 
-      assertThat(updatedMachine).hasFieldOrPropertyWithValue("powerStatus", PowerStatus.ON)
+      assertThat(updatedMachine)
+        .hasFieldOrPropertyWithValue("powerStatus", PowerStatus.ON)
         .hasFieldOrPropertyWithValue("workingStatus", WorkingStatus.OK)
         .hasFieldOrPropertyWithValue("rfidStatus", CardSystemStatus.NORMAL)
         .hasFieldOrPropertyWithValue("smartCardStatus", CardSystemStatus.NORMAL)
-        .hasFieldOrPropertyWithValue("changeMoneyStatus", ChangeSystemStatus.NORMAL);
+        .hasFieldOrPropertyWithValue("changeMoneyStatus",
+          ChangeSystemStatus.NORMAL);
       verify(dao).save(machine);
     }
 
     @Test
     void machineIsWorking() throws Exception
     {
-      VendingMachine machine = buildMachine(UUID.randomUUID(), PowerStatus.ON, WorkingStatus.OK,
-        CardSystemStatus.NORMAL, CardSystemStatus.NORMAL, ChangeSystemStatus.NORMAL);
+      VendingMachine machine = buildMachine(UUID.randomUUID(), PowerStatus.ON,
+        WorkingStatus.OK,
+        CardSystemStatus.NORMAL, CardSystemStatus.NORMAL,
+        ChangeSystemStatus.NORMAL);
 
       when(dao.read(machine.getId())).thenReturn(machine);
 
-      VendingMachineDto updatedMachine = dtoService.resetStatus(machine.getId());
+      VendingMachineDto updatedMachine = dtoService
+        .resetStatus(machine.getId());
 
-      assertThat(updatedMachine).hasFieldOrPropertyWithValue("powerStatus", PowerStatus.ON)
+      assertThat(updatedMachine)
+        .hasFieldOrPropertyWithValue("powerStatus", PowerStatus.ON)
         .hasFieldOrPropertyWithValue("workingStatus", WorkingStatus.OK)
         .hasFieldOrPropertyWithValue("rfidStatus", CardSystemStatus.NORMAL)
         .hasFieldOrPropertyWithValue("smartCardStatus", CardSystemStatus.NORMAL)
-        .hasFieldOrPropertyWithValue("changeMoneyStatus", ChangeSystemStatus.NORMAL);
+        .hasFieldOrPropertyWithValue("changeMoneyStatus",
+          ChangeSystemStatus.NORMAL);
       verify(dao, never()).save(any());
     }
 
@@ -89,14 +99,17 @@ class VendingMachineDtoServiceImplTest
     void unexistingMachine() throws Exception
     {
       UUID id = UUID.randomUUID();
-      when(dao.read(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
+      when(dao.read(id))
+        .thenThrow(new EntityNotFound(VendingMachine.class, id));
 
-      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.resetStatus(id));
+      assertThatExceptionOfType(EntityNotFound.class)
+        .isThrownBy(() -> dtoService.resetStatus(id));
       verify(dao, never()).save(any());
     }
   }
 
-  static VendingMachine buildMachine(final UUID id, final PowerStatus powerStatus, final WorkingStatus workingStatus,
+  static VendingMachine buildMachine(final UUID id,
+    final PowerStatus powerStatus, final WorkingStatus workingStatus,
     final CardSystemStatus rfidStatus, final CardSystemStatus smartCardStatus,
     final ChangeSystemStatus changeSystemStatus)
   {

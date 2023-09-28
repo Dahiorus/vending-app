@@ -21,12 +21,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import me.dahiorus.project.vending.domain.dao.Dao;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.model.Item;
+import me.dahiorus.project.vending.domain.model.ItemBuilder;
 import me.dahiorus.project.vending.domain.model.PowerStatus;
 import me.dahiorus.project.vending.domain.model.Stock;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
+import me.dahiorus.project.vending.domain.model.VendingMachineBuilder;
 import me.dahiorus.project.vending.domain.model.WorkingStatus;
-import me.dahiorus.project.vending.util.ItemBuilder;
-import me.dahiorus.project.vending.util.VendingMachineBuilder;
 
 @ExtendWith(MockitoExtension.class)
 class StockManagerImplTest
@@ -69,9 +69,11 @@ class StockManagerImplTest
     {
       UUID id = UUID.randomUUID();
 
-      when(vendingMachineDao.read(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
+      when(vendingMachineDao.read(id))
+        .thenThrow(new EntityNotFound(VendingMachine.class, id));
 
-      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> manager.getMachine(id));
+      assertThatExceptionOfType(EntityNotFound.class)
+        .isThrownBy(() -> manager.getMachine(id));
     }
   }
 
@@ -117,7 +119,8 @@ class StockManagerImplTest
 
       manager.provision(machine, item, 10);
 
-      assertAll(() -> assertThat(machine.getQuantityInStock(item)).isEqualTo(15),
+      assertAll(
+        () -> assertThat(machine.getQuantityInStock(item)).isEqualTo(15),
         () -> assertThat(machine.getLastIntervention()).isNotNull());
       verify(vendingMachineDao).save(machine);
     }

@@ -22,16 +22,16 @@ import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ItemMissing;
 import me.dahiorus.project.vending.domain.exception.VendingMachineNotWorking;
 import me.dahiorus.project.vending.domain.model.Item;
+import me.dahiorus.project.vending.domain.model.ItemBuilder;
 import me.dahiorus.project.vending.domain.model.ItemType;
 import me.dahiorus.project.vending.domain.model.PowerStatus;
 import me.dahiorus.project.vending.domain.model.Stock;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
+import me.dahiorus.project.vending.domain.model.VendingMachineBuilder;
 import me.dahiorus.project.vending.domain.model.WorkingStatus;
 import me.dahiorus.project.vending.domain.model.dto.ItemDto;
 import me.dahiorus.project.vending.domain.model.dto.SaleDto;
 import me.dahiorus.project.vending.domain.service.manager.SaleManager;
-import me.dahiorus.project.vending.util.ItemBuilder;
-import me.dahiorus.project.vending.util.VendingMachineBuilder;
 
 @ExtendWith(MockitoExtension.class)
 class SaleDtoServiceImplTest
@@ -80,7 +80,8 @@ class SaleDtoServiceImplTest
     itemToPurchase.setId(item.getId());
 
     assertThatExceptionOfType(ItemMissing.class)
-      .isThrownBy(() -> dtoService.purchaseItem(machine.getId(), itemToPurchase));
+      .isThrownBy(
+        () -> dtoService.purchaseItem(machine.getId(), itemToPurchase));
     verify(manager, never()).purchaseItem(machine, item);
   }
 
@@ -94,7 +95,8 @@ class SaleDtoServiceImplTest
     itemToPurchase.setId(UUID.randomUUID());
 
     assertThatExceptionOfType(ItemMissing.class)
-      .isThrownBy(() -> dtoService.purchaseItem(machine.getId(), itemToPurchase));
+      .isThrownBy(
+        () -> dtoService.purchaseItem(machine.getId(), itemToPurchase));
     verify(manager, never()).purchaseItem(eq(machine), any());
   }
 
@@ -102,7 +104,8 @@ class SaleDtoServiceImplTest
   void purchaseFromUnknownMachine() throws Exception
   {
     UUID id = UUID.randomUUID();
-    when(manager.getWorkingMachine(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
+    when(manager.getWorkingMachine(id))
+      .thenThrow(new EntityNotFound(VendingMachine.class, id));
 
     ItemDto itemToPurchase = new ItemDto();
     itemToPurchase.setId(UUID.randomUUID());
@@ -117,14 +120,17 @@ class SaleDtoServiceImplTest
   {
     VendingMachine machine = buildMachine(UUID.randomUUID(), ItemType.FOOD);
     machine.setPowerStatus(PowerStatus.OFF);
-    when(manager.getWorkingMachine(machine.getId())).thenThrow(new VendingMachineNotWorking("Machine not working"));
+    when(manager.getWorkingMachine(machine.getId()))
+      .thenThrow(new VendingMachineNotWorking("Machine not working"));
 
     assertThatExceptionOfType(VendingMachineNotWorking.class)
-      .isThrownBy(() -> dtoService.purchaseItem(machine.getId(), new ItemDto()));
+      .isThrownBy(
+        () -> dtoService.purchaseItem(machine.getId(), new ItemDto()));
     verify(manager, never()).purchaseItem(any(), any());
   }
 
-  static Item buildItem(final String name, final ItemType type, final BigDecimal price)
+  static Item buildItem(final String name, final ItemType type,
+    final BigDecimal price)
   {
     return ItemBuilder.builder()
       .name(name)
@@ -143,7 +149,8 @@ class SaleDtoServiceImplTest
       .build();
   }
 
-  static void addStock(final VendingMachine machine, final Item item, final int quantity)
+  static void addStock(final VendingMachine machine, final Item item,
+    final int quantity)
   {
     machine.getStocks()
       .clear();

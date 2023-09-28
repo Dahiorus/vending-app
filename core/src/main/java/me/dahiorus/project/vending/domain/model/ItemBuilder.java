@@ -1,23 +1,17 @@
-package me.dahiorus.project.vending.util;
+package me.dahiorus.project.vending.domain.model;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import me.dahiorus.project.vending.domain.model.BinaryData;
-import me.dahiorus.project.vending.domain.model.Item;
-import me.dahiorus.project.vending.domain.model.ItemType;
 import me.dahiorus.project.vending.domain.model.dto.ItemDto;
-import me.dahiorus.project.vending.domain.service.DtoMapper;
-import me.dahiorus.project.vending.domain.service.impl.DtoMapperImpl;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ItemBuilder
 {
-  private final DtoMapper dtoMapper = new DtoMapperImpl();
-
   private Item item = new Item();
+  private ItemDto dto = new ItemDto();
 
   public static ItemBuilder builder()
   {
@@ -27,24 +21,28 @@ public class ItemBuilder
   public ItemBuilder name(final String name)
   {
     item.setName(name);
+    dto.setName(name);
     return this;
   }
 
   public ItemBuilder id(final UUID id)
   {
     item.setId(id);
+    dto.setId(id);
     return this;
   }
 
   public ItemBuilder price(final BigDecimal price)
   {
     item.setPrice(price);
+    dto.setPrice(price);
     return this;
   }
 
   public ItemBuilder type(final ItemType type)
   {
     item.setType(type);
+    dto.setType(type);
     return this;
   }
 
@@ -66,6 +64,6 @@ public class ItemBuilder
 
   public ItemDto buildDto()
   {
-    return dtoMapper.toDto(item, ItemDto.class);
+    return dto;
   }
 }

@@ -17,8 +17,17 @@ import me.dahiorus.project.vending.domain.exception.AppException;
 import me.dahiorus.project.vending.domain.model.dto.AbstractDto;
 
 public abstract class DtoModelAssembler<T extends AbstractDto<?>>
-  implements SimpleRepresentationModelAssembler<T>, HasLogger
+    implements SimpleRepresentationModelAssembler<T>, HasLogger
 {
+  @Override
+  public void addLinks(final CollectionModel<EntityModel<T>> resources)
+  {
+    UriComponents requestUri = ServletUriComponentsBuilder.fromCurrentRequest()
+        .build();
+
+    resources.add(Link.of(requestUri.toString()));
+  }
+
   @Override
   public void addLinks(final EntityModel<T> resource)
   {
@@ -36,23 +45,8 @@ public abstract class DtoModelAssembler<T extends AbstractDto<?>>
     }
     catch (Exception e)
     {
-      getLogger().error("Unable to build links for {}: {}", content, e.getMessage());
+      getLogger().error("Unable to build links for {}", content, e);
     }
-  }
-
-  @Override
-  public void addLinks(final CollectionModel<EntityModel<T>> resources)
-  {
-    UriComponents requestUri = ServletUriComponentsBuilder.fromCurrentRequest()
-      .build();
-
-    resources.add(Link.of(requestUri.toString()));
-  }
-
-  @SuppressWarnings({ "java:S1172", "java:S1130" })
-  protected Optional<Link> selfLink(final T content) throws AppException
-  {
-    return Optional.empty();
   }
 
   @SuppressWarnings("java:S1130")
@@ -61,5 +55,11 @@ public abstract class DtoModelAssembler<T extends AbstractDto<?>>
     getLogger().trace("Building links for {}", content);
 
     return List.of();
+  }
+
+  @SuppressWarnings({ "java:S1172", "java:S1130" })
+  protected Optional<Link> selfLink(final T content) throws AppException
+  {
+    return Optional.empty();
   }
 }

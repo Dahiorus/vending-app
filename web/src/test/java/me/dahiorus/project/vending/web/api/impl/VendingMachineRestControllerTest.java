@@ -23,10 +23,10 @@ import me.dahiorus.project.vending.domain.model.CardSystemStatus;
 import me.dahiorus.project.vending.domain.model.ChangeSystemStatus;
 import me.dahiorus.project.vending.domain.model.PowerStatus;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
+import me.dahiorus.project.vending.domain.model.VendingMachineBuilder;
 import me.dahiorus.project.vending.domain.model.WorkingStatus;
 import me.dahiorus.project.vending.domain.model.dto.VendingMachineDto;
 import me.dahiorus.project.vending.domain.service.impl.VendingMachineDtoServiceImpl;
-import me.dahiorus.project.vending.util.VendingMachineBuilder;
 import me.dahiorus.project.vending.web.api.assembler.VendingMachineDtoModelAssembler;
 
 @WebMvcTest(VendingMachineRestController.class)

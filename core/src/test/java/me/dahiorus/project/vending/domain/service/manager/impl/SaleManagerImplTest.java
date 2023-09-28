@@ -23,13 +23,13 @@ import me.dahiorus.project.vending.domain.dao.Dao;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.VendingMachineNotWorking;
 import me.dahiorus.project.vending.domain.model.Item;
+import me.dahiorus.project.vending.domain.model.ItemBuilder;
 import me.dahiorus.project.vending.domain.model.PowerStatus;
 import me.dahiorus.project.vending.domain.model.Sale;
 import me.dahiorus.project.vending.domain.model.Stock;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
+import me.dahiorus.project.vending.domain.model.VendingMachineBuilder;
 import me.dahiorus.project.vending.domain.model.WorkingStatus;
-import me.dahiorus.project.vending.util.ItemBuilder;
-import me.dahiorus.project.vending.util.VendingMachineBuilder;
 
 @ExtendWith(MockitoExtension.class)
 class SaleManagerImplTest
@@ -69,8 +69,10 @@ class SaleManagerImplTest
 
     Sale sale = manager.purchaseItem(machine, item);
 
-    assertAll(() -> assertThat(sale).hasFieldOrPropertyWithValue("amount", BigDecimal.valueOf(1.5))
-      .hasFieldOrPropertyWithValue("machine", machine),
+    assertAll(
+      () -> assertThat(sale)
+        .hasFieldOrPropertyWithValue("amount", BigDecimal.valueOf(1.5))
+        .hasFieldOrPropertyWithValue("machine", machine),
       () -> assertThat(machine.getQuantityInStock(item)).isEqualTo(4));
     verify(vendingMachineDao).save(machine);
   }
@@ -114,7 +116,8 @@ class SaleManagerImplTest
     {
       UUID id = UUID.randomUUID();
 
-      when(vendingMachineDao.read(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
+      when(vendingMachineDao.read(id))
+        .thenThrow(new EntityNotFound(VendingMachine.class, id));
 
       assertThatExceptionOfType(EntityNotFound.class)
         .isThrownBy(() -> manager.getWorkingMachine(id));

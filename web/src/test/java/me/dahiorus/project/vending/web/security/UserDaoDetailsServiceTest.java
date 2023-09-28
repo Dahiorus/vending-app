@@ -18,7 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import me.dahiorus.project.vending.domain.dao.UserDao;
 import me.dahiorus.project.vending.domain.model.AppUser;
-import me.dahiorus.project.vending.util.UserBuilder;
+import me.dahiorus.project.vending.domain.model.UserBuilder;
 
 @ExtendWith(MockitoExtension.class)
 class UserDaoDetailsServiceTest

@@ -12,8 +12,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.EntityModel;
 
+import me.dahiorus.project.vending.domain.model.UserBuilder;
 import me.dahiorus.project.vending.domain.model.dto.UserDto;
-import me.dahiorus.project.vending.util.UserBuilder;
 import me.dahiorus.project.vending.web.security.impl.AuthenticationFacadeImpl;
 
 @ExtendWith(MockitoExtension.class)

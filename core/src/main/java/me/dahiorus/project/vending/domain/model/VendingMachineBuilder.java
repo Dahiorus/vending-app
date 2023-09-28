@@ -1,26 +1,18 @@
-package me.dahiorus.project.vending.util;
+package me.dahiorus.project.vending.domain.model;
 
 import java.time.Instant;
 import java.util.UUID;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import me.dahiorus.project.vending.domain.model.CardSystemStatus;
-import me.dahiorus.project.vending.domain.model.ChangeSystemStatus;
-import me.dahiorus.project.vending.domain.model.ItemType;
-import me.dahiorus.project.vending.domain.model.PowerStatus;
-import me.dahiorus.project.vending.domain.model.VendingMachine;
-import me.dahiorus.project.vending.domain.model.WorkingStatus;
 import me.dahiorus.project.vending.domain.model.dto.VendingMachineDto;
-import me.dahiorus.project.vending.domain.service.DtoMapper;
-import me.dahiorus.project.vending.domain.service.impl.DtoMapperImpl;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class VendingMachineBuilder
 {
-  private final DtoMapper dtoMapper = new DtoMapperImpl();
-
   private VendingMachine machine = new VendingMachine();
+
+  private VendingMachineDto dto = new VendingMachineDto();
 
   public static VendingMachineBuilder builder()
   {
@@ -30,48 +22,58 @@ public class VendingMachineBuilder
   public VendingMachineBuilder itemType(final ItemType type)
   {
     machine.setType(type);
+    dto.setType(type);
     return this;
   }
 
   public VendingMachineBuilder id(final UUID id)
   {
     machine.setId(id);
+    dto.setId(id);
     return this;
   }
 
   public VendingMachineBuilder powerStatus(final PowerStatus powerStatus)
   {
     machine.setPowerStatus(powerStatus);
+    dto.setPowerStatus(powerStatus);
     return this;
   }
 
   public VendingMachineBuilder workingStatus(final WorkingStatus workingStatus)
   {
     machine.setWorkingStatus(workingStatus);
+    dto.setWorkingStatus(workingStatus);
     return this;
   }
 
   public VendingMachineBuilder rfidStatus(final CardSystemStatus rfidStatus)
   {
     machine.setRfidStatus(rfidStatus);
+    dto.setRfidStatus(rfidStatus);
     return this;
   }
 
-  public VendingMachineBuilder smartCardStatus(final CardSystemStatus smartCardStatus)
+  public VendingMachineBuilder smartCardStatus(
+    final CardSystemStatus smartCardStatus)
   {
     machine.setSmartCardStatus(smartCardStatus);
+    dto.setSmartCardStatus(smartCardStatus);
     return this;
   }
 
-  public VendingMachineBuilder changeMoneyStatus(final ChangeSystemStatus changeMoneyStatus)
+  public VendingMachineBuilder changeMoneyStatus(
+    final ChangeSystemStatus changeMoneyStatus)
   {
     machine.setChangeMoneyStatus(changeMoneyStatus);
+    dto.setChangeMoneyStatus(changeMoneyStatus);
     return this;
   }
 
   public VendingMachineBuilder serialNumber(final String serialNumber)
   {
     machine.setSerialNumber(serialNumber);
+    dto.setSerialNumber(serialNumber);
     return this;
   }
 
@@ -79,6 +81,7 @@ public class VendingMachineBuilder
   {
     machine.getAddress()
       .setLatitude(latitude);
+    dto.getAddress().setLatitude(latitude);
     return this;
   }
 
@@ -86,12 +89,15 @@ public class VendingMachineBuilder
   {
     machine.getAddress()
       .setLongitude(longitude);
+    dto.getAddress().setLongitude(longitude);
     return this;
   }
 
   public VendingMachineBuilder place(final String place)
   {
     machine.getAddress()
+      .setPlace(place);
+    dto.getAddress()
       .setPlace(place);
     return this;
   }
@@ -100,18 +106,22 @@ public class VendingMachineBuilder
   {
     machine.getAddress()
       .setStreetAddress(address);
+    dto.getAddress()
+      .setStreetAddress(address);
     return this;
   }
 
   public VendingMachineBuilder lastIntervention(final Instant lastIntervention)
   {
     machine.setLastIntervention(lastIntervention);
+    dto.setLastIntervention(lastIntervention);
     return this;
   }
 
   public VendingMachineBuilder temperature(final Integer temperature)
   {
     machine.setTemperature(temperature);
+    dto.setTemperature(temperature);
     return this;
   }
 
@@ -122,6 +132,6 @@ public class VendingMachineBuilder
 
   public VendingMachineDto buildDto()
   {
-    return dtoMapper.toDto(machine, VendingMachineDto.class);
+    return dto;
   }
 }

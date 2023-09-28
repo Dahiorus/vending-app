@@ -6,9 +6,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.EntityModel;
 
+import me.dahiorus.project.vending.domain.model.ItemBuilder;
 import me.dahiorus.project.vending.domain.model.ItemType;
 import me.dahiorus.project.vending.domain.model.dto.ItemDto;
-import me.dahiorus.project.vending.util.ItemBuilder;
 
 class ItemDtoModelAssemblerTest
 {
@@ -23,10 +23,9 @@ class ItemDtoModelAssemblerTest
   @Test
   void dtoToEntityModel()
   {
-    ItemDto dto = ItemBuilder.builder()
-      .id(UUID.randomUUID())
-      .type(ItemType.COLD_BAVERAGE)
-      .buildDto();
+    ItemDto dto = new ItemDto();
+    dto.setId(UUID.randomUUID());
+    dto.setType(ItemType.COLD_BAVERAGE);
 
     EntityModel<ItemDto> model = modelAssembler.toModel(dto);
 
@@ -36,10 +35,14 @@ class ItemDtoModelAssemblerTest
   @Test
   void itemWithPictureToEntityModel()
   {
-    ItemDto dto = ItemBuilder.builder()
-      .id(UUID.randomUUID())
-      .type(ItemType.COLD_BAVERAGE)
-      .buildDto();
+    ItemDto dto = new ItemDto();
+    dto.setId(UUID.randomUUID());
+    dto.setType(null);
+
+    ItemBuilder.builder()
+        .id(UUID.randomUUID())
+        .type(ItemType.COLD_BAVERAGE)
+        .buildDto();
     dto.setPictureId(UUID.randomUUID());
 
     EntityModel<ItemDto> model = modelAssembler.toModel(dto);

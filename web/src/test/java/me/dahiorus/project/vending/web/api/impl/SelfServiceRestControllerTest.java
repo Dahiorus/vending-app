@@ -37,12 +37,12 @@ import org.springframework.security.test.context.support.WithMockUser;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.UserNotAuthenticated;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
+import me.dahiorus.project.vending.domain.model.UserBuilder;
 import me.dahiorus.project.vending.domain.model.dto.BinaryDataDto;
 import me.dahiorus.project.vending.domain.model.dto.EditPasswordDto;
 import me.dahiorus.project.vending.domain.model.dto.UserDto;
 import me.dahiorus.project.vending.domain.service.impl.UserDtoServiceImpl;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
-import me.dahiorus.project.vending.util.UserBuilder;
 import me.dahiorus.project.vending.web.api.assembler.UserDtoModelAssembler;
 import me.dahiorus.project.vending.web.security.impl.AuthenticationFacadeImpl;
 

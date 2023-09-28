@@ -1,6 +1,6 @@
 package me.dahiorus.project.vending.web.api.impl;
 
-import static me.dahiorus.project.vending.util.TestUtils.jsonValue;
+import static me.dahiorus.project.vending.web.utils.WebTestUtils.jsonValue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,9 +26,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 
+import me.dahiorus.project.vending.domain.model.UserBuilder;
 import me.dahiorus.project.vending.domain.model.dto.UserDto;
 import me.dahiorus.project.vending.domain.service.impl.UserDtoServiceImpl;
-import me.dahiorus.project.vending.util.UserBuilder;
 import me.dahiorus.project.vending.web.api.assembler.UserDtoModelAssembler;
 
 @WebMvcTest(UserRestController.class)

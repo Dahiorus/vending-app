@@ -17,12 +17,12 @@ import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ItemMissing;
 import me.dahiorus.project.vending.domain.exception.VendingMachineNotWorking;
 import me.dahiorus.project.vending.domain.model.Item;
+import me.dahiorus.project.vending.domain.model.ItemBuilder;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
 import me.dahiorus.project.vending.domain.model.dto.ItemDto;
 import me.dahiorus.project.vending.domain.model.dto.SaleDto;
 import me.dahiorus.project.vending.domain.service.impl.ItemDtoServiceImpl;
 import me.dahiorus.project.vending.domain.service.impl.SaleDtoServiceImpl;
-import me.dahiorus.project.vending.util.ItemBuilder;
 
 @WebMvcTest(SaleRestController.class)
 class SaleRestControllerTest extends RestControllerTest

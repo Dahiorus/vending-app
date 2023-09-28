@@ -26,13 +26,13 @@ public abstract class RestControllerTest
   @Autowired
   WebApplicationContext appContext;
 
-  MockMvc mockMvc;
+  protected MockMvc mockMvc;
 
   @BeforeEach
   void initMockMvc() throws Exception
   {
     mockMvc = webAppContextSetup(appContext)
-      .apply(springSecurity())
-      .build();
+        .apply(springSecurity())
+        .build();
   }
 }

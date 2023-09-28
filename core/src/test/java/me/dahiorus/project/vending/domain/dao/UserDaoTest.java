@@ -17,7 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import me.dahiorus.project.vending.domain.config.DaoConfig;
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.model.AppUser;
-import me.dahiorus.project.vending.util.UserBuilder;
+import me.dahiorus.project.vending.domain.model.UserBuilder;
 
 @Import(DaoConfig.class)
 @DataJpaTest
@@ -69,7 +69,8 @@ class UserDaoTest
   void readNonExistingEntity()
   {
     assertThatExceptionOfType(EntityNotFound.class)
-      .isThrownBy(() -> dao.read(UUID.fromString("c8d4ac44-4e1f-441f-8e64-16f85ee529b2")));
+      .isThrownBy(() -> dao
+        .read(UUID.fromString("c8d4ac44-4e1f-441f-8e64-16f85ee529b2")));
   }
 
   @Test

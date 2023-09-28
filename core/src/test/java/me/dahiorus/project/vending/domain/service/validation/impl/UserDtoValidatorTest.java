@@ -1,6 +1,6 @@
 package me.dahiorus.project.vending.domain.service.validation.impl;
 
-import static me.dahiorus.project.vending.util.TestUtils.anySpec;
+import static me.dahiorus.project.vending.util.CoreTestUtils.anySpec;
 import static me.dahiorus.project.vending.util.ValidationTestUtils.assertHasExactlyFieldErrors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -27,7 +27,8 @@ class UserDtoValidatorTest
 
   UserDtoValidator validator;
 
-  UserDto buildDto(final String firstName, final String lastName, final String email)
+  UserDto buildDto(final String firstName, final String lastName,
+    final String email)
   {
     UserDto dto = new UserDto();
     dto.setEmail(email);
@@ -63,17 +64,20 @@ class UserDtoValidatorTest
 
     ValidationResults results = validator.validate(dto);
 
-    assertHasExactlyFieldErrors(results, "firstName", "validation.constraints.empty_value");
+    assertHasExactlyFieldErrors(results, "firstName",
+      "validation.constraints.empty_value");
   }
 
   @Test
   void firstNameHasMaxLength()
   {
-    UserDto dto = buildDto(RandomStringUtils.random(256), "Test", "user.test@yopmail.com");
+    UserDto dto = buildDto(RandomStringUtils.random(256), "Test",
+      "user.test@yopmail.com");
 
     ValidationResults results = validator.validate(dto);
 
-    assertHasExactlyFieldErrors(results, "firstName", "validation.constraints.max_length");
+    assertHasExactlyFieldErrors(results, "firstName",
+      "validation.constraints.max_length");
   }
 
   @ParameterizedTest(name = "Last name [{0}] is invalid")
@@ -85,17 +89,20 @@ class UserDtoValidatorTest
 
     ValidationResults results = validator.validate(dto);
 
-    assertHasExactlyFieldErrors(results, "lastName", "validation.constraints.empty_value");
+    assertHasExactlyFieldErrors(results, "lastName",
+      "validation.constraints.empty_value");
   }
 
   @Test
   void lastNameHasMaxLength()
   {
-    UserDto dto = buildDto("User", RandomStringUtils.random(256), "user.test@yopmail.com");
+    UserDto dto = buildDto("User", RandomStringUtils.random(256),
+      "user.test@yopmail.com");
 
     ValidationResults results = validator.validate(dto);
 
-    assertHasExactlyFieldErrors(results, "lastName", "validation.constraints.max_length");
+    assertHasExactlyFieldErrors(results, "lastName",
+      "validation.constraints.max_length");
   }
 
   @ParameterizedTest(name = "Email [{0}] is invalid")
@@ -107,7 +114,8 @@ class UserDtoValidatorTest
 
     ValidationResults results = validator.validate(dto);
 
-    assertHasExactlyFieldErrors(results, "email", "validation.constraints.empty_value");
+    assertHasExactlyFieldErrors(results, "email",
+      "validation.constraints.empty_value");
   }
 
   @Test
@@ -118,7 +126,8 @@ class UserDtoValidatorTest
 
     ValidationResults results = validator.validate(dto);
 
-    assertHasExactlyFieldErrors(results, "email", "validation.constraints.not_unique");
+    assertHasExactlyFieldErrors(results, "email",
+      "validation.constraints.not_unique");
   }
 
   @Test
@@ -128,6 +137,7 @@ class UserDtoValidatorTest
 
     ValidationResults results = validator.validate(dto);
 
-    assertHasExactlyFieldErrors(results, "email", "validation.constraints.max_length");
+    assertHasExactlyFieldErrors(results, "email",
+      "validation.constraints.max_length");
   }
 }

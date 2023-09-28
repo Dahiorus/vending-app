@@ -1,6 +1,6 @@
 package me.dahiorus.project.vending.web.api.impl;
 
-import static me.dahiorus.project.vending.util.TestUtils.jsonValue;
+import static me.dahiorus.project.vending.web.utils.WebTestUtils.jsonValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -52,12 +52,12 @@ class CommentRestControllerTest extends RestControllerTest
       when(modelAssembler.toCollectionModel(comments)).thenReturn(CollectionModel.wrap(comments));
 
       mockMvc.perform(get("/api/v1/vending-machines/{id}/comments", id))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaTypes.HAL_JSON))
-        .andExpect(result -> {
-          jsonPath("_embedded.commentDTOes[0].content").value("Comment 1");
-          jsonPath("_embedded.commentDTOes[1].content").value("Comment 2");
-        });
+          .andExpect(status().isOk())
+          .andExpect(content().contentType(MediaTypes.HAL_JSON))
+          .andExpect(result -> {
+            jsonPath("_embedded.commentDTOes[0].content").value("Comment 1");
+            jsonPath("_embedded.commentDTOes[1].content").value("Comment 2");
+          });
     }
 
     @Test
@@ -67,7 +67,7 @@ class CommentRestControllerTest extends RestControllerTest
       when(commentDtoService.getComments(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
 
       mockMvc.perform(get("/api/v1/vending-machines/{id}/comments", id))
-        .andExpect(status().isNotFound());
+          .andExpect(status().isNotFound());
     }
   }
 
@@ -88,13 +88,13 @@ class CommentRestControllerTest extends RestControllerTest
       when(modelAssembler.toModel(comment)).thenReturn(EntityModel.of(comment));
 
       mockMvc.perform(post("/api/v1/vending-machines/{id}/comments", id).contentType(MediaType.APPLICATION_JSON)
-        .content(jsonValue(comment)))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaTypes.HAL_JSON))
-        .andExpect(result -> {
-          jsonPath("content").value("Comment");
-          jsonPath("rate").value(5);
-        });
+          .content(jsonValue(comment)))
+          .andExpect(status().isOk())
+          .andExpect(content().contentType(MediaTypes.HAL_JSON))
+          .andExpect(result -> {
+            jsonPath("content").value("Comment");
+            jsonPath("rate").value(5);
+          });
     }
 
     @Test
@@ -102,10 +102,10 @@ class CommentRestControllerTest extends RestControllerTest
     void nonAdminCannotComment() throws Exception
     {
       mockMvc
-        .perform(
-          post("/api/v1/vending-machines/{id}/comments", UUID.randomUUID()).contentType(MediaType.APPLICATION_JSON)
-            .content(jsonValue(buildComment("Comment", 0))))
-        .andExpect(status().isForbidden());
+          .perform(
+              post("/api/v1/vending-machines/{id}/comments", UUID.randomUUID()).contentType(MediaType.APPLICATION_JSON)
+                  .content(jsonValue(buildComment("Comment", 0))))
+          .andExpect(status().isForbidden());
     }
 
     @Test
@@ -116,10 +116,10 @@ class CommentRestControllerTest extends RestControllerTest
       when(commentDtoService.comment(eq(id), any())).thenThrow(new EntityNotFound(VendingMachine.class, id));
 
       mockMvc
-        .perform(
-          post("/api/v1/vending-machines/{id}/comments", id).contentType(MediaType.APPLICATION_JSON)
-            .content(jsonValue(buildComment("Comment", 0))))
-        .andExpect(status().isNotFound());
+          .perform(
+              post("/api/v1/vending-machines/{id}/comments", id).contentType(MediaType.APPLICATION_JSON)
+                  .content(jsonValue(buildComment("Comment", 0))))
+          .andExpect(status().isNotFound());
     }
 
     @Test
@@ -128,13 +128,13 @@ class CommentRestControllerTest extends RestControllerTest
     {
       UUID id = UUID.randomUUID();
       when(commentDtoService.comment(eq(id), any()))
-        .thenThrow(new ValidationException("Validation errors from test", new ValidationResults()));
+          .thenThrow(new ValidationException("Validation errors from test", new ValidationResults()));
 
       mockMvc
-        .perform(
-          post("/api/v1/vending-machines/{id}/comments", id).contentType(MediaType.APPLICATION_JSON)
-            .content(jsonValue(buildComment("Comment", 0))))
-        .andExpect(status().isBadRequest());
+          .perform(
+              post("/api/v1/vending-machines/{id}/comments", id).contentType(MediaType.APPLICATION_JSON)
+                  .content(jsonValue(buildComment("Comment", 0))))
+          .andExpect(status().isBadRequest());
     }
   }
 

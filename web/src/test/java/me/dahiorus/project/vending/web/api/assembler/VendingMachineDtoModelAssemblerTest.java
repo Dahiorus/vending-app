@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.EntityModel;
 
 import me.dahiorus.project.vending.domain.model.ItemType;
+import me.dahiorus.project.vending.domain.model.VendingMachineBuilder;
 import me.dahiorus.project.vending.domain.model.dto.VendingMachineDto;
-import me.dahiorus.project.vending.util.VendingMachineBuilder;
 
 class VendingMachineDtoModelAssemblerTest
 {

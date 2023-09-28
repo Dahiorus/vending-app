@@ -46,8 +46,8 @@ public class WebSecurityConfig
 
   @Bean
   SecurityFilterChain filterChain(final HttpSecurity http, final AuthenticationManager authenticationManager,
-    final JwtService jwtService)
-    throws Exception
+      final JwtService jwtService)
+      throws Exception
   {
     // @formatter:off
     return http
@@ -57,7 +57,7 @@ public class WebSecurityConfig
       .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
       // request permissions
       .authorizeHttpRequests(customizer -> customizer
-        .requestMatchers(SecurityConstants.AUTHENTICATE_ENDPOINT, SecurityConstants.REFRESH_TOKEN_ENDPOINT).permitAll()
+        .requestMatchers(SecurityConstants.AUTHENTICATE_ENDPOINT, SecurityConstants.REFRESH_TOKEN_ENDPOINT, "/api/v1/").permitAll()
         .requestMatchers(antMatcher(HttpMethod.GET, "/api/v1/vending-machines/**"), antMatcher(HttpMethod.GET, "/api/v1/items/{.+}/**")).permitAll()
         .requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/vending-machines/{.+}/purchase/**")).permitAll()
         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
@@ -80,18 +80,18 @@ public class WebSecurityConfig
       response.setStatus(HttpServletResponse.SC_FORBIDDEN);
       response.setContentType(MediaType.APPLICATION_JSON_VALUE);
       MAPPER.writeValue(response.getOutputStream(), Map.of("timestamp", Instant.now()
-        .toString(), "message", accessDeniedException.getMessage()));
+          .toString(), "message", accessDeniedException.getMessage()));
       response.flushBuffer();
     };
   }
 
   @Bean
   AuthenticationManager authenticationManager(final HttpSecurity http, final UserDetailsService userDetailsService,
-    final PasswordEncoder passwordEncoder) throws Exception
+      final PasswordEncoder passwordEncoder) throws Exception
   {
     AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
     builder.userDetailsService(userDetailsService)
-      .passwordEncoder(passwordEncoder);
+        .passwordEncoder(passwordEncoder);
 
     return builder.build();
   }
@@ -100,6 +100,6 @@ public class WebSecurityConfig
   PasswordEncoder passwordEncoder()
   {
     return new DelegatingPasswordEncoder(DEFAULT_PWD_ENCODER_PREFIX,
-      Map.of(DEFAULT_PWD_ENCODER_PREFIX, new BCryptPasswordEncoder(BCryptVersion.$2A, 13)));
+        Map.of(DEFAULT_PWD_ENCODER_PREFIX, new BCryptPasswordEncoder(BCryptVersion.$2A, 13)));
   }
 }

@@ -14,9 +14,9 @@ import org.springframework.security.core.Authentication;
 
 import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.UserNotAuthenticated;
+import me.dahiorus.project.vending.domain.model.UserBuilder;
 import me.dahiorus.project.vending.domain.model.dto.UserDto;
 import me.dahiorus.project.vending.domain.service.impl.UserDtoServiceImpl;
-import me.dahiorus.project.vending.util.UserBuilder;
 
 @ExtendWith(MockitoExtension.class)
 class AuthenticationFacadeImplTest

@@ -34,9 +34,9 @@ import me.dahiorus.project.vending.domain.model.Report;
 import me.dahiorus.project.vending.domain.model.Sale;
 import me.dahiorus.project.vending.domain.model.Stock;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
+import me.dahiorus.project.vending.domain.model.VendingMachineBuilder;
 import me.dahiorus.project.vending.domain.model.WorkingStatus;
 import me.dahiorus.project.vending.domain.model.dto.ReportDto;
-import me.dahiorus.project.vending.util.VendingMachineBuilder;
 
 @ExtendWith(MockitoExtension.class)
 class ReportDtoServiceImplTest
@@ -62,7 +62,8 @@ class ReportDtoServiceImplTest
   @Test
   void createIsUnsupported()
   {
-    assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> dtoService.create(new ReportDto()));
+    assertThatExceptionOfType(UnsupportedOperationException.class)
+      .isThrownBy(() -> dtoService.create(new ReportDto()));
   }
 
   @Test
@@ -79,9 +80,11 @@ class ReportDtoServiceImplTest
     void reportUnkownMachine() throws Exception
     {
       UUID id = UUID.randomUUID();
-      when(vendingMachineDao.read(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
+      when(vendingMachineDao.read(id))
+        .thenThrow(new EntityNotFound(VendingMachine.class, id));
 
-      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.report(id));
+      assertThatExceptionOfType(EntityNotFound.class)
+        .isThrownBy(() -> dtoService.report(id));
       verify(dao, never()).save(any());
     }
 
@@ -120,7 +123,7 @@ class ReportDtoServiceImplTest
         () -> assertReportHasMachineInfo(report, machine),
         () -> assertThat(report.getReportStocks()
           .get(0)).hasFieldOrPropertyWithValue("itemName", item.getName())
-            .hasFieldOrPropertyWithValue("quantity", stock.getQuantity()));
+          .hasFieldOrPropertyWithValue("quantity", stock.getQuantity()));
     }
 
     @Test
@@ -141,8 +144,9 @@ class ReportDtoServiceImplTest
       ReportDto report = dtoService.report(machine.getId());
 
       assertAll(() -> assertReportHasMachineInfo(report, machine),
-        () -> assertThat(report.getTotalSaleAmount()).isEqualTo(sale1.getAmount()
-          .add(sale2.getAmount())));
+        () -> assertThat(report.getTotalSaleAmount())
+          .isEqualTo(sale1.getAmount()
+            .add(sale2.getAmount())));
     }
 
     @Test
@@ -170,7 +174,8 @@ class ReportDtoServiceImplTest
       ReportDto report = dtoService.report(machine.getId());
 
       assertAll(() -> assertReportHasMachineInfo(report, machine),
-        () -> assertThat(report.getTotalSaleAmount()).isEqualTo(sale2.getAmount()));
+        () -> assertThat(report.getTotalSaleAmount())
+          .isEqualTo(sale2.getAmount()));
     }
 
     void mockSaveReport()
@@ -200,14 +205,20 @@ class ReportDtoServiceImplTest
       .build();
   }
 
-  private static void assertReportHasMachineInfo(final ReportDto report, final VendingMachine machine)
+  private static void assertReportHasMachineInfo(final ReportDto report,
+    final VendingMachine machine)
   {
-    assertThat(report).hasFieldOrPropertyWithValue("machineSerialNumber", machine.getSerialNumber())
-      .hasFieldOrPropertyWithValue("mesuredTemperature", machine.getTemperature())
+    assertThat(report)
+      .hasFieldOrPropertyWithValue("machineSerialNumber",
+        machine.getSerialNumber())
+      .hasFieldOrPropertyWithValue("mesuredTemperature",
+        machine.getTemperature())
       .hasFieldOrPropertyWithValue("powerStatus", machine.getPowerStatus())
       .hasFieldOrPropertyWithValue("workingStatus", machine.getWorkingStatus())
       .hasFieldOrPropertyWithValue("rfidStatus", machine.getRfidStatus())
-      .hasFieldOrPropertyWithValue("smartCardStatus", machine.getSmartCardStatus())
-      .hasFieldOrPropertyWithValue("changeMoneyStatus", machine.getChangeMoneyStatus());
+      .hasFieldOrPropertyWithValue("smartCardStatus",
+        machine.getSmartCardStatus())
+      .hasFieldOrPropertyWithValue("changeMoneyStatus",
+        machine.getChangeMoneyStatus());
   }
 }

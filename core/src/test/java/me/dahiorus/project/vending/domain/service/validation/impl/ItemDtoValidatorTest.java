@@ -1,6 +1,6 @@
 package me.dahiorus.project.vending.domain.service.validation.impl;
 
-import static me.dahiorus.project.vending.util.TestUtils.anySpec;
+import static me.dahiorus.project.vending.util.CoreTestUtils.anySpec;
 import static me.dahiorus.project.vending.util.ValidationTestUtils.assertHasExactlyFieldErrors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -19,10 +19,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import me.dahiorus.project.vending.domain.dao.ItemDao;
+import me.dahiorus.project.vending.domain.model.ItemBuilder;
 import me.dahiorus.project.vending.domain.model.ItemType;
 import me.dahiorus.project.vending.domain.model.dto.ItemDto;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
-import me.dahiorus.project.vending.util.ItemBuilder;
 
 @ExtendWith(MockitoExtension.class)
 class ItemDtoValidatorTest
@@ -60,7 +60,8 @@ class ItemDtoValidatorTest
 
     ValidationResults results = validator.validate(dto);
 
-    assertHasExactlyFieldErrors(results, "name", "validation.constraints.empty_value");
+    assertHasExactlyFieldErrors(results, "name",
+      "validation.constraints.empty_value");
   }
 
   @Test
@@ -77,11 +78,13 @@ class ItemDtoValidatorTest
   @Test
   void nameHasMaxLength()
   {
-    dto = buildDto(RandomStringUtils.randomAlphanumeric(256), ItemType.FOOD, BigDecimal.valueOf(1.5));
+    dto = buildDto(RandomStringUtils.randomAlphanumeric(256), ItemType.FOOD,
+      BigDecimal.valueOf(1.5));
 
     ValidationResults results = validator.validate(dto);
 
-    assertHasExactlyFieldErrors(results, "name", "validation.constraints.max_length");
+    assertHasExactlyFieldErrors(results, "name",
+      "validation.constraints.max_length");
   }
 
   @Test
@@ -91,7 +94,8 @@ class ItemDtoValidatorTest
 
     ValidationResults results = validator.validate(dto);
 
-    assertHasExactlyFieldErrors(results, "type", "validation.constraints.empty_value");
+    assertHasExactlyFieldErrors(results, "type",
+      "validation.constraints.empty_value");
   }
 
   @ParameterizedTest(name = "Price [{0}] is not valid")
@@ -99,14 +103,17 @@ class ItemDtoValidatorTest
   @ValueSource(doubles = -1.5)
   void priceMustBePositiveAndIsMandatory(final Double price)
   {
-    dto = buildDto("Drink", ItemType.COLD_BAVERAGE, price == null ? null : BigDecimal.valueOf(price));
+    dto = buildDto("Drink", ItemType.COLD_BAVERAGE,
+      price == null ? null : BigDecimal.valueOf(price));
 
     ValidationResults results = validator.validate(dto);
 
-    assertHasExactlyFieldErrors(results, "price", "validation.constraints.item.price_positive");
+    assertHasExactlyFieldErrors(results, "price",
+      "validation.constraints.item.price_positive");
   }
 
-  ItemDto buildDto(final String name, final ItemType type, final BigDecimal price)
+  ItemDto buildDto(final String name, final ItemType type,
+    final BigDecimal price)
   {
     return ItemBuilder.builder()
       .name(name)

@@ -40,12 +40,12 @@ import me.dahiorus.project.vending.domain.exception.ValidationException;
 import me.dahiorus.project.vending.domain.model.AppUser;
 import me.dahiorus.project.vending.domain.model.BinaryData;
 import me.dahiorus.project.vending.domain.model.Item;
+import me.dahiorus.project.vending.domain.model.ItemBuilder;
 import me.dahiorus.project.vending.domain.model.ItemType;
 import me.dahiorus.project.vending.domain.model.dto.BinaryDataDto;
 import me.dahiorus.project.vending.domain.model.dto.ItemDto;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 import me.dahiorus.project.vending.domain.service.validation.impl.ItemDtoValidator;
-import me.dahiorus.project.vending.util.ItemBuilder;
 
 @ExtendWith(MockitoExtension.class)
 class ItemDtoServiceImplTest
@@ -102,7 +102,8 @@ class ItemDtoServiceImplTest
         return results;
       });
 
-      assertThatExceptionOfType(ValidationException.class).isThrownBy(() -> dtoService.create(dto));
+      assertThatExceptionOfType(ValidationException.class)
+        .isThrownBy(() -> dtoService.create(dto));
       verify(dao, never()).save(any());
     }
   }
@@ -129,7 +130,8 @@ class ItemDtoServiceImplTest
       UUID id = UUID.randomUUID();
       when(dao.read(id)).thenThrow(new EntityNotFound(Item.class, id));
 
-      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.read(id));
+      assertThatExceptionOfType(EntityNotFound.class)
+        .isThrownBy(() -> dtoService.read(id));
     }
   }
 
@@ -167,7 +169,8 @@ class ItemDtoServiceImplTest
         return results;
       });
 
-      assertThatExceptionOfType(ValidationException.class).isThrownBy(() -> dtoService.update(entity.getId(), dto));
+      assertThatExceptionOfType(ValidationException.class)
+        .isThrownBy(() -> dtoService.update(entity.getId(), dto));
       verify(dao, never()).save(any());
     }
 
@@ -177,7 +180,8 @@ class ItemDtoServiceImplTest
       UUID id = UUID.randomUUID();
       when(dao.read(id)).thenThrow(new EntityNotFound(Item.class, id));
 
-      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.update(id, new ItemDto()));
+      assertThatExceptionOfType(EntityNotFound.class)
+        .isThrownBy(() -> dtoService.update(id, new ItemDto()));
       verify(dtoValidator, never()).validate(any());
       verify(dao, never()).save(any());
     }
@@ -191,7 +195,8 @@ class ItemDtoServiceImplTest
     {
       Item entity = mockRead(UUID.randomUUID());
 
-      assertThatNoException().isThrownBy(() -> dtoService.delete(entity.getId()));
+      assertThatNoException()
+        .isThrownBy(() -> dtoService.delete(entity.getId()));
       verify(dao).delete(entity);
     }
 
@@ -201,7 +206,8 @@ class ItemDtoServiceImplTest
       UUID id = UUID.randomUUID();
       when(dao.read(id)).thenThrow(new EntityNotFound(Item.class, id));
 
-      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.delete(id));
+      assertThatExceptionOfType(EntityNotFound.class)
+        .isThrownBy(() -> dtoService.delete(id));
       verify(dao, never()).delete(any(Item.class));
     }
   }
@@ -220,7 +226,8 @@ class ItemDtoServiceImplTest
     void setUp()
     {
       entities = IntStream.range(0, 20)
-        .mapToObj(i -> buildEntity("Item-" + i, ItemType.FOOD, BigDecimal.valueOf(1.5)))
+        .mapToObj(
+          i -> buildEntity("Item-" + i, ItemType.FOOD, BigDecimal.valueOf(1.5)))
         .toList();
       entities.forEach(entity -> entity.setId(UUID.randomUUID()));
 
@@ -340,7 +347,8 @@ class ItemDtoServiceImplTest
       UUID id = UUID.randomUUID();
       when(dao.read(id)).thenThrow(new EntityNotFound(Item.class, id));
 
-      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.getImage(id));
+      assertThatExceptionOfType(EntityNotFound.class)
+        .isThrownBy(() -> dtoService.getImage(id));
     }
   }
 
@@ -372,7 +380,8 @@ class ItemDtoServiceImplTest
       UUID id = UUID.randomUUID();
       when(dao.read(id)).thenThrow(new EntityNotFound(AppUser.class, id));
 
-      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.uploadImage(id, new BinaryDataDto()));
+      assertThatExceptionOfType(EntityNotFound.class)
+        .isThrownBy(() -> dtoService.uploadImage(id, new BinaryDataDto()));
       verify(binaryDataDao, never()).save(any());
       verify(dao, never()).save(any());
     }
@@ -388,7 +397,8 @@ class ItemDtoServiceImplTest
     }
   }
 
-  Item buildEntity(final String name, final ItemType type, final BigDecimal price)
+  Item buildEntity(final String name, final ItemType type,
+    final BigDecimal price)
   {
     return ItemBuilder.builder()
       .name(name)
@@ -397,7 +407,8 @@ class ItemDtoServiceImplTest
       .build();
   }
 
-  ItemDto buildDto(final String name, final ItemType type, final BigDecimal price)
+  ItemDto buildDto(final String name, final ItemType type,
+    final BigDecimal price)
   {
     return ItemBuilder.builder()
       .name(name)

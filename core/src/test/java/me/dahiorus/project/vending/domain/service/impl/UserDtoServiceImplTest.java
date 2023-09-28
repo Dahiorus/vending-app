@@ -32,6 +32,7 @@ import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
 import me.dahiorus.project.vending.domain.model.AppUser;
 import me.dahiorus.project.vending.domain.model.BinaryData;
+import me.dahiorus.project.vending.domain.model.UserBuilder;
 import me.dahiorus.project.vending.domain.model.dto.BinaryDataDto;
 import me.dahiorus.project.vending.domain.model.dto.EditPasswordDto;
 import me.dahiorus.project.vending.domain.model.dto.UserDto;
@@ -39,7 +40,6 @@ import me.dahiorus.project.vending.domain.service.validation.FieldValidationErro
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 import me.dahiorus.project.vending.domain.service.validation.impl.PasswordValidatorImpl;
 import me.dahiorus.project.vending.domain.service.validation.impl.UserDtoValidator;
-import me.dahiorus.project.vending.util.UserBuilder;
 
 @ExtendWith(MockitoExtension.class)
 class UserDtoServiceImplTest
@@ -91,10 +91,12 @@ class UserDtoServiceImplTest
     @Test
     void createUserWithPassword() throws Exception
     {
-      UserDto user = buildUser("User", "Test", "email@yopmail.com", "Secret123");
+      UserDto user = buildUser("User", "Test", "email@yopmail.com",
+        "Secret123");
 
       when(dtoValidator.validate(user)).thenReturn(successResults());
-      when(passwordValidator.validate("password", user.getPassword())).thenReturn(successResults());
+      when(passwordValidator.validate("password", user.getPassword()))
+        .thenReturn(successResults());
       when(dao.save(userArg.capture())).then(invocation -> {
         AppUser toCreate = invocation.getArgument(0);
         toCreate.setId(UUID.randomUUID());
@@ -103,32 +105,40 @@ class UserDtoServiceImplTest
 
       UserDto createdUser = dtoService.create(user);
 
-      assertAll(() -> assertThat(createdUser).hasFieldOrPropertyWithValue("firstName", user.getFirstName())
-        .hasFieldOrPropertyWithValue("lastName", user.getLastName())
-        .hasFieldOrPropertyWithValue("email", user.getEmail()),
+      assertAll(
+        () -> assertThat(createdUser)
+          .hasFieldOrPropertyWithValue("firstName", user.getFirstName())
+          .hasFieldOrPropertyWithValue("lastName", user.getLastName())
+          .hasFieldOrPropertyWithValue("email", user.getEmail()),
         () -> assertThat(passwordEncoder.matches("Secret123", userArg.getValue()
-          .getEncodedPassword())).describedAs("Encoded password must match the raw password")
-            .isTrue());
+          .getEncodedPassword()))
+          .describedAs("Encoded password must match the raw password")
+          .isTrue());
     }
 
     @Test
     void passwordMustRespectPolicy() throws Exception
     {
-      UserDto user = buildUser("User", "Test", "email@yopmail.com", "Secret123");
+      UserDto user = buildUser("User", "Test", "email@yopmail.com",
+        "Secret123");
 
       when(dtoValidator.validate(user)).thenReturn(successResults());
-      when(passwordValidator.validate("password", user.getPassword())).then(invocation -> {
-        ValidationResults results = new ValidationResults();
-        results.addError(FieldValidationError.fieldError("password", "validation.constraints.password.min-length",
-          "Password too short", 12));
-        return results;
-      });
+      when(passwordValidator.validate("password", user.getPassword()))
+        .then(invocation -> {
+          ValidationResults results = new ValidationResults();
+          results.addError(FieldValidationError.fieldError("password",
+            "validation.constraints.password.min-length",
+            "Password too short", 12));
+          return results;
+        });
 
-      assertThatExceptionOfType(ValidationException.class).isThrownBy(() -> dtoService.create(user));
+      assertThatExceptionOfType(ValidationException.class)
+        .isThrownBy(() -> dtoService.create(user));
       verify(dao, never()).save(any());
     }
 
-    UserDto buildUser(final String firstName, final String lastName, final String email,
+    UserDto buildUser(final String firstName, final String lastName,
+      final String email,
       final String rawPassword)
     {
       return UserBuilder.builder()
@@ -157,13 +167,16 @@ class UserDtoServiceImplTest
         .build();
 
       when(dao.read(id)).thenReturn(user);
-      when(passwordValidator.validate("password", dto.getPassword())).thenReturn(successResults());
+      when(passwordValidator.validate("password", dto.getPassword()))
+        .thenReturn(successResults());
       when(dtoValidator.validate(dto)).thenReturn(successResults());
       when(dao.save(user)).thenReturn(user);
 
       dtoService.update(id, dto);
 
-      assertThat(passwordEncoder.matches("Secret123", user.getEncodedPassword())).isTrue();
+      assertThat(
+        passwordEncoder.matches("Secret123", user.getEncodedPassword()))
+        .isTrue();
     }
 
     @Test
@@ -184,7 +197,10 @@ class UserDtoServiceImplTest
 
       dtoService.update(id, dto);
 
-      assertAll(() -> assertThat(passwordEncoder.matches("Secret", user.getEncodedPassword())).isTrue(),
+      assertAll(
+        () -> assertThat(
+          passwordEncoder.matches("Secret", user.getEncodedPassword()))
+          .isTrue(),
         () -> assertThat(user.getPassword()).isNull());
     }
   }
@@ -200,14 +216,18 @@ class UserDtoServiceImplTest
       EditPasswordDto editPwd = new EditPasswordDto("Secret123", "Secret1234");
 
       when(dao.read(user.getId())).thenReturn(user);
-      when(passwordValidator.validate("password", editPwd.password())).thenReturn(successResults());
+      when(passwordValidator.validate("password", editPwd.password()))
+        .thenReturn(successResults());
       when(dao.save(user)).then(invoc -> {
         AppUser arg = invoc.getArgument(0);
-        assertThat(passwordEncoder.matches(editPwd.password(), arg.getEncodedPassword())).isTrue();
+        assertThat(
+          passwordEncoder.matches(editPwd.password(), arg.getEncodedPassword()))
+          .isTrue();
         return arg;
       });
 
-      assertThatNoException().isThrownBy(() -> dtoService.updatePassword(user.getId(), editPwd));
+      assertThatNoException()
+        .isThrownBy(() -> dtoService.updatePassword(user.getId(), editPwd));
     }
 
     @Test
@@ -218,15 +238,18 @@ class UserDtoServiceImplTest
       EditPasswordDto editPwd = new EditPasswordDto("Azertyui", "Secret1234");
 
       when(dao.read(user.getId())).thenReturn(user);
-      when(passwordValidator.validate("password", editPwd.password())).thenReturn(successResults());
+      when(passwordValidator.validate("password", editPwd.password()))
+        .thenReturn(successResults());
 
       assertThatExceptionOfType(ValidationException.class)
         .isThrownBy(() -> dtoService.updatePassword(user.getId(), editPwd))
         .extracting(ValidationException::getFieldErrors)
         .asList()
         .hasSize(1)
-        .allSatisfy(err -> assertThat(err).hasFieldOrPropertyWithValue("field", "oldPassword")
-          .hasFieldOrPropertyWithValue("code", "validation.constraints.password.old-password-mismatch"));
+        .allSatisfy(err -> assertThat(err)
+          .hasFieldOrPropertyWithValue("field", "oldPassword")
+          .hasFieldOrPropertyWithValue("code",
+            "validation.constraints.password.old-password-mismatch"));
       verify(dao, never()).save(user);
     }
 
@@ -238,15 +261,18 @@ class UserDtoServiceImplTest
       EditPasswordDto editPwd = new EditPasswordDto("Secret123", "Secret123");
 
       when(dao.read(user.getId())).thenReturn(user);
-      when(passwordValidator.validate("password", editPwd.password())).thenReturn(successResults());
+      when(passwordValidator.validate("password", editPwd.password()))
+        .thenReturn(successResults());
 
       assertThatExceptionOfType(ValidationException.class)
         .isThrownBy(() -> dtoService.updatePassword(user.getId(), editPwd))
         .extracting(ValidationException::getFieldErrors)
         .asList()
         .hasSize(1)
-        .allSatisfy(err -> assertThat(err).hasFieldOrPropertyWithValue("field", "password")
-          .hasFieldOrPropertyWithValue("code", "validation.constraints.password.new-password-match"));
+        .allSatisfy(err -> assertThat(err)
+          .hasFieldOrPropertyWithValue("field", "password")
+          .hasFieldOrPropertyWithValue("code",
+            "validation.constraints.password.new-password-match"));
       verify(dao, never()).save(user);
     }
 
@@ -258,12 +284,15 @@ class UserDtoServiceImplTest
       EditPasswordDto editPwd = new EditPasswordDto("Secret123", "Secret1234");
 
       when(dao.read(user.getId())).thenReturn(user);
-      when(passwordValidator.validate("password", editPwd.password())).then(invoc -> {
-        ValidationResults results = new ValidationResults();
-        results.addError(
-          fieldError(invoc.getArgument(0), "validation.constraints.password.min-length", "Pwd error from test"));
-        return results;
-      });
+      when(passwordValidator.validate("password", editPwd.password()))
+        .then(invoc -> {
+          ValidationResults results = new ValidationResults();
+          results.addError(
+            fieldError(invoc.getArgument(0),
+              "validation.constraints.password.min-length",
+              "Pwd error from test"));
+          return results;
+        });
 
       assertThatExceptionOfType(ValidationException.class)
         .isThrownBy(() -> dtoService.updatePassword(user.getId(), editPwd));
@@ -277,7 +306,8 @@ class UserDtoServiceImplTest
       when(dao.read(id)).thenThrow(new EntityNotFound(AppUser.class, id));
 
       assertThatExceptionOfType(EntityNotFound.class)
-        .isThrownBy(() -> dtoService.updatePassword(id, new EditPasswordDto(null, null)));
+        .isThrownBy(
+          () -> dtoService.updatePassword(id, new EditPasswordDto(null, null)));
       verify(dao, never()).save(any());
     }
 
@@ -310,7 +340,8 @@ class UserDtoServiceImplTest
       String username = "azerty";
       when(dao.findByEmail(username)).thenReturn(Optional.empty());
 
-      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.getByUsername(username));
+      assertThatExceptionOfType(EntityNotFound.class)
+        .isThrownBy(() -> dtoService.getByUsername(username));
     }
 
     AppUser buildUser(final String username)
@@ -353,10 +384,12 @@ class UserDtoServiceImplTest
       UUID id = UUID.randomUUID();
       when(dao.read(id)).thenThrow(new EntityNotFound(AppUser.class, id));
 
-      assertThatExceptionOfType(EntityNotFound.class).isThrownBy(() -> dtoService.getImage(id));
+      assertThatExceptionOfType(EntityNotFound.class)
+        .isThrownBy(() -> dtoService.getImage(id));
     }
 
-    AppUser buildUser(final UUID id, final String pictureName, final String contentType)
+    AppUser buildUser(final UUID id, final String pictureName,
+      final String contentType)
     {
       return UserBuilder.builder()
         .id(id)

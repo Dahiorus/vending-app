@@ -6,12 +6,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import me.dahiorus.project.vending.domain.model.Item;
+import me.dahiorus.project.vending.domain.model.ItemBuilder;
 import me.dahiorus.project.vending.domain.model.ItemType;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
+import me.dahiorus.project.vending.domain.model.VendingMachineBuilder;
 import me.dahiorus.project.vending.domain.service.validation.ValidationError;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
-import me.dahiorus.project.vending.util.ItemBuilder;
-import me.dahiorus.project.vending.util.VendingMachineBuilder;
 
 class StockValidatorImplTest
 {
@@ -26,7 +26,8 @@ class StockValidatorImplTest
   @Test
   void validStock()
   {
-    ValidationResults results = validator.validate(buildItem(ItemType.COLD_BAVERAGE), 10,
+    ValidationResults results = validator.validate(
+      buildItem(ItemType.COLD_BAVERAGE), 10,
       buildMachine(ItemType.COLD_BAVERAGE));
 
     assertThat(results.count()).isZero();
@@ -45,10 +46,12 @@ class StockValidatorImplTest
   @Test
   void quantityMustBePositive()
   {
-    ValidationResults results = validator.validate(buildItem(ItemType.COLD_BAVERAGE), -1,
+    ValidationResults results = validator.validate(
+      buildItem(ItemType.COLD_BAVERAGE), -1,
       buildMachine(ItemType.COLD_BAVERAGE));
 
-    assertThat(results.getFieldErrors("quantity")).extracting(ValidationError::getCode)
+    assertThat(results.getFieldErrors("quantity"))
+      .extracting(ValidationError::getCode)
       .containsExactly("validation.constraints.stock.quantity_positive");
   }
 
