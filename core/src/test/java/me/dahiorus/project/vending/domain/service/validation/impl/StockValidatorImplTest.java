@@ -5,11 +5,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import me.dahiorus.project.vending.domain.model.Item;
 import me.dahiorus.project.vending.domain.model.ItemBuilder;
 import me.dahiorus.project.vending.domain.model.ItemType;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
 import me.dahiorus.project.vending.domain.model.VendingMachineBuilder;
+import me.dahiorus.project.vending.domain.model.dto.ItemDto;
+import me.dahiorus.project.vending.domain.model.dto.StockQuantityDto;
 import me.dahiorus.project.vending.domain.service.validation.ValidationError;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
@@ -26,8 +27,8 @@ class StockValidatorImplTest
   @Test
   void validStock()
   {
-    ValidationResults results = validator.validate(
-      buildItem(ItemType.COLD_BAVERAGE), 10,
+    ValidationResults results = validator.validate(new StockQuantityDto(
+      buildItem(ItemType.COLD_BAVERAGE), 10),
       buildMachine(ItemType.COLD_BAVERAGE));
 
     assertThat(results.count()).isZero();
@@ -36,7 +37,7 @@ class StockValidatorImplTest
   @Test
   void typeNotMatch()
   {
-    ValidationResults results = validator.validate(buildItem(ItemType.FOOD), 10,
+    ValidationResults results = validator.validate(new StockQuantityDto(buildItem(ItemType.FOOD), 10),
       buildMachine(ItemType.COLD_BAVERAGE));
 
     assertThat(results.getObjectErrors()).extracting(ValidationError::getCode)
@@ -46,8 +47,8 @@ class StockValidatorImplTest
   @Test
   void quantityMustBePositive()
   {
-    ValidationResults results = validator.validate(
-      buildItem(ItemType.COLD_BAVERAGE), -1,
+    ValidationResults results = validator.validate(new StockQuantityDto(
+      buildItem(ItemType.COLD_BAVERAGE), -1),
       buildMachine(ItemType.COLD_BAVERAGE));
 
     assertThat(results.getFieldErrors("quantity"))
@@ -62,10 +63,10 @@ class StockValidatorImplTest
       .build();
   }
 
-  static Item buildItem(final ItemType type)
+  static ItemDto buildItem(final ItemType type)
   {
     return ItemBuilder.builder()
       .type(type)
-      .build();
+      .buildDto();
   }
 }

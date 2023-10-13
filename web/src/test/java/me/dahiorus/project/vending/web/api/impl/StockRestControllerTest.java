@@ -33,6 +33,7 @@ import me.dahiorus.project.vending.domain.model.ItemBuilder;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
 import me.dahiorus.project.vending.domain.model.dto.ItemDto;
 import me.dahiorus.project.vending.domain.model.dto.StockDto;
+import me.dahiorus.project.vending.domain.model.dto.StockQuantityDto;
 import me.dahiorus.project.vending.domain.service.impl.ItemDtoServiceImpl;
 import me.dahiorus.project.vending.domain.service.impl.StockDtoServiceImpl;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
@@ -50,12 +51,12 @@ class StockRestControllerTest extends RestControllerTest
       UUID id = UUID.randomUUID();
       when(stockDtoService.getStocks(id)).thenReturn(List.of(buildStock(UUID.randomUUID(), 5)));
       when(modelAssembler.toCollectionModel(anyIterable()))
-          .then(invoc -> CollectionModel.of(invoc.getArgument(0)));
+        .then(invoc -> CollectionModel.of(invoc.getArgument(0)));
 
       mockMvc.perform(get("/api/v1/vending-machines/{id}/stocks", id))
-          .andExpect(status().isOk())
-          .andExpect(content().contentType(MediaTypes.HAL_JSON))
-          .andExpect(jsonPath("_embedded.stockDtoList[0]").isNotEmpty());
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaTypes.HAL_JSON))
+        .andExpect(jsonPath("_embedded.stockDtoList[0]").isNotEmpty());
     }
 
     @Test
@@ -65,7 +66,7 @@ class StockRestControllerTest extends RestControllerTest
       when(stockDtoService.getStocks(id)).thenThrow(new EntityNotFound(VendingMachine.class, id));
 
       mockMvc.perform(get("/api/v1/vending-machines/{id}/stocks", id))
-          .andExpect(status().isNotFound());
+        .andExpect(status().isNotFound());
     }
   }
 
@@ -79,11 +80,11 @@ class StockRestControllerTest extends RestControllerTest
       UUID id = UUID.randomUUID(), itemId = UUID.randomUUID();
 
       mockMvc
-          .perform(
-              post("/api/v1/vending-machines/{id}/provision/{itemId}", id, itemId)
-                  .contentType(MediaType.APPLICATION_JSON)
-                  .content("{ \"quantity\": 10 }"))
-          .andExpect(status().isUnauthorized());
+        .perform(
+          post("/api/v1/vending-machines/{id}/provision/{itemId}", id, itemId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{ \"quantity\": 10 }"))
+        .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -93,11 +94,11 @@ class StockRestControllerTest extends RestControllerTest
       UUID id = UUID.randomUUID(), itemId = UUID.randomUUID();
 
       mockMvc
-          .perform(
-              post("/api/v1/vending-machines/{id}/provision/{itemId}", id, itemId)
-                  .contentType(MediaType.APPLICATION_JSON)
-                  .content("{ \"quantity\": 10 }"))
-          .andExpect(status().isForbidden());
+        .perform(
+          post("/api/v1/vending-machines/{id}/provision/{itemId}", id, itemId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{ \"quantity\": 10 }"))
+        .andExpect(status().isForbidden());
     }
 
     @Test
@@ -106,25 +107,25 @@ class StockRestControllerTest extends RestControllerTest
     {
       UUID id = UUID.randomUUID(), itemId = UUID.randomUUID();
       ItemDto item = ItemBuilder.builder()
-          .id(itemId)
-          .buildDto();
+        .id(itemId)
+        .buildDto();
       when(itemDtoService.read(itemId)).thenReturn(item);
       when(stockDtoService.getStocks(itemId))
-          .thenReturn(List.of(buildStock(itemId, 1), buildStock(UUID.randomUUID(), 5)));
+        .thenReturn(List.of(buildStock(itemId, 1), buildStock(UUID.randomUUID(), 5)));
       when(modelAssembler.toCollectionModel(anyIterable())).then(invoc -> CollectionModel.wrap(invoc.getArgument(0)));
 
       mockMvc
-          .perform(
-              post("/api/v1/vending-machines/{id}/provision/{itemId}", id, itemId)
-                  .contentType(MediaType.APPLICATION_JSON)
-                  .content("{ \"quantity\": 10 }"))
-          .andExpect(status().isOk())
-          .andExpect(content().contentType(MediaTypes.HAL_JSON))
-          .andExpect(result -> {
-            jsonPath("_embedded.stockDtoes[0]").isNotEmpty();
-            jsonPath("_embedded.stockDtoes[1]").isNotEmpty();
-          });
-      verify(stockDtoService).provisionStock(id, item, 10);
+        .perform(
+          post("/api/v1/vending-machines/{id}/provision/{itemId}", id, itemId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{ \"quantity\": 10 }"))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaTypes.HAL_JSON))
+        .andExpect(result -> {
+          jsonPath("_embedded.stockDtoes[0]").isNotEmpty();
+          jsonPath("_embedded.stockDtoes[1]").isNotEmpty();
+        });
+      verify(stockDtoService).provisionStock(id, new StockQuantityDto(item, 10));
     }
 
     @Test
@@ -135,12 +136,12 @@ class StockRestControllerTest extends RestControllerTest
       when(itemDtoService.read(itemId)).thenThrow(new EntityNotFound(Item.class, id));
 
       mockMvc
-          .perform(
-              post("/api/v1/vending-machines/{id}/provision/{itemId}", id, itemId)
-                  .contentType(MediaType.APPLICATION_JSON)
-                  .content("{ \"quantity\": 10 }"))
-          .andExpect(status().isNotFound());
-      verify(stockDtoService, never()).provisionStock(eq(id), any(), eq(10));
+        .perform(
+          post("/api/v1/vending-machines/{id}/provision/{itemId}", id, itemId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{ \"quantity\": 10 }"))
+        .andExpect(status().isNotFound());
+      verify(stockDtoService, never()).provisionStock(eq(id), any());
     }
 
     @Test
@@ -149,18 +150,18 @@ class StockRestControllerTest extends RestControllerTest
     {
       UUID id = UUID.randomUUID(), itemId = UUID.randomUUID();
       ItemDto item = ItemBuilder.builder()
-          .id(itemId)
-          .buildDto();
+        .id(itemId)
+        .buildDto();
       when(itemDtoService.read(itemId)).thenReturn(item);
       doThrow(new EntityNotFound(VendingMachine.class, id)).when(stockDtoService)
-          .provisionStock(id, item, 10);
+        .provisionStock(id, new StockQuantityDto(item, 10));
 
       mockMvc
-          .perform(
-              post("/api/v1/vending-machines/{id}/provision/{itemId}", id, itemId)
-                  .contentType(MediaType.APPLICATION_JSON)
-                  .content("{ \"quantity\": 10 }"))
-          .andExpect(status().isNotFound());
+        .perform(
+          post("/api/v1/vending-machines/{id}/provision/{itemId}", id, itemId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{ \"quantity\": 10 }"))
+        .andExpect(status().isNotFound());
     }
 
     @Test
@@ -169,18 +170,18 @@ class StockRestControllerTest extends RestControllerTest
     {
       UUID id = UUID.randomUUID(), itemId = UUID.randomUUID();
       ItemDto item = ItemBuilder.builder()
-          .id(itemId)
-          .buildDto();
+        .id(itemId)
+        .buildDto();
       when(itemDtoService.read(itemId)).thenReturn(item);
       doThrow(new ValidationException("Exception from test", new ValidationResults())).when(stockDtoService)
-          .provisionStock(id, item, -1);
+        .provisionStock(id, new StockQuantityDto(item, -1));
 
       mockMvc
-          .perform(
-              post("/api/v1/vending-machines/{id}/provision/{itemId}", id, itemId)
-                  .contentType(MediaType.APPLICATION_JSON)
-                  .content("{ \"quantity\": -1 }"))
-          .andExpect(status().isBadRequest());
+        .perform(
+          post("/api/v1/vending-machines/{id}/provision/{itemId}", id, itemId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{ \"quantity\": -1 }"))
+        .andExpect(status().isBadRequest());
     }
   }
 

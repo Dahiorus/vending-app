@@ -7,6 +7,7 @@ import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
 import me.dahiorus.project.vending.domain.model.dto.ItemDto;
 import me.dahiorus.project.vending.domain.model.dto.StockDto;
+import me.dahiorus.project.vending.domain.model.dto.StockQuantityDto;
 import me.dahiorus.project.vending.domain.model.dto.VendingMachineDto;
 
 public interface StockDtoService
@@ -29,5 +30,5 @@ public interface StockDtoService
    * @throws EntityNotFound      if no vending machine match the ID
    * @throws ValidationException if the item cannot be stock in the machine
    */
-  void provisionStock(UUID id, ItemDto item, Integer quantity) throws EntityNotFound, ValidationException;
+  void provisionStock(UUID id, StockQuantityDto stockQuantity) throws EntityNotFound, ValidationException;
 }

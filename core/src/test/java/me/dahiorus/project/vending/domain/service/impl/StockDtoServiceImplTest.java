@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -32,6 +31,7 @@ import me.dahiorus.project.vending.domain.model.VendingMachine;
 import me.dahiorus.project.vending.domain.model.VendingMachineBuilder;
 import me.dahiorus.project.vending.domain.model.dto.ItemDto;
 import me.dahiorus.project.vending.domain.model.dto.StockDto;
+import me.dahiorus.project.vending.domain.model.dto.StockQuantityDto;
 import me.dahiorus.project.vending.domain.service.manager.StockManager;
 import me.dahiorus.project.vending.domain.service.validation.impl.StockValidatorImpl;
 
@@ -70,7 +70,7 @@ class StockDtoServiceImplTest
       itemDto.setType(machine.getType());
 
       assertThatNoException().isThrownBy(
-        () -> dtoService.provisionStock(machine.getId(), itemDto, 10));
+        () -> dtoService.provisionStock(machine.getId(), new StockQuantityDto(itemDto, 10)));
       verify(manager).provision(machine, item, 10);
     }
 
@@ -87,7 +87,7 @@ class StockDtoServiceImplTest
 
       assertThatExceptionOfType(ValidationException.class)
         .isThrownBy(
-          () -> dtoService.provisionStock(machine.getId(), itemDto, 10));
+          () -> dtoService.provisionStock(machine.getId(), new StockQuantityDto(itemDto, 10)));
       verify(manager, never()).provision(eq(machine), any(), eq(10));
     }
 
@@ -99,12 +99,11 @@ class StockDtoServiceImplTest
         .thenThrow(new EntityNotFound(VendingMachine.class, id));
 
       assertThatExceptionOfType(EntityNotFound.class)
-        .isThrownBy(() -> dtoService.provisionStock(id, new ItemDto(), 15));
+        .isThrownBy(() -> dtoService.provisionStock(id, new StockQuantityDto(new ItemDto(), 15)));
       verify(manager, never()).provision(any(), any(), eq(15));
     }
 
     @ParameterizedTest(name = "Cannot provision {0} quantity of item")
-    @NullSource
     @ValueSource(ints = { 0, -50 })
     void canOnlyProvisiongPositiveQuantity(final Integer quantity)
       throws Exception
@@ -119,7 +118,7 @@ class StockDtoServiceImplTest
 
       assertThatExceptionOfType(ValidationException.class)
         .isThrownBy(
-          () -> dtoService.provisionStock(machine.getId(), itemDto, quantity));
+          () -> dtoService.provisionStock(machine.getId(), new StockQuantityDto(itemDto, quantity)));
 
       verify(manager, never()).provision(any(), any(), eq(quantity));
     }

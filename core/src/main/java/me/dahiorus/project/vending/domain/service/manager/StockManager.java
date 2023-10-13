@@ -10,5 +10,5 @@ public interface StockManager
 {
   VendingMachine getMachine(UUID id) throws EntityNotFound;
 
-  void provision(VendingMachine vendingMachine, Item item, Integer quantity);
+  void provision(VendingMachine vendingMachine, Item item, int quantity);
 }

@@ -6,8 +6,9 @@ import static me.dahiorus.project.vending.domain.service.validation.ValidationEr
 
 import org.springframework.stereotype.Component;
 
-import me.dahiorus.project.vending.domain.model.Item;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
+import me.dahiorus.project.vending.domain.model.dto.ItemDto;
+import me.dahiorus.project.vending.domain.model.dto.StockQuantityDto;
 import me.dahiorus.project.vending.domain.service.validation.StockValidator;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
@@ -15,9 +16,10 @@ import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 public class StockValidatorImpl implements StockValidator
 {
   @Override
-  public ValidationResults validate(final Item item, final Integer quantity, final VendingMachine machine)
+  public ValidationResults validate(final StockQuantityDto stockQuantity, final VendingMachine machine)
   {
     ValidationResults validationResults = new ValidationResults();
+    ItemDto item = stockQuantity.item();
 
     // the item type must be the same as the machine type
     if (machine.getType() != item.getType())
@@ -27,10 +29,10 @@ public class StockValidatorImpl implements StockValidator
         machine.getId()));
     }
 
-    if (quantity == null || quantity < 1L)
+    if (stockQuantity.quantity() < 1L)
     {
       validationResults.addError(fieldError("quantity", getFullCode("stock.quantity_positive"),
-        "The quantity to provision must be positive", quantity));
+        "The quantity to provision must be positive", stockQuantity.quantity()));
     }
 
     return validationResults;

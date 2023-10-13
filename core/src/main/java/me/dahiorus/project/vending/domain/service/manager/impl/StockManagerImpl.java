@@ -34,7 +34,7 @@ public class StockManagerImpl implements StockManager
   @Transactional(propagation = Propagation.MANDATORY)
   @Override
   public void provision(final VendingMachine vendingMachine, final Item itemToProvision,
-    final Integer quantity)
+    final int quantity)
   {
     log.debug("Provisioning a quantity of {} of item '{}' to vending machine {}", quantity,
       itemToProvision.getName(), vendingMachine.getId());
@@ -46,7 +46,7 @@ public class StockManagerImpl implements StockManager
         log.debug("Provisioned stock of items '{}': stock quantity updated to {}",
           itemToProvision.getName(), s.getQuantity());
       }, () -> {
-        Stock stock = Stock.fill(itemToProvision, quantity);
+        Stock stock = Stock.fill(itemToProvision, Integer.valueOf(quantity));
         vendingMachine.addStock(stock);
         dao.save(stock);
         log.debug("Provisioned a new stock of items to the vending machine {}: '{}' with quantity of {}",

@@ -26,6 +26,7 @@ import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
 import me.dahiorus.project.vending.domain.model.dto.ItemDto;
 import me.dahiorus.project.vending.domain.model.dto.StockDto;
+import me.dahiorus.project.vending.domain.model.dto.StockQuantityDto;
 import me.dahiorus.project.vending.domain.service.ItemDtoService;
 import me.dahiorus.project.vending.domain.service.StockDtoService;
 import me.dahiorus.project.vending.web.api.AppWebService;
@@ -63,7 +64,7 @@ public class StockRestController implements AppWebService
     throws EntityNotFound, ValidationException
   {
     ItemDto item = itemDtoService.read(itemId);
-    dtoService.provisionStock(id, item, provisionRequest.quantity());
+    dtoService.provisionStock(id, new StockQuantityDto(item, provisionRequest.quantity()));
 
     log.info("Provisioned stock of {} for vending machine {} with {}", itemId, id, provisionRequest);
 

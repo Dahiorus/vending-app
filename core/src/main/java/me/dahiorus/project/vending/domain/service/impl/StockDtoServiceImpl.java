@@ -12,8 +12,8 @@ import me.dahiorus.project.vending.domain.exception.EntityNotFound;
 import me.dahiorus.project.vending.domain.exception.ValidationException;
 import me.dahiorus.project.vending.domain.model.Item;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
-import me.dahiorus.project.vending.domain.model.dto.ItemDto;
 import me.dahiorus.project.vending.domain.model.dto.StockDto;
+import me.dahiorus.project.vending.domain.model.dto.StockQuantityDto;
 import me.dahiorus.project.vending.domain.service.DtoMapper;
 import me.dahiorus.project.vending.domain.service.StockDtoService;
 import me.dahiorus.project.vending.domain.service.manager.StockManager;
@@ -47,20 +47,20 @@ public class StockDtoServiceImpl implements StockDtoService
 
   @Transactional
   @Override
-  public void provisionStock(final UUID id, final ItemDto item, final Integer quantity)
+  public void provisionStock(final UUID id, final StockQuantityDto stockQuantity)
     throws EntityNotFound, ValidationException
   {
-    log.traceEntry(() -> id, () -> item, () -> quantity);
+    log.traceEntry(() -> id, () -> stockQuantity);
 
     VendingMachine machine = manager.getMachine(id);
-    Item itemToProvision = dtoMapper.toEntity(item, Item.class);
+    Item itemToProvision = dtoMapper.toEntity(stockQuantity.item(), Item.class);
 
-    ValidationResults validationResults = stockValidator.validate(itemToProvision, quantity, machine);
-    validationResults.throwIfError("Cannot provision " + item + " to vending machine " + id);
+    ValidationResults validationResults = stockValidator.validate(stockQuantity, machine);
+    validationResults.throwIfError("Cannot provision " + stockQuantity + " to vending machine " + id);
 
-    manager.provision(machine, itemToProvision, quantity);
+    manager.provision(machine, itemToProvision, stockQuantity.quantity());
 
     log.info("Vending machine {} stock of '{}' increased by {}", id,
-      item.getName(), quantity);
+      itemToProvision.getName(), stockQuantity.quantity());
   }
 }
