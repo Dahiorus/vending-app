@@ -7,6 +7,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.logging.log4j.Logger;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,9 +23,11 @@ import me.dahiorus.project.vending.domain.model.dto.ReportDto;
 import me.dahiorus.project.vending.domain.service.DtoMapper;
 import me.dahiorus.project.vending.domain.service.ReportDtoService;
 
+@CacheConfig(cacheNames = "reports")
 @Log4j2
 @Service
-public class ReportDtoServiceImpl extends DtoServiceImpl<Report, ReportDto, ReportDao>
+public class ReportDtoServiceImpl
+  extends DtoServiceImpl<Report, ReportDto, ReportDao>
   implements ReportDtoService
 {
   private final Dao<VendingMachine> vendingMachineDao;
@@ -41,6 +45,7 @@ public class ReportDtoServiceImpl extends DtoServiceImpl<Report, ReportDto, Repo
     return log;
   }
 
+  @CachePut(key = "#result.id")
   @Transactional
   @Override
   public ReportDto report(final UUID vendingMachineId) throws EntityNotFound
@@ -56,7 +61,8 @@ public class ReportDtoServiceImpl extends DtoServiceImpl<Report, ReportDto, Repo
     Report report = dao.save(reportAt(machineToReport, lastReportingDate));
     ReportDto dto = dtoMapper.toDto(report, getDomainClass());
 
-    log.info("Report created for vending machine {} : {}", machineToReport.getId(), report);
+    log.info("Report created for vending machine {} : {}",
+      machineToReport.getId(), report);
 
     return log.traceExit(dto);
   }
@@ -64,7 +70,8 @@ public class ReportDtoServiceImpl extends DtoServiceImpl<Report, ReportDto, Repo
   @Override
   public ReportDto create(final ReportDto dto) throws ValidationException
   {
-    throw new UnsupportedOperationException("Cannot directly call create. Call report() instead.");
+    throw new UnsupportedOperationException(
+      "Cannot directly call create. Call report() instead.");
   }
 
   @Override

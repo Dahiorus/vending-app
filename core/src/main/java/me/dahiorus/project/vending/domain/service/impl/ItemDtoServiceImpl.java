@@ -4,6 +4,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.logging.log4j.Logger;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +23,7 @@ import me.dahiorus.project.vending.domain.service.DtoMapper;
 import me.dahiorus.project.vending.domain.service.ItemDtoService;
 import me.dahiorus.project.vending.domain.service.validation.DtoValidator;
 
+@CacheConfig(cacheNames = "items")
 @Log4j2
 @Service
 public class ItemDtoServiceImpl extends DtoServiceImpl<Item, ItemDto, Dao<Item>>
@@ -26,7 +32,8 @@ public class ItemDtoServiceImpl extends DtoServiceImpl<Item, ItemDto, Dao<Item>>
   private final Dao<BinaryData> binaryDataDao;
 
   public ItemDtoServiceImpl(final Dao<Item> dao, final DtoMapper dtoMapper,
-    final DtoValidator<ItemDto> dtoValidator, final Dao<BinaryData> binaryDataDao)
+    final DtoValidator<ItemDto> dtoValidator,
+    final Dao<BinaryData> binaryDataDao)
   {
     super(dao, dtoMapper, dtoValidator);
     this.binaryDataDao = binaryDataDao;
@@ -44,9 +51,11 @@ public class ItemDtoServiceImpl extends DtoServiceImpl<Item, ItemDto, Dao<Item>>
     return ItemDto.class;
   }
 
+  @Caching(evict = @CacheEvict(cacheNames = "itemImages", key = "#id"), put = @CachePut(key = "#result.id"))
   @Transactional
   @Override
-  public ItemDto uploadImage(final UUID id, final BinaryDataDto picture) throws EntityNotFound
+  public ItemDto uploadImage(final UUID id, final BinaryDataDto picture)
+    throws EntityNotFound
   {
     log.debug("Uploading a picture for the item {}", id);
 
@@ -63,6 +72,7 @@ public class ItemDtoServiceImpl extends DtoServiceImpl<Item, ItemDto, Dao<Item>>
     return dtoMapper.toDto(updatedEntity, ItemDto.class);
   }
 
+  @Cacheable(value = "itemImages", key = "#id")
   @Transactional(readOnly = true)
   @Override
   public Optional<BinaryDataDto> getImage(final UUID id) throws EntityNotFound
@@ -71,6 +81,7 @@ public class ItemDtoServiceImpl extends DtoServiceImpl<Item, ItemDto, Dao<Item>>
 
     Item entity = dao.read(id);
 
-    return Optional.ofNullable(dtoMapper.toDto(entity.getPicture(), BinaryDataDto.class));
+    return Optional
+      .ofNullable(dtoMapper.toDto(entity.getPicture(), BinaryDataDto.class));
   }
 }

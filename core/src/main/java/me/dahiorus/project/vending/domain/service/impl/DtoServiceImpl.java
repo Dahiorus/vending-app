@@ -4,6 +4,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
@@ -24,6 +29,7 @@ import me.dahiorus.project.vending.domain.service.validation.CrudOperation;
 import me.dahiorus.project.vending.domain.service.validation.DtoValidator;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
+@CacheConfig(cacheResolver = "vendingCacheResolver")
 public abstract class DtoServiceImpl<E extends AbstractEntity, D extends AbstractDto<E>, R extends Dao<E>>
   implements DtoService<E, D>, HasLogger
 {
@@ -44,11 +50,13 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     entityClass = dao.getDomainClass();
   }
 
+  @CachePut(key = "#result.id")
   @Transactional
   @Override
   public D create(final D dto) throws ValidationException
   {
-    getLogger().debug("Creating a new {}: {}", getDomainClass().getSimpleName(), dto);
+    getLogger().debug("Creating a new {}: {}", getDomainClass().getSimpleName(),
+      dto);
 
     validate(dto).throwIfError(dto, CrudOperation.CREATE);
 
@@ -58,7 +66,8 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     E createdEntity = dao.save(entity);
     D createdDto = dtoMapper.toDto(createdEntity, getDomainClass());
 
-    getLogger().info("{} created: {}", getDomainClass().getSimpleName(), createdDto);
+    getLogger().info("{} created: {}", getDomainClass().getSimpleName(),
+      createdDto);
 
     return createdDto;
   }
@@ -82,29 +91,35 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
       }
 
       createCount++;
-      if (createCount % 100 == 0)
+      if (createCount % 200 == 0)
       {
-        getLogger().debug("Intermediate flushing after {} creation(s) of {}", createCount,
+        getLogger().debug("Intermediate flushing after {} creation(s) of {}",
+          createCount,
           entityClass.getSimpleName());
         dao.flush();
       }
     }
   }
 
+  @Cacheable(key = "#id")
   @Override
   public D read(final UUID id) throws EntityNotFound
   {
-    getLogger().debug("Getting {} with ID {}", getDomainClass().getSimpleName(), id);
+    getLogger().debug("Getting {} with ID {}", getDomainClass().getSimpleName(),
+      id);
     E entity = dao.read(id);
 
     return dtoMapper.toDto(entity, getDomainClass());
   }
 
+  @Caching(evict = @CacheEvict(key = "#id"), put = @CachePut(key = "#result.id"))
   @Transactional
   @Override
-  public D update(final UUID id, final D dto) throws EntityNotFound, ValidationException
+  public D update(final UUID id, final D dto)
+    throws EntityNotFound, ValidationException
   {
-    getLogger().debug("Updating {} with ID {}: {}", getDomainClass().getSimpleName(), id, dto);
+    getLogger().debug("Updating {} with ID {}: {}",
+      getDomainClass().getSimpleName(), id, dto);
 
     E entity = dao.read(id);
 
@@ -116,16 +131,19 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     E updatedEntity = dao.save(entity);
     D updatedDto = dtoMapper.toDto(updatedEntity, getDomainClass());
 
-    getLogger().info("{} updated: {}", getDomainClass().getSimpleName(), updatedDto);
+    getLogger().info("{} updated: {}", getDomainClass().getSimpleName(),
+      updatedDto);
 
     return updatedDto;
   }
 
+  @CacheEvict(key = "#id")
   @Transactional
   @Override
   public void delete(final UUID id) throws EntityNotFound
   {
-    getLogger().debug("Deleting {} with ID {}", getDomainClass().getSimpleName(), id);
+    getLogger().debug("Deleting {} with ID {}",
+      getDomainClass().getSimpleName(), id);
 
     E entity = dao.read(id);
     prepareEntity(entity, CrudOperation.DELETE);
@@ -134,8 +152,10 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     getLogger().info("{} deleted: ID {}", getDomainClass().getSimpleName(), id);
   }
 
+  // @Cacheable
   @Override
-  public Page<D> list(@Nonnull final Pageable pageable, @Nullable final D criteria,
+  public Page<D> list(@Nonnull final Pageable pageable,
+    @Nullable final D criteria,
     @Nullable final ExampleMatcher exampleMatcher)
   {
     Page<E> entities;
@@ -149,7 +169,8 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
     }
     else
     {
-      getLogger().debug("Getting page {} of {}", pageable, getDomainClass().getSimpleName());
+      getLogger().debug("Getting page {} of {}", pageable,
+        getDomainClass().getSimpleName());
       entities = dao.findAll(pageable);
     }
 
@@ -161,17 +182,21 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
   {
     E probe = dtoMapper.toEntity(criteria, entityClass);
 
-    return exampleMatcher == null ? Example.of(probe) : Example.of(probe, exampleMatcher);
+    return exampleMatcher == null ? Example.of(probe)
+      : Example.of(probe, exampleMatcher);
   }
 
+  @Cacheable(key = "#id", unless = "#result == null")
   @Override
   public Optional<D> findById(final UUID id)
   {
-    getLogger().debug("Finding one {} with ID {}", getDomainClass().getSimpleName(), id);
+    getLogger().debug("Finding one {} with ID {}",
+      getDomainClass().getSimpleName(), id);
 
     Optional<E> entity = dao.findById(id);
 
-    return Optional.ofNullable(dtoMapper.toDto(entity.orElse(null), getDomainClass()));
+    return Optional
+      .ofNullable(dtoMapper.toDto(entity.orElse(null), getDomainClass()));
   }
 
   @Nonnull
@@ -179,12 +204,14 @@ public abstract class DtoServiceImpl<E extends AbstractEntity, D extends Abstrac
   {
     if (dtoValidator.isEmpty())
     {
-      getLogger().debug("No available validator for {}. Skipping the validation",
+      getLogger().debug(
+        "No available validator for {}. Skipping the validation",
         getDomainClass().getSimpleName());
       return new ValidationResults();
     }
 
-    getLogger().debug("Validating {}: {}", getDomainClass().getSimpleName(), dto);
+    getLogger().debug("Validating {}: {}", getDomainClass().getSimpleName(),
+      dto);
 
     return dtoValidator.get()
       .validate(dto);

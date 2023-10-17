@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,7 @@ import me.dahiorus.project.vending.domain.service.validation.DtoValidator;
 import me.dahiorus.project.vending.domain.service.validation.PasswordValidator;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
+@CacheConfig(cacheNames = "users")
 @Log4j2
 @Service
 public class UserDtoServiceImpl extends DtoServiceImpl<AppUser, UserDto, UserDao>

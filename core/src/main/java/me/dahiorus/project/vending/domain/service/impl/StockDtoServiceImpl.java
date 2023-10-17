@@ -3,6 +3,9 @@ package me.dahiorus.project.vending.domain.service.impl;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,18 +23,22 @@ import me.dahiorus.project.vending.domain.service.manager.StockManager;
 import me.dahiorus.project.vending.domain.service.validation.StockValidator;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
+@CacheConfig(cacheNames = "vendingMachineStocks")
 @Transactional(readOnly = true)
 @Log4j2
 @RequiredArgsConstructor
 @Service
 public class StockDtoServiceImpl implements StockDtoService
 {
+  private static final String CACHE_NAME = "vendingMachineStocks";
+
   private final StockManager manager;
 
   private final StockValidator stockValidator;
 
   private final DtoMapper dtoMapper;
 
+  @Cacheable(cacheNames = CACHE_NAME, key = "#id")
   @Override
   public List<StockDto> getStocks(final UUID id) throws EntityNotFound
   {
@@ -45,6 +52,7 @@ public class StockDtoServiceImpl implements StockDtoService
     return stocks;
   }
 
+  @CacheEvict(cacheNames = CACHE_NAME, key = "#id")
   @Transactional
   @Override
   public void provisionStock(final UUID id, final StockQuantityDto stockQuantity)

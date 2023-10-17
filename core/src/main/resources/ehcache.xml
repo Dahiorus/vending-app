@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config
+  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+  xmlns='http://www.ehcache.org/v3'
+  xmlns:jsr107='http://www.ehcache.org/v3/jsr107'>
+  
+  <service>
+    <jsr107:defaults enable-statistics="true"/>
+  </service>
+  
+  <cache-template name="default-cache">
+    <expiry>
+      <ttl unit="seconds">10000</ttl>
+    </expiry>
+    
+    <listeners>
+      <listener>
+        <class>me.dahiorus.project.vending.cache.VendingCacheEventLogger</class>
+        <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
+        <event-ordering-mode>UNORDERED</event-ordering-mode>
+        <events-to-fire-on>CREATED</events-to-fire-on>
+        <events-to-fire-on>UPDATED</events-to-fire-on>
+        <events-to-fire-on>EXPIRED</events-to-fire-on>
+        <events-to-fire-on>REMOVED</events-to-fire-on>
+        <events-to-fire-on>EVICTED</events-to-fire-on>
+      </listener>
+    </listeners>
+    
+    <resources>
+      <offheap unit="MB">100</offheap>
+    </resources>
+  </cache-template>
+  
+  <cache alias="items" uses-template="default-cache">
+    <value-type>me.dahiorus.project.vending.domain.model.dto.ItemDto</value-type>
+  </cache>
+  
+  <cache alias="itemImages" uses-template="default-cache">
+    <value-type>me.dahiorus.project.vending.domain.model.dto.BinaryDataDto</value-type>
+  </cache>
+  
+  <cache alias="vendingMachines" uses-template="default-cache">
+    <value-type>me.dahiorus.project.vending.domain.model.dto.VendingMachineDto</value-type>
+  </cache>
+  
+  <cache alias="users" uses-template="default-cache">
+    <value-type>me.dahiorus.project.vending.domain.model.dto.UserDto</value-type>
+  </cache>
+  
+  <cache alias="reports" uses-template="default-cache">
+    <value-type>me.dahiorus.project.vending.domain.model.dto.ReportDto</value-type>
+  </cache>
+  
+  <cache alias="vendingMachineStocks" uses-template="default-cache">
+  </cache>
+  
+  
+</config>

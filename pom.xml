@@ -15,21 +15,23 @@
   <packaging>pom</packaging>
   <name>Vending App</name>
   <description>Vending machine project test</description>
-  
+
   <modules>
     <module>core</module>
     <module>web</module>
+    <module>cli</module>
   </modules>
 
   <properties>
     <java.version>17</java.version>
     <commons-collections4.version>4.4</commons-collections4.version>
     <json-patch.version>1.13</json-patch.version>
-    <maven-processor-plugin.version>5.0-rc3</maven-processor-plugin.version>
+    <maven-processor-plugin.version>5.0</maven-processor-plugin.version>
     <modelmapper.version>3.1.1</modelmapper.version>
     <spring.openapi.version>2.1.0</spring.openapi.version>
     <nimbus-jose-jwt.version>9.31</nimbus-jose-jwt.version>
     <commons-io.version>2.12.0</commons-io.version>
+    <jcommander.version>1.82</jcommander.version>
   </properties>
 
   <dependencies>
@@ -64,7 +66,10 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-log4j2</artifactId>
     </dependency>
-
+    <dependency>
+	  <groupId>org.springframework.boot</groupId>
+	  <artifactId>spring-boot-starter-cache</artifactId>
+	</dependency>
 
     <dependency>
       <groupId>com.nimbusds</groupId>
@@ -122,6 +127,12 @@
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
       <version>${spring.openapi.version}</version>
     </dependency>
+    
+    <dependency>
+	  <groupId>org.ehcache</groupId>
+	  <artifactId>ehcache</artifactId>
+	  <classifier>jakarta</classifier>
+	</dependency>
 
 
     <dependency>
