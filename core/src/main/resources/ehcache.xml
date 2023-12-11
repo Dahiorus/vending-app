@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config
-  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+<config xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
   xmlns='http://www.ehcache.org/v3'
   xmlns:jsr107='http://www.ehcache.org/v3/jsr107'>
   
@@ -53,6 +52,4 @@
   
   <cache alias="vendingMachineStocks" uses-template="default-cache">
   </cache>
-  
-  
 </config>
