@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.hateoas.server.core.Relation;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
@@ -15,6 +17,7 @@ import lombok.Setter;
 import lombok.ToString;
 import me.dahiorus.project.vending.domain.model.AppUser;
 
+@Relation(collectionRelation = "elements")
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true, exclude = { "password" })
 public class UserDto extends AbstractDto<AppUser>

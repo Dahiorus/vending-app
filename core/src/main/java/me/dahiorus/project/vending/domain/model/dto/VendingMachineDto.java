@@ -2,6 +2,8 @@ package me.dahiorus.project.vending.domain.model.dto;
 
 import java.time.Instant;
 
+import org.springframework.hateoas.server.core.Relation;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import lombok.EqualsAndHashCode;
@@ -16,6 +18,7 @@ import me.dahiorus.project.vending.domain.model.PowerStatus;
 import me.dahiorus.project.vending.domain.model.VendingMachine;
 import me.dahiorus.project.vending.domain.model.WorkingStatus;
 
+@Relation(collectionRelation = "elements")
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class VendingMachineDto extends AbstractDto<VendingMachine>

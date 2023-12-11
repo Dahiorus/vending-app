@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.hateoas.server.core.Relation;
+
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,6 +17,7 @@ import me.dahiorus.project.vending.domain.model.PowerStatus;
 import me.dahiorus.project.vending.domain.model.Report;
 import me.dahiorus.project.vending.domain.model.WorkingStatus;
 
+@Relation(collectionRelation = "elements")
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true, exclude = "reportStocks")
 public class ReportDto extends AbstractDto<Report>
