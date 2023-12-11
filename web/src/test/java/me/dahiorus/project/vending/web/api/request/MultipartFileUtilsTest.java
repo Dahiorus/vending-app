@@ -1,12 +1,11 @@
 package me.dahiorus.project.vending.web.api.request;
 
-import static me.dahiorus.project.vending.util.ValidationTestUtils.assertHasExactlyFieldErrors;
-import static me.dahiorus.project.vending.util.ValidationTestUtils.assertNoFieldError;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -24,6 +23,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import me.dahiorus.project.vending.domain.model.dto.BinaryDataDto;
+import me.dahiorus.project.vending.domain.service.validation.FieldValidationError;
 import me.dahiorus.project.vending.domain.service.validation.ValidationResults;
 
 class MultipartFileUtilsTest
@@ -31,10 +31,12 @@ class MultipartFileUtilsTest
   @Test
   void convertMultipartFileToBinaryDataDto() throws Exception
   {
-    MultipartFile file = new MockMultipartFile("file", "image.jpg", MediaType.IMAGE_JPEG_VALUE, new byte[32]);
+    MultipartFile file = new MockMultipartFile("file", "image.jpg",
+      MediaType.IMAGE_JPEG_VALUE, new byte[32]);
     BinaryDataDto binaryDataDto = MultipartFileUtils.convert(file);
 
-    assertThat(binaryDataDto).hasFieldOrPropertyWithValue("contentType", file.getContentType())
+    assertThat(binaryDataDto)
+      .hasFieldOrPropertyWithValue("contentType", file.getContentType())
       .hasFieldOrPropertyWithValue("content", file.getBytes())
       .satisfies(dto -> assertThat(dto.getName()).endsWith(".jpg")
         .isNotEqualTo(file.getOriginalFilename()));
@@ -44,12 +46,15 @@ class MultipartFileUtilsTest
   class ValidateImageTests
   {
     @ParameterizedTest(name = "Content type {0} is valid")
-    @ValueSource(strings = { MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE })
+    @ValueSource(strings = { MediaType.IMAGE_JPEG_VALUE,
+      MediaType.IMAGE_PNG_VALUE })
     void imageIsValid(final String contentType)
     {
-      MultipartFile file = new MockMultipartFile("file", "image", contentType, new byte[32]);
+      MultipartFile file = new MockMultipartFile("file", "image", contentType,
+        new byte[32]);
 
-      ValidationResults validationResults = MultipartFileUtils.validateImage("file", file);
+      ValidationResults validationResults = MultipartFileUtils
+        .validateImage("file", file);
 
       assertNoFieldError(validationResults, "file");
     }
@@ -57,11 +62,30 @@ class MultipartFileUtilsTest
     @Test
     void otherContentTypeIsInvalid()
     {
-      MultipartFile file = new MockMultipartFile("file", "text.html", MediaType.TEXT_HTML_VALUE, new byte[32]);
+      MultipartFile file = new MockMultipartFile("file", "text.html",
+        MediaType.TEXT_HTML_VALUE, new byte[32]);
 
-      ValidationResults validationResults = MultipartFileUtils.validateImage("file", file);
+      ValidationResults validationResults = MultipartFileUtils
+        .validateImage("file", file);
 
-      assertHasExactlyFieldErrors(validationResults, "file", "validation.constraints.image.wrong-content-type");
+      assertHasExactlyFieldErrors(validationResults, "file",
+        "validation.constraints.image.wrong-content-type");
+    }
+
+    private void assertNoFieldError(final ValidationResults results,
+      final String field)
+    {
+      assertThat(results.getFieldErrors(field)).isEmpty();
+    }
+
+    private void assertHasExactlyFieldErrors(final ValidationResults results,
+      final String field, final String... codes)
+    {
+      assertThat(results.getFieldErrors(field))
+        .as("Expecting %s error(s) on field '%s'", Arrays.asList(codes), field)
+        .isNotEmpty()
+        .extracting(FieldValidationError::getCode)
+        .containsExactlyInAnyOrder(codes);
     }
   }
 
@@ -81,7 +105,8 @@ class MultipartFileUtilsTest
       dto.setContent(new byte[32]);
       dto.setCreatedAt(Instant.now());
 
-      ResponseEntity<ByteArrayResource> response = MultipartFileUtils.convertToResponse(Optional.of(dto));
+      ResponseEntity<ByteArrayResource> response = MultipartFileUtils
+        .convertToResponse(Optional.of(dto));
 
       assertThat(response).satisfies(r -> {
         assertThat(r.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -89,16 +114,20 @@ class MultipartFileUtilsTest
           List.of(dto.getContentType()))
           .containsEntry(HttpHeaders.LAST_MODIFIED,
             List.of(DATE_FORMATTER.format(dto.getCreatedAt())))
-          .containsEntry(HttpHeaders.CONTENT_DISPOSITION, List.of("inline; filename=\"" + dto.getName() + "\""))
-          .containsEntry(HttpHeaders.CACHE_CONTROL, List.of("max-age=3600, public"))
-          .containsEntry(HttpHeaders.CONTENT_LENGTH, List.of(Integer.toString(dto.getSize())));
+          .containsEntry(HttpHeaders.CONTENT_DISPOSITION,
+            List.of("inline; filename=\"" + dto.getName() + "\""))
+          .containsEntry(HttpHeaders.CACHE_CONTROL,
+            List.of("max-age=3600, public"))
+          .containsEntry(HttpHeaders.CONTENT_LENGTH,
+            List.of(Integer.toString(dto.getSize())));
       });
     }
 
     @Test
     void convertEmptyToResponse()
     {
-      ResponseEntity<ByteArrayResource> response = MultipartFileUtils.convertToResponse(Optional.empty());
+      ResponseEntity<ByteArrayResource> response = MultipartFileUtils
+        .convertToResponse(Optional.empty());
 
       assertThat(response).isEqualTo(ResponseEntity.notFound()
         .build());
