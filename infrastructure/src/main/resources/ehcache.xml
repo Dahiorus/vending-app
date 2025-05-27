@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config
+  xmlns='http://www.ehcache.org/v3'
+  xmlns:jsr107='http://www.ehcache.org/v3/jsr107'>
+
+  <service>
+    <jsr107:defaults enable-statistics="true"/>
+  </service>
+
+  <cache-template name="default-cache">
+    <expiry>
+      <ttl>10000</ttl>
+    </expiry>
+
+    <listeners>
+      <listener>
+        <class>me.dahiorus.project.vending.infrastructure.cache.VendingCacheEventLogger</class>
+        <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
+        <event-ordering-mode>UNORDERED</event-ordering-mode>
+        <events-to-fire-on>CREATED</events-to-fire-on>
+        <events-to-fire-on>UPDATED</events-to-fire-on>
+        <events-to-fire-on>EXPIRED</events-to-fire-on>
+        <events-to-fire-on>REMOVED</events-to-fire-on>
+        <events-to-fire-on>EVICTED</events-to-fire-on>
+      </listener>
+    </listeners>
+
+    <resources>
+      <offheap unit="MB">100</offheap>
+    </resources>
+  </cache-template>
+
+  <cache alias="items" uses-template="default-cache">
+    <value-type>me.dahiorus.project.vending.domain.item.entity.Item</value-type>
+  </cache>
+
+  <cache alias="itemImages" uses-template="default-cache">
+    <value-type>me.dahiorus.project.vending.domain.file.entity.UploadedFile</value-type>
+  </cache>
+
+  <cache alias="vendingMachines" uses-template="default-cache">
+    <value-type>me.dahiorus.project.vending.domain.machine.entity.VendingMachine</value-type>
+  </cache>
+
+  <cache alias="users" uses-template="default-cache">
+    <value-type>me.dahiorus.project.vending.domain.user.entity.AppUser</value-type>
+  </cache>
+
+  <cache alias="userPictures" uses-template="default-cache">
+    <value-type>me.dahiorus.project.vending.domain.file.entity.UploadedFile</value-type>
+  </cache>
+
+  <cache alias="admins" uses-template="default-cache">
+    <value-type>me.dahiorus.project.vending.domain.user.entity.AdminUser</value-type>
+  </cache>
+
+  <cache alias="usersWithRoles" uses-template="default-cache">
+    <value-type>me.dahiorus.project.vending.domain.user.entity.UserWithRoles</value-type>
+  </cache>
+
+  <cache alias="vendingMachineStocks" uses-template="default-cache">
+  </cache>
+</config>
