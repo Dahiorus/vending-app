@@ -1,0 +1,6 @@
+package me.dahiorus.project.vending.domain.reporting.entity;
+
+import java.util.UUID;
+import me.dahiorus.project.vending.domain.DomainId;
+
+public record VendingMachineClientOrdersReportId(UUID value) implements DomainId {}
