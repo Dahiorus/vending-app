@@ -9,7 +9,7 @@
   
   <cache-template name="default-cache">
     <expiry>
-      <ttl unit="seconds">10000</ttl>
+      <ttl>10000</ttl>
     </expiry>
     
     <listeners>

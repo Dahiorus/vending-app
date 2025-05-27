@@ -2,10 +2,10 @@ package me.dahiorus.project.vending.domain.service.validation.impl;
 
 import static me.dahiorus.project.vending.util.ValidationTestUtils.assertHasExactlyFieldErrors;
 import static me.dahiorus.project.vending.util.ValidationTestUtils.assertNoFieldError;
+import static org.apache.commons.lang3.ArrayUtils.isEmpty;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -109,7 +109,7 @@ class PasswordValidatorImplTest
     String field = "pwdField";
     ValidationResults results = validator.validate(field, rawPassword);
 
-    if (ArrayUtils.isEmpty(expectedErrorCodes))
+    if (isEmpty(expectedErrorCodes))
     {
       assertNoFieldError(results, field);
     }

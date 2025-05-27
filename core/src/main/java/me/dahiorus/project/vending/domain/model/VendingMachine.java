@@ -26,13 +26,14 @@ import jakarta.persistence.UniqueConstraint;
 @Entity
 @Table(name = "vending_machine",
   uniqueConstraints = @UniqueConstraint(name = "UK_VENDING_MACHINE_SERIAL_NUMBER",
-    columnNames = "serialNumber"),
-  indexes = { @Index(columnList = "streetAddress", name = "IDX_VENDING_MACHINE_ADDRESS"),
+    columnNames = "serial_number"),
+  indexes = {
+    @Index(columnList = "streetAddress", name = "IDX_VENDING_MACHINE_ADDRESS"),
     @Index(columnList = "latitude, longitude", name = "IDX_VENDING_MACHINE_POSITION"),
     @Index(columnList = "place", name = "IDX_VENDING_MACHINE_PLACE"),
     @Index(columnList = "type", name = "IDX_VENDING_MACHINE_TYPE"),
-    @Index(columnList = "powerStatus", name = "IDX_VENDING_MACHINE_POWER_STATUS"), @Index(
-      columnList = "powerStatus, workingStatus", name = "IDX_VENDING_MACHINE_WORKING_STATUS") })
+    @Index(columnList = "powerStatus", name = "IDX_VENDING_MACHINE_POWER_STATUS"),
+    @Index(columnList = "powerStatus, workingStatus", name = "IDX_VENDING_MACHINE_WORKING_STATUS") })
 public class VendingMachine extends AbstractEntity
 {
   private String serialNumber;
@@ -193,7 +194,8 @@ public class VendingMachine extends AbstractEntity
   public boolean isAllSystemClear()
   {
     return isWorking() && rfidStatus == CardSystemStatus.NORMAL &&
-      smartCardStatus == CardSystemStatus.NORMAL && changeMoneyStatus == ChangeSystemStatus.NORMAL;
+      smartCardStatus == CardSystemStatus.NORMAL
+      && changeMoneyStatus == ChangeSystemStatus.NORMAL;
   }
 
   public void setChangeMoneyStatus(final ChangeSystemStatus changeMoneyStatus)
@@ -292,10 +294,14 @@ public class VendingMachine extends AbstractEntity
   @Override
   public String toString()
   {
-    return super.toString() + "[serialNumber=" + serialNumber + ", address=" + address +
-      ", lastIntervention=" + lastIntervention + ", temperature=" + temperature + ", type=" + type +
-      ", powerStatus=" + powerStatus + ", workingStatus=" + workingStatus + ", rfidStatus=" +
-      rfidStatus + ", smartCardStatus=" + smartCardStatus + ", changeMoneyStatus=" +
+    return super.toString() + "[serialNumber=" + serialNumber + ", address="
+      + address +
+      ", lastIntervention=" + lastIntervention + ", temperature=" + temperature
+      + ", type=" + type +
+      ", powerStatus=" + powerStatus + ", workingStatus=" + workingStatus
+      + ", rfidStatus=" +
+      rfidStatus + ", smartCardStatus=" + smartCardStatus
+      + ", changeMoneyStatus=" +
       changeMoneyStatus + "]";
   }
 }

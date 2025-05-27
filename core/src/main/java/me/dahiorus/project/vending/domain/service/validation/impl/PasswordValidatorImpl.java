@@ -88,7 +88,7 @@ public class PasswordValidatorImpl implements PasswordValidator
   private static long countCharType(final String rawPassword, final Predicate<Character> charPredicate)
   {
     return rawPassword.chars()
-        .mapToObj(Character.class::cast)
+        .mapToObj(c -> (char) c)
         .filter(charPredicate)
         .count();
   }
