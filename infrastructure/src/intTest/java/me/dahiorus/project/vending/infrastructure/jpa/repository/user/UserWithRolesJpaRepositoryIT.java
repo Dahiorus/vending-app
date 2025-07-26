@@ -19,8 +19,8 @@ import me.dahiorus.project.vending.infrastructure.jpa.repository.user.UserWithRo
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 
 @ContextConfiguration(classes = TestConfig.class)
@@ -77,7 +77,7 @@ class UserWithRolesJpaRepositoryIT extends H2DbContainer {
         .hasMessage("No user found with username [toto]");
   }
 
-  @Configuration
+  @TestConfiguration
   static class TestConfig {
     @Bean
     UserWithRolesJpaRepository userWithRolesJpaRepository(JpaUserDao jpaUserDao) {

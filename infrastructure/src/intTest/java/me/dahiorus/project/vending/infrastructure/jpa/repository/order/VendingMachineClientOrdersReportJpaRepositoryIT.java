@@ -25,6 +25,7 @@ import me.dahiorus.project.vending.infrastructure.jpa.repository.order.VendingMa
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -155,6 +156,7 @@ class VendingMachineClientOrdersReportJpaRepositoryIT extends H2DbContainer {
     }
   }
 
+  @TestConfiguration
   static class TestConfig {
     @Bean
     VendingMachineClientOrdersReportJpaRepository vendingMachineClientOrdersReportJpaRepository(

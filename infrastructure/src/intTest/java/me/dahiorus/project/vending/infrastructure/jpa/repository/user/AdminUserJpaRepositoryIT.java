@@ -13,17 +13,18 @@ import me.dahiorus.project.vending.domain.user.entity.Password;
 import me.dahiorus.project.vending.domain.user.entity.UserId;
 import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaUser;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
+import me.dahiorus.project.vending.infrastructure.jpa.repository.user.AdminUserJpaRepositoryIT.TestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 
-@ContextConfiguration()
+@ContextConfiguration(classes = TestConfig.class)
 class AdminUserJpaRepositoryIT extends H2DbContainer {
 
   @Autowired PasswordEncoder passwordEncoder;
@@ -119,7 +120,7 @@ class AdminUserJpaRepositoryIT extends H2DbContainer {
     }
   }
 
-  @Configuration
+  @TestConfiguration
   static class TestConfig {
     @Bean
     PasswordEncoder passwordEncoder() {
