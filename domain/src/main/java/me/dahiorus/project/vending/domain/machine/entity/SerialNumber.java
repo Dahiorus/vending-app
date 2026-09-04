@@ -1,12 +1,12 @@
 package me.dahiorus.project.vending.domain.machine.entity;
 
-import static me.dahiorus.project.vending.domain.utils.StringUtils.isBlank;
+import static java.util.Objects.requireNonNullElse;
 
 import java.io.Serializable;
 
 public record SerialNumber(String value) implements Serializable {
   public SerialNumber {
-    if (isBlank(value)) {
+    if (requireNonNullElse(value, "").isBlank()) {
       throw new IllegalArgumentException("Serial number cannot be null or blank");
     }
   }

@@ -1,6 +1,6 @@
 package me.dahiorus.project.vending.domain.machine.entity;
 
-import static me.dahiorus.project.vending.domain.utils.StringUtils.isBlank;
+import static java.util.Objects.requireNonNullElse;
 
 import java.io.Serializable;
 
@@ -29,7 +29,7 @@ public record Address(
 
   public record City(String value) implements Serializable {
     public City {
-      if (isBlank(value)) {
+      if (requireNonNullElse(value, "").isBlank()) {
         throw new IllegalArgumentException("City name cannot be null or blank.");
       }
     }
@@ -41,7 +41,7 @@ public record Address(
 
   public record PostalCode(String value) implements Serializable {
     public PostalCode {
-      if (isBlank(value)) {
+      if (requireNonNullElse(value, "").isBlank()) {
         throw new IllegalArgumentException("Postal code cannot be null or blank.");
       }
     }
@@ -65,7 +65,7 @@ public record Address(
 
   public record StreetName(String value) implements Serializable {
     public StreetName {
-      if (isBlank(value)) {
+      if (requireNonNullElse(value, "").isBlank()) {
         throw new IllegalArgumentException("Street name cannot be null or blank.");
       }
     }

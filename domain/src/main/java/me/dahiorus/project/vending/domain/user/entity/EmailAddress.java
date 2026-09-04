@@ -1,13 +1,13 @@
 package me.dahiorus.project.vending.domain.user.entity;
 
-import static me.dahiorus.project.vending.domain.utils.StringUtils.isBlank;
+import static java.util.Objects.requireNonNullElse;
 
 import java.io.Serializable;
 
 public record EmailAddress(String value) implements Serializable {
 
   public EmailAddress {
-    if (isBlank(value)) {
+    if (requireNonNullElse(value, "").isBlank()) {
       throw new IllegalArgumentException("EmailAddress value cannot be blank");
     }
   }
