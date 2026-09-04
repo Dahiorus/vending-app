@@ -1,0 +1,51 @@
+<h1 class="mb-4 text-xl font-semibold">Vending machines</h1>
+
+@if (isLoading()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+@if (hasError()) {
+  <p class="text-red-600" role="alert">Vending machines could not be loaded.</p>
+} @else {
+  <table mat-table [dataSource]="machines()" class="w-full">
+    <ng-container matColumnDef="serialNumber">
+      <th mat-header-cell *matHeaderCellDef>Serial number</th>
+      <td mat-cell *matCellDef="let machine">{{ machine.serialNumber }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="city">
+      <th mat-header-cell *matHeaderCellDef>City</th>
+      <td mat-cell *matCellDef="let machine">{{ machine.address?.city ?? '—' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="itemType">
+      <th mat-header-cell *matHeaderCellDef>Item type</th>
+      <td mat-cell *matCellDef="let machine">{{ machine.itemType ?? '—' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="workingStatus">
+      <th mat-header-cell *matHeaderCellDef>Working status</th>
+      <td mat-cell *matCellDef="let machine">{{ machine.workingStatus ?? '—' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="powerStatus">
+      <th mat-header-cell *matHeaderCellDef>Power</th>
+      <td mat-cell *matCellDef="let machine">{{ machine.powerStatus ?? '—' }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+
+  @if (!isLoading() && machines().length === 0) {
+    <p class="p-4 text-sm text-gray-600">No vending machine found.</p>
+  }
+
+  <mat-paginator
+    [length]="totalElements()"
+    [pageIndex]="pageIndex()"
+    [pageSize]="pageSize()"
+    [pageSizeOptions]="[10, 20, 50]"
+    (page)="onPageChange($event)"
+  />
+}
