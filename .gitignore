@@ -37,3 +37,10 @@ build/
 
 ### Worktrees ###
 .worktrees/
+
+### Frontend ###
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/test-results/
+frontend/playwright-report/
