@@ -1,4 +1,4 @@
-package me.dahiorus.project.vending.infrastructure.jpa.repository;
+package me.dahiorus.project.vending.infrastructure.jpa.repository.item;
 
 import static me.dahiorus.project.vending.domain.file.entity.ContentType.JPG;
 import static me.dahiorus.project.vending.domain.item.entity.ItemType.COLD_BEVERAGE;
@@ -22,7 +22,8 @@ import me.dahiorus.project.vending.domain.pagination.entity.Filter;
 import me.dahiorus.project.vending.domain.pagination.entity.FilterMatcher;
 import me.dahiorus.project.vending.domain.pagination.entity.Pagination;
 import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaUploadedFile;
-import me.dahiorus.project.vending.infrastructure.jpa.repository.ItemJpaRepositoryIT.TestConfig;
+import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
+import me.dahiorus.project.vending.infrastructure.jpa.repository.item.ItemJpaRepositoryIT.TestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

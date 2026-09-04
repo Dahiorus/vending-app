@@ -1,4 +1,4 @@
-package me.dahiorus.project.vending.infrastructure.jpa.repository;
+package me.dahiorus.project.vending.infrastructure.jpa.repository.item;
 
 import static me.dahiorus.project.vending.infrastructure.jpa.repository.ExampleMatcherAdapter.toExample;
 import static me.dahiorus.project.vending.infrastructure.jpa.repository.ToPageableConverter.toPageable;
