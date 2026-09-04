@@ -14,13 +14,13 @@ import org.springframework.hateoas.server.SimpleRepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
 @Component
-public class VendingMachineStatusReportModelAssembler
+public class VendingMachineStatusReportDtoModelAssembler
     implements SimpleRepresentationModelAssembler<VendingMachineStatusReportDto> {
 
   @Override
   public void addLinks(final EntityModel<VendingMachineStatusReportDto> resource) {
     Optional.ofNullable(resource.getContent())
-        .map(VendingMachineStatusReportModelAssembler::buildLinks)
+        .map(VendingMachineStatusReportDtoModelAssembler::buildLinks)
         .ifPresent(resource::add);
   }
 
