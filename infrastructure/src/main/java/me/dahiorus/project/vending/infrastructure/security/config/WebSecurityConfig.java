@@ -12,6 +12,7 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Clock;
+import java.util.List;
 import java.util.Map;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +31,9 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -45,9 +49,12 @@ public class WebSecurityConfig {
   SecurityFilterChain filterChain(
       final HttpSecurity http,
       final ObjectMapper objectMapper,
-      final JwtAuthenticationConverter jwtAuthenticationConverter, final Clock clock)
+      final JwtAuthenticationConverter jwtAuthenticationConverter,
+      final CorsConfigurationSource corsConfigurationSource,
+      final Clock clock)
       throws Exception {
     return http.csrf(CsrfConfigurer::disable)
+        .cors(customizer -> customizer.configurationSource(corsConfigurationSource))
         .httpBasic(HttpBasicConfigurer::disable)
         .logout(LogoutConfigurer::disable)
         .sessionManagement(customizer -> customizer.sessionCreationPolicy(STATELESS))
@@ -126,5 +133,17 @@ public class WebSecurityConfig {
         DEFAULT_PWD_ENCODER_PREFIX,
         Map.of(DEFAULT_PWD_ENCODER_PREFIX, new BCryptPasswordEncoder($2A, 13)));
   }
-}
 
+  @Bean
+  CorsConfigurationSource corsConfigurationSource(final CorsProperties corsProperties) {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedOrigins(corsProperties.getAllowedOrigins());
+    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+    configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
+    configuration.setAllowCredentials(false);
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
+  }
+}

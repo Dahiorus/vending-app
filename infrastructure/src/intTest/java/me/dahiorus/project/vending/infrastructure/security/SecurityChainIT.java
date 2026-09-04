@@ -4,7 +4,9 @@ import static org.hamcrest.Matchers.not;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.oauth2.jose.jws.SignatureAlgorithm.RS256;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -60,6 +62,7 @@ class SecurityChainIT {
 
   private static final String PASSWORD = "S3cr3t!Password";
   private static final String ISSUER_URI = "https://vending-app.dahiorus.me";
+  private static final String TEST_ORIGIN = "https://spa.example.test";
   private static final String TOKEN_TYPE_CLAIM = "token_type";
   private static final String ROLES_CLAIM = "roles";
 
@@ -244,6 +247,26 @@ class SecurityChainIT {
   @Test
   void should_allow_public_endpoints_without_authentication() throws Exception {
     mockMvc.perform(get("/api/v1/vending-machines")).andExpect(status().isOk());
+  }
+
+  @Test
+  void should_handle_a_cors_preflight_request_for_an_allowed_origin() throws Exception {
+    mockMvc
+        .perform(
+            options("/api/v1/me")
+                .header(HttpHeaders.ORIGIN, TEST_ORIGIN)
+                .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
+                .header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "Authorization,Content-Type"))
+        .andExpect(status().isOk())
+        .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, TEST_ORIGIN))
+        .andExpect(
+            header().string(
+                HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "GET,POST,PUT,DELETE"))
+        .andExpect(
+            header()
+                .string(
+                    HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS,
+                    "Authorization, Content-Type"));
   }
 
   private String accessTokenFor(final String username, final List<SimpleGrantedAuthority> roles) {
