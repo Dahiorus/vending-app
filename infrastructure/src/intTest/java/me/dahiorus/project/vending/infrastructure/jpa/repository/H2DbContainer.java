@@ -1,6 +1,6 @@
 package me.dahiorus.project.vending.infrastructure.jpa.repository;
 
-import me.dahiorus.project.vending.infrastructure.config.JpaRepositoryConfig;
+import me.dahiorus.project.vending.infrastructure.jpa.config.JpaRepositoryConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;

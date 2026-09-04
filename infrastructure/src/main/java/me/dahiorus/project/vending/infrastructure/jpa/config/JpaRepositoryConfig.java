@@ -1,4 +1,4 @@
-package me.dahiorus.project.vending.infrastructure.config;
+package me.dahiorus.project.vending.infrastructure.jpa.config;
 
 import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaEntity;
 import org.springframework.boot.autoconfigure.domain.EntityScan;

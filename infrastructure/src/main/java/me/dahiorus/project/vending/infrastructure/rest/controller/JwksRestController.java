@@ -1,6 +1,6 @@
 package me.dahiorus.project.vending.infrastructure.rest.controller;
 
-import static me.dahiorus.project.vending.infrastructure.config.WebSecurityConfig.JWKS_PATH;
+import static me.dahiorus.project.vending.infrastructure.security.config.WebSecurityConfig.JWKS_PATH;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.ok;
 

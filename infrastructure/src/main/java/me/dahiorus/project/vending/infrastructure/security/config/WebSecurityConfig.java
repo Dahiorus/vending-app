@@ -1,4 +1,4 @@
-package me.dahiorus.project.vending.infrastructure.config;
+package me.dahiorus.project.vending.infrastructure.security.config;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;

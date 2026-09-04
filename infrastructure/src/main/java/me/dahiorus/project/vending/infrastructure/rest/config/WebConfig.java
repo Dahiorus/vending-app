@@ -1,4 +1,4 @@
-package me.dahiorus.project.vending.infrastructure.config;
+package me.dahiorus.project.vending.infrastructure.rest.config;
 
 import static io.swagger.v3.oas.annotations.enums.SecuritySchemeType.HTTP;
 import static org.springframework.data.domain.Sort.Direction.DESC;
@@ -22,7 +22,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
             description = "Simple vending application",
             version = "v1.0"))
 @SecurityScheme(name = "bearerAuth", bearerFormat = "JWT", type = HTTP, scheme = "bearer")
-public class MvcConfig implements WebMvcConfigurer {
+public class WebConfig implements WebMvcConfigurer {
   @Override
   public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers) {
     resolvers.add(pagingHandlerResolver());
