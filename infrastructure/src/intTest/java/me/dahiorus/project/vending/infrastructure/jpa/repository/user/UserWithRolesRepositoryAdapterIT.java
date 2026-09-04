@@ -15,7 +15,7 @@ import me.dahiorus.project.vending.domain.user.entity.Role;
 import me.dahiorus.project.vending.domain.user.entity.UserWithRoles;
 import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaUser;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
-import me.dahiorus.project.vending.infrastructure.jpa.repository.user.UserWithRolesJpaRepositoryIT.TestConfig;
+import me.dahiorus.project.vending.infrastructure.jpa.repository.user.UserWithRolesRepositoryAdapterIT.TestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +24,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 
 @ContextConfiguration(classes = TestConfig.class)
-class UserWithRolesJpaRepositoryIT extends H2DbContainer {
+class UserWithRolesRepositoryAdapterIT extends H2DbContainer {
 
-  @Autowired UserWithRolesJpaRepository userWithRolesJpaRepository;
+  @Autowired UserWithRolesRepositoryAdapter userWithRolesJpaRepository;
 
   @BeforeEach
   void setUpUsers() {
@@ -80,8 +80,8 @@ class UserWithRolesJpaRepositoryIT extends H2DbContainer {
   @TestConfiguration
   static class TestConfig {
     @Bean
-    UserWithRolesJpaRepository userWithRolesJpaRepository(JpaUserDao jpaUserDao) {
-      return new UserWithRolesJpaRepository(jpaUserDao);
+    UserWithRolesRepositoryAdapter userWithRolesJpaRepository(UserJpaRepository jpaUserDao) {
+      return new UserWithRolesRepositoryAdapter(jpaUserDao);
     }
   }
 }

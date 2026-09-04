@@ -17,7 +17,7 @@ import me.dahiorus.project.vending.domain.user.entity.UserId;
 import me.dahiorus.project.vending.domain.user.port.AppUserRepositoryPort;
 import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaUser;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
-import me.dahiorus.project.vending.infrastructure.jpa.repository.user.AppUserJpaRepositoryIT.TestConfig;
+import me.dahiorus.project.vending.infrastructure.jpa.repository.user.AppUserRepositoryAdapterIT.TestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -32,10 +32,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 
 @ContextConfiguration(classes = TestConfig.class)
-class AppUserJpaRepositoryIT extends H2DbContainer {
+class AppUserRepositoryAdapterIT extends H2DbContainer {
 
   @Autowired PasswordEncoder passwordEncoder;
-  @Autowired AppUserJpaRepository repository;
+  @Autowired AppUserRepositoryAdapter repository;
 
   @Test
   void should_create_app_user() {
@@ -260,8 +260,8 @@ class AppUserJpaRepositoryIT extends H2DbContainer {
 
     @Bean
     AppUserRepositoryPort appUserJpaRepository(
-        JpaUserDao jpaUserDao, PasswordEncoder passwordEncoder) {
-      return new AppUserJpaRepository(jpaUserDao, passwordEncoder);
+        UserJpaRepository jpaUserDao, PasswordEncoder passwordEncoder) {
+      return new AppUserRepositoryAdapter(jpaUserDao, passwordEncoder);
     }
   }
 }

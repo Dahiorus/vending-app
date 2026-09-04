@@ -18,7 +18,7 @@ import me.dahiorus.project.vending.domain.reporting.port.VendingMachineStockRepo
 import me.dahiorus.project.vending.domain.stock.entity.ItemQuantity;
 import me.dahiorus.project.vending.domain.stock.entity.Quantity;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
-import me.dahiorus.project.vending.infrastructure.jpa.repository.machine.VendingMachineStockReportJpaRepositoryIT.TestConfig;
+import me.dahiorus.project.vending.infrastructure.jpa.repository.machine.VendingMachineStockReportRepositoryAdapterIT.TestConfig;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 
 @ContextConfiguration(classes = TestConfig.class)
-class VendingMachineStockReportJpaRepositoryIT extends H2DbContainer {
+class VendingMachineStockReportRepositoryAdapterIT extends H2DbContainer {
 
   @Autowired VendingMachineStockReportRepositoryPort repository;
 
@@ -70,8 +70,8 @@ class VendingMachineStockReportJpaRepositoryIT extends H2DbContainer {
   @TestConfiguration
   static class TestConfig {
     @Bean
-    VendingMachineStockReportJpaRepository repository(EntityManager entityManager) {
-      return new VendingMachineStockReportJpaRepository(entityManager);
+    VendingMachineStockReportRepositoryAdapter repository(EntityManager entityManager) {
+      return new VendingMachineStockReportRepositoryAdapter(entityManager);
     }
   }
 }

@@ -23,9 +23,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
-class VendingMachineStatusReportJpaRepositoryIT extends H2DbContainer {
+class VendingMachineStatusReportRepositoryAdapterIT extends H2DbContainer {
 
-  @Autowired VendingMachineStatusReportJpaRepository repository;
+  @Autowired VendingMachineStatusReportRepositoryAdapter repository;
 
   @Test
   void should_create_status_report_of_given_vending_machine() {
@@ -58,9 +58,9 @@ class VendingMachineStatusReportJpaRepositoryIT extends H2DbContainer {
   @TestConfiguration
   static class TestConfig {
     @Bean
-    VendingMachineStatusReportJpaRepository vendingMachineStatusReportJpaRepository(
+    VendingMachineStatusReportRepositoryAdapter vendingMachineStatusReportJpaRepository(
         EntityManager entityManager) {
-      return new VendingMachineStatusReportJpaRepository(entityManager);
+      return new VendingMachineStatusReportRepositoryAdapter(entityManager);
     }
   }
 }

@@ -10,7 +10,7 @@ import me.dahiorus.project.vending.domain.user.entity.Lastname;
 import me.dahiorus.project.vending.domain.user.entity.Password;
 import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaUser;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
-import me.dahiorus.project.vending.infrastructure.jpa.repository.user.UserToCreateJpaRepositoryIT.TestConfig;
+import me.dahiorus.project.vending.infrastructure.jpa.repository.user.UserToCreateRepositoryAdapterIT.TestConfig;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +19,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 
 @ContextConfiguration(classes = TestConfig.class)
-class UserToCreateJpaRepositoryIT extends H2DbContainer {
+class UserToCreateRepositoryAdapterIT extends H2DbContainer {
 
-  @Autowired UserToCreateJpaRepository repository;
+  @Autowired UserToCreateRepositoryAdapter repository;
 
   @Nested
   class FindDuplicateOf {
@@ -66,8 +66,8 @@ class UserToCreateJpaRepositoryIT extends H2DbContainer {
   @TestConfiguration
   static class TestConfig {
     @Bean
-    UserToCreateJpaRepository userToCreateJpaRepository(JpaUserDao jpaUserDao) {
-      return new UserToCreateJpaRepository(jpaUserDao);
+    UserToCreateRepositoryAdapter userToCreateJpaRepository(UserJpaRepository jpaUserDao) {
+      return new UserToCreateRepositoryAdapter(jpaUserDao);
     }
   }
 }

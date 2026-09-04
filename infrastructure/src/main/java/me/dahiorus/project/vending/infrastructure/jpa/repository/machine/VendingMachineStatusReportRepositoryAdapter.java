@@ -11,11 +11,11 @@ import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class VendingMachineStatusReportJpaRepository
+public class VendingMachineStatusReportRepositoryAdapter
     implements VendingMachineStatusReportRepositoryPort {
   private final JpaRepository<JpaStatusReport, UUID> jpaRepository;
 
-  public VendingMachineStatusReportJpaRepository(final EntityManager entityManager) {
+  public VendingMachineStatusReportRepositoryAdapter(final EntityManager entityManager) {
     this.jpaRepository = new SimpleJpaRepository<>(JpaStatusReport.class, entityManager);
   }
 

@@ -1,6 +1,6 @@
 package me.dahiorus.project.vending.infrastructure.security;
 
-import me.dahiorus.project.vending.infrastructure.jpa.repository.user.JpaUserDao;
+import me.dahiorus.project.vending.infrastructure.jpa.repository.user.UserJpaRepository;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserDaoDetailsService implements UserDetailsService {
 
-  private final JpaUserDao jpaUserDao;
+  private final UserJpaRepository jpaUserDao;
 
-  public UserDaoDetailsService(final JpaUserDao jpaUserDao) {
+  public UserDaoDetailsService(final UserJpaRepository jpaUserDao) {
     this.jpaUserDao = jpaUserDao;
   }
 

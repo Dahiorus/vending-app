@@ -9,13 +9,13 @@ import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaClientOrdersRepo
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class VendingMachineClientOrdersReportJpaRepository
+public class VendingMachineClientOrdersReportRepositoryAdapter
     implements VendingMachineClientOrdersReportRepositoryPort {
 
-  private final JpaClientOrdersReportDao jpaClientOrdersReportRepository;
+  private final ClientOrdersReportJpaRepository jpaClientOrdersReportRepository;
 
-  public VendingMachineClientOrdersReportJpaRepository(
-      final JpaClientOrdersReportDao jpaClientOrdersReportRepository) {
+  public VendingMachineClientOrdersReportRepositoryAdapter(
+      final ClientOrdersReportJpaRepository jpaClientOrdersReportRepository) {
     this.jpaClientOrdersReportRepository = jpaClientOrdersReportRepository;
   }
 

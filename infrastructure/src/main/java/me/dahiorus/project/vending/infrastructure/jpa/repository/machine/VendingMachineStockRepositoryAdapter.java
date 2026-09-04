@@ -23,11 +23,11 @@ import org.springframework.stereotype.Repository;
 
 @CacheConfig(cacheNames = "vendingMachineStocks")
 @Repository
-public class VendingMachineStockJpaRepository implements VendingMachineStockRepositoryPort {
+public class VendingMachineStockRepositoryAdapter implements VendingMachineStockRepositoryPort {
   private final JpaRepository<JpaVendingMachine, UUID> jpaRepository;
   private final JpaRepository<JpaVendingMachineStockEntry, JpaStockId> jpaStockRepository;
 
-  public VendingMachineStockJpaRepository(EntityManager entityManager) {
+  public VendingMachineStockRepositoryAdapter(EntityManager entityManager) {
     this.jpaRepository = new SimpleJpaRepository<>(JpaVendingMachine.class, entityManager);
     this.jpaStockRepository =
         new SimpleJpaRepository<>(JpaVendingMachineStockEntry.class, entityManager);

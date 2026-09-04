@@ -11,11 +11,11 @@ import org.springframework.stereotype.Repository;
 
 @CacheConfig(cacheNames = "usersWithRoles")
 @Repository
-public class UserWithRolesJpaRepository implements UserWithRolesRepositoryPort {
+public class UserWithRolesRepositoryAdapter implements UserWithRolesRepositoryPort {
 
-  private final JpaUserDao jpaRepository;
+  private final UserJpaRepository jpaRepository;
 
-  public UserWithRolesJpaRepository(final JpaUserDao jpaRepository) {
+  public UserWithRolesRepositoryAdapter(final UserJpaRepository jpaRepository) {
     this.jpaRepository = jpaRepository;
   }
 

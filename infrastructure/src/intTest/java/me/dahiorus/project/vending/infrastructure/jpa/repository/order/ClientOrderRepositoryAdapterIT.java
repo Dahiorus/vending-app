@@ -35,10 +35,10 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 
-@ContextConfiguration(classes = ClientOrderJpaRepositoryIT.TestConfig.class)
-class ClientOrderJpaRepositoryIT extends H2DbContainer {
+@ContextConfiguration(classes = ClientOrderRepositoryAdapterIT.TestConfig.class)
+class ClientOrderRepositoryAdapterIT extends H2DbContainer {
 
-  @Autowired ClientOrderJpaRepository clientOrderJpaRepository;
+  @Autowired ClientOrderRepositoryAdapter clientOrderJpaRepository;
 
   VendingMachine vendingMachine;
   Item volvic33cl;
@@ -166,8 +166,8 @@ class ClientOrderJpaRepositoryIT extends H2DbContainer {
   static class TestConfig {
     @Bean
     public ClientOrderRepositoryPort clientOrderRepository(
-        JpaClientOrderDao clientOrderDao, EntityManager entityManager) {
-      return new ClientOrderJpaRepository(clientOrderDao, entityManager);
+        ClientOrderJpaRepository clientOrderDao, EntityManager entityManager) {
+      return new ClientOrderRepositoryAdapter(clientOrderDao, entityManager);
     }
   }
 }

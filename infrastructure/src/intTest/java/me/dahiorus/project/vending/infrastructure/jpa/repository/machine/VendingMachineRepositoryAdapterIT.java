@@ -39,9 +39,9 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 
-@ContextConfiguration(classes = VendingMachineJpaRepositoryIT.TestConfig.class)
-class VendingMachineJpaRepositoryIT extends H2DbContainer {
-  @Autowired VendingMachineJpaRepository repository;
+@ContextConfiguration(classes = VendingMachineRepositoryAdapterIT.TestConfig.class)
+class VendingMachineRepositoryAdapterIT extends H2DbContainer {
+  @Autowired VendingMachineRepositoryAdapter repository;
 
   @Test
   void should_create_vending_machine() {
@@ -290,8 +290,8 @@ class VendingMachineJpaRepositoryIT extends H2DbContainer {
   @TestConfiguration
   static class TestConfig {
     @Bean
-    VendingMachineJpaRepository repository(JpaVendingMachineDao jpaRepository) {
-      return new VendingMachineJpaRepository(jpaRepository);
+    VendingMachineRepositoryAdapter repository(VendingMachineJpaRepository jpaRepository) {
+      return new VendingMachineRepositoryAdapter(jpaRepository);
     }
   }
 }

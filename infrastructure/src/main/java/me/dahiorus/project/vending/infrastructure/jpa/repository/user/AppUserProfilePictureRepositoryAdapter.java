@@ -20,12 +20,12 @@ import org.springframework.stereotype.Repository;
 
 @CacheConfig(cacheNames = "userPictures")
 @Repository
-public class AppUserProfilePictureJpaRepository implements AppUserProfilePictureRepositoryPort {
+public class AppUserProfilePictureRepositoryAdapter implements AppUserProfilePictureRepositoryPort {
 
   private final JpaRepository<JpaUser, UUID> jpaUserRepository;
   private final JpaRepository<JpaUploadedFile, UUID> jpaUploadedFileRepository;
 
-  public AppUserProfilePictureJpaRepository(final EntityManager entityManager) {
+  public AppUserProfilePictureRepositoryAdapter(final EntityManager entityManager) {
     this.jpaUserRepository = new SimpleJpaRepository<>(JpaUser.class, entityManager);
     this.jpaUploadedFileRepository =
         new SimpleJpaRepository<>(JpaUploadedFile.class, entityManager);

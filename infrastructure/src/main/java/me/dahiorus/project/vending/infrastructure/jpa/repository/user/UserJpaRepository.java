@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface JpaUserDao extends JpaRepository<JpaUser, UUID> {
+public interface UserJpaRepository extends JpaRepository<JpaUser, UUID> {
   Optional<JpaUser> findByEmail(final String email);
 
   @Query(

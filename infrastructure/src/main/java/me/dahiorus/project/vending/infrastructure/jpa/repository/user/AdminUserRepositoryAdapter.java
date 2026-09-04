@@ -18,13 +18,13 @@ import org.springframework.stereotype.Repository;
 
 @CacheConfig(cacheNames = "admins")
 @Repository
-public class AdminUserJpaRepository implements AdminUserRepositoryPort {
+public class AdminUserRepositoryAdapter implements AdminUserRepositoryPort {
 
-  private final JpaUserDao jpaUserRepository;
+  private final UserJpaRepository jpaUserRepository;
   private final PasswordEncoder passwordEncoder;
 
-  public AdminUserJpaRepository(
-      final JpaUserDao jpaUserRepository, final PasswordEncoder passwordEncoder) {
+  public AdminUserRepositoryAdapter(
+      final UserJpaRepository jpaUserRepository, final PasswordEncoder passwordEncoder) {
     this.jpaUserRepository = jpaUserRepository;
     this.passwordEncoder = passwordEncoder;
   }

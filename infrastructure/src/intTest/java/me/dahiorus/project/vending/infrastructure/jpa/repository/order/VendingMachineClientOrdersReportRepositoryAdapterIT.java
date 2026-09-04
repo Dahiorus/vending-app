@@ -21,7 +21,7 @@ import me.dahiorus.project.vending.domain.reporting.entity.VendingMachineClientO
 import me.dahiorus.project.vending.domain.reporting.entity.VendingMachineClientOrdersReport.ReportedClientOrder;
 import me.dahiorus.project.vending.domain.reporting.entity.VendingMachineClientOrdersReportToCreate;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
-import me.dahiorus.project.vending.infrastructure.jpa.repository.order.VendingMachineClientOrdersReportJpaRepositoryIT.TestConfig;
+import me.dahiorus.project.vending.infrastructure.jpa.repository.order.VendingMachineClientOrdersReportRepositoryAdapterIT.TestConfig;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +30,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 
 @ContextConfiguration(classes = TestConfig.class)
-class VendingMachineClientOrdersReportJpaRepositoryIT extends H2DbContainer {
+class VendingMachineClientOrdersReportRepositoryAdapterIT extends H2DbContainer {
 
-  @Autowired VendingMachineClientOrdersReportJpaRepository repository;
+  @Autowired VendingMachineClientOrdersReportRepositoryAdapter repository;
 
   @Nested
   class Create {
@@ -159,9 +159,9 @@ class VendingMachineClientOrdersReportJpaRepositoryIT extends H2DbContainer {
   @TestConfiguration
   static class TestConfig {
     @Bean
-    VendingMachineClientOrdersReportJpaRepository vendingMachineClientOrdersReportJpaRepository(
-        JpaClientOrdersReportDao jpaClientOrdersReportDao) {
-      return new VendingMachineClientOrdersReportJpaRepository(jpaClientOrdersReportDao);
+    VendingMachineClientOrdersReportRepositoryAdapter vendingMachineClientOrdersReportJpaRepository(
+        ClientOrdersReportJpaRepository jpaClientOrdersReportDao) {
+      return new VendingMachineClientOrdersReportRepositoryAdapter(jpaClientOrdersReportDao);
     }
   }
 }

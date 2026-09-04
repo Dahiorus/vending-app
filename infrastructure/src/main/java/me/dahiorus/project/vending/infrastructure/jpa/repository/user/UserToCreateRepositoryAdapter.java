@@ -8,11 +8,11 @@ import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaUser;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class UserToCreateJpaRepository implements UserToCreateRepositoryPort {
+public class UserToCreateRepositoryAdapter implements UserToCreateRepositoryPort {
 
-  private final JpaUserDao jpaRepository;
+  private final UserJpaRepository jpaRepository;
 
-  public UserToCreateJpaRepository(final JpaUserDao jpaRepository) {
+  public UserToCreateRepositoryAdapter(final UserJpaRepository jpaRepository) {
     this.jpaRepository = jpaRepository;
   }
 

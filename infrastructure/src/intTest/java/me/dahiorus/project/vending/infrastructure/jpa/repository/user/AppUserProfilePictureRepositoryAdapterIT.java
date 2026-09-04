@@ -22,7 +22,7 @@ import me.dahiorus.project.vending.domain.user.port.AppUserProfilePictureReposit
 import me.dahiorus.project.vending.domain.user.port.AppUserRepositoryPort;
 import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaUploadedFile;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
-import me.dahiorus.project.vending.infrastructure.jpa.repository.user.AppUserProfilePictureJpaRepositoryIT.TestConfig;
+import me.dahiorus.project.vending.infrastructure.jpa.repository.user.AppUserProfilePictureRepositoryAdapterIT.TestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -33,10 +33,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 
 @ContextConfiguration(classes = TestConfig.class)
-class AppUserProfilePictureJpaRepositoryIT extends H2DbContainer {
+class AppUserProfilePictureRepositoryAdapterIT extends H2DbContainer {
 
-  @Autowired AppUserJpaRepository appUserJpaRepository;
-  @Autowired AppUserProfilePictureJpaRepository repository;
+  @Autowired AppUserRepositoryAdapter appUserJpaRepository;
+  @Autowired AppUserProfilePictureRepositoryAdapter repository;
 
   AppUser appUser;
 
@@ -173,14 +173,14 @@ class AppUserProfilePictureJpaRepositoryIT extends H2DbContainer {
   @TestConfiguration
   static class TestConfig {
     @Bean
-    AppUserRepositoryPort appUserJpaRepository(JpaUserDao jpaUserDao) {
-      return new AppUserJpaRepository(jpaUserDao, new BCryptPasswordEncoder());
+    AppUserRepositoryPort appUserJpaRepository(UserJpaRepository jpaUserDao) {
+      return new AppUserRepositoryAdapter(jpaUserDao, new BCryptPasswordEncoder());
     }
 
     @Bean
     AppUserProfilePictureRepositoryPort appUserProfilePictureRepository(
         EntityManager entityManager) {
-      return new AppUserProfilePictureJpaRepository(entityManager);
+      return new AppUserProfilePictureRepositoryAdapter(entityManager);
     }
   }
 }

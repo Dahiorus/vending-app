@@ -26,10 +26,10 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 
-@ContextConfiguration(classes = VendingMachineStockJpaRepositoryIT.TestConfig.class)
-class VendingMachineStockJpaRepositoryIT extends H2DbContainer {
+@ContextConfiguration(classes = VendingMachineStockRepositoryAdapterIT.TestConfig.class)
+class VendingMachineStockRepositoryAdapterIT extends H2DbContainer {
 
-  @Autowired VendingMachineStockJpaRepository repository;
+  @Autowired VendingMachineStockRepositoryAdapter repository;
 
   VendingMachine vendingMachine;
   Item bueno, lays;
@@ -140,8 +140,8 @@ class VendingMachineStockJpaRepositoryIT extends H2DbContainer {
   @TestConfiguration
   static class TestConfig {
     @Bean
-    VendingMachineStockJpaRepository repository(EntityManager entityManager) {
-      return new VendingMachineStockJpaRepository(entityManager);
+    VendingMachineStockRepositoryAdapter repository(EntityManager entityManager) {
+      return new VendingMachineStockRepositoryAdapter(entityManager);
     }
   }
 }

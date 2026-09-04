@@ -22,13 +22,13 @@ import org.springframework.stereotype.Repository;
 
 @CacheConfig(cacheNames = "users")
 @Repository
-public class AppUserJpaRepository implements AppUserRepositoryPort, PasswordMatcherPort {
+public class AppUserRepositoryAdapter implements AppUserRepositoryPort, PasswordMatcherPort {
 
-  private final JpaUserDao jpaRepository;
+  private final UserJpaRepository jpaRepository;
   private final PasswordEncoder passwordEncoder;
 
-  public AppUserJpaRepository(
-      final JpaUserDao jpaRepository, final PasswordEncoder passwordEncoder) {
+  public AppUserRepositoryAdapter(
+      final UserJpaRepository jpaRepository, final PasswordEncoder passwordEncoder) {
     this.jpaRepository = jpaRepository;
     this.passwordEncoder = passwordEncoder;
   }

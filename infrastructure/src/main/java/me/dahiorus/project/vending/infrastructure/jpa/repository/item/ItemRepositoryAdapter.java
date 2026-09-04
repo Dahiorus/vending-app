@@ -30,11 +30,11 @@ import org.springframework.stereotype.Repository;
 
 @CacheConfig(cacheNames = "items")
 @Repository
-public class ItemJpaRepository implements ItemRepositoryPort {
+public class ItemRepositoryAdapter implements ItemRepositoryPort {
   private final JpaRepository<JpaItem, UUID> jpaRepository;
   private final JpaRepository<JpaUploadedFile, UUID> jpaUploadedFileRepository;
 
-  public ItemJpaRepository(EntityManager entityManager) {
+  public ItemRepositoryAdapter(EntityManager entityManager) {
     this.jpaRepository = new SimpleJpaRepository<>(JpaItem.class, entityManager);
     this.jpaUploadedFileRepository =
         new SimpleJpaRepository<>(JpaUploadedFile.class, entityManager);
