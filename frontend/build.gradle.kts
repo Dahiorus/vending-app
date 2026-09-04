@@ -7,7 +7,7 @@ plugins {
     base
 }
 
-val npmInstall by tasks.registering(Exec::class) {
+val npmInstall = tasks.register<Exec>("npmInstall") {
     description = "Installs frontend dependencies (npm ci)."
     group = "build setup"
     inputs.file("package-lock.json")
@@ -15,7 +15,7 @@ val npmInstall by tasks.registering(Exec::class) {
     commandLine("npm", "ci")
 }
 
-val npmBuild by tasks.registering(Exec::class) {
+val npmBuild = tasks.register<Exec>("npmBuild") {
     description = "Builds the Angular production bundle (npm run build)."
     group = "build"
     dependsOn(npmInstall)
@@ -25,7 +25,7 @@ val npmBuild by tasks.registering(Exec::class) {
     commandLine("npm", "run", "build")
 }
 
-val npmTest by tasks.registering(Exec::class) {
+val npmTest = tasks.register<Exec>("npmTest") {
     description = "Runs the frontend unit tests (npm test)."
     group = "verification"
     dependsOn(npmInstall)
