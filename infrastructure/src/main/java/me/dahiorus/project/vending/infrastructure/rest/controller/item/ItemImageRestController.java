@@ -1,7 +1,7 @@
 package me.dahiorus.project.vending.infrastructure.rest.controller.item;
 
 import static me.dahiorus.project.vending.infrastructure.rest.controller.MultipartFileValidator.validator;
-import static me.dahiorus.project.vending.infrastructure.rest.utils.ToFileToUploadConvertor.toFileToUpload;
+import static me.dahiorus.project.vending.infrastructure.rest.utils.ToFileToUploadConverter.toFileToUpload;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
@@ -17,7 +17,7 @@ import java.util.UUID;
 import me.dahiorus.project.vending.domain.item.entity.ItemId;
 import me.dahiorus.project.vending.domain.item.port.ItemImageApiPort;
 import me.dahiorus.project.vending.infrastructure.rest.entity.item.ItemDto;
-import me.dahiorus.project.vending.infrastructure.rest.utils.ToByteArrayResponseConvertor;
+import me.dahiorus.project.vending.infrastructure.rest.utils.ToByteArrayResponseConverter;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
@@ -54,7 +54,7 @@ public class ItemImageRestController {
     var maybeItemImage = itemImageService.findImage(new ItemId(id));
 
     return maybeItemImage
-        .map(ToByteArrayResponseConvertor::toResponseEntity)
+        .map(ToByteArrayResponseConverter::toResponseEntity)
         .orElse(notFound().build());
   }
 

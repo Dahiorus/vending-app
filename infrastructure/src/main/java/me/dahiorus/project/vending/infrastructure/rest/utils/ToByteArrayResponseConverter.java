@@ -12,11 +12,11 @@ import me.dahiorus.project.vending.domain.file.entity.UploadedFile;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 
-public record ToByteArrayResponseConvertor(UploadedFile uploadedFile) {
+public record ToByteArrayResponseConverter(UploadedFile uploadedFile) {
 
   public static ResponseEntity<ByteArrayResource> toResponseEntity(
       final UploadedFile uploadedFile) {
-    return new ToByteArrayResponseConvertor(uploadedFile).convert();
+    return new ToByteArrayResponseConverter(uploadedFile).convert();
   }
 
   public ResponseEntity<ByteArrayResource> convert() {

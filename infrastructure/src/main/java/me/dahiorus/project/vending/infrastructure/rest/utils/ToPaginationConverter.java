@@ -10,10 +10,10 @@ import me.dahiorus.project.vending.domain.pagination.entity.Pagination;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-public record ToPaginationConvertor(Pageable pageable) {
+public record ToPaginationConverter(Pageable pageable) {
 
   public static Pagination toPagination(Pageable pageable) {
-    return new ToPaginationConvertor(pageable).convert();
+    return new ToPaginationConverter(pageable).convert();
   }
 
   public Pagination convert() {

@@ -6,9 +6,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-public record ToPageableConvertor(Pagination pagination) {
+public record ToPageableConverter(Pagination pagination) {
   public static Pageable toPageable(Pagination pagination) {
-    return new ToPageableConvertor(pagination).convert();
+    return new ToPageableConverter(pagination).convert();
   }
 
   private Pageable convert() {

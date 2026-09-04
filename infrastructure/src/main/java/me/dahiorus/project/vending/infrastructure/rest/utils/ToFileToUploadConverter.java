@@ -11,10 +11,10 @@ import me.dahiorus.project.vending.domain.file.entity.FileToUpload;
 import me.dahiorus.project.vending.domain.file.entity.Filename;
 import org.springframework.web.multipart.MultipartFile;
 
-public record ToFileToUploadConvertor(MultipartFile multipartFile) {
+public record ToFileToUploadConverter(MultipartFile multipartFile) {
 
   public static FileToUpload toFileToUpload(final MultipartFile multipartFile) {
-    return new ToFileToUploadConvertor(multipartFile).convert();
+    return new ToFileToUploadConverter(multipartFile).convert();
   }
 
   public FileToUpload convert() {

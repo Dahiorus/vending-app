@@ -2,7 +2,7 @@ package me.dahiorus.project.vending.infrastructure.jpa.repository.machine;
 
 import static java.util.function.Predicate.not;
 import static me.dahiorus.project.vending.infrastructure.jpa.repository.ExampleMatcherAdapter.toExample;
-import static me.dahiorus.project.vending.infrastructure.jpa.repository.ToPageableConvertor.toPageable;
+import static me.dahiorus.project.vending.infrastructure.jpa.repository.ToPageableConverter.toPageable;
 
 import java.util.List;
 import java.util.Optional;

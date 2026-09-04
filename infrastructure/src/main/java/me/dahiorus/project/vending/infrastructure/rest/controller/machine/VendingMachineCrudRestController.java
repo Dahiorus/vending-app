@@ -1,6 +1,6 @@
 package me.dahiorus.project.vending.infrastructure.rest.controller.machine;
 
-import static me.dahiorus.project.vending.infrastructure.rest.utils.ToPaginationConvertor.toPagination;
+import static me.dahiorus.project.vending.infrastructure.rest.utils.ToPaginationConverter.toPagination;
 import static org.springframework.hateoas.IanaLinkRelations.SELF;
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.noContent;

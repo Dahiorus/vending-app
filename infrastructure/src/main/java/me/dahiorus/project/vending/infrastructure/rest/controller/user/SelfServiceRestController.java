@@ -1,7 +1,7 @@
 package me.dahiorus.project.vending.infrastructure.rest.controller.user;
 
 import static me.dahiorus.project.vending.infrastructure.rest.controller.MultipartFileValidator.validator;
-import static me.dahiorus.project.vending.infrastructure.rest.utils.ToFileToUploadConvertor.toFileToUpload;
+import static me.dahiorus.project.vending.infrastructure.rest.utils.ToFileToUploadConverter.toFileToUpload;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
@@ -22,7 +22,7 @@ import me.dahiorus.project.vending.infrastructure.rest.entity.user.EditPasswordR
 import me.dahiorus.project.vending.infrastructure.rest.entity.user.UserDto;
 import me.dahiorus.project.vending.infrastructure.rest.entity.user.UserToUpdateDto;
 import me.dahiorus.project.vending.infrastructure.rest.exception.UserNotAuthenticated;
-import me.dahiorus.project.vending.infrastructure.rest.utils.ToByteArrayResponseConvertor;
+import me.dahiorus.project.vending.infrastructure.rest.utils.ToByteArrayResponseConverter;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
@@ -96,7 +96,7 @@ public class SelfServiceRestController {
     var maybeProfilePicture = appUserService.getProfilePicture(authenticatedUser.id());
 
     return maybeProfilePicture
-        .map(ToByteArrayResponseConvertor::toResponseEntity)
+        .map(ToByteArrayResponseConverter::toResponseEntity)
         .orElse(notFound().build());
   }
 
