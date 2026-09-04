@@ -13,6 +13,6 @@ public record Role(String value) implements Serializable {
   }
 
   public String asRole() {
-    return format("ROLE_%s".toUpperCase(), value);
+    return format("ROLE_%s", value).toUpperCase();
   }
 }
