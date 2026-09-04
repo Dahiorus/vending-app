@@ -1,5 +1,5 @@
 import { computed, inject, Service, signal } from '@angular/core';
-import { map, Observable, switchMap, tap, throwError } from 'rxjs';
+import { map, Observable, of, switchMap, tap, throwError } from 'rxjs';
 import { AuthApi } from './auth-api';
 import { Credentials, JwtPayload } from './models/auth';
 import { User } from './models/user';
@@ -32,10 +32,19 @@ export class AuthService {
     return token ? (decodePayload(token)?.roles ?? []) : [];
   });
 
-  login(credentials: Credentials): Observable<User> {
+  /**
+   * Loads the current user's profile after login, except for admin accounts:
+   * `/me` is a self-service endpoint backed by `AppUserRepositoryPort`, scoped to
+   * `ROLE_USER` accounts only (admins have no matching profile there yet, see backend
+   * `AppUserRepositoryAdapter`/`AGENTS.md`).
+   */
+  login(credentials: Credentials): Observable<User | null> {
     return this.api.login(credentials).pipe(
       tap((tokens) => this.tokens.setTokens(tokens)),
-      switchMap(() => this.api.me()),
+      switchMap((tokens) => {
+        const isAdmin = (decodePayload(tokens.accessToken)?.roles ?? []).includes('ROLE_ADMIN');
+        return isAdmin ? of(null) : this.api.me();
+      }),
       tap((user) => this.user.set(user)),
     );
   }

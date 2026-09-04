@@ -40,33 +40,53 @@ describe('AuthService', () => {
 
   it('stores the tokens, exposes the roles and loads the current user on login', () => {
     let loaded: unknown = null;
-    service.login({ username: 'admin@vending.me', password: 'secret' }).subscribe((user) => {
+    service.login({ username: 'ada@vending.me', password: 'secret' }).subscribe((user) => {
       loaded = user;
     });
 
     const loginRequest = http.expectOne('/api/v1/authenticate');
     expect(loginRequest.request.method).toBe('POST');
     expect(loginRequest.request.body).toEqual({
-      username: 'admin@vending.me',
+      username: 'ada@vending.me',
       password: 'secret',
     });
     loginRequest.flush({
-      accessToken: fakeJwt({ sub: 'admin@vending.me', roles: ['ROLE_ADMIN'], exp: 1 }),
+      accessToken: fakeJwt({ sub: 'ada@vending.me', roles: ['ROLE_USER'], exp: 1 }),
       refreshToken: 'refresh-1',
     });
 
     const meRequest = http.expectOne('/api/v1/me');
     meRequest.flush({
       id: 'u-1',
-      email: 'admin@vending.me',
+      email: 'ada@vending.me',
       firstname: 'Ada',
       lastname: 'Lovelace',
     });
 
     expect(service.isAuthenticated()).toBe(true);
-    expect(service.roles()).toEqual(['ROLE_ADMIN']);
-    expect(service.currentUser()?.email).toBe('admin@vending.me');
+    expect(service.roles()).toEqual(['ROLE_USER']);
+    expect(service.currentUser()?.email).toBe('ada@vending.me');
     expect(loaded).not.toBeNull();
+  });
+
+  it('skips loading /me for admin accounts, which have no self-service profile', () => {
+    let loaded: unknown = 'not-set';
+    service.login({ username: 'admin@vending.me', password: 'secret' }).subscribe((user) => {
+      loaded = user;
+    });
+
+    const loginRequest = http.expectOne('/api/v1/authenticate');
+    loginRequest.flush({
+      accessToken: fakeJwt({ sub: 'admin@vending.me', roles: ['ROLE_ADMIN'], exp: 1 }),
+      refreshToken: 'refresh-1',
+    });
+
+    http.expectNone('/api/v1/me');
+
+    expect(service.isAuthenticated()).toBe(true);
+    expect(service.roles()).toEqual(['ROLE_ADMIN']);
+    expect(service.currentUser()).toBeNull();
+    expect(loaded).toBeNull();
   });
 
   it('reuses the same refresh token because the backend does not rotate it', () => {
