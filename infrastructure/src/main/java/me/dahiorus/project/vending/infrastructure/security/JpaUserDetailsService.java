@@ -8,17 +8,17 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserDaoDetailsService implements UserDetailsService {
+public class JpaUserDetailsService implements UserDetailsService {
 
-  private final UserJpaRepository jpaUserDao;
+  private final UserJpaRepository userJpaRepository;
 
-  public UserDaoDetailsService(final UserJpaRepository jpaUserDao) {
-    this.jpaUserDao = jpaUserDao;
+  public JpaUserDetailsService(final UserJpaRepository userJpaRepository) {
+    this.userJpaRepository = userJpaRepository;
   }
 
   @Override
   public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-    return jpaUserDao
+    return userJpaRepository
         .findByEmail(username)
         .map(
             appUser ->
