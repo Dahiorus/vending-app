@@ -1,22 +1,18 @@
 package me.dahiorus.project.vending.infrastructure.config;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static java.time.LocalDateTime.now;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder.BCryptVersion.$2A;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.Clock;
 import java.util.Map;
-import me.dahiorus.project.vending.infrastructure.security.TokenService;
-import me.dahiorus.project.vending.infrastructure.security.filter.JwtAuthenticationFilter;
-import me.dahiorus.project.vending.infrastructure.security.filter.JwtAuthorizationFilter;
-import me.dahiorus.project.vending.infrastructure.security.jwt.JwtProperties;
-import me.dahiorus.project.vending.infrastructure.security.jwt.JwtService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,25 +26,26 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
+
   public static final String AUTHENTICATE_PATH = "/api/v1/authenticate";
   public static final String REFRESH_TOKEN_PATH = "/api/v1/authenticate/refresh";
+  public static final String JWKS_PATH = "/oauth2/jwks";
 
   private static final String DEFAULT_PWD_ENCODER_PREFIX = "bcrypt";
 
   @Bean
   SecurityFilterChain filterChain(
       final HttpSecurity http,
-      final AuthenticationManager authenticationManager,
-      final TokenService tokenService,
-      final ObjectMapper objectMapper)
+      final ObjectMapper objectMapper,
+      final JwtAuthenticationConverter jwtAuthenticationConverter, final Clock clock)
       throws Exception {
     return http.csrf(CsrfConfigurer::disable)
         .httpBasic(HttpBasicConfigurer::disable)
@@ -58,7 +55,7 @@ public class WebSecurityConfig {
         .authorizeHttpRequests(
             customizer ->
                 customizer
-                    .requestMatchers(AUTHENTICATE_PATH, REFRESH_TOKEN_PATH, "/api/v1/")
+                    .requestMatchers(AUTHENTICATE_PATH, REFRESH_TOKEN_PATH, JWKS_PATH, "/api/v1/")
                     .permitAll()
                     .requestMatchers(
                         antMatcher(GET, "/api/v1/vending-machines/**"),
@@ -79,22 +76,34 @@ public class WebSecurityConfig {
         .exceptionHandling(
             customizer ->
                 customizer
-                    .authenticationEntryPoint(new HttpStatusEntryPoint(UNAUTHORIZED))
-                    .accessDeniedHandler(restAccessDeniedHandler(objectMapper)))
-        // request filters
-        .addFilter(new JwtAuthenticationFilter(authenticationManager, tokenService))
-        .addFilterBefore(
-            new JwtAuthorizationFilter(tokenService), UsernamePasswordAuthenticationFilter.class)
+                    .authenticationEntryPoint(restAuthenticationEntryPoint(objectMapper, clock))
+                    .accessDeniedHandler(restAccessDeniedHandler(objectMapper, clock)))
+        // resource server: incoming requests are authenticated via a Bearer JWT
+        .oauth2ResourceServer(
+            customizer ->
+                customizer.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)))
         .build();
   }
 
-  private static AccessDeniedHandler restAccessDeniedHandler(final ObjectMapper objectMapper) {
+  private static AuthenticationEntryPoint restAuthenticationEntryPoint(
+      final ObjectMapper objectMapper, final Clock clock) {
+    return (request, response, authException) -> {
+      response.setStatus(SC_UNAUTHORIZED);
+      response.setContentType(APPLICATION_JSON_VALUE);
+      objectMapper.writeValue(
+          response.getOutputStream(),
+          Map.of("timestamp", now(clock), "message", authException.getMessage()));
+      response.flushBuffer();
+    };
+  }
+
+  private static AccessDeniedHandler restAccessDeniedHandler(final ObjectMapper objectMapper, final Clock clock) {
     return (request, response, accessDeniedException) -> {
       response.setStatus(SC_FORBIDDEN);
       response.setContentType(APPLICATION_JSON_VALUE);
       objectMapper.writeValue(
           response.getOutputStream(),
-          Map.of("timestamp", now(), "message", accessDeniedException.getMessage()));
+          Map.of("timestamp", now(clock), "message", accessDeniedException.getMessage()));
       response.flushBuffer();
     };
   }
@@ -112,14 +121,10 @@ public class WebSecurityConfig {
   }
 
   @Bean
-  TokenService tokenService(JwtProperties jwtProperties) {
-    return new JwtService(jwtProperties);
-  }
-
-  @Bean
   PasswordEncoder passwordEncoder() {
     return new DelegatingPasswordEncoder(
         DEFAULT_PWD_ENCODER_PREFIX,
         Map.of(DEFAULT_PWD_ENCODER_PREFIX, new BCryptPasswordEncoder($2A, 13)));
   }
 }
+

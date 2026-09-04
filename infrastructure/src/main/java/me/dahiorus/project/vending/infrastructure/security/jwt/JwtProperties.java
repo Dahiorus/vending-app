@@ -1,28 +1,43 @@
 package me.dahiorus.project.vending.infrastructure.security.jwt;
 
+import jakarta.validation.constraints.NotBlank;
 import java.time.Duration;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
+import org.springframework.validation.annotation.Validated;
 
 @ConfigurationProperties(prefix = "jwt")
+@Validated
 public class JwtProperties {
-  private String secret;
-
-  private String issuerUri;
+  @NotBlank private String issuerUri;
 
   private Duration accessTokenDuration = Duration.ofHours(1);
 
   @DurationUnit(ChronoUnit.DAYS)
   private Period refreshTokenDuration = Period.ofDays(365);
 
-  public String getSecret() {
-    return secret;
+  /** PEM-encoded RSA public key. When blank, an ephemeral key pair is generated at startup. */
+  private String publicKey;
+
+  /** PEM-encoded RSA private key. When blank, an ephemeral key pair is generated at startup. */
+  private String privateKey;
+
+  public String getPublicKey() {
+    return publicKey;
   }
 
-  public void setSecret(final String secret) {
-    this.secret = secret;
+  public void setPublicKey(final String publicKey) {
+    this.publicKey = publicKey;
+  }
+
+  public String getPrivateKey() {
+    return privateKey;
+  }
+
+  public void setPrivateKey(final String privateKey) {
+    this.privateKey = privateKey;
   }
 
   public String getIssuerUri() {

@@ -35,6 +35,7 @@ dependencies {
     implementation(libs.springdoc.openapi.starter.webmvc.ui)
 
     implementation(libs.spring.boot.starter.security)
+    implementation(libs.spring.boot.starter.oauth2.resource.server)
     annotationProcessor(libs.spring.boot.configuration.processor)
     implementation(libs.nimbus.jose.jwt)
 
@@ -64,6 +65,10 @@ val intTestTask = tasks.register<Test>("intTest") {
     classpath = intTest.runtimeClasspath
     useJUnitPlatform()
     shouldRunAfter(tasks.test)
+    // SecurityChainIT boots the full application context, allocating every ehcache
+    // off-heap cache defined in ehcache.xml (8 caches x 100MB); the JVM default
+    // MaxDirectMemorySize is too small for that on constrained environments.
+    jvmArgs("-XX:MaxDirectMemorySize=1200m")
 }
 
 tasks.check {

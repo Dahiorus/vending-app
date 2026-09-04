@@ -49,10 +49,45 @@ Les assemblers portent tous le suffixe `DtoModelAssembler` (et non
 
 ## Sécurité
 
-`security/filter/JwtAuthorizationFilter` valide le token bearer sur les
-requêtes déjà authentifiées ; ne pas le confondre avec
-`JwtAuthenticationFilter` qui gère le login. Respecter cette distinction de
-responsabilité si un nouveau filtre est ajouté.
+L'application est un serveur de ressources OAuth2 Spring Security
+(`config/WebSecurityConfig`), et non un filtre JWT maison : pas de
+`UsernamePasswordAuthenticationFilter`/`OncePerRequestFilter` personnalisé,
+la vérification du bearer token est déléguée à
+`oauth2ResourceServer(jwt(...))`.
+
+```
+security/jwt/
+  JwtProperties        @ConfigurationProperties(prefix = "jwt") : issuer-uri (obligatoire),
+                       durées d'accès/rafraîchissement, clé RSA publique/privée (PEM, optionnelles)
+  JwtKeysConfig        RSAKey (configurée ou générée de façon éphémère avec un WARN au démarrage),
+                       beans JwtEncoder/JwtDecoder/JwtAuthenticationConverter
+  JwtTokenIssuer        émission des access/refresh tokens (claim "token_type" pour les distinguer)
+```
+
+Points à respecter en cas d'évolution :
+
+- Le claim `roles` porte déjà les autorités complètes (`ROLE_ADMIN`,
+  produites par `Role#asRole`) : `JwtGrantedAuthoritiesConverter` est
+  configuré avec un préfixe vide (`setAuthorityPrefix("")`). Ne pas
+  ajouter `ROLE_` une deuxième fois.
+- Le endpoint `/oauth2/jwks` (`rest/controller/JwksRestController`) expose
+  uniquement la clé **publique** (`rsaJwk.toPublicJWK()`) ; ne jamais y
+  exposer la clé privée.
+- `AuthenticationRestController.refreshToken` doit toujours vérifier le
+  claim `token_type == "refresh"` avant de faire confiance à un token
+  présenté sur `/api/v1/authenticate/refresh` — un access token ne doit
+  jamais pouvoir servir de refresh token.
+- Sans clé RSA configurée (`jwt.public-key`/`jwt.private-key`), une paire
+  éphémère est générée à chaque démarrage : tous les tokens émis avant un
+  redémarrage deviennent invalides. Acceptable en développement,
+  inacceptable pour un environnement long-lived — y configurer une vraie
+  paire de clés.
+- Tests de la chaîne de sécurité (login, refresh, 401/403, tokens
+  expirés/altérés/signés par une clé étrangère, endpoints publics) dans
+  `infrastructure/src/intTest/.../security/SecurityChainIT.java`, seul
+  test `@SpringBootTest` du dépôt à ce jour ; le task Gradle `intTest`
+  déclare `-XX:MaxDirectMemorySize` car ce test charge le contexte complet
+  et donc tous les caches Ehcache off-heap.
 
 ## Runners de commande
 
