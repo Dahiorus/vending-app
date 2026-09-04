@@ -1,5 +1,5 @@
 package me.dahiorus.project.vending.domain;
 
-public interface UpdateSpi<P, D> {
+public interface Updatable<P, D> {
   D update(P toUpdate);
 }

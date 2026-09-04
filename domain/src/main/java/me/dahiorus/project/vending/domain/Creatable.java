@@ -1,5 +1,5 @@
 package me.dahiorus.project.vending.domain;
 
-public interface CreateSpi<P, D> {
+public interface Creatable<P, D> {
   D create(P toCreate);
 }
