@@ -39,6 +39,14 @@ garde-fou de non-régression à vérifier après toute modification.
 - Les adaptateurs hexagonaux implémentant un `RepositoryPort` s'appellent
   `XxxRepositoryAdapter` ; les interfaces Spring Data brutes s'appellent
   `XxxJpaRepository`. (Historiquement inversé, corrigé — ne pas régresser.)
+- Quand un `XxxRepositoryAdapter` n'a besoin que d'une seule opération JPA
+  générique (typiquement `save()` pour un rapport en écriture seule), il
+  est acceptable d'instancier directement `SimpleJpaRepository` avec l'
+  `EntityManager` plutôt que de déclarer une interface `XxxJpaRepository`
+  complète qui exposerait inutilement tout le CRUD Spring Data (décision
+  actée : `VendingMachineStatusReportRepositoryAdapter` et
+  `VendingMachineStockReportRepositoryAdapter`). Ne pas signaler ce
+  pattern comme de la sur-ingénierie.
 - Les DTO ont deux conventions distinctes et volontaires, à ne pas unifier :
   - `XxxToCreateDto` / `XxxToUpdateDto` : miroir direct d'une commande CRUD
     du domaine (`XxxToCreate`, `XxxToUpdate`).
@@ -51,6 +59,19 @@ garde-fou de non-régression à vérifier après toute modification.
   à apporter, ne doit pas être enveloppé artificiellement (décision actée :
   `AuthenticationRestController` et `CreateDevEnvironmentAdmin` injectent
   volontairement leur `RepositoryPort` directement).
+- À l'inverse, un `XxxApplicationService` qui délègue à un seul use case ou
+  port mais porte l'annotation `@Transactional` n'est PAS un pass-through à
+  supprimer : le module `domain` n'a aucune dépendance Spring et ne peut
+  donc pas porter lui-même cette frontière transactionnelle. Dès qu'un use
+  case ou un adaptateur enchaîne plusieurs opérations JPA nécessitant une
+  atomicité (lecture(s) + écriture(s) sur plusieurs `RepositoryPort` ou
+  plusieurs appels JPA dans un même adaptateur), l'`ApplicationService`
+  `@Transactional` est le seul endroit possible pour garantir cette
+  atomicité (décision actée : `OrderItemApplicationService`,
+  `VendingMachineStockReportApplicationService`,
+  `VendingMachineClientOrdersReportApplicationService`,
+  `ItemImageApplicationService`). Ne pas signaler ces classes comme de la
+  sur-ingénierie lors d'une revue ou d'un audit.
 
 ## Workflow git
 
