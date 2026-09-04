@@ -9,9 +9,10 @@ backend `vending-app` (module `infrastructure`). Voir aussi
 - **Node ≥ 22.22.3** (le projet épingle **Node 24** via [Volta](https://volta.sh/) :
   `volta.node` dans `package.json`). Si Volta est installé, `cd frontend` suffit
   à utiliser la bonne version.
-- Le backend Spring Boot (`cd backend && ./gradlew :infrastructure:bootRun`)
-  et PostgreSQL pour un usage complet en développement — non requis pour les
-  tests unitaires ni pour l'E2E Playwright, qui mockent l'API.
+- Le backend Spring Boot (`./gradlew :backend:infrastructure:bootRun` depuis
+  la racine du dépôt) et PostgreSQL pour un usage complet en développement —
+  non requis pour les tests unitaires ni pour l'E2E Playwright, qui mockent
+  l'API.
 
 ## Démarrage en développement
 
@@ -19,8 +20,8 @@ Lancer le backend puis le frontend dans deux terminaux :
 
 ```bash
 # terminal 1 — backend, port 8080
-cd /home/bung@france.groupe.intra/IdeaProjects/vending-app/backend
-./gradlew :infrastructure:bootRun --args='--spring.profiles.active=dev'
+cd /home/bung@france.groupe.intra/IdeaProjects/vending-app
+./gradlew :backend:infrastructure:bootRun --args='--spring.profiles.active=dev'
 
 # terminal 2 — frontend, port 4200
 cd frontend

@@ -14,6 +14,13 @@ npm run e2e      # tests end-to-end Playwright (API mockée, aucun backend requi
 Node est épinglé par Volta (`volta.node` dans `package.json`) : Angular 22 exige
 Node >= 22.22.3.
 
+`frontend/` est aussi intégré au build Gradle englobant (racine du dépôt,
+projet `:frontend`, voir `AGENTS.md` racine) : `./gradlew build` y exécute
+`npm ci`/`npm run build`/`npm test` via des tâches `Exec` (pas de plugin
+Angular/Node Gradle). Ce wrapping ne remplace pas le workflow quotidien
+ci-dessus : continuer à utiliser `npm start`/`npm test` directement pendant
+le développement, le Gradle wrapping n'existe que pour le build agrégé.
+
 ## Workflow de développement
 
 - Utiliser le skill `angular-developer` pour toute nouvelle feature Angular

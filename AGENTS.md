@@ -7,39 +7,49 @@ plus proche du code modifié prévaut.
 
 ## Vue d'ensemble
 
-Deux projets côte à côte à la racine du dépôt, chacun avec son propre
-`AGENTS.md` détaillant ses règles locales :
+Un seul projet Gradle multi-module (Kotlin DSL) englobe le dépôt entier —
+racine `settings.gradle.kts`/`build.gradle.kts`, wrapper `./gradlew` — à
+l'image des autres projets Vidal (`kisscool`, `renoshield`, `carmen`) :
+`backend/` regroupe les modules Java (architecture hexagonale / DDD, Spring
+Boot 3.4.0, Java 21) et `frontend/` est intégré comme un projet Gradle à
+part entière qui délègue à `npm` (aucun plugin Angular/Node Gradle : voir
+`frontend/build.gradle.kts`, de simples tâches `Exec` vers `npm ci`/
+`npm run build`/`npm test`). Chaque module a en plus son propre `AGENTS.md`
+détaillant ses règles locales :
 
 ```
-backend/            projet multi-module Gradle (Kotlin DSL), architecture
-                     hexagonale / DDD, Spring Boot 3.4.0, Java 21
+backend/            (pas de settings.gradle.kts propre — inclus depuis la racine)
   domain/            cœur métier, aucune dépendance externe
   application/       implémentations des cas d'usage (ApplicationService)
   infrastructure/    adaptateurs (REST, JPA, sécurité), point d'entrée
                      Spring Boot
-frontend/            SPA Angular (Node/npm, hors build Gradle)
+frontend/            SPA Angular, wrappée en projet Gradle (voir plus haut)
 ```
 
-Dépendances entre modules Gradle : `infrastructure` → `application` (au
-runtime seulement, voir `backend/infrastructure/AGENTS.md`) → `domain`.
-`domain` ne dépend d'aucun des deux autres.
+Chemins des projets Gradle : `:backend:domain`, `:backend:application`,
+`:backend:infrastructure`, `:frontend` (le project path Gradle a le préfixe
+`:backend:`, pas seulement le dossier). Dépendances entre modules Java :
+`:backend:infrastructure` → `:backend:application` (au runtime seulement,
+voir `backend/infrastructure/AGENTS.md`) → `:backend:domain`. `domain` ne
+dépend d'aucun des deux autres.
 
-Le module `frontend/` a son propre `AGENTS.md` et son propre workflow : ses
-commandes passent par `npm` (voir `frontend/README.md`), pas par Gradle. Le
-compte de 140 tests Gradle mentionné plus bas reste le garde-fou de
-non-régression du backend uniquement ; les tests du frontend (`npm test`,
-`npm run e2e`) s'exécutent et se vérifient séparément.
+Le module `frontend/` garde son propre `AGENTS.md` et son propre workflow
+quotidien via `npm` (voir `frontend/README.md`) ; le wrapping Gradle sert
+uniquement à ce que `./gradlew build`/`check` à la racine agrège aussi le
+frontend (`:frontend:npmBuild`, `:frontend:npmTest`). Le compte de 140
+tests Gradle mentionné plus bas reste le garde-fou de non-régression du
+backend uniquement ; les tests du frontend (`npm test`, `npm run e2e`)
+s'exécutent et se vérifient séparément.
 
 ## Commandes
 
-Toutes les commandes Gradle s'exécutent depuis `backend/` :
+Toutes les commandes Gradle s'exécutent depuis la **racine du dépôt** :
 
 ```bash
-cd backend
-./gradlew build            # compile + tests unitaires (domain, application, infrastructure)
-./gradlew test              # tests unitaires uniquement
-./gradlew :infrastructure:intTest   # tests d'intégration (*IT)
-./gradlew clean build       # build complet, critère de non-régression (140 tests)
+./gradlew build                       # backend (compile + tests unitaires) + frontend (npm build + npm test)
+./gradlew test                        # tests unitaires backend uniquement
+./gradlew :backend:infrastructure:intTest   # tests d'intégration (*IT)
+./gradlew clean build                 # build complet, critère de non-régression (140 tests)
 ```
 
 Le nombre de tests exécutés (140 = 68 `domain` + 72 `infrastructure`) est le
@@ -101,8 +111,8 @@ garde-fou de non-régression à vérifier après toute modification.
 - Un commit (ou une suite de commits logiques) par branche, avec le
   trailer `Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>`
   si le travail a été assisté par l'agent.
-- Vérification du build (`cd backend && ./gradlew clean build`, 140 tests)
-  avant chaque commit.
+- Vérification du build (`./gradlew clean build`, 140 tests) avant chaque
+  commit.
 - Fusion dans `develop` en fast-forward (`git merge --ff-only`, rebase au
   besoin) — jamais de commit de merge.
 - Suppression de la branche locale après fusion.

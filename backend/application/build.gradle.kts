@@ -1,5 +1,5 @@
 dependencies {
-    api(project(":domain"))
+    api(project(":backend:domain"))
 
     implementation(libs.spring.boot.starter.data.jpa)
     implementation(libs.commons.lang3)

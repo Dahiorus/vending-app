@@ -53,5 +53,5 @@ traduction vers un code HTTP se fait exclusivement dans
 
 Les fixtures partagées (`src/testFixtures`) sont gérées par le plugin
 Gradle `java-test-fixtures` et exposées aux autres modules via
-`testFixtures(project(":domain"))`. Ne pas dupliquer une fixture déjà
+`testFixtures(project(":backend:domain"))`. Ne pas dupliquer une fixture déjà
 présente ici dans `application` ou `infrastructure`.

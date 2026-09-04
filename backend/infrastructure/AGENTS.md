@@ -3,7 +3,7 @@
 Adaptateurs (REST, JPA, sécurité) et point d'entrée Spring Boot. Règles
 spécifiques à ce module (en plus de `AGENTS.md` à la racine) :
 
-## Contrainte de compilation critique : `runtimeOnly(project(":application"))`
+## Contrainte de compilation critique : `runtimeOnly(project(":backend:application"))`
 
 `build.gradle.kts` déclare la dépendance vers `application` en
 `runtimeOnly`, pas en `implementation`. Conséquence directe : le code de

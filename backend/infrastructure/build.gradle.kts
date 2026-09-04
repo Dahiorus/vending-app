@@ -15,9 +15,9 @@ configurations["intTestImplementation"].extendsFrom(configurations["testImplemen
 configurations["intTestRuntimeOnly"].extendsFrom(configurations["testRuntimeOnly"])
 
 dependencies {
-    implementation(project(":domain"))
-    runtimeOnly(project(":application"))
-    testImplementation(testFixtures(project(":domain")))
+    implementation(project(":backend:domain"))
+    runtimeOnly(project(":backend:application"))
+    testImplementation(testFixtures(project(":backend:domain")))
 
     implementation(libs.spring.boot.starter)
     implementation(libs.spring.boot.starter.validation)
