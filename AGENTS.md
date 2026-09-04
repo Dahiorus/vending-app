@@ -72,6 +72,14 @@ garde-fou de non-régression à vérifier après toute modification.
   `VendingMachineClientOrdersReportApplicationService`,
   `ItemImageApplicationService`). Ne pas signaler ces classes comme de la
   sur-ingénierie lors d'une revue ou d'un audit.
+- Un port du domaine (ex. `PasswordPolicy`) à une seule implémentation dans
+  `infrastructure` n'est pas non plus une abstraction spéculative à
+  supprimer dès lors que cette implémentation dépend d'un mécanisme Spring
+  (ex. `PasswordPolicyProperties` avec `@ConfigurationProperties`) que
+  `domain` ne peut pas référencer lui-même. Le port est ici la seule façon
+  de garder `domain` exempt de toute dépendance Spring/JPA/Jackson tout en
+  permettant l'injection de configuration côté infrastructure — ce n'est
+  pas un YAGNI, c'est le patron port/adaptateur hexagonal standard.
 
 ## Workflow git
 
