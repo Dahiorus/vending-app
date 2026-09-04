@@ -41,15 +41,14 @@ public class WebSecurityConfig {
   public static final String AUTHENTICATE_PATH = "/api/v1/authenticate";
   public static final String REFRESH_TOKEN_PATH = "/api/v1/authenticate/refresh";
 
-  private static final ObjectMapper MAPPER = new ObjectMapper();
-
   private static final String DEFAULT_PWD_ENCODER_PREFIX = "bcrypt";
 
   @Bean
   SecurityFilterChain filterChain(
       final HttpSecurity http,
       final AuthenticationManager authenticationManager,
-      final TokenService tokenService)
+      final TokenService tokenService,
+      final ObjectMapper objectMapper)
       throws Exception {
     return http.csrf(CsrfConfigurer::disable)
         .httpBasic(HttpBasicConfigurer::disable)
@@ -63,9 +62,10 @@ public class WebSecurityConfig {
                     .permitAll()
                     .requestMatchers(
                         antMatcher(GET, "/api/v1/vending-machines/**"),
-                        antMatcher(GET, "/api/v1/items/{.+}/**"))
+                        antMatcher(GET, "/api/v1/items/{itemId}/**"))
                     .permitAll()
-                    .requestMatchers(antMatcher(POST, "/api/v1/vending-machines/{.+}/order/**"))
+                    .requestMatchers(
+                        antMatcher(POST, "/api/v1/vending-machines/{vendingMachineId}/order/**"))
                     .permitAll()
                     .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**")
                     .permitAll()
@@ -80,7 +80,7 @@ public class WebSecurityConfig {
             customizer ->
                 customizer
                     .authenticationEntryPoint(new HttpStatusEntryPoint(UNAUTHORIZED))
-                    .accessDeniedHandler(restAccessDeniedHandler()))
+                    .accessDeniedHandler(restAccessDeniedHandler(objectMapper)))
         // request filters
         .addFilter(new JwtAuthenticationFilter(authenticationManager, tokenService))
         .addFilterBefore(
@@ -88,11 +88,11 @@ public class WebSecurityConfig {
         .build();
   }
 
-  private static AccessDeniedHandler restAccessDeniedHandler() {
+  private static AccessDeniedHandler restAccessDeniedHandler(final ObjectMapper objectMapper) {
     return (request, response, accessDeniedException) -> {
       response.setStatus(SC_FORBIDDEN);
       response.setContentType(APPLICATION_JSON_VALUE);
-      MAPPER.writeValue(
+      objectMapper.writeValue(
           response.getOutputStream(),
           Map.of("timestamp", now(), "message", accessDeniedException.getMessage()));
       response.flushBuffer();
