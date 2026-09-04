@@ -14,11 +14,18 @@ Multi-module Gradle (Kotlin DSL), architecture hexagonale / DDD, Spring Boot
 domain/           cœur métier, aucune dépendance externe
 application/      implémentations des cas d'usage (ApplicationService)
 infrastructure/   adaptateurs (REST, JPA, sécurité), point d'entrée Spring Boot
+frontend/         SPA Angular (Node/npm, hors build Gradle)
 ```
 
 Dépendances entre modules : `infrastructure` → `application` (au runtime
 seulement, voir `infrastructure/AGENTS.md`) → `domain`. `domain` ne dépend
 d'aucun des deux autres.
+
+Le module `frontend/` a son propre `AGENTS.md` et son propre workflow : ses
+commandes passent par `npm` (voir `frontend/README.md`), pas par Gradle. Le
+compte de 140 tests Gradle mentionné plus bas reste le garde-fou de
+non-régression du backend uniquement ; les tests du frontend (`npm test`,
+`npm run e2e`) s'exécutent et se vérifient séparément.
 
 ## Commandes
 
