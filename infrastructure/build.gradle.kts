@@ -6,7 +6,7 @@ springBoot {
     mainClass.set("me.dahiorus.project.vending.VendingApplication")
 }
 
-val intTest by sourceSets.creating {
+val intTest = sourceSets.create("intTest") {
     compileClasspath += sourceSets.main.get().output
     runtimeClasspath += sourceSets.main.get().output
 }
