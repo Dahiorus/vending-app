@@ -3,9 +3,9 @@ import { Component, computed, signal } from '@angular/core';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
-import { machinesPageUrl } from '../../../api/vending-machine-api';
-import { HalPage, toPage } from '../../../api/models/hal';
-import { VendingMachine } from '../../../api/models/vending-machine';
+import { machinesPageUrl } from '../vending-machine-api';
+import { HalPage, toPage } from '../../../shared/models/hal';
+import { VendingMachine } from '../models/vending-machine';
 
 const DEFAULT_PAGE_SIZE = 10;
 

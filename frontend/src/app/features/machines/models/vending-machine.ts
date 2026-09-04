@@ -1,4 +1,4 @@
-import { HalResource } from './hal';
+import { HalResource } from '../../../shared/models/hal';
 import {
   CardSystemStatus,
   ChangeSystemStatus,

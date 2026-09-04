@@ -36,11 +36,17 @@ Node >= 22.22.3.
   non racine, etc.) que `@Service()` ne couvre pas.
 - **Lecture de données** : `httpResource()` (signaux). **Mutations** (`POST`/`PUT`/
   `DELETE`) : `HttpClient` directement — c'est la recommandation Angular.
-- Les modèles de `src/app/api/models/` sont **écrits à la main** et sont le miroir
-  des DTO du module `infrastructure`. Toute évolution d'un DTO backend doit être
-  répercutée ici manuellement.
+- **Organisation par feature** (guide de style Angular 2025) : pas de dossier
+  générique `api/`. Le code d'accès aux données vit à côté de la feature qui
+  l'utilise (ex. `features/machines/vending-machine-api.ts` +
+  `features/machines/models/`). Seul le code réellement transverse (utilisé par
+  plusieurs features) va dans `core/` (singletons app-wide, ex. `core/auth/`)
+  ou `shared/` (utilitaires/modèles réutilisables, ex. `shared/models/hal.ts`).
+- Les modèles (ex. `features/machines/models/`, `core/auth/models/`) sont
+  **écrits à la main** et sont le miroir des DTO du module `infrastructure`.
+  Toute évolution d'un DTO backend doit être répercutée ici manuellement.
 - Le contrat HAL n'est déballé qu'au seul endroit prévu : `toPage()` dans
-  `api/models/hal.ts`. `_embedded` est absent des pages vides.
+  `shared/models/hal.ts`. `_embedded` est absent des pages vides.
 - Les nouveaux formulaires utilisent **Signal Forms** (`@angular/forms/signals`).
 - Angular Material fournit les composants, Tailwind la mise en page.
 - **Tests unitaires impliquant `httpResource()`** : ne jamais `await

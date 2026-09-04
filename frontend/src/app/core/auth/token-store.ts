@@ -1,5 +1,5 @@
 import { Service, signal } from '@angular/core';
-import { AuthTokens } from '../../api/models/auth';
+import { AuthTokens } from './models/auth';
 
 const REFRESH_TOKEN_KEY = 'vending.refreshToken';
 

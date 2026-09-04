@@ -1,8 +1,8 @@
 import { computed, inject, Service, signal } from '@angular/core';
 import { map, Observable, switchMap, tap, throwError } from 'rxjs';
-import { AuthApi } from '../../api/auth-api';
-import { Credentials, JwtPayload } from '../../api/models/auth';
-import { User } from '../../api/models/user';
+import { AuthApi } from './auth-api';
+import { Credentials, JwtPayload } from './models/auth';
+import { User } from './models/user';
 import { TokenStore } from './token-store';
 
 /** Decodes the payload of a JWT without verifying its signature (the backend does that). */
