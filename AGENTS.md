@@ -7,19 +7,22 @@ plus proche du code modifié prévaut.
 
 ## Vue d'ensemble
 
-Multi-module Gradle (Kotlin DSL), architecture hexagonale / DDD, Spring Boot
-3.4.0, Java 21 :
+Deux projets côte à côte à la racine du dépôt, chacun avec son propre
+`AGENTS.md` détaillant ses règles locales :
 
 ```
-domain/           cœur métier, aucune dépendance externe
-application/      implémentations des cas d'usage (ApplicationService)
-infrastructure/   adaptateurs (REST, JPA, sécurité), point d'entrée Spring Boot
-frontend/         SPA Angular (Node/npm, hors build Gradle)
+backend/            projet multi-module Gradle (Kotlin DSL), architecture
+                     hexagonale / DDD, Spring Boot 3.4.0, Java 21
+  domain/            cœur métier, aucune dépendance externe
+  application/       implémentations des cas d'usage (ApplicationService)
+  infrastructure/    adaptateurs (REST, JPA, sécurité), point d'entrée
+                     Spring Boot
+frontend/            SPA Angular (Node/npm, hors build Gradle)
 ```
 
-Dépendances entre modules : `infrastructure` → `application` (au runtime
-seulement, voir `infrastructure/AGENTS.md`) → `domain`. `domain` ne dépend
-d'aucun des deux autres.
+Dépendances entre modules Gradle : `infrastructure` → `application` (au
+runtime seulement, voir `backend/infrastructure/AGENTS.md`) → `domain`.
+`domain` ne dépend d'aucun des deux autres.
 
 Le module `frontend/` a son propre `AGENTS.md` et son propre workflow : ses
 commandes passent par `npm` (voir `frontend/README.md`), pas par Gradle. Le
@@ -29,7 +32,10 @@ non-régression du backend uniquement ; les tests du frontend (`npm test`,
 
 ## Commandes
 
+Toutes les commandes Gradle s'exécutent depuis `backend/` :
+
 ```bash
+cd backend
 ./gradlew build            # compile + tests unitaires (domain, application, infrastructure)
 ./gradlew test              # tests unitaires uniquement
 ./gradlew :infrastructure:intTest   # tests d'intégration (*IT)
@@ -95,8 +101,8 @@ garde-fou de non-régression à vérifier après toute modification.
 - Un commit (ou une suite de commits logiques) par branche, avec le
   trailer `Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>`
   si le travail a été assisté par l'agent.
-- Vérification du build (`./gradlew clean build`, 140 tests) avant chaque
-  commit.
+- Vérification du build (`cd backend && ./gradlew clean build`, 140 tests)
+  avant chaque commit.
 - Fusion dans `develop` en fast-forward (`git merge --ff-only`, rebase au
   besoin) — jamais de commit de merge.
 - Suppression de la branche locale après fusion.
