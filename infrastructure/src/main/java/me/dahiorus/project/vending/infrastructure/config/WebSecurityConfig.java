@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import me.dahiorus.project.vending.infrastructure.security.TokenService;
 import me.dahiorus.project.vending.infrastructure.security.filter.JwtAuthenticationFilter;
-import me.dahiorus.project.vending.infrastructure.security.filter.JwtRequestFilter;
+import me.dahiorus.project.vending.infrastructure.security.filter.JwtAuthorizationFilter;
 import me.dahiorus.project.vending.infrastructure.security.jwt.JwtProperties;
 import me.dahiorus.project.vending.infrastructure.security.jwt.JwtService;
 import org.springframework.context.annotation.Bean;
@@ -84,7 +84,7 @@ public class WebSecurityConfig {
         // request filters
         .addFilter(new JwtAuthenticationFilter(authenticationManager, tokenService))
         .addFilterBefore(
-            new JwtRequestFilter(tokenService), UsernamePasswordAuthenticationFilter.class)
+            new JwtAuthorizationFilter(tokenService), UsernamePasswordAuthenticationFilter.class)
         .build();
   }
 

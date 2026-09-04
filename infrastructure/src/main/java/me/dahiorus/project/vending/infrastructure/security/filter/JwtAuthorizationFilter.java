@@ -14,13 +14,13 @@ import me.dahiorus.project.vending.infrastructure.security.TokenService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-public class JwtRequestFilter extends OncePerRequestFilter {
+public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
   private static final String AUTHORIZATION_HEADER_PREFIX = "Bearer";
 
   private final TokenService tokenService;
 
-  public JwtRequestFilter(final TokenService tokenService) {
+  public JwtAuthorizationFilter(final TokenService tokenService) {
     this.tokenService = tokenService;
   }
 
