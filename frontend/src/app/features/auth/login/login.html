@@ -1,0 +1,37 @@
+<div class="flex min-h-screen items-center justify-center p-4">
+  <mat-card class="w-full max-w-sm">
+    <mat-card-header>
+      <mat-card-title>Sign in</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form class="flex flex-col gap-4 pt-4" (submit)="$event.preventDefault(); submit()">
+        <mat-form-field>
+          <mat-label>Email</mat-label>
+          <input matInput type="email" autocomplete="username" [formField]="loginForm.username" />
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Password</mat-label>
+          <input
+            matInput
+            type="password"
+            autocomplete="current-password"
+            [formField]="loginForm.password"
+          />
+        </mat-form-field>
+
+        @if (errorMessage(); as message) {
+          <p class="text-sm text-red-600" role="alert">{{ message }}</p>
+        }
+
+        <button
+          mat-flat-button
+          type="submit"
+          [disabled]="submitting() || !loginForm().valid()"
+        >
+          {{ submitting() ? 'Signing in…' : 'Sign in' }}
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
