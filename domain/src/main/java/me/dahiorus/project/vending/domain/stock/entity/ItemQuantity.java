@@ -7,6 +7,7 @@ import me.dahiorus.project.vending.domain.item.entity.ItemId;
 import me.dahiorus.project.vending.domain.item.entity.ItemName;
 
 public record ItemQuantity(Item item, Quantity quantity) {
+
   public ItemQuantity {
     if (item == null || quantity == null) {
       throw new IllegalArgumentException("Item and quantity must not be null");
@@ -27,5 +28,16 @@ public record ItemQuantity(Item item, Quantity quantity) {
 
   public Integer quantityValue() {
     return quantity.value();
+  }
+
+  public boolean doesNotHaveStock() {
+    return quantity.value() <= 0;
+  }
+
+  public ItemQuantity decrementQuantity() {
+    if (doesNotHaveStock()) {
+      throw new IllegalStateException("Cannot decrement quantity below zero");
+    }
+    return new ItemQuantity(item, quantity.decrement());
   }
 }
