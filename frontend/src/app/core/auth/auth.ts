@@ -2,7 +2,7 @@ import { computed, inject, Service, signal } from '@angular/core';
 import { map, Observable, of, switchMap, tap, throwError } from 'rxjs';
 import { AuthApi } from './auth-api';
 import { Credentials, JwtPayload } from './models/auth';
-import { User } from './models/user';
+import { User, UserToRegister } from './models/user';
 import { TokenStore } from './token-store';
 
 /** Decodes the payload of a JWT without verifying its signature (the backend does that). */
@@ -47,6 +47,12 @@ export class AuthService {
       }),
       tap((user) => this.user.set(user)),
     );
+  }
+
+  register(payload: UserToRegister): Observable<User | null> {
+    return this.api
+      .register(payload)
+      .pipe(switchMap(() => this.login({ username: payload.email, password: payload.password })));
   }
 
   refreshAccessToken(): Observable<string> {

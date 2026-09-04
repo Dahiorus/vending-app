@@ -1,0 +1,81 @@
+<div class="flex min-h-screen items-center justify-center p-4">
+  <mat-card class="w-full max-w-sm">
+    <mat-card-header>
+      <mat-card-title>Create account</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form class="flex flex-col gap-4 pt-4" (submit)="$event.preventDefault(); submit()">
+        <mat-form-field>
+          <mat-label>Email</mat-label>
+          <input matInput type="email" autocomplete="username" [formField]="registerForm.email" />
+        </mat-form-field>
+
+        @if (fieldErrors()['email']; as message) {
+          <p class="text-sm text-red-600" role="alert">{{ message }}</p>
+        }
+
+        <mat-form-field>
+          <mat-label>Password</mat-label>
+          <input
+            matInput
+            type="password"
+            autocomplete="new-password"
+            [formField]="registerForm.password"
+          />
+        </mat-form-field>
+
+        @if (fieldErrors()['password']; as message) {
+          <p class="text-sm text-red-600" role="alert">{{ message }}</p>
+        }
+
+        <mat-form-field>
+          <mat-label>Confirm password</mat-label>
+          <input
+            matInput
+            type="password"
+            autocomplete="new-password"
+            [formField]="registerForm.confirmPassword"
+          />
+        </mat-form-field>
+
+        @if (!passwordsMatch()) {
+          <p class="text-sm text-red-600" role="alert">Passwords do not match.</p>
+        }
+
+        <mat-form-field>
+          <mat-label>First name</mat-label>
+          <input matInput type="text" autocomplete="given-name" [formField]="registerForm.firstname" />
+        </mat-form-field>
+
+        @if (fieldErrors()['firstname']; as message) {
+          <p class="text-sm text-red-600" role="alert">{{ message }}</p>
+        }
+
+        <mat-form-field>
+          <mat-label>Last name</mat-label>
+          <input matInput type="text" autocomplete="family-name" [formField]="registerForm.lastname" />
+        </mat-form-field>
+
+        @if (fieldErrors()['lastname']; as message) {
+          <p class="text-sm text-red-600" role="alert">{{ message }}</p>
+        }
+
+        @if (errorMessage(); as message) {
+          <p class="text-sm text-red-600" role="alert">{{ message }}</p>
+        }
+
+        <button
+          mat-flat-button
+          type="submit"
+          [disabled]="submitting() || !registerForm().valid() || !passwordsMatch()"
+        >
+          {{ submitting() ? 'Signing up…' : 'Create account' }}
+        </button>
+
+        <a class="text-sm text-center text-blue-700 hover:underline" routerLink="/login">
+          Already have an account? Sign in
+        </a>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

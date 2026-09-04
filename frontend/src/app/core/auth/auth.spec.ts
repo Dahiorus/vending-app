@@ -69,6 +69,69 @@ describe('AuthService', () => {
     expect(loaded).not.toBeNull();
   });
 
+  it('registers the user then logs in and loads the current user profile', () => {
+    let registered: unknown = null;
+    service
+      .register({
+        email: 'ada@vending.me',
+        password: 'secret',
+        firstname: 'Ada',
+        lastname: 'Lovelace',
+      })
+      .subscribe((user) => {
+        registered = user;
+      });
+
+    const registerRequest = http.expectOne('/api/v1/register');
+    expect(registerRequest.request.method).toBe('POST');
+    expect(registerRequest.request.body).toEqual({
+      email: 'ada@vending.me',
+      password: 'secret',
+      firstname: 'Ada',
+      lastname: 'Lovelace',
+    });
+    registerRequest.flush({
+      id: 'u-1',
+      email: 'ada@vending.me',
+      firstname: 'Ada',
+      lastname: 'Lovelace',
+    });
+
+    const loginRequest = http.expectOne('/api/v1/authenticate');
+    expect(loginRequest.request.method).toBe('POST');
+    expect(loginRequest.request.body).toEqual({
+      username: 'ada@vending.me',
+      password: 'secret',
+    });
+    loginRequest.flush({
+      accessToken: fakeJwt({ sub: 'ada@vending.me', roles: ['ROLE_USER'], exp: 1 }),
+      refreshToken: 'refresh-1',
+    });
+
+    const meRequest = http.expectOne('/api/v1/me');
+    meRequest.flush({
+      id: 'u-1',
+      email: 'ada@vending.me',
+      firstname: 'Ada',
+      lastname: 'Lovelace',
+    });
+
+    expect(service.isAuthenticated()).toBe(true);
+    expect(service.roles()).toEqual(['ROLE_USER']);
+    expect(service.currentUser()).toEqual({
+      id: 'u-1',
+      email: 'ada@vending.me',
+      firstname: 'Ada',
+      lastname: 'Lovelace',
+    });
+    expect(registered).toEqual({
+      id: 'u-1',
+      email: 'ada@vending.me',
+      firstname: 'Ada',
+      lastname: 'Lovelace',
+    });
+  });
+
   it('skips loading /me for admin accounts, which have no self-service profile', () => {
     let loaded: unknown = 'not-set';
     service.login({ username: 'admin@vending.me', password: 'secret' }).subscribe((user) => {

@@ -6,3 +6,10 @@ export interface User extends HalResource {
   firstname: string;
   lastname: string;
 }
+
+export interface UserToRegister {
+  email: string;
+  password: string;
+  firstname: string;
+  lastname: string;
+}
