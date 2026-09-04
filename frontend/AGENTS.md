@@ -14,6 +14,16 @@ npm run e2e      # tests end-to-end Playwright (API mockée, aucun backend requi
 Node est épinglé par Volta (`volta.node` dans `package.json`) : Angular 22 exige
 Node >= 22.22.3.
 
+## Workflow de développement
+
+- Utiliser le skill `angular-developer` pour toute nouvelle feature Angular
+  (composants, services, guides d'architecture, bonnes pratiques signaux/
+  formulaires/routage).
+- Générer les composants et services avec **Angular CLI** (`ng generate
+  component ...`, `ng generate service ...`) plutôt que de créer les fichiers
+  à la main, puis adapter le squelette généré au besoin (voir les conventions
+  ci-dessous : nommage 2025, Signal Forms, `httpResource`, etc.).
+
 ## Conventions
 
 - Angular standalone et **zoneless** ; pas de SSR.
