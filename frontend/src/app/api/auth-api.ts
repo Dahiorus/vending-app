@@ -1,0 +1,26 @@
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
+import { AuthTokens, Credentials } from './models/auth';
+import { User } from './models/user';
+
+@Injectable({ providedIn: 'root' })
+export class AuthApi {
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = environment.apiBaseUrl;
+
+  login(credentials: Credentials): Observable<AuthTokens> {
+    return this.http.post<AuthTokens>(`${this.baseUrl}/authenticate`, credentials);
+  }
+
+  refresh(refreshToken: string): Observable<AuthTokens> {
+    return this.http.post<AuthTokens>(`${this.baseUrl}/authenticate/refresh`, {
+      token: refreshToken,
+    });
+  }
+
+  me(): Observable<User> {
+    return this.http.get<User>(`${this.baseUrl}/me`);
+  }
+}
