@@ -1,4 +1,4 @@
-package me.dahiorus.project.vending.application.service;
+package me.dahiorus.project.vending.application.service.user;
 
 import java.util.Optional;
 import me.dahiorus.project.vending.domain.exception.InvalidBusinessObject;

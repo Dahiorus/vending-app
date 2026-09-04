@@ -1,4 +1,4 @@
-package me.dahiorus.project.vending.application.service;
+package me.dahiorus.project.vending.application.service.machine;
 
 import me.dahiorus.project.vending.domain.exception.ItemStockIsEmpty;
 import me.dahiorus.project.vending.domain.exception.NotWorkingVendingMachine;
