@@ -1,0 +1,74 @@
+# AGENTS.md — vending-app
+
+Ce fichier documente les conventions du projet pour tout agent (ou humain)
+qui contribue au code. Chaque module a en plus son propre `AGENTS.md` qui
+précise les règles locales ; en cas de conflit, le fichier du module le
+plus proche du code modifié prévaut.
+
+## Vue d'ensemble
+
+Multi-module Gradle (Kotlin DSL), architecture hexagonale / DDD, Spring Boot
+3.4.0, Java 21 :
+
+```
+domain/           cœur métier, aucune dépendance externe
+application/      implémentations des cas d'usage (ApplicationService)
+infrastructure/   adaptateurs (REST, JPA, sécurité), point d'entrée Spring Boot
+```
+
+Dépendances entre modules : `infrastructure` → `application` (au runtime
+seulement, voir `infrastructure/AGENTS.md`) → `domain`. `domain` ne dépend
+d'aucun des deux autres.
+
+## Commandes
+
+```bash
+./gradlew build            # compile + tests unitaires (domain, application, infrastructure)
+./gradlew test              # tests unitaires uniquement
+./gradlew :infrastructure:intTest   # tests d'intégration (*IT)
+./gradlew clean build       # build complet, critère de non-régression (140 tests)
+```
+
+Le nombre de tests exécutés (140 = 68 `domain` + 72 `infrastructure`) est le
+garde-fou de non-régression à vérifier après toute modification.
+
+## Conventions de nommage
+
+- Les mixins CRUD génériques du domaine sont adjectivaux :
+  `Creatable`, `Findable`, `Updatable`, `Deletable`, `Searchable`.
+- Les adaptateurs hexagonaux implémentant un `RepositoryPort` s'appellent
+  `XxxRepositoryAdapter` ; les interfaces Spring Data brutes s'appellent
+  `XxxJpaRepository`. (Historiquement inversé, corrigé — ne pas régresser.)
+- Les DTO ont deux conventions distinctes et volontaires, à ne pas unifier :
+  - `XxxToCreateDto` / `XxxToUpdateDto` : miroir direct d'une commande CRUD
+    du domaine (`XxxToCreate`, `XxxToUpdate`).
+  - `XxxRequestDto` / `XxxResponseDto` : endpoints d'action sans équivalent
+    CRUD direct (login, refresh de token, changement de mot de passe).
+- Un service applicatif ne s'appelle `XxxApplicationService` que s'il
+  implémente un `ApiPort` du domaine et orchestre/valide plusieurs ports
+  ou porte une frontière `@Transactional` explicite. Un pass-through pur
+  1:1 vers un `RepositoryPort`, sans logique ni frontière transactionnelle
+  à apporter, ne doit pas être enveloppé artificiellement (décision actée :
+  `AuthenticationRestController` et `CreateDevEnvironmentAdmin` injectent
+  volontairement leur `RepositoryPort` directement).
+
+## Workflow git
+
+- Une branche dédiée par sujet de correction/évolution, créée depuis
+  `develop`.
+- Un commit (ou une suite de commits logiques) par branche, avec le
+  trailer `Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>`
+  si le travail a été assisté par l'agent.
+- Vérification du build (`./gradlew clean build`, 140 tests) avant chaque
+  commit.
+- Fusion dans `develop` en fast-forward (`git merge --ff-only`, rebase au
+  besoin) — jamais de commit de merge.
+- Suppression de la branche locale après fusion.
+
+## Points d'architecture actés (ne pas ré-ouvrir sans nouvelle analyse)
+
+- Le module `domain` ne doit avoir aucune dépendance vers Spring, JPA ou
+  Jackson — c'est un invariant vérifié à chaque revue.
+- L'accès direct à un `RepositoryPort` depuis `infrastructure` (au lieu de
+  passer par un `ApplicationService`) est acceptable quand il n'y a ni
+  logique métier ni frontière transactionnelle à encapsuler.
