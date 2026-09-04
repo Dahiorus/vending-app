@@ -1,9 +1,9 @@
-import { Injectable, signal } from '@angular/core';
+import { Service, signal } from '@angular/core';
 import { AuthTokens } from '../../api/models/auth';
 
 const REFRESH_TOKEN_KEY = 'vending.refreshToken';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class TokenStore {
   private readonly access = signal<string | null>(null);
 

@@ -28,6 +28,12 @@ Node >= 22.22.3.
 
 - Angular standalone et **zoneless** ; pas de SSR.
 - Nommage de fichiers style guide **2025** : `login.ts`, pas `login.component.ts`.
+- **Services** : décorateur **`@Service()`** (Angular 22, `@angular/core`), pas
+  `@Injectable({ providedIn: 'root' })` — c'est le nouveau défaut de
+  `ng generate service` et la recommandation actuelle pour un singleton racine
+  standard (voir `TokenStore`, `AuthApi`, `AuthService`). Garder `@Injectable`
+  uniquement pour un besoin de provider avancé (`useClass`, `useFactory`, scope
+  non racine, etc.) que `@Service()` ne couvre pas.
 - **Lecture de données** : `httpResource()` (signaux). **Mutations** (`POST`/`PUT`/
   `DELETE`) : `HttpClient` directement — c'est la recommandation Angular.
 - Les modèles de `src/app/api/models/` sont **écrits à la main** et sont le miroir

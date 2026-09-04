@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Service, signal } from '@angular/core';
 import { map, Observable, switchMap, tap, throwError } from 'rxjs';
 import { AuthApi } from '../../api/auth-api';
 import { Credentials, JwtPayload } from '../../api/models/auth';
@@ -19,7 +19,7 @@ function decodePayload(token: string): JwtPayload | null {
   }
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class AuthService {
   private readonly api = inject(AuthApi);
   private readonly tokens = inject(TokenStore);
