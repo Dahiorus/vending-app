@@ -1,0 +1,6 @@
+[tools]
+# Versions alignées avec le `volta` de frontend/package.json et le JDK 21
+# requis par backend/ (voir libs.versions.toml, `java = "21"`).
+java = "temurin-21.0.2+13.0.LTS"
+node = "24.20.0"
+npm = "11.19.0"

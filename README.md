@@ -39,6 +39,13 @@ Voir `AGENTS.md` (racine et par module) pour le détail des conventions.
 - JDK 21
 - Node.js / npm (voir `frontend/package.json`, champ `volta` : Node 24,
   npm 11)
+- Versions outillées via [mise](https://mise.jdx.dev/) (`mise.toml` à la
+  racine) : lancer `mise install` pour obtenir les versions exactes de
+  Java, Node et npm utilisées par le projet
+
+  ```bash
+  mise install && mise trust
+  ```
 - Une instance PostgreSQL locale (le dépôt ne fournit pas de
   docker-compose) : base `vending-app`, accessible sur
   `jdbc:postgresql://localhost:5432/vending-app` (voir
