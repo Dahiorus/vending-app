@@ -1,6 +1,7 @@
 import { httpResource } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
@@ -14,7 +15,14 @@ const DEFAULT_PAGE_SIZE = 10;
 
 @Component({
   selector: 'app-machine-list',
-  imports: [MatButtonModule, MatPaginatorModule, MatProgressBarModule, MatTableModule, RouterLink],
+  imports: [
+    MatButtonModule,
+    MatIconModule,
+    MatPaginatorModule,
+    MatProgressBarModule,
+    MatTableModule,
+    RouterLink,
+  ],
   templateUrl: './machine-list.html',
 })
 export class MachineList {
@@ -28,6 +36,7 @@ export class MachineList {
     'itemType',
     'workingStatus',
     'powerStatus',
+    'actions',
   ];
 
   readonly pageIndex = signal(0);

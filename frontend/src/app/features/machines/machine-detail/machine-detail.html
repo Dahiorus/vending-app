@@ -1,0 +1,55 @@
+<div class="mb-4 flex items-center justify-between">
+  <h1 class="text-xl font-semibold">Vending machine details</h1>
+  <a mat-button routerLink="/machines">Back to list</a>
+</div>
+
+@if (isLoading()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+@if (hasError()) {
+  <p class="text-red-600" role="alert">The vending machine could not be loaded.</p>
+} @else if (machine(); as machine) {
+  <mat-card>
+    <mat-card-content>
+      <dl class="grid grid-cols-2 gap-x-4 gap-y-2">
+        <dt class="font-medium">Serial number</dt>
+        <dd>{{ machine.serialNumber ?? '—' }}</dd>
+
+        <dt class="font-medium">Address</dt>
+        <dd>
+          @if (machine.address; as address) {
+            {{ address.streetNumber }} {{ address.streetName }}, {{ address.postalCode }}
+            {{ address.city }}
+          } @else {
+            —
+          }
+        </dd>
+
+        <dt class="font-medium">Item type</dt>
+        <dd>{{ machine.itemType ?? '—' }}</dd>
+
+        <dt class="font-medium">Working status</dt>
+        <dd>{{ machine.workingStatus ?? '—' }}</dd>
+
+        <dt class="font-medium">Power status</dt>
+        <dd>{{ machine.powerStatus ?? '—' }}</dd>
+
+        <dt class="font-medium">Temperature</dt>
+        <dd>{{ machine.temperature ?? '—' }}</dd>
+
+        <dt class="font-medium">RFID status</dt>
+        <dd>{{ machine.rfidStatus ?? '—' }}</dd>
+
+        <dt class="font-medium">Smart card status</dt>
+        <dd>{{ machine.smartCardStatus ?? '—' }}</dd>
+
+        <dt class="font-medium">Change money status</dt>
+        <dd>{{ machine.changeMoneyStatus ?? '—' }}</dd>
+
+        <dt class="font-medium">Last intervention</dt>
+        <dd>{{ machine.lastIntervention ?? '—' }}</dd>
+      </dl>
+    </mat-card-content>
+  </mat-card>
+}

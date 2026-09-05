@@ -17,6 +17,12 @@ export const routes: Routes = [
     title: 'New vending machine',
   },
   {
+    path: 'machines/:id',
+    loadComponent: () =>
+      import('./features/machines/machine-detail/machine-detail').then((m) => m.MachineDetail),
+    title: 'Vending machine details',
+  },
+  {
     path: 'login',
     loadComponent: () => import('./features/auth/login/login').then((m) => m.Login),
     title: 'Sign in',
