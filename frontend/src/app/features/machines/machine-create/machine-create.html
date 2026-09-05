@@ -1,0 +1,98 @@
+<div class="flex min-h-screen items-center justify-center p-4">
+  <mat-card class="w-full max-w-md">
+    <mat-card-header>
+      <mat-card-title>New vending machine</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form class="flex flex-col gap-4 pt-4" (submit)="$event.preventDefault(); submit()">
+        <mat-form-field>
+          <mat-label>Serial number</mat-label>
+          <input matInput type="text" [formField]="machineForm.serialNumber" />
+        </mat-form-field>
+        @if (machineForm.serialNumber().touched() && machineForm.serialNumber().errors().length) {
+          <p class="text-sm text-red-600" role="alert">Serial number is required.</p>
+        }
+        @if (fieldErrors()['serialNumber']; as message) {
+          <p class="text-sm text-red-600" role="alert">{{ message }}</p>
+        }
+
+        <mat-form-field>
+          <mat-label>Item type</mat-label>
+          <mat-select [formField]="machineForm.itemType">
+            @for (itemType of itemTypes; track itemType) {
+              <mat-option [value]="itemType">{{ itemType }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        @if (machineForm.itemType().touched() && machineForm.itemType().errors().length) {
+          <p class="text-sm text-red-600" role="alert">Item type is required.</p>
+        }
+        @if (fieldErrors()['itemType']; as message) {
+          <p class="text-sm text-red-600" role="alert">{{ message }}</p>
+        }
+
+        <div class="grid grid-cols-2 gap-4">
+          <mat-form-field>
+            <mat-label>Latitude</mat-label>
+            <input matInput type="number" [formField]="machineForm.address.latitude" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Longitude</mat-label>
+            <input matInput type="number" [formField]="machineForm.address.longitude" />
+          </mat-form-field>
+        </div>
+        @if ((machineForm.address.latitude().touched() && machineForm.address.latitude().errors().length) ||
+             (machineForm.address.longitude().touched() && machineForm.address.longitude().errors().length)) {
+          <p class="text-sm text-red-600" role="alert">Latitude and longitude are required.</p>
+        }
+        @if (fieldErrors()['address.latitude'] ?? fieldErrors()['address.longitude']; as message) {
+          <p class="text-sm text-red-600" role="alert">{{ message }}</p>
+        }
+
+        <div class="grid grid-cols-3 gap-4">
+          <mat-form-field class="col-span-1">
+            <mat-label>Street number</mat-label>
+            <input matInput type="number" [formField]="machineForm.address.streetNumber" />
+          </mat-form-field>
+          <mat-form-field class="col-span-2">
+            <mat-label>Street name</mat-label>
+            <input matInput type="text" [formField]="machineForm.address.streetName" />
+          </mat-form-field>
+        </div>
+        @if ((machineForm.address.streetNumber().touched() && machineForm.address.streetNumber().errors().length) ||
+             (machineForm.address.streetName().touched() && machineForm.address.streetName().errors().length)) {
+          <p class="text-sm text-red-600" role="alert">Street number and name are required.</p>
+        }
+        @if (fieldErrors()['address.streetNumber'] ?? fieldErrors()['address.streetName']; as message) {
+          <p class="text-sm text-red-600" role="alert">{{ message }}</p>
+        }
+
+        <div class="grid grid-cols-2 gap-4">
+          <mat-form-field>
+            <mat-label>Postal code</mat-label>
+            <input matInput type="text" [formField]="machineForm.address.postalCode" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>City</mat-label>
+            <input matInput type="text" [formField]="machineForm.address.city" />
+          </mat-form-field>
+        </div>
+        @if ((machineForm.address.postalCode().touched() && machineForm.address.postalCode().errors().length) ||
+             (machineForm.address.city().touched() && machineForm.address.city().errors().length)) {
+          <p class="text-sm text-red-600" role="alert">Postal code and city are required.</p>
+        }
+        @if (fieldErrors()['address.postalCode'] ?? fieldErrors()['address.city']; as message) {
+          <p class="text-sm text-red-600" role="alert">{{ message }}</p>
+        }
+
+        @if (errorMessage(); as message) {
+          <p class="text-sm text-red-600" role="alert">{{ message }}</p>
+        }
+
+        <button mat-flat-button type="submit" [disabled]="submitting() || !machineForm().valid()">
+          {{ submitting() ? 'Creating…' : 'Create machine' }}
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

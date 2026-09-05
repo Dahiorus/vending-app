@@ -4,8 +4,16 @@ import {
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { TokenStore } from '../../../core/auth/token-store';
 import { MachineList } from './machine-list';
+
+function fakeJwt(payload: Record<string, unknown>): string {
+  const encode = (value: unknown) =>
+    btoa(JSON.stringify(value)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  return `${encode({ alg: 'none' })}.${encode(payload)}.signature`;
+}
 
 describe('MachineList', () => {
   let fixture: ComponentFixture<MachineList>;
@@ -16,7 +24,11 @@ describe('MachineList', () => {
     sessionStorage.clear();
     await TestBed.configureTestingModule({
       imports: [MachineList],
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([{ path: 'machines/new', children: [] }]),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(MachineList);
@@ -75,5 +87,20 @@ describe('MachineList', () => {
 
     expect(component.machines()).toEqual([]);
     expect(component.totalElements()).toBe(30);
+  });
+
+  it('exposes isAdmin based on the current JWT roles', () => {
+    backend
+      .expectOne('/api/v1/vending-machines?page=0&size=10')
+      .flush({ page: { size: 10, totalElements: 0, totalPages: 0, number: 0 } });
+
+    expect(component.isAdmin()).toBe(false);
+
+    TestBed.inject(TokenStore).setTokens({
+      accessToken: fakeJwt({ sub: 'admin@vending.me', roles: ['ROLE_ADMIN'], exp: 1 }),
+      refreshToken: 'refresh-1',
+    });
+
+    expect(component.isAdmin()).toBe(true);
   });
 });

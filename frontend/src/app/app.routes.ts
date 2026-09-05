@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { adminGuard } from './core/auth/admin-guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'machines' },
@@ -7,6 +8,13 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/machines/machine-list/machine-list').then((m) => m.MachineList),
     title: 'Vending machines',
+  },
+  {
+    path: 'machines/new',
+    loadComponent: () =>
+      import('./features/machines/machine-create/machine-create').then((m) => m.MachineCreate),
+    canActivate: [adminGuard],
+    title: 'New vending machine',
   },
   {
     path: 'login',

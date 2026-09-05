@@ -1,8 +1,11 @@
 import { httpResource } from '@angular/common/http';
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
+import { RouterLink } from '@angular/router';
+import { AuthService } from '../../../core/auth/auth';
 import { machinesPageUrl } from '../vending-machine-api';
 import { HalPage, toPage } from '../../../shared/models/hal';
 import { VendingMachine } from '../models/vending-machine';
@@ -11,10 +14,14 @@ const DEFAULT_PAGE_SIZE = 10;
 
 @Component({
   selector: 'app-machine-list',
-  imports: [MatPaginatorModule, MatProgressBarModule, MatTableModule],
+  imports: [MatButtonModule, MatPaginatorModule, MatProgressBarModule, MatTableModule, RouterLink],
   templateUrl: './machine-list.html',
 })
 export class MachineList {
+  private readonly auth = inject(AuthService);
+
+  readonly isAdmin = computed(() => this.auth.roles().includes('ROLE_ADMIN'));
+
   protected readonly displayedColumns = [
     'serialNumber',
     'city',

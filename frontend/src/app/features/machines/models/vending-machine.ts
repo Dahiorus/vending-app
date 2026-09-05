@@ -16,6 +16,21 @@ export interface Address {
   city: string | null;
 }
 
+export interface AddressToCreate {
+  latitude: number | null;
+  longitude: number | null;
+  streetNumber: number | null;
+  streetName: string;
+  postalCode: string;
+  city: string;
+}
+
+export interface VendingMachineToCreate {
+  serialNumber: string;
+  address: AddressToCreate;
+  itemType: ItemType | null;
+}
+
 export interface VendingMachine extends HalResource {
   id: string;
   serialNumber: string | null;
