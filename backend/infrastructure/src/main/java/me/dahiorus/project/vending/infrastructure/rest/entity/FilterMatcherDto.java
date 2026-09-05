@@ -1,5 +1,7 @@
 package me.dahiorus.project.vending.infrastructure.rest.entity;
 
+import static java.util.Objects.requireNonNullElse;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import me.dahiorus.project.vending.domain.pagination.entity.FilterMatcher;
 import me.dahiorus.project.vending.domain.pagination.entity.FilterMatcher.CaseSensitivity;
@@ -28,7 +30,15 @@ public record FilterMatcherDto(
             description = "Searching ignoring case",
             implementation = CaseSensitivity.class)
         CaseSensitivity caseSensitivity) {
+
   public FilterMatcher toDomain() {
-    return new FilterMatcher(stringMatch, matchAllOrAny, ignoreOrIncludeNull, caseSensitivity);
+    var defaults = new FilterMatcher();
+
+    return new FilterMatcher(
+        requireNonNullElse(stringMatch, defaults.stringMatch()),
+        requireNonNullElse(matchAllOrAny, defaults.matchAllOrAny()),
+        requireNonNullElse(ignoreOrIncludeNull, defaults.ignoreOrIncludeNull()),
+        requireNonNullElse(caseSensitivity, defaults.caseSensitivity()));
   }
 }
+
