@@ -12,7 +12,7 @@ public record Address(
     City city)
     implements Serializable {
 
-  public record GeoCoordinates(Double latitude, Double longitude) {
+  public record GeoCoordinates(Double latitude, Double longitude) implements Serializable {
     public GeoCoordinates {
       if (latitude < -90 || latitude > 90) {
         throw new IllegalArgumentException("Latitude must be between -90 and 90 degrees.");
