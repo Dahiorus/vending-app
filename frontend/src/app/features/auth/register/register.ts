@@ -1,4 +1,3 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
 import { email, form, FormField, required, validate } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,7 +6,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth';
-import { ValidationErrorResponse } from '../../../shared/models/validation-error';
+import { parseValidationErrors } from '../../../shared/models/validation-error';
+
+const FORM_FIELDS = ['email', 'password', 'firstname', 'lastname'];
 
 @Component({
   selector: 'app-register',
@@ -76,25 +77,12 @@ export class Register {
       error: (error: unknown) => {
         this.submitting.set(false);
 
-        if (error instanceof HttpErrorResponse && this.isValidationErrorResponse(error.error)) {
-          const fieldErrors: Record<string, string> = {};
-          let hasObjectLevelError = false;
+        const parsed = parseValidationErrors(error, FORM_FIELDS);
 
-          for (const validationError of error.error.errors) {
-            if (
-              validationError.field &&
-              ['email', 'password', 'firstname', 'lastname'].includes(validationError.field)
-            ) {
-              fieldErrors[validationError.field] = validationError.defaultMessage;
-              continue;
-            }
-
-            hasObjectLevelError = true;
-          }
-
-          this.fieldErrors.set(fieldErrors);
+        if (parsed) {
+          this.fieldErrors.set(parsed.fieldErrors);
           this.errorMessage.set(
-            hasObjectLevelError ? 'An account with this email may already exist.' : null,
+            parsed.hasObjectLevelError ? 'An account with this email may already exist.' : null,
           );
           return;
         }
@@ -102,14 +90,5 @@ export class Register {
         this.errorMessage.set('Registration failed. Please try again.');
       },
     });
-  }
-
-  private isValidationErrorResponse(error: unknown): error is ValidationErrorResponse {
-    return (
-      typeof error === 'object' &&
-      error !== null &&
-      'errors' in error &&
-      Array.isArray(error.errors)
-    );
   }
 }

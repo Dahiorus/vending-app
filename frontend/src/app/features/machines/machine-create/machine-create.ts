@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { form, FormField, required, submit } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,8 +11,7 @@ import { firstValueFrom } from 'rxjs';
 import { ITEM_TYPES } from '../models/enums';
 import { VendingMachineToCreate } from '../models/vending-machine';
 import { machinesUrl } from '../vending-machine-api';
-import { ValidationErrorResponse } from '../../../shared/models/validation-error';
-
+import { parseValidationErrors } from '../../../shared/models/validation-error';
 const FORM_FIELDS = [
   'serialNumber',
   'itemType',
@@ -83,22 +82,12 @@ export class MachineCreate {
       } catch (error) {
         this.submitting.set(false);
 
-        if (error instanceof HttpErrorResponse && this.isValidationErrorResponse(error.error)) {
-          const fieldErrors: Record<string, string> = {};
-          let hasObjectLevelError = false;
+        const parsed = parseValidationErrors(error, FORM_FIELDS);
 
-          for (const validationError of error.error.errors) {
-            if (validationError.field && FORM_FIELDS.includes(validationError.field)) {
-              fieldErrors[validationError.field] = validationError.defaultMessage;
-              continue;
-            }
-
-            hasObjectLevelError = true;
-          }
-
-          this.fieldErrors.set(fieldErrors);
+        if (parsed) {
+          this.fieldErrors.set(parsed.fieldErrors);
           this.errorMessage.set(
-            hasObjectLevelError ? 'The vending machine could not be created.' : null,
+            parsed.hasObjectLevelError ? 'The vending machine could not be created.' : null,
           );
           return;
         }
@@ -106,14 +95,5 @@ export class MachineCreate {
         this.errorMessage.set('Creation failed. Please try again.');
       }
     });
-  }
-
-  private isValidationErrorResponse(error: unknown): error is ValidationErrorResponse {
-    return (
-      typeof error === 'object' &&
-      error !== null &&
-      'errors' in error &&
-      Array.isArray(error.errors)
-    );
   }
 }
