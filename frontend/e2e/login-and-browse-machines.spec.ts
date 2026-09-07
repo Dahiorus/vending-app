@@ -3,8 +3,7 @@ import { expect, test } from '@playwright/test';
 /** Unsigned JWT: the frontend only reads the payload, the backend is mocked here. */
 function fakeAccessToken(): string {
   const encode = (value: unknown) =>
-    Buffer.from(JSON.stringify(value))
-      .toString('base64')
+    btoa(JSON.stringify(value))
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/=+$/, '');
