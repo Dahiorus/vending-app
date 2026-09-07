@@ -8,34 +8,38 @@ Analyse basée sur les contrôleurs REST du backend
 
 - Login, inscription (avec auto-login), liste des machines (lecture seule,
   paginée)
+- **Détail d'une machine** (`GET /vending-machines/{id}`) — page en lecture
+  seule (infos machine, statuts) ; ne liste pas encore les items ni ne
+  propose de commande
+- **Création d'une machine** (`ROLE_ADMIN`, `POST /vending-machines`) —
+  formulaire Signal Forms dédié (`machines/new`)
 
 ## 🌐 Public / client (sans authentification)
 
-1. **Détail d'une machine** (`GET /vending-machines/{id}`) — page dédiée
-   (actuellement seule la liste existe)
+1. **Items d'une machine + commande** — la page détail machine n'affiche pas
+   encore les items disponibles ni un flow d'achat
+   (`POST /vending-machines/{id}/order/{itemId}`), cœur métier, public
 2. **Détail/visuel d'un item** (`GET /items/{itemId}/**`, image publique)
-3. **Passer une commande** (`POST /vending-machines/{id}/order/{itemId}`) —
-   flow d'achat, cœur métier, public (pas besoin d'être connecté)
 
 ## 👤 Espace utilisateur connecté (`/api/v1/me/**`)
 
-4. **Profil** : consulter/modifier ses infos (`GET`/`PUT /me`)
-5. **Photo de profil** : afficher/uploader (`GET`/`POST /me/picture`)
-6. **Changement de mot de passe** (`POST /me/password`)
+3. **Profil** : consulter/modifier ses infos (`GET`/`PUT /me`)
+4. **Photo de profil** : afficher/uploader (`GET`/`POST /me/picture`)
+5. **Changement de mot de passe** (`POST /me/password`)
 
 ## 🔐 Back-office admin (`ROLE_ADMIN`, tout le reste)
 
-7. **Gestion des items** : CRUD complet + upload d'image (`/items`)
-8. **Gestion des machines** : création / modification / suppression (le CRUD
-   complet, au-delà de la liste)
-9. **Gestion du stock d'une machine** : ajouter du stock, consulter le stock,
+6. **Gestion des items** : CRUD complet + upload d'image (`/items`)
+7. **Gestion des machines** : modification / suppression (la création est
+   faite, il manque édition et suppression pour un CRUD complet)
+8. **Gestion du stock d'une machine** : ajouter du stock, consulter le stock,
    rapport de stock (`/vending-machines/{id}/stock`, `/stock/report`)
-10. **Statut machine** : reset (`/reset`), rapport de statut
-    (`/status/report`)
-11. **Rapport des commandes** par machine (`/orders/report`)
+9. **Statut machine** : reset (`/reset`), rapport de statut
+   (`/status/report`)
+10. **Rapport des commandes** par machine (`/orders/report`)
 
 ## Priorité suggérée
 
-1. Détail machine + commande (point 3, cœur métier client)
-2. Espace profil (points 4-6)
-3. Back-office admin (points 7-11, le plus gros lot)
+1. Items d'une machine + commande (point 1, cœur métier client)
+2. Espace profil (points 3-5)
+3. Back-office admin (points 6-10, le plus gros lot)
