@@ -124,3 +124,17 @@ garde-fou de non-régression à vérifier après toute modification.
 - L'accès direct à un `RepositoryPort` depuis `infrastructure` (au lieu de
   passer par un `ApplicationService`) est acceptable quand il n'y a ni
   logique métier ni frontière transactionnelle à encapsuler.
+
+<!-- build-brief:instructions:start -->
+## build-brief
+
+- Prefer `build-brief gradle ...` for PATH Gradle and `build-brief ./gradlew ...` for the project wrapper.
+- For chained shell commands, rewrite each Gradle segment individually, for example `build-brief gradle test && build-brief gradle check`.
+- Use default `build-brief` output for routine Gradle work; it stays intentionally short on clean success cases.
+- Use `build-brief gradle --stacktrace ...` or `build-brief ./gradlew --stacktrace ...` when you need Gradle stack traces.
+- `build-brief` normalizes output-shaping flags like `--quiet`, `--warn`, `--warning-mode ...`, and `--console ...` so its reducer keeps working reliably.
+- Let Gradle daemon reuse happen by default; `build-brief` strips explicit `--daemon` and `--no-daemon` overrides rather than forcing daemon-off behavior.
+- Preserve the raw log path from `build-brief` output when handing build failures to another tool or agent.
+- RTK is installed on this machine. Prefer `build-brief` directly for Gradle commands instead of wrapping Gradle work in RTK first.
+- If hooks or plugins rewrite raw `gradle` / `./gradlew` commands for you, let them route those commands — including chained `&&`, `||`, and `;` segments — to `build-brief` rather than sending Gradle through RTK first.
+<!-- build-brief:instructions:end -->
