@@ -49,6 +49,17 @@ jamais référencer un concept d'infrastructure (HTTP, SQL, JSON). La
 traduction vers un code HTTP se fait exclusivement dans
 `infrastructure/rest/exception/RestResponseExceptionHandler`.
 
+## Typage fort
+
+Le typage dans `domain` doit être fort : pas de type primitif ou générique
+(`String`, `int`/`Integer`, `double`/`BigDecimal` nu, `Map<String, Object>`,
+...) pour représenter un concept métier dès qu'il porte une sémantique ou
+une contrainte propre (identifiant, quantité, prix, statut, ...). Préférer
+un value object dédié (record) ou une énumération plutôt qu'un type natif
+utilisé tel quel. Un paramètre ou un attribut typé en `String`/`int` brut là
+où un concept métier existe est un signal fort qu'un value object manque
+(primitive obsession), au même titre qu'une dépendance externe mal placée.
+
 ## Test fixtures
 
 Les fixtures partagées (`src/testFixtures`) sont gérées par le plugin
