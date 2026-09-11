@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.infrastructure.rest.assembler;
 
+import static me.dahiorus.project.vending.infrastructure.rest.assembler.Relation.VENDING_MACHINE;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -20,14 +21,14 @@ public class VendingMachineStatusReportDtoModelAssembler
   @Override
   public void addLinks(final EntityModel<VendingMachineStatusReportDto> resource) {
     Optional.ofNullable(resource.getContent())
-        .map(VendingMachineStatusReportDtoModelAssembler::buildLinks)
+        .map(VendingMachineStatusReportDtoModelAssembler::linksOf)
         .ifPresent(resource::add);
   }
 
-  private static Set<Link> buildLinks(VendingMachineStatusReportDto content) {
+  private static Set<Link> linksOf(VendingMachineStatusReportDto content) {
     return Set.of(
         linkTo(methodOn(VendingMachineCrudRestController.class).read(content.vendingMachineId()))
-            .withRel(Relation.VENDING_MACHINE));
+            .withRel(VENDING_MACHINE));
   }
 
   @Override
