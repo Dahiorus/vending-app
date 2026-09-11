@@ -24,7 +24,9 @@ public class ItemImageApplicationService implements ItemImageApiPort {
   @Override
   public ItemWithImage uploadImage(final ItemId itemId, final FileToUpload image)
       throws ResourceNotFound {
-    return itemRepository.uploadImage(itemId, image);
+    var itemUploadedImage = itemRepository.uploadImage(itemId, image);
+
+    return new ItemWithImage(itemId, itemUploadedImage);
   }
 
   @Override

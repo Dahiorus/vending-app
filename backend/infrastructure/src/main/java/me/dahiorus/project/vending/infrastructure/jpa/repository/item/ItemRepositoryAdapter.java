@@ -14,7 +14,6 @@ import me.dahiorus.project.vending.domain.item.entity.Item;
 import me.dahiorus.project.vending.domain.item.entity.ItemId;
 import me.dahiorus.project.vending.domain.item.entity.ItemToCreate;
 import me.dahiorus.project.vending.domain.item.entity.ItemToUpdate;
-import me.dahiorus.project.vending.domain.item.entity.ItemWithImage;
 import me.dahiorus.project.vending.domain.item.port.ItemRepositoryPort;
 import me.dahiorus.project.vending.domain.pagination.entity.Filter;
 import me.dahiorus.project.vending.domain.pagination.entity.Pagination;
@@ -63,7 +62,9 @@ public class ItemRepositoryAdapter implements ItemRepositoryPort {
         .orElseThrow(() -> new ResourceNotFound(toUpdate.id()));
   }
 
-  @CacheEvict(key = "#itemId.value")
+  @CacheEvict(
+      cacheNames = {"items", "itemImages"},
+      key = "#itemId.value")
   @Override
   public void delete(ItemId itemId) {
     jpaRepository.deleteById(itemId.value());
@@ -82,9 +83,9 @@ public class ItemRepositoryAdapter implements ItemRepositoryPort {
     return jpaRepository.count(toExample(filter, JpaItem::fromDomain));
   }
 
-  @CachePut(cacheNames = "itemImages", key = "#result.item.id.value")
+  @CachePut(value = "itemImages", key = "#itemId.value")
   @Override
-  public ItemWithImage uploadImage(final ItemId itemId, final FileToUpload image)
+  public UploadedFile uploadImage(final ItemId itemId, final FileToUpload image)
       throws ResourceNotFound {
     return jpaRepository
         .findById(itemId.value())
@@ -94,12 +95,12 @@ public class ItemRepositoryAdapter implements ItemRepositoryPort {
               jpaItem.setImage(uploadedImage);
               jpaRepository.save(jpaItem);
 
-              return new ItemWithImage(jpaItem.toDomain(), uploadedImage.toDomain());
+              return uploadedImage.toDomain();
             })
         .orElseThrow(() -> new ResourceNotFound(itemId));
   }
 
-  @Cacheable(value = "itemImages", key = "#itemId.value")
+  @Cacheable(value = "itemImages", key = "#itemId.value", unless = "#result.isEmpty()")
   @Override
   public Optional<UploadedFile> findImage(final ItemId itemId) {
     var jpaItem =

@@ -13,7 +13,6 @@ import me.dahiorus.project.vending.domain.item.entity.Item;
 import me.dahiorus.project.vending.domain.item.entity.ItemId;
 import me.dahiorus.project.vending.domain.item.entity.ItemToCreate;
 import me.dahiorus.project.vending.domain.item.entity.ItemToUpdate;
-import me.dahiorus.project.vending.domain.item.entity.ItemWithImage;
 
 public interface ItemRepositoryPort
     extends Creatable<ItemToCreate, Item>,
@@ -21,7 +20,7 @@ public interface ItemRepositoryPort
         Updatable<ItemToUpdate, Item>,
         Deletable<ItemId>,
         Searchable<Item, Item> {
-  ItemWithImage uploadImage(ItemId itemId, FileToUpload picture) throws ResourceNotFound;
+  UploadedFile uploadImage(ItemId itemId, FileToUpload picture) throws ResourceNotFound;
 
   Optional<UploadedFile> findImage(ItemId itemId);
 }

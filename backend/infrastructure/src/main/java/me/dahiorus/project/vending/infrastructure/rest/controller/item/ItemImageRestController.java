@@ -64,9 +64,8 @@ public class ItemImageRestController {
   public ResponseEntity<EntityModel<ItemDto>> uploadImage(
       @PathVariable("id") UUID id, @RequestParam("file") MultipartFile multipartFile) {
     validator(multipartFile).validate();
+    itemImageService.uploadImage(new ItemId(id), toFileToUpload(multipartFile));
 
-    var itemWithImage = itemImageService.uploadImage(new ItemId(id), toFileToUpload(multipartFile));
-
-    return ok(modelAssembler.toModel(ItemDto.fromDomain(itemWithImage.item())));
+    return ok(modelAssembler.toModel(new ItemDto(id, null, null, null)));
   }
 }
