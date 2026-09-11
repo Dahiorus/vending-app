@@ -1,6 +1,7 @@
 package me.dahiorus.project.vending.infrastructure.rest.assembler;
 
 import static me.dahiorus.project.vending.infrastructure.rest.assembler.Relation.ITEM_IMAGE;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -21,14 +22,17 @@ public class ItemDtoModelAssembler implements SimpleRepresentationModelAssembler
   @Override
   public void addLinks(final EntityModel<ItemDto> resource) {
     Optional.ofNullable(resource.getContent())
-        .map(ItemDtoModelAssembler::buildLinks)
+        .map(ItemDtoModelAssembler::linksOf)
         .ifPresent(resource::add);
   }
 
-  private static Set<Link> buildLinks(ItemDto content) {
+  private static Set<Link> linksOf(ItemDto content) {
     return Set.of(
         linkTo(methodOn(ItemCrudRestController.class).read(content.id())).withSelfRel(),
-        linkTo(methodOn(ItemImageRestController.class).getImage(content.id())).withRel(ITEM_IMAGE));
+        linkTo(methodOn(ItemImageRestController.class).getImage(content.id()))
+            .withRel(ITEM_IMAGE)
+            .andAffordance(
+                afford(methodOn(ItemImageRestController.class).uploadImage(content.id(), null))));
   }
 
   @Override

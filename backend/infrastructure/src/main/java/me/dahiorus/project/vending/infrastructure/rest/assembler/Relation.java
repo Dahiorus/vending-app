@@ -8,7 +8,7 @@ public enum Relation implements LinkRelation {
   RESET("reset"),
   ORDER("order"),
   ITEM("item"),
-  ITEM_IMAGE("itemImage"),
+  ITEM_IMAGE("item:image"),
   SELF_PICTURE("me:picture"),
   SELF_PASSWORD("me:password");
 
