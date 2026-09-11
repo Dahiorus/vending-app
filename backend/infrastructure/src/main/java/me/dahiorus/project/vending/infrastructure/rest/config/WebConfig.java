@@ -25,8 +25,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
             description = "Simple vending application",
             version = "v1.0"))
 @SecurityScheme(name = "bearerAuth", bearerFormat = "JWT", type = HTTP, scheme = "bearer")
-@EnableSpringDataWebSupport
-@EnableHypermediaSupport(type = HAL_FORMS)
 public class WebConfig implements WebMvcConfigurer {
   @Override
   public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers) {
