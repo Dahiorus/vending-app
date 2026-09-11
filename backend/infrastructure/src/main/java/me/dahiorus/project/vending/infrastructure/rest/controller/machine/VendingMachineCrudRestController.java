@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import java.util.UUID;
 import me.dahiorus.project.vending.domain.machine.entity.VendingMachineId;
 import me.dahiorus.project.vending.domain.machine.port.VendingMachineApiPort;
+import me.dahiorus.project.vending.infrastructure.rest.assembler.PagedModelAssembler;
 import me.dahiorus.project.vending.infrastructure.rest.entity.FilterMatcherDto;
 import me.dahiorus.project.vending.infrastructure.rest.entity.machine.VendingMachineDto;
 import me.dahiorus.project.vending.infrastructure.rest.entity.machine.VendingMachineToCreateDto;
@@ -21,7 +22,6 @@ import me.dahiorus.project.vending.infrastructure.rest.entity.machine.VendingMac
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
@@ -42,13 +42,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/api/v1/vending-machines")
 public class VendingMachineCrudRestController {
   private final VendingMachineApiPort service;
-  private final PagedResourcesAssembler<VendingMachineDto> pageModelAssembler;
+  private final PagedModelAssembler<VendingMachineDto> pageModelAssembler;
   private final RepresentationModelAssembler<VendingMachineDto, EntityModel<VendingMachineDto>>
       modelAssembler;
 
   public VendingMachineCrudRestController(
       final VendingMachineApiPort service,
-      final PagedResourcesAssembler<VendingMachineDto> pageModelAssembler,
+      final PagedModelAssembler<VendingMachineDto> pageModelAssembler,
       final RepresentationModelAssembler<VendingMachineDto, EntityModel<VendingMachineDto>>
           modelAssembler) {
     this.service = service;
@@ -112,6 +112,7 @@ public class VendingMachineCrudRestController {
             .map(VendingMachineDto::fromDomain);
 
     return ok(
-        pageModelAssembler.toModel(new PageImpl<>(page.content(), pageable, page.totalElements())));
+        pageModelAssembler.toModel(
+            new PageImpl<>(page.content(), pageable, page.totalElements())));
   }
 }
