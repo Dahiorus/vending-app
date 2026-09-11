@@ -62,7 +62,7 @@ public class WebSecurityConfig {
         .authorizeHttpRequests(
             customizer ->
                 customizer
-                    .requestMatchers(AUTHENTICATE_PATH, REFRESH_TOKEN_PATH, JWKS_PATH, "/api/v1/")
+                    .requestMatchers(AUTHENTICATE_PATH, REFRESH_TOKEN_PATH, JWKS_PATH, "/api/v1")
                     .permitAll()
                     .requestMatchers(
                         withDefaults().matcher(GET, "/api/v1/vending-machines/**"),

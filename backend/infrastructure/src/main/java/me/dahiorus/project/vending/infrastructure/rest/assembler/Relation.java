@@ -10,7 +10,13 @@ public enum Relation implements LinkRelation {
   ITEM("item"),
   ITEM_IMAGE("item:image"),
   SELF_PICTURE("me:picture"),
-  SELF_PASSWORD("me:password");
+  SELF_PASSWORD("me:password"),
+  ITEMS("items"),
+  VENDING_MACHINES("vendingMachines"),
+  ME("me"),
+  AUTHENTICATE("authenticate"),
+  REGISTER("register"),
+  DOCS("docs");
 
   private final String value;
 
