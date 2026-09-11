@@ -8,7 +8,7 @@ import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder.BCryptVersion.$2A;
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+import static org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher.withDefaults;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Clock;
@@ -65,11 +65,12 @@ public class WebSecurityConfig {
                     .requestMatchers(AUTHENTICATE_PATH, REFRESH_TOKEN_PATH, JWKS_PATH, "/api/v1/")
                     .permitAll()
                     .requestMatchers(
-                        antMatcher(GET, "/api/v1/vending-machines/**"),
-                        antMatcher(GET, "/api/v1/items/{itemId}/**"))
+                        withDefaults().matcher(GET, "/api/v1/vending-machines/**"),
+                        withDefaults().matcher(GET, "/api/v1/items/{itemId}/**"))
                     .permitAll()
                     .requestMatchers(
-                        antMatcher(POST, "/api/v1/vending-machines/{vendingMachineId}/order/**"))
+                        withDefaults()
+                            .matcher(POST, "/api/v1/vending-machines/{vendingMachineId}/order/**"))
                     .permitAll()
                     .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**")
                     .permitAll()
@@ -104,7 +105,8 @@ public class WebSecurityConfig {
     };
   }
 
-  private static AccessDeniedHandler restAccessDeniedHandler(final ObjectMapper objectMapper, final Clock clock) {
+  private static AccessDeniedHandler restAccessDeniedHandler(
+      final ObjectMapper objectMapper, final Clock clock) {
     return (request, response, accessDeniedException) -> {
       response.setStatus(SC_FORBIDDEN);
       response.setContentType(APPLICATION_JSON_VALUE);
