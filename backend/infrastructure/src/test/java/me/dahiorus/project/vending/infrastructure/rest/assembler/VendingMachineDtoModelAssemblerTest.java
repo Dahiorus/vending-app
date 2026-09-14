@@ -2,7 +2,6 @@ package me.dahiorus.project.vending.infrastructure.rest.assembler;
 
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.StreamSupport.stream;
-import static me.dahiorus.project.vending.infrastructure.rest.assembler.Relation.STOCK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.hateoas.IanaLinkRelations.SELF;
 
@@ -86,7 +85,7 @@ class VendingMachineDtoModelAssemblerTest {
     assembler.addLinks(resource);
 
     // Then
-    assertThat(resource.getRequiredLink(STOCK).getHref())
+    assertThat(resource.getRequiredLink("stock").getHref())
         .endsWith("/api/v1/vending-machines/" + id + "/stock");
   }
 
