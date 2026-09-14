@@ -5,6 +5,8 @@ commonsCollections4 = "4.4"
 commonsIo = "2.12.0"
 nimbusJoseJwt = "9.31"
 springdocOpenapi = "2.8.13"
+spotless = "8.10.2"
+googleJavaFormat = "1.36.1"
 
 [libraries]
 spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "springBoot" }
@@ -36,3 +38,4 @@ commons-io = { module = "commons-io:commons-io", version.ref = "commonsIo" }
 
 [plugins]
 spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

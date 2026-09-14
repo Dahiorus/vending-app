@@ -25,8 +25,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @ExtendWith(MockitoExtension.class)
 class ItemPagedModelAssemblerTest {
-  @Mock
-  RepresentationModelAssembler<ItemDto, EntityModel<ItemDto>> itemAssembler;
+  @Mock RepresentationModelAssembler<ItemDto, EntityModel<ItemDto>> itemAssembler;
 
   ItemPagedModelAssembler assembler;
 
@@ -34,8 +33,7 @@ class ItemPagedModelAssemblerTest {
   void setUp() {
     var pageAssembler =
         new PagedResourcesAssembler<ItemDto>(
-            null,
-            UriComponentsBuilder.fromUriString("http://localhost/api/v1/items").build());
+            null, UriComponentsBuilder.fromUriString("http://localhost/api/v1/items").build());
     assembler = new ItemPagedModelAssembler(pageAssembler, itemAssembler);
   }
 

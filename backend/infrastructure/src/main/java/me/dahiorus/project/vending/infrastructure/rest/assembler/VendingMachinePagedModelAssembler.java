@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * Assembles a paginated list of {@link VendingMachineDto} into a {@link PagedModel}, applying the
- * item-level links/affordances of {@link VendingMachineDtoModelAssembler} and adding a
- * {@code create} affordance on the collection's self link.
+ * item-level links/affordances of {@link VendingMachineDtoModelAssembler} and adding a {@code
+ * create} affordance on the collection's self link.
  */
 @Component
 public class VendingMachinePagedModelAssembler implements PagedModelAssembler<VendingMachineDto> {

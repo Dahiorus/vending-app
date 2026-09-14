@@ -33,8 +33,7 @@ class VendingMachinePagedModelAssemblerTest {
     var pageAssembler =
         new PagedResourcesAssembler<VendingMachineDto>(
             null,
-            UriComponentsBuilder.fromUriString("http://localhost/api/v1/vending-machines")
-                .build());
+            UriComponentsBuilder.fromUriString("http://localhost/api/v1/vending-machines").build());
     assembler = new VendingMachinePagedModelAssembler(pageAssembler, itemAssembler);
   }
 

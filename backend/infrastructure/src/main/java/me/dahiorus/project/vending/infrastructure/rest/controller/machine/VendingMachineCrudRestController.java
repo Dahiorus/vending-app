@@ -112,7 +112,6 @@ public class VendingMachineCrudRestController {
             .map(VendingMachineDto::fromDomain);
 
     return ok(
-        pageModelAssembler.toModel(
-            new PageImpl<>(page.content(), pageable, page.totalElements())));
+        pageModelAssembler.toModel(new PageImpl<>(page.content(), pageable, page.totalElements())));
   }
 }

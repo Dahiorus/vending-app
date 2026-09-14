@@ -27,7 +27,7 @@ le développement, le Gradle wrapping n'existe que pour le build agrégé.
   (composants, services, guides d'architecture, bonnes pratiques signaux/
   formulaires/routage).
 - Générer les composants et services avec **Angular CLI** (`ng generate
-  component ...`, `ng generate service ...`) plutôt que de créer les fichiers
+component ...`, `ng generate service ...`) plutôt que de créer les fichiers
   à la main, puis adapter le squelette généré au besoin (voir les conventions
   ci-dessous : nommage 2025, Signal Forms, `httpResource`, etc.).
 
@@ -57,7 +57,7 @@ le développement, le Gradle wrapping n'existe que pour le build agrégé.
 - Les nouveaux formulaires utilisent **Signal Forms** (`@angular/forms/signals`).
 - Angular Material fournit les composants, Tailwind la mise en page.
 - **Tests unitaires impliquant `httpResource()`** : ne jamais `await
-  fixture.whenStable()` avant d'avoir flush une requête HTTP en attente —
+fixture.whenStable()` avant d'avoir flush une requête HTTP en attente —
   `httpResource` garde le fixture instable tant que sa requête n'est pas résolue,
   ce qui bloque `whenStable()` indéfiniment (timeout du hook/test). Déclencher la
   détection de changements avec `fixture.detectChanges()` (synchrone) pour laisser

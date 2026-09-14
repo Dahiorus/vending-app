@@ -28,6 +28,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -117,7 +118,9 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
 
   @Nested
   class SearchAndCount {
-    Item item1, item2, item3;
+    Item item1;
+    Item item2;
+    Item item3;
 
     @BeforeEach
     void setUpItems() {
@@ -309,6 +312,7 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
     }
   }
 
+  @TestConfiguration
   static class TestConfig {
     @Bean
     ItemRepositoryAdapter itemJpaRepository(EntityManager entityManager) {

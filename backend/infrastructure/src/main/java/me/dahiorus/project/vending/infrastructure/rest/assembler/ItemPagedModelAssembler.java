@@ -18,7 +18,8 @@ public class ItemPagedModelAssembler implements PagedModelAssembler<ItemDto> {
   private final PagedResourcesAssembler<ItemDto> pageAssembler;
   private final RepresentationModelAssembler<ItemDto, EntityModel<ItemDto>> entityModelAssembler;
 
-  public ItemPagedModelAssembler(PagedResourcesAssembler<ItemDto> pageAssembler,
+  public ItemPagedModelAssembler(
+      PagedResourcesAssembler<ItemDto> pageAssembler,
       RepresentationModelAssembler<ItemDto, EntityModel<ItemDto>> entityModelAssembler) {
     this.pageAssembler = pageAssembler;
     this.entityModelAssembler = entityModelAssembler;
@@ -30,9 +31,7 @@ public class ItemPagedModelAssembler implements PagedModelAssembler<ItemDto> {
 
     pagedModel.mapLink(
         SELF,
-        link ->
-            link.andAffordance(
-                afford(methodOn(ItemCrudRestController.class).create(null))));
+        link -> link.andAffordance(afford(methodOn(ItemCrudRestController.class).create(null))));
 
     return pagedModel;
   }

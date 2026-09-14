@@ -19,7 +19,8 @@ public record VendingMachineStock(Map<ItemId, ItemQuantity> itemQuantities)
   }
 
   public VendingMachineStock(Set<ItemQuantity> itemQuantities) {
-    this(itemQuantities.stream().collect(toMap(ItemQuantity::itemId, itemQuantity -> itemQuantity)));
+    this(
+        itemQuantities.stream().collect(toMap(ItemQuantity::itemId, itemQuantity -> itemQuantity)));
   }
 
   public Stream<ItemQuantity> stream() {

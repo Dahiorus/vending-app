@@ -6,7 +6,6 @@ import static me.dahiorus.project.vending.infrastructure.rest.assembler.Relation
 import static me.dahiorus.project.vending.infrastructure.rest.assembler.Relation.ME;
 import static me.dahiorus.project.vending.infrastructure.rest.assembler.Relation.REGISTER;
 import static me.dahiorus.project.vending.infrastructure.rest.assembler.Relation.VENDING_MACHINES;
-import static me.dahiorus.project.vending.infrastructure.security.config.WebSecurityConfig.AUTHENTICATE_PATH;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -35,17 +34,15 @@ public class RootRestController {
   public RepresentationModel<?> index() {
     return new RepresentationModel<>()
         .add(linkTo(methodOn(RootRestController.class).index()).withSelfRel())
-        .add(
-            linkTo(methodOn(ItemCrudRestController.class).search(null, null, null))
-                .withRel(ITEMS))
+        .add(linkTo(methodOn(ItemCrudRestController.class).search(null, null, null)).withRel(ITEMS))
         .add(
             linkTo(methodOn(VendingMachineCrudRestController.class).search(null, null, null))
                 .withRel(VENDING_MACHINES))
         .add(linkTo(methodOn(SelfServiceRestController.class).get(null)).withRel(ME))
-        .add(linkTo(methodOn(AuthenticationRestController.class).authenticate(null)).withRel(AUTHENTICATE))
         .add(
-            linkTo(methodOn(UserRegistrationRestController.class).create(null))
-                .withRel(REGISTER))
+            linkTo(methodOn(AuthenticationRestController.class).authenticate(null))
+                .withRel(AUTHENTICATE))
+        .add(linkTo(methodOn(UserRegistrationRestController.class).create(null)).withRel(REGISTER))
         .add(Link.of("/v3/api-docs").withRel(DOCS));
   }
 }

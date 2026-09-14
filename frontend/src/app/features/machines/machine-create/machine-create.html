@@ -41,8 +41,12 @@
             <input matInput type="text" [formField]="machineForm.address.longitude" />
           </mat-form-field>
         </div>
-        @if ((machineForm.address.latitude().touched() && machineForm.address.latitude().errors().length) ||
-             (machineForm.address.longitude().touched() && machineForm.address.longitude().errors().length)) {
+        @if (
+          (machineForm.address.latitude().touched() &&
+            machineForm.address.latitude().errors().length) ||
+          (machineForm.address.longitude().touched() &&
+            machineForm.address.longitude().errors().length)
+        ) {
           <p class="text-sm text-red-600" role="alert">Latitude and longitude are required.</p>
         }
         @if (fieldErrors()['address.latitude'] ?? fieldErrors()['address.longitude']; as message) {
@@ -59,11 +63,18 @@
             <input matInput type="text" [formField]="machineForm.address.streetName" />
           </mat-form-field>
         </div>
-        @if ((machineForm.address.streetNumber().touched() && machineForm.address.streetNumber().errors().length) ||
-             (machineForm.address.streetName().touched() && machineForm.address.streetName().errors().length)) {
+        @if (
+          (machineForm.address.streetNumber().touched() &&
+            machineForm.address.streetNumber().errors().length) ||
+          (machineForm.address.streetName().touched() &&
+            machineForm.address.streetName().errors().length)
+        ) {
           <p class="text-sm text-red-600" role="alert">Street number and name are required.</p>
         }
-        @if (fieldErrors()['address.streetNumber'] ?? fieldErrors()['address.streetName']; as message) {
+        @if (
+          fieldErrors()['address.streetNumber'] ?? fieldErrors()['address.streetName'];
+          as message
+        ) {
           <p class="text-sm text-red-600" role="alert">{{ message }}</p>
         }
 
@@ -77,8 +88,11 @@
             <input matInput type="text" [formField]="machineForm.address.city" />
           </mat-form-field>
         </div>
-        @if ((machineForm.address.postalCode().touched() && machineForm.address.postalCode().errors().length) ||
-             (machineForm.address.city().touched() && machineForm.address.city().errors().length)) {
+        @if (
+          (machineForm.address.postalCode().touched() &&
+            machineForm.address.postalCode().errors().length) ||
+          (machineForm.address.city().touched() && machineForm.address.city().errors().length)
+        ) {
           <p class="text-sm text-red-600" role="alert">Postal code and city are required.</p>
         }
         @if (fieldErrors()['address.postalCode'] ?? fieldErrors()['address.city']; as message) {
