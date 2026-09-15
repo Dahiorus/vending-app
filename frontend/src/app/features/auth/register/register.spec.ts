@@ -1,8 +1,5 @@
 import { provideHttpClient } from '@angular/common/http';
-import {
-  HttpTestingController,
-  provideHttpClientTesting,
-} from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -21,7 +18,10 @@ describe('Register', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideRouter([{ path: 'machines', children: [] }, { path: 'login', children: [] }]),
+        provideRouter([
+          { path: 'machines', children: [] },
+          { path: 'login', children: [] },
+        ]),
       ],
     }).compileComponents();
 

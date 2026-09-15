@@ -102,18 +102,18 @@ export class VendingMachineApi {
   private readonly machineId = signal('123');
 
   readonly machine = httpResource<VendingMachine>(
-    () => `/api/vending-machines/${this.machineId()}`
+    () => `/api/vending-machines/${this.machineId()}`,
   );
 }
 ```
 
 ```html
 @if (machine.isLoading()) {
-  <p>Chargement...</p>
+<p>Chargement...</p>
 } @else if (machine.error()) {
-  <p>Erreur de chargement</p>
+<p>Erreur de chargement</p>
 } @else if (machine.hasValue()) {
-  <p>{{ machine.value().serialNumber }}</p>
+<p>{{ machine.value().serialNumber }}</p>
 }
 ```
 
@@ -163,6 +163,7 @@ export class UserFormComponent {
 ```
 
 **Règles clés** :
+
 - Modèle initial : `''`, `0`, `[]` — jamais `null`/`undefined`.
 - Un champ doit être **appelé** pour accéder à son état :
   `userForm.name().touched()`, pas `userForm.name.touched()`.

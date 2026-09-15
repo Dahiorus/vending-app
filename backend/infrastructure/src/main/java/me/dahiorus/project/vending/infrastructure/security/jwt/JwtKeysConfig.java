@@ -27,16 +27,16 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 
 /**
- * Provides the RSA key pair used to sign and verify access/refresh tokens, and the Spring
- * Security {@link JwtEncoder}/{@link JwtDecoder} beans built on top of it.
+ * Provides the RSA key pair used to sign and verify access/refresh tokens, and the Spring Security
+ * {@link JwtEncoder}/{@link JwtDecoder} beans built on top of it.
  *
- * <p>When {@code jwt.public-key}/{@code jwt.private-key} are not configured, an ephemeral key
- * pair is generated at startup: tokens issued before a restart become invalid. This is acceptable
- * for development but a real key pair must be configured for any long-lived environment.
+ * <p>When {@code jwt.public-key}/{@code jwt.private-key} are not configured, an ephemeral key pair
+ * is generated at startup: tokens issued before a restart become invalid. This is acceptable for
+ * development but a real key pair must be configured for any long-lived environment.
  */
 @Configuration
 class JwtKeysConfig {

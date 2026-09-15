@@ -2,7 +2,6 @@ package me.dahiorus.project.vending.infrastructure.rest.controller.user;
 
 import static me.dahiorus.project.vending.infrastructure.rest.controller.MultipartFileValidator.validator;
 import static me.dahiorus.project.vending.infrastructure.rest.utils.ToFileToUploadConverter.toFileToUpload;
-import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 import static org.springframework.http.ResponseEntity.noContent;
@@ -55,7 +54,7 @@ public class SelfServiceRestController {
 
   @Operation(description = "Get the authenticated user")
   @ApiResponse(responseCode = "200", description = "Authenticated user found")
-  @GetMapping(produces = HAL_JSON_VALUE)
+  @GetMapping
   public ResponseEntity<EntityModel<UserDto>> get(Authentication authentication) {
     var authenticatedUser = getAuthenticatedUser(authentication);
 
@@ -64,7 +63,7 @@ public class SelfServiceRestController {
 
   @Operation(description = "Update self information")
   @ApiResponse(responseCode = "200", description = "Authenticated user updated")
-  @PutMapping(produces = HAL_JSON_VALUE)
+  @PutMapping
   public ResponseEntity<EntityModel<UserDto>> update(
       Authentication authentication, UserToUpdateDto userDto) {
     var authenticatedUser = getAuthenticatedUser(authentication);

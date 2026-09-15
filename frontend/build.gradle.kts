@@ -32,10 +32,25 @@ val npmTest = tasks.register<Exec>("npmTest") {
     commandLine("npm", "test")
 }
 
+val npmFormat = tasks.register<Exec>("format") {
+    description = "Formats the frontend source code with Prettier (npm run format)."
+    group = "formatting"
+    dependsOn(npmInstall)
+    commandLine("npm", "run", "format")
+}
+
+val npmFormatCheck = tasks.register<Exec>("formatCheck") {
+    description = "Checks Prettier formatting without modifying files (npm run format:check)."
+    group = "verification"
+    dependsOn(npmInstall)
+    commandLine("npm", "run", "format:check")
+}
+
 tasks.assemble {
     dependsOn(npmBuild)
 }
 
 tasks.check {
     dependsOn(npmTest)
+    dependsOn(npmFormatCheck)
 }

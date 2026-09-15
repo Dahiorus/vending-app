@@ -1,6 +1,6 @@
 package me.dahiorus.project.vending.infrastructure.rest.controller.machine;
 
-import static java.util.stream.Collectors.toCollection;
+import static me.dahiorus.project.vending.infrastructure.rest.entity.stock.VendingMachineStockDto.fromDomain;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -8,17 +8,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.UUID;
 import me.dahiorus.project.vending.domain.machine.entity.VendingMachineId;
 import me.dahiorus.project.vending.domain.reporting.port.VendingMachineStockReportApiPort;
-import me.dahiorus.project.vending.domain.stock.entity.VendingMachineStock;
 import me.dahiorus.project.vending.domain.stock.port.VendingMachineStockApiPort;
 import me.dahiorus.project.vending.infrastructure.rest.entity.stock.ItemToProvisionDto;
-import me.dahiorus.project.vending.infrastructure.rest.entity.stock.StockEntryDto;
+import me.dahiorus.project.vending.infrastructure.rest.entity.stock.VendingMachineStockDto;
 import me.dahiorus.project.vending.infrastructure.rest.entity.stock.VendingMachineStockReportDto;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.http.ResponseEntity;
@@ -34,14 +30,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class VendingMachineStockRestController {
   private final VendingMachineStockApiPort vendingMachineStockService;
-  private final RepresentationModelAssembler<StockEntryDto, EntityModel<StockEntryDto>>
+  private final RepresentationModelAssembler<
+          VendingMachineStockDto, EntityModel<VendingMachineStockDto>>
       modelAssembler;
   private final VendingMachineStockReportApiPort vendingMachineStockReportService;
 
   public VendingMachineStockRestController(
       final VendingMachineStockApiPort vendingMachineStockService,
       final VendingMachineStockReportApiPort vendingMachineStockReportService,
-      final RepresentationModelAssembler<StockEntryDto, EntityModel<StockEntryDto>>
+      final RepresentationModelAssembler<
+              VendingMachineStockDto, EntityModel<VendingMachineStockDto>>
           modelAssembler) {
     this.vendingMachineStockService = vendingMachineStockService;
     this.vendingMachineStockReportService = vendingMachineStockReportService;
@@ -52,34 +50,25 @@ public class VendingMachineStockRestController {
   @Operation(description = "Provision stocks of one item to a vending machine")
   @ApiResponse(responseCode = "200", description = "Stock provisioned")
   @PostMapping
-  public ResponseEntity<CollectionModel<EntityModel<StockEntryDto>>> provisionStock(
+  public ResponseEntity<EntityModel<VendingMachineStockDto>> provisionStock(
       @PathVariable("id") final UUID id, @RequestBody final ItemToProvisionDto itemToProvision) {
     var vendingMachineId = new VendingMachineId(id);
     var provisionedStocks =
         vendingMachineStockService.provision(
             vendingMachineId, itemToProvision.toItemId(), itemToProvision.toQuantity());
-    var vendingMachineStockDtos = toDto(vendingMachineId, provisionedStocks);
 
-    return ok(modelAssembler.toCollectionModel(vendingMachineStockDtos));
+    return ok(modelAssembler.toModel(fromDomain(vendingMachineId, provisionedStocks)));
   }
 
   @Tag(name = "VendingMachine")
   @Operation(description = "Get the stocks of a vending machine")
   @ApiResponse(responseCode = "200", description = "Stock found")
   @GetMapping
-  public ResponseEntity<CollectionModel<EntityModel<StockEntryDto>>> getStock(
-      @PathVariable("id") UUID id) {
+  public ResponseEntity<EntityModel<VendingMachineStockDto>> getStock(@PathVariable("id") UUID id) {
     var vendingMachineId = new VendingMachineId(id);
     var stocks = vendingMachineStockService.get(vendingMachineId);
 
-    return ok(modelAssembler.toCollectionModel(toDto(vendingMachineId, stocks)));
-  }
-
-  private static Set<StockEntryDto> toDto(
-      VendingMachineId vendingMachineId, VendingMachineStock vendingMachineStock) {
-    return vendingMachineStock.stream()
-        .map(itemQuantity -> StockEntryDto.fromDomain(vendingMachineId, itemQuantity))
-        .collect(toCollection(LinkedHashSet::new));
+    return ok(modelAssembler.toModel(fromDomain(vendingMachineId, stocks)));
   }
 
   @Tag(name = "Reporting")

@@ -4,13 +4,16 @@ import org.springframework.hateoas.LinkRelation;
 
 public enum Relation implements LinkRelation {
   VENDING_MACHINE("vendingMachine"),
-  STOCK("stock"),
-  RESET("reset"),
-  ORDER("order"),
   ITEM("item"),
-  ITEM_IMAGE("itemImage"),
+  ITEM_IMAGE("item:image"),
   SELF_PICTURE("me:picture"),
-  SELF_PASSWORD("me:password");
+  SELF_PASSWORD("me:password"),
+  ITEMS("items"),
+  VENDING_MACHINES("vendingMachines"),
+  ME("me"),
+  AUTHENTICATE("authenticate"),
+  REGISTER("register"),
+  DOCS("docs");
 
   private final String value;
 

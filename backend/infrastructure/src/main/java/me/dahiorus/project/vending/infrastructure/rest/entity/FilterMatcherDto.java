@@ -41,4 +41,3 @@ public record FilterMatcherDto(
         requireNonNullElse(caseSensitivity, defaults.caseSensitivity()));
   }
 }
-

@@ -1,8 +1,5 @@
 import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
-import {
-  HttpTestingController,
-  provideHttpClientTesting,
-} from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { authInterceptor } from './auth-interceptor';
@@ -63,9 +60,7 @@ describe('authInterceptor', () => {
     http.get('/api/v1/me').subscribe((body) => answers.push(body));
     http.get('/api/v1/vending-machines').subscribe((body) => answers.push(body));
 
-    backend
-      .match('/api/v1/me')[0]
-      .flush(null, { status: 401, statusText: 'Unauthorized' });
+    backend.match('/api/v1/me')[0].flush(null, { status: 401, statusText: 'Unauthorized' });
     backend
       .match('/api/v1/vending-machines')[0]
       .flush(null, { status: 401, statusText: 'Unauthorized' });

@@ -1,11 +1,15 @@
 package me.dahiorus.project.vending.infrastructure.rest.entity.item;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import me.dahiorus.project.vending.domain.item.entity.ItemName;
 import me.dahiorus.project.vending.domain.item.entity.ItemToCreate;
 import me.dahiorus.project.vending.domain.item.entity.ItemType;
 
-public record ItemToCreateDto(String name, ItemType type, BigDecimal price) {
+public record ItemToCreateDto(
+    @NotBlank String name, @NotNull ItemType type, @Positive BigDecimal price) {
   public ItemToCreate toDomain() {
     return new ItemToCreate(ItemName.of(name), type, price);
   }

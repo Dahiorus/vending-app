@@ -8,7 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ClientOrdersReportJpaRepository extends JpaRepository<JpaClientOrdersReport, UUID> {
+public interface ClientOrdersReportJpaRepository
+    extends JpaRepository<JpaClientOrdersReport, UUID> {
 
   @Query(
       """

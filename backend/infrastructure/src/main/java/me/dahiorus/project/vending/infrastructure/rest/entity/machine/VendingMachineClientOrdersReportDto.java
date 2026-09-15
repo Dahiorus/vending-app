@@ -1,6 +1,5 @@
 package me.dahiorus.project.vending.infrastructure.rest.entity.machine;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

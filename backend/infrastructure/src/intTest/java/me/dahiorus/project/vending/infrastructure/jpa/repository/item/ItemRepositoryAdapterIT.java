@@ -28,6 +28,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -117,7 +118,9 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
 
   @Nested
   class SearchAndCount {
-    Item item1, item2, item3;
+    Item item1;
+    Item item2;
+    Item item3;
 
     @BeforeEach
     void setUpItems() {
@@ -206,21 +209,18 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
         var result = repository.uploadImage(item.id(), picture);
 
         assertThat(result)
-            .satisfies(
-                itemWithImage -> {
-                  assertThat(itemWithImage.item()).isEqualTo(item);
-                  assertThat(itemWithImage.image())
-                      .usingRecursiveComparison()
-                      .ignoringFields("id", "uploadedAt")
-                      .isEqualTo(
-                          new UploadedFile(
-                              null,
-                              new Filename("coca-cola.jpg"),
-                              new BinaryContent(new byte[] {1, 2, 3}),
-                              JPG,
-                              null));
-                  assertThat(itemWithImage.image().id()).isNotNull();
-                });
+            .usingRecursiveComparison()
+            .ignoringFields("id", "uploadedAt")
+            .isEqualTo(
+                new UploadedFile(
+                    null,
+                    new Filename("coca-cola.jpg"),
+                    new BinaryContent(new byte[] {1, 2, 3}),
+                    JPG,
+                    null));
+        assertThat(result)
+            .extracting(UploadedFile::id, UploadedFile::uploadedAt)
+            .doesNotContainNull();
       }
 
       @Test
@@ -251,7 +251,7 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
         var result = repository.uploadImage(item.id(), newPicture);
         entityManager.flush();
 
-        assertThat(result.image())
+        assertThat(result)
             .usingRecursiveComparison()
             .ignoringFields("id", "uploadedAt")
             .isEqualTo(
@@ -261,9 +261,7 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
                     new BinaryContent(new byte[] {4, 5, 6}),
                     JPG,
                     null));
-        assertThat(
-                entityManager.find(
-                    JpaUploadedFile.class, itemWithPictureToReplace.image().id().value()))
+        assertThat(entityManager.find(JpaUploadedFile.class, itemWithPictureToReplace.id().value()))
             .isNull();
       }
     }
@@ -314,6 +312,7 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
     }
   }
 
+  @TestConfiguration
   static class TestConfig {
     @Bean
     ItemRepositoryAdapter itemJpaRepository(EntityManager entityManager) {

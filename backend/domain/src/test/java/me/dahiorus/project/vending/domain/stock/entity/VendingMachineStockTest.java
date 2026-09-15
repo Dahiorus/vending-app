@@ -136,7 +136,8 @@ class VendingMachineStockTest {
     void should_throw_exception_when_stock_is_empty() {
       var coke = aColdBeverage("Coke", 1.5);
       var machineStock =
-          new VendingMachineStock(new HashMap<>(Map.of(coke.id(), new ItemQuantity(coke, empty()))));
+          new VendingMachineStock(
+              new HashMap<>(Map.of(coke.id(), new ItemQuantity(coke, empty()))));
 
       assertThatThrownBy(() -> machineStock.decrementStock(coke))
           .isInstanceOf(IllegalArgumentException.class)
