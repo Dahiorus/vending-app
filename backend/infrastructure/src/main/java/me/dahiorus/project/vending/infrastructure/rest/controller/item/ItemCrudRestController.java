@@ -79,9 +79,10 @@ public class ItemCrudRestController {
 
   @Operation(description = "Update an item targeted by its ID")
   @ApiResponse(responseCode = "200", description = "Entity created or updated")
+  @ApiResponse(responseCode = "400", description = "Bad request")
   @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<EntityModel<ItemDto>> update(
-      @PathVariable final UUID id, @RequestBody final ItemToUpdateDto item) {
+      @PathVariable final UUID id, @Valid @RequestBody final ItemToUpdateDto item) {
     var updatedItem = service.update(item.toDomain(id));
 
     return ok(modelAssembler.toModel(ItemDto.fromDomain(updatedItem)));
