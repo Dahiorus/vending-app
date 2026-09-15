@@ -36,10 +36,16 @@ class VendingMachineStockDtoModelAssemblerTest {
         .endsWith("/api/v1/vending-machines/" + vendingMachineId + "/stock");
     assertThat(resource.getRequiredLink(VENDING_MACHINE).getHref())
         .endsWith("/api/v1/vending-machines/" + vendingMachineId);
+
     var provisionLink = resource.getRequiredLink("stock:provision");
     assertThat(provisionLink.getHref())
         .endsWith("/api/v1/vending-machines/" + vendingMachineId + "/stock");
     assertThat(affordanceMethodsOf(provisionLink)).contains("provisionStock:" + POST);
+
+    var reportStockLink = resource.getRequiredLink("stock:report");
+    assertThat(reportStockLink.getHref())
+        .endsWith("/api/v1/vending-machines/" + vendingMachineId + "/stock/report");
+    assertThat(affordanceMethodsOf(reportStockLink)).contains("reportStock:" + POST);
   }
 
   @Test
@@ -60,8 +66,7 @@ class VendingMachineStockDtoModelAssemblerTest {
     // Then
     assertThat(resource.getLinks(ITEM))
         .extracting(Link::getHref)
-        .containsExactlyInAnyOrder(
-            "/api/v1/items/" + firstItemId, "/api/v1/items/" + secondItemId);
+        .containsExactlyInAnyOrder("/api/v1/items/" + firstItemId, "/api/v1/items/" + secondItemId);
     assertThat(resource.getLinks("order"))
         .extracting(Link::getHref)
         .containsExactlyInAnyOrder(
@@ -70,8 +75,7 @@ class VendingMachineStockDtoModelAssemblerTest {
     resource
         .getLinks("order")
         .forEach(
-            orderLink ->
-                assertThat(affordanceMethodsOf(orderLink)).contains("orderItem:" + POST));
+            orderLink -> assertThat(affordanceMethodsOf(orderLink)).contains("orderItem:" + POST));
   }
 
   @Test

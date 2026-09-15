@@ -57,7 +57,15 @@ public class VendingMachineStockDtoModelAssembler
                     .andAffordance(
                         afford(
                             methodOn(VendingMachineStockRestController.class)
-                                .provisionStock(content.vendingMachineId(), null)))))
+                                .provisionStock(content.vendingMachineId(), null))),
+                linkTo(
+                        methodOn(VendingMachineStockRestController.class)
+                            .reportStock(content.vendingMachineId()))
+                    .withRel("stock:report")
+                    .andAffordance(
+                        afford(
+                            methodOn(VendingMachineStockRestController.class)
+                                .reportStock(content.vendingMachineId())))))
         .collect(toSet());
   }
 

@@ -30,14 +30,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class VendingMachineStockRestController {
   private final VendingMachineStockApiPort vendingMachineStockService;
-  private final RepresentationModelAssembler<VendingMachineStockDto, EntityModel<VendingMachineStockDto>>
+  private final RepresentationModelAssembler<
+          VendingMachineStockDto, EntityModel<VendingMachineStockDto>>
       modelAssembler;
   private final VendingMachineStockReportApiPort vendingMachineStockReportService;
 
   public VendingMachineStockRestController(
       final VendingMachineStockApiPort vendingMachineStockService,
       final VendingMachineStockReportApiPort vendingMachineStockReportService,
-      final RepresentationModelAssembler<VendingMachineStockDto, EntityModel<VendingMachineStockDto>>
+      final RepresentationModelAssembler<
+              VendingMachineStockDto, EntityModel<VendingMachineStockDto>>
           modelAssembler) {
     this.vendingMachineStockService = vendingMachineStockService;
     this.vendingMachineStockReportService = vendingMachineStockReportService;
@@ -62,8 +64,7 @@ public class VendingMachineStockRestController {
   @Operation(description = "Get the stocks of a vending machine")
   @ApiResponse(responseCode = "200", description = "Stock found")
   @GetMapping
-  public ResponseEntity<EntityModel<VendingMachineStockDto>> getStock(
-      @PathVariable("id") UUID id) {
+  public ResponseEntity<EntityModel<VendingMachineStockDto>> getStock(@PathVariable("id") UUID id) {
     var vendingMachineId = new VendingMachineId(id);
     var stocks = vendingMachineStockService.get(vendingMachineId);
 
