@@ -90,6 +90,24 @@ class VendingMachineDtoModelAssemblerTest {
   }
 
   @Test
+  void should_add_orders_report_link_with_affordance() {
+    // Given
+    var id = UUID.randomUUID();
+    var vendingMachine =
+        new VendingMachineDto(id, "SN-001", null, null, null, null, null, null, null, null, null);
+    var resource = EntityModel.of(vendingMachine);
+
+    // When
+    assembler.addLinks(resource);
+
+    // Then
+    var reportLink = resource.getRequiredLink("orders:report");
+    assertThat(reportLink.getHref()).endsWith("/api/v1/vending-machines/" + id + "/orders/report");
+    assertThat(affordanceNames(reportLink))
+        .containsExactly("reportClientOrders:" + HttpMethod.POST);
+  }
+
+  @Test
   void should_do_nothing_on_collection_model() {
     // Given
     var resources = CollectionModel.of(List.<EntityModel<VendingMachineDto>>of());

@@ -7,6 +7,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import java.util.Optional;
 import java.util.Set;
 import me.dahiorus.project.vending.infrastructure.rest.controller.machine.VendingMachineCrudRestController;
+import me.dahiorus.project.vending.infrastructure.rest.controller.machine.VendingMachineOrderRestController;
 import me.dahiorus.project.vending.infrastructure.rest.controller.machine.VendingMachineStatusRestController;
 import me.dahiorus.project.vending.infrastructure.rest.controller.machine.VendingMachineStockRestController;
 import me.dahiorus.project.vending.infrastructure.rest.entity.machine.VendingMachineDto;
@@ -46,7 +47,13 @@ public class VendingMachineDtoModelAssembler
                 afford(
                     methodOn(VendingMachineStatusRestController.class).reportStatus(content.id()))),
         linkTo(methodOn(VendingMachineStockRestController.class).getStock(content.id()))
-            .withRel("stock"));
+            .withRel("stock"),
+        linkTo(methodOn(VendingMachineOrderRestController.class).reportClientOrders(content.id()))
+            .withRel("orders:report")
+            .andAffordance(
+                afford(
+                    methodOn(VendingMachineOrderRestController.class)
+                        .reportClientOrders(content.id()))));
   }
 
   @Override
