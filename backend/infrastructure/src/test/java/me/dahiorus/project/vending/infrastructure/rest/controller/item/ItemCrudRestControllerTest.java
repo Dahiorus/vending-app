@@ -44,6 +44,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -324,32 +325,6 @@ class ItemCrudRestControllerTest {
         .andExpect(jsonPath("$.errors[*].field", containsInAnyOrder("name", "type", "price")));
 
     then(itemApiPort).shouldHaveNoInteractions();
-  }
-
-  @Test
-  void should_accept_create_payload_with_a_null_price() throws Exception {
-    // Given
-    var createdItem = aSnack("Chips", 2.1);
-
-    given(itemApiPort.create(any(ItemToCreate.class))).willReturn(createdItem);
-
-    // When / Then
-    mockMvc
-        .perform(
-            post("/api/v1/items")
-                .contentType(APPLICATION_JSON)
-                .content(
-                    """
-                    {
-                      "name": "Chips",
-                      "type": "SNACK"
-                    }
-                    """))
-        .andExpect(status().isCreated());
-
-    var itemToCreate = ArgumentCaptor.forClass(ItemToCreate.class);
-    then(itemApiPort).should().create(itemToCreate.capture());
-    assertThat(itemToCreate.getValue().price()).isNull();
   }
 
   @ParameterizedTest

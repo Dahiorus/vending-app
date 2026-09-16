@@ -9,7 +9,7 @@ import me.dahiorus.project.vending.domain.item.entity.ItemToCreate;
 import me.dahiorus.project.vending.domain.item.entity.ItemType;
 
 public record ItemToCreateDto(
-    @NotBlank String name, @NotNull ItemType type, @Positive BigDecimal price) {
+    @NotBlank String name, @NotNull ItemType type, @Positive @NotNull BigDecimal price) {
   public ItemToCreate toDomain() {
     return new ItemToCreate(ItemName.of(name), type, price);
   }
