@@ -1,6 +1,6 @@
 package me.dahiorus.project.vending.infrastructure.rest.entity;
 
-import static java.util.Objects.requireNonNullElse;
+import static java.util.Objects.requireNonNullElseGet;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import me.dahiorus.project.vending.domain.pagination.entity.FilterMatcher;
@@ -35,9 +35,9 @@ public record FilterMatcherDto(
     var defaults = new FilterMatcher();
 
     return new FilterMatcher(
-        requireNonNullElse(stringMatch, defaults.stringMatch()),
-        requireNonNullElse(matchAllOrAny, defaults.matchAllOrAny()),
-        requireNonNullElse(ignoreOrIncludeNull, defaults.ignoreOrIncludeNull()),
-        requireNonNullElse(caseSensitivity, defaults.caseSensitivity()));
+        requireNonNullElseGet(stringMatch, defaults::stringMatch),
+        requireNonNullElseGet(matchAllOrAny, defaults::matchAllOrAny),
+        requireNonNullElseGet(ignoreOrIncludeNull, defaults::ignoreOrIncludeNull),
+        requireNonNullElseGet(caseSensitivity, defaults::caseSensitivity));
   }
 }
