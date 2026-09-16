@@ -80,7 +80,9 @@ public class AppUserApplicationService implements AppUserApiPort {
   @Override
   public AppUserWithPicture uploadProfilePicture(final UserId userId, final FileToUpload picture)
       throws ResourceNotFound {
-    return profilePictureRepository.uploadPicture(userId, picture);
+    var uploadedProfilePicture = profilePictureRepository.uploadPicture(userId, picture);
+
+    return new AppUserWithPicture(userId, uploadedProfilePicture);
   }
 
   @Override

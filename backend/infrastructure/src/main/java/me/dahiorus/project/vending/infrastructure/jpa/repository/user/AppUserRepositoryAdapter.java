@@ -59,7 +59,9 @@ public class AppUserRepositoryAdapter implements AppUserRepositoryPort, Password
         .orElseThrow(() -> new ResourceNotFound(toUpdate.id()));
   }
 
-  @CacheEvict(key = "#id.value")
+  @CacheEvict(
+      cacheNames = {"users", "userPictures"},
+      key = "#id.value")
   @Override
   public void delete(final UserId id) {
     jpaRepository.deleteById(id.value());
