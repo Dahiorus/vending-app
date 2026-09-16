@@ -197,7 +197,8 @@ class VendingMachineCrudRestControllerTest {
                 .param("stringMatch", "STARTING")
                 .param("matchAllOrAny", "ANY")
                 .param("caseSensitivity", "CASE_SENSITIVE"))
-        .andExpectAll(status().isOk(),
+        .andExpectAll(
+            status().isOk(),
             jsonPath("$._embedded.elements[0].id").value(idOf(machine).toString()),
             jsonPath("$._embedded.elements[0]._links.self.href")
                 .value("http://localhost/api/v1/vending-machines/" + idOf(machine)),
@@ -214,8 +215,10 @@ class VendingMachineCrudRestControllerTest {
         .should()
         .search(pagination.capture(), example.capture(), filterMatcher.capture());
 
-    assertThat(pagination.getValue()).isEqualTo(new Pagination(1, 5, Map.of(Direction.ASC, Set.of("serialNumber"))));
-    assertThat(filterMatcher.getValue()).isEqualTo(new FilterMatcher(STARTING, ANY, IGNORE, CASE_SENSITIVE));
+    assertThat(pagination.getValue())
+        .isEqualTo(new Pagination(1, 5, Map.of(Direction.ASC, Set.of("serialNumber"))));
+    assertThat(filterMatcher.getValue())
+        .isEqualTo(new FilterMatcher(STARTING, ANY, IGNORE, CASE_SENSITIVE));
     assertThat(example.getValue())
         .isEqualTo(
             new VendingMachine(
@@ -423,7 +426,8 @@ class VendingMachineCrudRestControllerTest {
     mockMvc
         .perform(get("/api/v1/vending-machines/{id}", id))
         .andExpect(status().isNotFound())
-        .andExpect(jsonPath("$.message").value("Resource not found with ID: " + new VendingMachineId(id)));
+        .andExpect(
+            jsonPath("$.message").value("Resource not found with ID: " + new VendingMachineId(id)));
   }
 
   private static UUID idOf(VendingMachine vendingMachine) {
