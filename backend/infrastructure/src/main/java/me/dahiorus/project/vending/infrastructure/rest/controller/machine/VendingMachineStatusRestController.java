@@ -1,6 +1,6 @@
 package me.dahiorus.project.vending.infrastructure.rest.controller.machine;
 
-import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.http.HttpStatus.OK;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -13,10 +13,10 @@ import me.dahiorus.project.vending.infrastructure.rest.entity.machine.VendingMac
 import me.dahiorus.project.vending.infrastructure.rest.entity.machine.VendingMachineStatusReportDto;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @SecurityRequirement(name = "bearerAuth")
@@ -47,25 +47,27 @@ public class VendingMachineStatusRestController {
   @Tag(name = "VendingMachine")
   @ApiResponse(responseCode = "200", description = "Error statuses reset")
   @PostMapping("/reset")
-  public ResponseEntity<EntityModel<VendingMachineDto>> resetStatus(
+  @ResponseStatus(OK)
+  public EntityModel<VendingMachineDto> resetStatus(
       @PathVariable("id") final UUID vendingMachineId) {
     var repairedVendingMachine =
         vendingMachineStatusService.resetStatus(new VendingMachineId(vendingMachineId));
     var vendingMachineDto = VendingMachineDto.fromDomain(repairedVendingMachine);
 
-    return ok(vendingMachineModelAssembler.toModel(vendingMachineDto));
+    return vendingMachineModelAssembler.toModel(vendingMachineDto);
   }
 
   @Tag(name = "Reporting")
   @Operation(description = "Generate a report of the current status of a vending machine")
   @ApiResponse(responseCode = "200", description = "Report generated")
   @PostMapping("/status/report")
-  public ResponseEntity<EntityModel<VendingMachineStatusReportDto>> reportStatus(
+  @ResponseStatus(OK)
+  public EntityModel<VendingMachineStatusReportDto> reportStatus(
       @PathVariable("id") final UUID id) {
     var vendingMachineId = new VendingMachineId(id);
     var statusReport = vendingMachineStatusService.reportStatus(vendingMachineId);
     var reportDto = VendingMachineStatusReportDto.fromDomain(vendingMachineId, statusReport);
 
-    return ok().body(statusReportModelAssembler.toModel(reportDto));
+    return statusReportModelAssembler.toModel(reportDto);
   }
 }

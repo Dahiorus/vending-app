@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.infrastructure.rest.controller.machine;
 
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.ResponseEntity.ok;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @SecurityRequirement(name = "bearerAuth")
@@ -44,13 +46,14 @@ public class VendingMachineOrderRestController {
   @Operation(description = "Order an item from a vending machine")
   @ApiResponse(responseCode = "200", description = "Item ordered")
   @PostMapping("/order/{itemId}")
-  public ResponseEntity<EntityModel<ClientOrderDto>> orderItem(
+  @ResponseStatus(OK)
+  public EntityModel<ClientOrderDto> orderItem(
       @PathVariable("id") UUID vendingMachineId, @PathVariable("itemId") final UUID itemId) {
     var clientOrder =
         orderItemService.orderItem(new VendingMachineId(vendingMachineId), new ItemId(itemId));
     var clientOrderDto = ClientOrderDto.fromDomain(clientOrder);
 
-    return ok(orderModelAssembler.toModel(clientOrderDto));
+    return orderModelAssembler.toModel(clientOrderDto);
   }
 
   @Tag(name = "Reporting")

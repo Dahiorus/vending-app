@@ -2,9 +2,9 @@ package me.dahiorus.project.vending.infrastructure.rest.controller.machine;
 
 import static me.dahiorus.project.vending.infrastructure.rest.utils.ToPaginationConverter.toPagination;
 import static org.springframework.hateoas.IanaLinkRelations.SELF;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.noContent;
-import static org.springframework.http.ResponseEntity.ok;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @SecurityRequirement(name = "bearerAuth")
@@ -74,20 +75,22 @@ public class VendingMachineCrudRestController {
   @ApiResponse(responseCode = "200", description = "Entity found")
   @ApiResponse(responseCode = "404", description = "Entity not found")
   @GetMapping("/{id}")
-  public ResponseEntity<EntityModel<VendingMachineDto>> read(@PathVariable("id") UUID id) {
+  @ResponseStatus(OK)
+  public EntityModel<VendingMachineDto> read(@PathVariable("id") UUID id) {
     var vendingMachineDto = VendingMachineDto.fromDomain(service.read(new VendingMachineId(id)));
 
-    return ok(modelAssembler.toModel(vendingMachineDto));
+    return modelAssembler.toModel(vendingMachineDto);
   }
 
   @Operation(description = "Update a vending machine targeted by its ID")
   @ApiResponse(responseCode = "200", description = "Entity created or updated")
   @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<EntityModel<VendingMachineDto>> update(
+  @ResponseStatus(OK)
+  public EntityModel<VendingMachineDto> update(
       @PathVariable final UUID id, @RequestBody final VendingMachineToUpdateDto vendingMachine) {
     var updatedMachine = service.update(vendingMachine.toDomain(id));
 
-    return ok(modelAssembler.toModel(VendingMachineDto.fromDomain(updatedMachine)));
+    return modelAssembler.toModel(VendingMachineDto.fromDomain(updatedMachine));
   }
 
   @Operation(description = "Delete an existing vending machine targeted by its ID")
@@ -102,7 +105,8 @@ public class VendingMachineCrudRestController {
   @Operation(description = "Get a page of vending machines")
   @ApiResponse(responseCode = "200", description = "Vending machines found")
   @GetMapping
-  public ResponseEntity<PagedModel<EntityModel<VendingMachineDto>>> search(
+  @ResponseStatus(OK)
+  public PagedModel<EntityModel<VendingMachineDto>> search(
       @ParameterObject Pageable pageable,
       @ParameterObject VendingMachineDto example,
       @ParameterObject FilterMatcherDto filterMatcher) {
@@ -111,7 +115,7 @@ public class VendingMachineCrudRestController {
             .search(toPagination(pageable), example.toDomain(), filterMatcher.toDomain())
             .map(VendingMachineDto::fromDomain);
 
-    return ok(
-        pageModelAssembler.toModel(new PageImpl<>(page.content(), pageable, page.totalElements())));
+    return pageModelAssembler.toModel(
+        new PageImpl<>(page.content(), pageable, page.totalElements()));
   }
 }
