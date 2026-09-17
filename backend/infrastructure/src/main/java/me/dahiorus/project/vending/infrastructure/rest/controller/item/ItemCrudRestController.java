@@ -2,9 +2,9 @@ package me.dahiorus.project.vending.infrastructure.rest.controller.item;
 
 import static me.dahiorus.project.vending.infrastructure.rest.utils.ToPaginationConverter.toPagination;
 import static org.springframework.hateoas.IanaLinkRelations.SELF;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.noContent;
-import static org.springframework.http.ResponseEntity.ok;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @SecurityRequirement(name = "bearerAuth")
@@ -71,21 +72,23 @@ public class ItemCrudRestController {
   @ApiResponse(responseCode = "200", description = "Entity found")
   @ApiResponse(responseCode = "404", description = "Entity not found")
   @GetMapping("/{id}")
-  public ResponseEntity<EntityModel<ItemDto>> read(@PathVariable("id") UUID id) {
+  @ResponseStatus(OK)
+  public EntityModel<ItemDto> read(@PathVariable("id") UUID id) {
     var itemDto = ItemDto.fromDomain(service.read(new ItemId(id)));
 
-    return ok(modelAssembler.toModel(itemDto));
+    return modelAssembler.toModel(itemDto);
   }
 
   @Operation(description = "Update an item targeted by its ID")
   @ApiResponse(responseCode = "200", description = "Entity created or updated")
   @ApiResponse(responseCode = "400", description = "Bad request")
   @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<EntityModel<ItemDto>> update(
+  @ResponseStatus(OK)
+  public EntityModel<ItemDto> update(
       @PathVariable final UUID id, @Valid @RequestBody final ItemToUpdateDto item) {
     var updatedItem = service.update(item.toDomain(id));
 
-    return ok(modelAssembler.toModel(ItemDto.fromDomain(updatedItem)));
+    return modelAssembler.toModel(ItemDto.fromDomain(updatedItem));
   }
 
   @Operation(description = "Delete an existing vending machine targeted by its ID")
@@ -100,7 +103,8 @@ public class ItemCrudRestController {
   @Operation(description = "Get a page of items")
   @ApiResponse(responseCode = "200", description = "Items found")
   @GetMapping
-  public ResponseEntity<PagedModel<EntityModel<ItemDto>>> search(
+  @ResponseStatus(OK)
+  public PagedModel<EntityModel<ItemDto>> search(
       @ParameterObject Pageable pageable,
       @ParameterObject ItemDto example,
       @ParameterObject FilterMatcherDto filterMatcher) {
@@ -109,7 +113,7 @@ public class ItemCrudRestController {
             .search(toPagination(pageable), example.toDomain(), filterMatcher.toDomain())
             .map(ItemDto::fromDomain);
 
-    return ok(
-        pageModelAssembler.toModel(new PageImpl<>(page.content(), pageable, page.totalElements())));
+    return pageModelAssembler.toModel(
+        new PageImpl<>(page.content(), pageable, page.totalElements()));
   }
 }

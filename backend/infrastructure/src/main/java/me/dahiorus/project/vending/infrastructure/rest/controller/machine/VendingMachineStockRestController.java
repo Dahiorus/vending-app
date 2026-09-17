@@ -1,6 +1,7 @@
 package me.dahiorus.project.vending.infrastructure.rest.controller.machine;
 
 import static me.dahiorus.project.vending.infrastructure.rest.entity.stock.VendingMachineStockDto.fromDomain;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.ResponseEntity.ok;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @SecurityRequirement(name = "bearerAuth")
@@ -49,25 +51,27 @@ public class VendingMachineStockRestController {
   @Operation(description = "Provision stocks of one item to a vending machine")
   @ApiResponse(responseCode = "200", description = "Stock provisioned")
   @PostMapping
-  public ResponseEntity<EntityModel<VendingMachineStockDto>> provisionStock(
+  @ResponseStatus(OK)
+  public EntityModel<VendingMachineStockDto> provisionStock(
       @PathVariable("id") final UUID id, @RequestBody final ItemToProvisionDto itemToProvision) {
     var vendingMachineId = new VendingMachineId(id);
     var provisionedStocks =
         vendingMachineStockService.provision(
             vendingMachineId, itemToProvision.toItemId(), itemToProvision.toQuantity());
 
-    return ok(modelAssembler.toModel(fromDomain(vendingMachineId, provisionedStocks)));
+    return modelAssembler.toModel(fromDomain(vendingMachineId, provisionedStocks));
   }
 
   @Tag(name = "VendingMachine")
   @Operation(description = "Get the stocks of a vending machine")
   @ApiResponse(responseCode = "200", description = "Stock found")
   @GetMapping
-  public ResponseEntity<EntityModel<VendingMachineStockDto>> getStock(@PathVariable("id") UUID id) {
+  @ResponseStatus(OK)
+  public EntityModel<VendingMachineStockDto> getStock(@PathVariable("id") UUID id) {
     var vendingMachineId = new VendingMachineId(id);
     var stocks = vendingMachineStockService.get(vendingMachineId);
 
-    return ok(modelAssembler.toModel(fromDomain(vendingMachineId, stocks)));
+    return modelAssembler.toModel(fromDomain(vendingMachineId, stocks));
   }
 
   @Tag(name = "Reporting")

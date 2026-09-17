@@ -2,11 +2,11 @@ package me.dahiorus.project.vending.infrastructure.rest.controller.user;
 
 import static me.dahiorus.project.vending.infrastructure.rest.controller.MultipartFileValidator.validator;
 import static me.dahiorus.project.vending.infrastructure.rest.utils.ToFileToUploadConverter.toFileToUpload;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.http.ResponseEntity.notFound;
-import static org.springframework.http.ResponseEntity.ok;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -55,27 +56,29 @@ public class SelfServiceRestController {
   @Operation(description = "Get the authenticated user")
   @ApiResponse(responseCode = "200", description = "Authenticated user found")
   @GetMapping
-  public ResponseEntity<EntityModel<UserDto>> get(Authentication authentication) {
+  @ResponseStatus(OK)
+  public EntityModel<UserDto> get(Authentication authentication) {
     var authenticatedUser = getAuthenticatedUser(authentication);
 
-    return ok(modelAssembler.toModel(UserDto.fromDomain(authenticatedUser)));
+    return modelAssembler.toModel(UserDto.fromDomain(authenticatedUser));
   }
 
   @Operation(description = "Update self information")
   @ApiResponse(responseCode = "200", description = "Authenticated user updated")
   @PutMapping
-  public ResponseEntity<EntityModel<UserDto>> update(
-      Authentication authentication, UserToUpdateDto userDto) {
+  @ResponseStatus(OK)
+  public EntityModel<UserDto> update(Authentication authentication, UserToUpdateDto userDto) {
     var authenticatedUser = getAuthenticatedUser(authentication);
     var updatedUser = appUserService.update(userDto.toDomain(authenticatedUser.id()));
 
-    return ok(modelAssembler.toModel(UserDto.fromDomain(updatedUser)));
+    return modelAssembler.toModel(UserDto.fromDomain(updatedUser));
   }
 
   @Operation(description = "Upload a profile picture to self")
   @ApiResponse(responseCode = "200", description = "Picture uploaded")
   @PostMapping(value = "/picture", consumes = MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<EntityModel<UserDto>> uploadProfilePicture(
+  @ResponseStatus(OK)
+  public EntityModel<UserDto> uploadProfilePicture(
       Authentication authentication, @RequestParam("file") MultipartFile multipartFile) {
     var authenticatedUser = getAuthenticatedUser(authentication);
 
@@ -83,8 +86,8 @@ public class SelfServiceRestController {
     var appUserWithPicture =
         appUserService.uploadProfilePicture(authenticatedUser.id(), toFileToUpload(multipartFile));
 
-    return ok(
-        modelAssembler.toModel(new UserDto(appUserWithPicture.userId().value(), null, null, null)));
+    return modelAssembler.toModel(
+        new UserDto(appUserWithPicture.userId().value(), null, null, null));
   }
 
   @Operation(description = "Get the authenticated user's profile picture")

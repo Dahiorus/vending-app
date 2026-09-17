@@ -7,7 +7,6 @@ import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 import static org.springframework.http.ResponseEntity.notFound;
-import static org.springframework.http.ResponseEntity.ok;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,12 +20,14 @@ import me.dahiorus.project.vending.infrastructure.rest.utils.ToByteArrayResponse
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -61,11 +62,12 @@ public class ItemImageRestController {
   @Operation(description = "Upload an image to an item")
   @ApiResponse(responseCode = "200", description = "Image uploaded")
   @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<EntityModel<ItemDto>> uploadImage(
+  @ResponseStatus(HttpStatus.OK)
+  public EntityModel<ItemDto> uploadImage(
       @PathVariable("id") UUID id, @RequestParam("file") MultipartFile multipartFile) {
     validator(multipartFile).validate();
     itemImageService.uploadImage(new ItemId(id), toFileToUpload(multipartFile));
 
-    return ok(modelAssembler.toModel(new ItemDto(id, null, null, null)));
+    return modelAssembler.toModel(new ItemDto(id, null, null, null));
   }
 }
