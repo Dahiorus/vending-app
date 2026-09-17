@@ -1,6 +1,6 @@
 package me.dahiorus.project.vending.infrastructure.rest.exception;
 
-import static java.time.LocalDateTime.now;
+import static java.time.Clock.systemDefaultZone;
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.util.stream.Collectors.toSet;
 
@@ -79,7 +79,7 @@ public class RestResponseExceptionHandler {
   private static Map<String, Object> initResponseBody(final Exception e) {
     Map<String, Object> body = new HashMap<>();
 
-    body.put("timestamp", now().truncatedTo(MILLIS));
+    body.put("timestamp", systemDefaultZone().instant().truncatedTo(MILLIS));
     body.put("message", e.getMessage());
 
     return body;

@@ -2,8 +2,10 @@ package me.dahiorus.project.vending.infrastructure.rest.entity.machine;
 
 import static me.dahiorus.project.vending.domain.machine.entity.VendingMachineStatus.defaultStatus;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import me.dahiorus.project.vending.domain.item.entity.ItemType;
 import me.dahiorus.project.vending.domain.machine.entity.Address;
 import me.dahiorus.project.vending.domain.machine.entity.Address.City;
@@ -16,7 +18,7 @@ import me.dahiorus.project.vending.domain.machine.entity.VendingMachine;
 
 public record VendingMachineToCreateDto(
     @NotBlank String serialNumber,
-    @NotNull AddressToCreateDto address,
+    @Valid @NotNull AddressToCreateDto address,
     @NotNull ItemType itemType) {
   public VendingMachine toDomain() {
     return new VendingMachine(
@@ -26,7 +28,7 @@ public record VendingMachineToCreateDto(
   public record AddressToCreateDto(
       @NotNull Double latitude,
       @NotNull Double longitude,
-      @NotNull Integer streetNumber,
+      @Positive @NotNull Integer streetNumber,
       @NotBlank String streetName,
       @NotBlank String postalCode,
       @NotBlank String city) {

@@ -1,11 +1,13 @@
 package me.dahiorus.project.vending.infrastructure.rest.assembler;
 
+import static me.dahiorus.project.vending.infrastructure.rest.assembler.Relation.ITEM;
 import static me.dahiorus.project.vending.infrastructure.rest.assembler.Relation.VENDING_MACHINE;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.Optional;
 import java.util.Set;
+import me.dahiorus.project.vending.infrastructure.rest.controller.item.ItemCrudRestController;
 import me.dahiorus.project.vending.infrastructure.rest.controller.machine.VendingMachineCrudRestController;
 import me.dahiorus.project.vending.infrastructure.rest.entity.machine.ClientOrderDto;
 import org.springframework.hateoas.CollectionModel;
@@ -26,10 +28,10 @@ public class ClientOrderDtoModelAssembler
   }
 
   private static Set<Link> buildLinks(ClientOrderDto content) {
-    // TODO add link for item
     return Set.of(
         linkTo(methodOn(VendingMachineCrudRestController.class).read(content.vendingMachineId()))
-            .withRel(VENDING_MACHINE));
+            .withRel(VENDING_MACHINE),
+        linkTo(methodOn(ItemCrudRestController.class).read(content.itemId())).withRel(ITEM));
   }
 
   @Override

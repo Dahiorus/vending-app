@@ -6,7 +6,6 @@ import java.util.UUID;
 import me.dahiorus.project.vending.domain.exception.ResourceNotFound;
 import me.dahiorus.project.vending.domain.file.entity.FileToUpload;
 import me.dahiorus.project.vending.domain.file.entity.UploadedFile;
-import me.dahiorus.project.vending.domain.user.entity.AppUserWithPicture;
 import me.dahiorus.project.vending.domain.user.entity.UserId;
 import me.dahiorus.project.vending.domain.user.port.AppUserProfilePictureRepositoryPort;
 import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaUploadedFile;
@@ -31,9 +30,9 @@ public class AppUserProfilePictureRepositoryAdapter implements AppUserProfilePic
         new SimpleJpaRepository<>(JpaUploadedFile.class, entityManager);
   }
 
-  @CachePut(key = "#result.user.id.value")
+  @CachePut(key = "#userId.value")
   @Override
-  public AppUserWithPicture uploadPicture(final UserId userId, final FileToUpload profilePicture)
+  public UploadedFile uploadPicture(final UserId userId, final FileToUpload profilePicture)
       throws ResourceNotFound {
     return jpaUserRepository
         .findById(userId.value())
@@ -44,12 +43,12 @@ public class AppUserProfilePictureRepositoryAdapter implements AppUserProfilePic
               jpaUser.setProfilePicture(uploadedPicture);
               jpaUserRepository.save(jpaUser);
 
-              return new AppUserWithPicture(jpaUser.toUser(), uploadedPicture.toDomain());
+              return uploadedPicture.toDomain();
             })
         .orElseThrow(() -> new ResourceNotFound(userId));
   }
 
-  @Cacheable(key = "#userId.value")
+  @Cacheable(key = "#userId.value", unless = "#result.isEmpty()")
   @Override
   public Optional<UploadedFile> findPicture(final UserId userId) throws ResourceNotFound {
     var jpaUser =

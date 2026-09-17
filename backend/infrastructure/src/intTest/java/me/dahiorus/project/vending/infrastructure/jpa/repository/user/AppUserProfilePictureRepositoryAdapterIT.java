@@ -41,7 +41,7 @@ class AppUserProfilePictureRepositoryAdapterIT extends H2DbContainer {
   AppUser appUser;
 
   @BeforeEach
-  void setUpItem() {
+  void setUp() {
     appUser =
         appUserJpaRepository.create(
             new AppUserToCreate(
@@ -55,7 +55,7 @@ class AppUserProfilePictureRepositoryAdapterIT extends H2DbContainer {
   @Nested
   class UploadPicture {
     @Test
-    void should_upload_picture_for_item() {
+    void should_upload_picture_for_user() {
       var picture =
           new FileToUpload(
               new Filename("profile-picture.jpg"), new BinaryContent(new byte[] {1, 2, 3}), JPG);
@@ -64,9 +64,8 @@ class AppUserProfilePictureRepositoryAdapterIT extends H2DbContainer {
 
       assertThat(result)
           .satisfies(
-              itemWithImage -> {
-                assertThat(itemWithImage.user()).isEqualTo(appUser);
-                assertThat(itemWithImage.profilePicture())
+              uploadedFile -> {
+                assertThat(uploadedFile)
                     .usingRecursiveComparison()
                     .ignoringFields("id", "uploadedAt")
                     .isEqualTo(
@@ -76,12 +75,12 @@ class AppUserProfilePictureRepositoryAdapterIT extends H2DbContainer {
                             new BinaryContent(new byte[] {1, 2, 3}),
                             JPG,
                             null));
-                assertThat(itemWithImage.profilePicture().id()).isNotNull();
+                assertThat(uploadedFile.id()).isNotNull();
               });
     }
 
     @Test
-    void should_throw_exception_when_upload_picture_for_non_existent_item() {
+    void should_throw_exception_when_upload_picture_for_non_existent_user() {
       var userId = new UserId(UUID.randomUUID());
       var picture =
           new FileToUpload(
@@ -108,7 +107,7 @@ class AppUserProfilePictureRepositoryAdapterIT extends H2DbContainer {
       var result = repository.uploadPicture(appUser.id(), newPicture);
       entityManager.flush();
 
-      assertThat(result.profilePicture())
+      assertThat(result)
           .usingRecursiveComparison()
           .ignoringFields("id", "uploadedAt")
           .isEqualTo(
@@ -118,9 +117,7 @@ class AppUserProfilePictureRepositoryAdapterIT extends H2DbContainer {
                   new BinaryContent(new byte[] {4, 5, 6}),
                   JPG,
                   null));
-      assertThat(
-              entityManager.find(
-                  JpaUploadedFile.class, itemWithPictureToReplace.profilePicture().id().value()))
+      assertThat(entityManager.find(JpaUploadedFile.class, itemWithPictureToReplace.id().value()))
           .isNull();
     }
   }
@@ -128,18 +125,18 @@ class AppUserProfilePictureRepositoryAdapterIT extends H2DbContainer {
   @Nested
   class FindPicture {
     @Test
-    void should_find_empty_picture_for_given_item() {
+    void should_find_empty_picture_for_given_user() {
       var result = repository.findPicture(appUser.id());
 
       assertThat(result).isEmpty();
     }
 
     @Test
-    void should_find_picture_for_given_item() {
+    void should_find_picture_for_given_user() {
       // Given
       var picture =
           new FileToUpload(
-              new Filename("coca-cola.jpg"), new BinaryContent(new byte[] {1, 2, 3}), JPG);
+              new Filename("avatar.jpg"), new BinaryContent(new byte[] {1, 2, 3}), JPG);
       repository.uploadPicture(appUser.id(), picture);
       entityManager.flush();
 
@@ -154,14 +151,14 @@ class AppUserProfilePictureRepositoryAdapterIT extends H2DbContainer {
           .isEqualTo(
               new UploadedFile(
                   null,
-                  new Filename("coca-cola.jpg"),
+                  new Filename("avatar.jpg"),
                   new BinaryContent(new byte[] {1, 2, 3}),
                   JPG,
                   null));
     }
 
     @Test
-    void should_throw_exception_when_find_picture_for_non_existent_item() {
+    void should_throw_exception_when_find_picture_for_non_existent_user() {
       var userId = new UserId(UUID.randomUUID());
 
       assertThatThrownBy(() -> repository.findPicture(userId))

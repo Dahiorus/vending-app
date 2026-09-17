@@ -16,11 +16,11 @@ import org.junit.jupiter.api.Test;
 class FilterMatcherDtoTest {
 
   /**
-   * A search request omitting the filter-matcher query params (stringMatch,
-   * matchAllOrAny, ignoreOrIncludeNull, caseSensitivity) must behave like the plain
-   * `GET /vending-machines`/`GET /items` search: ignoreOrIncludeNull must fall back to
-   * IGNORE, not null/INCLUDE, otherwise ExampleMatcherAdapter matches only all-null
-   * probes and every existing row is silently excluded from the results.
+   * A search request omitting the filter-matcher query params (stringMatch, matchAllOrAny,
+   * ignoreOrIncludeNull, caseSensitivity) must behave like the plain `GET /vending-machines`/`GET
+   * /items` search: ignoreOrIncludeNull must fall back to IGNORE, not null/INCLUDE, otherwise
+   * ExampleMatcherAdapter matches only all-null probes and every existing row is silently excluded
+   * from the results.
    */
   @Test
   void should_fall_back_to_FilterMatcher_defaults_when_all_params_are_missing() {

@@ -78,7 +78,8 @@ public class UserPasswordValidator implements Validator<Password> {
     for (var rule : RULES) {
       rule.threshold()
           .apply(passwordPolicy)
-          .filter(threshold -> rule.violates().test(rule.actualValue().apply(rawPassword), threshold))
+          .filter(
+              threshold -> rule.violates().test(rule.actualValue().apply(rawPassword), threshold))
           .ifPresent(
               threshold ->
                   results.addError(

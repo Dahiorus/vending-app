@@ -2,6 +2,7 @@ import org.gradle.api.artifacts.VersionCatalogsExtension
 
 plugins {
     alias(libs.plugins.spring.boot) apply false
+    alias(libs.plugins.spotless) apply false
 }
 
 // Type-safe `libs.xxx` accessors are bound lexically to the script that
@@ -23,11 +24,31 @@ allprojects {
 
 configure(backendSubprojects) {
     apply(plugin = "java-library")
+    apply(plugin = "com.diffplug.spotless")
 
     configure<JavaPluginExtension> {
         toolchain {
             languageVersion.set(JavaLanguageVersion.of(libsCatalog.findVersion("java").get().requiredVersion))
         }
+    }
+
+    configure<com.diffplug.gradle.spotless.SpotlessExtension> {
+        java {
+            googleJavaFormat(libsCatalog.findVersion("googleJavaFormat").get().requiredVersion)
+        }
+    }
+
+    // `format`/`formatCheck` are project-agnostic aliases so `./gradlew format`
+    // (used from the IDE and documented for contributors) works regardless of
+    // which formatter Spotless is configured with underneath.
+    tasks.register("format") {
+        group = "formatting"
+        description = "Formats the source code (alias for spotlessApply)."
+        dependsOn("spotlessApply")
+    }
+
+    tasks.named("check") {
+        dependsOn("spotlessCheck")
     }
 
     repositories {
@@ -44,4 +65,14 @@ configure(backendSubprojects) {
     tasks.withType<Test> {
         useJUnitPlatform()
     }
+}
+
+// Root-level aggregator so `./gradlew format` formats every module (backend
+// Java via Spotless/google-java-format, frontend TypeScript/HTML/CSS via
+// Prettier — see frontend/build.gradle.kts) in one go.
+tasks.register("format") {
+    group = "formatting"
+    description = "Formats the source code of all modules (backend + frontend)."
+    dependsOn(backendSubprojects.map { "${it.path}:format" })
+    dependsOn(":frontend:format")
 }

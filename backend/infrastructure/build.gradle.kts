@@ -1,18 +1,68 @@
 plugins {
     alias(libs.plugins.spring.boot)
+    `jvm-test-suite`
 }
 
 springBoot {
     mainClass.set("me.dahiorus.project.vending.VendingApplication")
 }
 
-val intTest = sourceSets.create("intTest") {
-    compileClasspath += sourceSets.main.get().output
-    runtimeClasspath += sourceSets.main.get().output
+// `intTest` is a dedicated JVM Test Suite (Gradle's recommended way to add
+// a second, slower kind of test alongside the default `test` suite) for the
+// *IT integration tests under src/intTest.
+testing {
+    suites {
+        val test = getByName<JvmTestSuite>("test")
+
+        register<JvmTestSuite>("intTest") {
+            useJUnitJupiter()
+
+            dependencies {
+                implementation(project())
+                implementation(testFixtures(project(":backend:domain")))
+                // intTestImplementation does not extend implementation, so the BOM
+                // platform applied to subprojects at the root does not propagate here.
+                implementation(platform(libs.spring.boot.dependencies))
+                implementation(libs.spring.boot.starter.test)
+                implementation(libs.spring.security.test) {
+                    exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
+                }
+                implementation(libs.h2)
+            }
+
+            targets {
+                all {
+                    testTask.configure {
+                        description = "Runs the integration tests."
+                        shouldRunAfter(test)
+                        // SecurityChainIT boots the full application context, allocating every
+                        // ehcache off-heap cache defined in ehcache.xml (8 caches x 100MB); the
+                        // JVM default MaxDirectMemorySize is too small for that on constrained
+                        // environments.
+                        jvmArgs("-XX:MaxDirectMemorySize=1200m")
+                    }
+                }
+            }
+        }
+    }
 }
 
-configurations["intTestImplementation"].extendsFrom(configurations["testImplementation"])
-configurations["intTestRuntimeOnly"].extendsFrom(configurations["testRuntimeOnly"])
+// The infrastructure module declares its Spring Security/OAuth2/Jackson
+// dependencies as `implementation` (not `api`), so `implementation(project())`
+// alone does not expose them to intTest's compile/runtime classpath. Extending
+// the suite's configurations from the main sourceSet's own configurations
+// makes the full main classpath (including transitive `implementation` deps)
+// visible, the same way the built-in `test` source set already works.
+configurations.named("intTestImplementation") {
+    extendsFrom(configurations.getByName("implementation"))
+}
+configurations.named("intTestRuntimeOnly") {
+    extendsFrom(configurations.getByName("runtimeOnly"))
+}
+
+tasks.named("check") {
+    dependsOn(testing.suites.named("intTest"))
+}
 
 dependencies {
     implementation(project(":backend:domain"))
@@ -56,21 +106,4 @@ dependencies {
         exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
     }
     testImplementation(libs.h2)
-}
-
-val intTestTask = tasks.register<Test>("intTest") {
-    description = "Runs the integration tests."
-    group = LifecycleBasePlugin.VERIFICATION_GROUP
-    testClassesDirs = intTest.output.classesDirs
-    classpath = intTest.runtimeClasspath
-    useJUnitPlatform()
-    shouldRunAfter(tasks.test)
-    // SecurityChainIT boots the full application context, allocating every ehcache
-    // off-heap cache defined in ehcache.xml (8 caches x 100MB); the JVM default
-    // MaxDirectMemorySize is too small for that on constrained environments.
-    jvmArgs("-XX:MaxDirectMemorySize=1200m")
-}
-
-tasks.check {
-    dependsOn(intTestTask)
 }

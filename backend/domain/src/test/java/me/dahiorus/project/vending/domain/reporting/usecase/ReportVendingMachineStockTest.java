@@ -32,7 +32,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class ReportVendingMachineStockTest {
- @Mock VendingMachineRepositoryPort vendingMachineRepository;
+  @Mock VendingMachineRepositoryPort vendingMachineRepository;
   @Mock VendingMachineStockRepositoryPort vendingMachineStockRepository;
   @Mock VendingMachineStockReportRepositoryPort vendingMachineStockReportRepository;
   @InjectMocks ReportVendingMachineStock reportVendingMachineStock;

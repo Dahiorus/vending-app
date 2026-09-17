@@ -51,8 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Exercises the whole OAuth2 resource server chain: login, refresh, public/protected/admin-only
  * endpoints, and rejection of expired/tampered/foreign-key-signed tokens. Each test runs in a
- * rolled-back transaction so the users created in {@link #createUsers()} never leak between
- * tests.
+ * rolled-back transaction so the users created in {@link #createUsers()} never leak between tests.
  */
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -153,7 +152,8 @@ class SecurityChainIT {
 
   @Test
   void should_allow_an_admin_only_resource_with_an_admin_token() throws Exception {
-    String accessToken = accessTokenFor(adminEmail, List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+    String accessToken =
+        accessTokenFor(adminEmail, List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
 
     mockMvc
         .perform(get("/api/v1/items").header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
@@ -259,14 +259,10 @@ class SecurityChainIT {
                 .header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "Authorization,Content-Type"))
         .andExpect(status().isOk())
         .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, TEST_ORIGIN))
-        .andExpect(
-            header().string(
-                HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "GET,POST,PUT,DELETE"))
+        .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "GET,POST,PUT,DELETE"))
         .andExpect(
             header()
-                .string(
-                    HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS,
-                    "Authorization, Content-Type"));
+                .string(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "Authorization, Content-Type"));
   }
 
   private String accessTokenFor(final String username, final List<SimpleGrantedAuthority> roles) {
