@@ -1,7 +1,6 @@
 package me.dahiorus.project.vending.infrastructure.rest.controller.machine;
 
 import static me.dahiorus.project.vending.infrastructure.rest.entity.stock.VendingMachineStockDto.fromDomain;
-import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.ok;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @SecurityRequirement(name = "bearerAuth")
-@RequestMapping(value = "/api/v1/vending-machines/{id}/stock", produces = HAL_JSON_VALUE)
+@RequestMapping(value = "/api/v1/vending-machines/{id}/stock")
 @RestController
 public class VendingMachineStockRestController {
   private final VendingMachineStockApiPort vendingMachineStockService;

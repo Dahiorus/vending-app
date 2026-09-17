@@ -1,6 +1,5 @@
 package me.dahiorus.project.vending.infrastructure.rest.controller.machine;
 
-import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.ok;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @SecurityRequirement(name = "bearerAuth")
 @RestController
-@RequestMapping(value = "/api/v1/vending-machines/{id}", produces = HAL_JSON_VALUE)
+@RequestMapping(value = "/api/v1/vending-machines/{id}")
 public class VendingMachineStatusRestController {
 
   private final VendingMachineStatusApiPort vendingMachineStatusService;

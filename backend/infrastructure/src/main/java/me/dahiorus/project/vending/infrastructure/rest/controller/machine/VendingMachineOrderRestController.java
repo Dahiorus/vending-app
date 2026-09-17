@@ -14,7 +14,6 @@ import me.dahiorus.project.vending.domain.reporting.port.VendingMachineClientOrd
 import me.dahiorus.project.vending.infrastructure.rest.entity.machine.ClientOrderDto;
 import me.dahiorus.project.vending.infrastructure.rest.entity.machine.VendingMachineClientOrdersReportDto;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @SecurityRequirement(name = "bearerAuth")
-@RequestMapping(value = "/api/v1/vending-machines/{id}", produces = MediaTypes.HAL_JSON_VALUE)
+@RequestMapping(value = "/api/v1/vending-machines/{id}")
 @RestController
 public class VendingMachineOrderRestController {
   private final OrderItemApiPort orderItemService;
