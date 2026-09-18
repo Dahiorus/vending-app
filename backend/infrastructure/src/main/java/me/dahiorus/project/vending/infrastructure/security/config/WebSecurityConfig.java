@@ -14,23 +14,30 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Clock;
 import java.util.List;
 import java.util.Map;
+import me.dahiorus.project.vending.domain.user.port.RefreshTokenApiPort;
+import me.dahiorus.project.vending.infrastructure.security.cookie.RefreshTokenCookieFactory;
+import me.dahiorus.project.vending.infrastructure.security.cookie.RefreshTokenCookieProperties;
+import me.dahiorus.project.vending.infrastructure.security.cookie.RefreshTokenLogoutHandler;
 import me.dahiorus.project.vending.infrastructure.security.jwt.JwtProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
-import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
@@ -58,7 +65,8 @@ public class WebSecurityConfig {
       final JwtAuthenticationConverter jwtAuthenticationConverter,
       final CorsConfigurationSource corsConfigurationSource,
       final JwtProperties jwtProperties,
-      final Clock clock)
+      final Clock clock,
+      final LogoutHandler refreshTokenLogoutHandler)
       throws Exception {
     RequestMatcher csrfProtectedMatcher =
         new OrRequestMatcher(
@@ -83,7 +91,13 @@ public class WebSecurityConfig {
                     .sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy()))
         .cors(customizer -> customizer.configurationSource(corsConfigurationSource))
         .httpBasic(HttpBasicConfigurer::disable)
-        .logout(LogoutConfigurer::disable)
+        .logout(
+            customizer ->
+                customizer
+                    .logoutUrl(LOGOUT_PATH)
+                    .addLogoutHandler(refreshTokenLogoutHandler)
+                    .logoutSuccessHandler(
+                        new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT)))
         .sessionManagement(customizer -> customizer.sessionCreationPolicy(STATELESS))
         // request permissions
         .authorizeHttpRequests(
@@ -155,6 +169,16 @@ public class WebSecurityConfig {
     builder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
 
     return builder.build();
+  }
+
+  @Bean
+  LogoutHandler refreshTokenLogoutHandler(
+      final JwtDecoder jwtDecoder,
+      final RefreshTokenApiPort refreshTokenApiPort,
+      final RefreshTokenCookieFactory refreshTokenCookieFactory,
+      final RefreshTokenCookieProperties refreshTokenCookieProperties) {
+    return new RefreshTokenLogoutHandler(
+        jwtDecoder, refreshTokenApiPort, refreshTokenCookieFactory, refreshTokenCookieProperties);
   }
 
   @Bean

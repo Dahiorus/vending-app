@@ -6,7 +6,6 @@ import static me.dahiorus.project.vending.infrastructure.security.jwt.JwtTokenIs
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -307,49 +306,6 @@ class AuthenticationRestControllerTest {
                 .cookie(new Cookie(COOKIE_NAME, REFRESH_TOKEN)))
         .andExpect(status().isUnauthorized())
         .andExpect(cookie().maxAge(COOKIE_NAME, 0));
-  }
-
-  @Test
-  void should_logout_revoke_the_token_and_clear_the_cookie() throws Exception {
-    // Given
-    when(jwtDecoder.decode(REFRESH_TOKEN))
-        .thenReturn(refreshJwt(REFRESH_TOKEN, USERNAME, REFRESH_TOKEN_JTI));
-
-    // When / Then
-    mockMvc
-        .perform(
-            post("/api/v1/authenticate/logout")
-                .with(csrf())
-                .cookie(new Cookie(COOKIE_NAME, REFRESH_TOKEN)))
-        .andExpect(status().isNoContent())
-        .andExpect(cookie().maxAge(COOKIE_NAME, 0));
-
-    verify(refreshTokenApiPort).revoke(new RefreshTokenId(UUID.fromString(REFRESH_TOKEN_JTI)));
-  }
-
-  @Test
-  void should_logout_without_a_cookie_and_not_call_the_port() throws Exception {
-    mockMvc
-        .perform(post("/api/v1/authenticate/logout").with(csrf()))
-        .andExpect(status().isNoContent())
-        .andExpect(cookie().maxAge(COOKIE_NAME, 0));
-
-    verify(refreshTokenApiPort, never()).revoke(any());
-  }
-
-  @Test
-  void should_logout_even_when_the_cookie_is_invalid() throws Exception {
-    when(jwtDecoder.decode(REFRESH_TOKEN)).thenThrow(new JwtException("invalid"));
-
-    mockMvc
-        .perform(
-            post("/api/v1/authenticate/logout")
-                .with(csrf())
-                .cookie(new Cookie(COOKIE_NAME, REFRESH_TOKEN)))
-        .andExpect(status().isNoContent())
-        .andExpect(cookie().maxAge(COOKIE_NAME, 0));
-
-    verify(refreshTokenApiPort, never()).revoke(any());
   }
 
   private static Jwt refreshJwt(String tokenValue, String subject, String jti) {

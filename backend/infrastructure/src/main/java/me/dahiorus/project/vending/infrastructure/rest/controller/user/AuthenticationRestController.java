@@ -5,7 +5,6 @@ import static me.dahiorus.project.vending.infrastructure.security.jwt.JwtTokenIs
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.http.ResponseEntity.status;
 
@@ -89,8 +88,7 @@ public class AuthenticationRestController {
       @RequestBody final AuthenticateRequestDto authRequest, final HttpServletRequest request) {
     // login is excluded from required CSRF protection, so the deferred CsrfToken must be
     // materialized explicitly to force the CsrfFilter to deposit the XSRF-TOKEN cookie
-    var csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
-    if (csrfToken != null) {
+    if (request.getAttribute(CsrfToken.class.getName()) instanceof CsrfToken csrfToken) {
       csrfToken.getToken();
     }
 
@@ -137,7 +135,9 @@ public class AuthenticationRestController {
           new RefreshTokenId(UUID.fromString(refreshJwt.getId())),
           newRefreshTokenEntity(username, issuedRefreshToken));
     } catch (InvalidRefreshToken e) {
-      return status(UNAUTHORIZED).header(SET_COOKIE, clearedRefreshCookie().toString()).build();
+      return status(UNAUTHORIZED)
+          .header(SET_COOKIE, refreshTokenCookieFactory.clear().toString())
+          .build();
     }
 
     return ok().header(SET_COOKIE, refreshCookie(issuedRefreshToken).toString())
@@ -147,24 +147,8 @@ public class AuthenticationRestController {
   @Operation(description = "Log a user out and revoke their refresh token")
   @ApiResponse(responseCode = "204", description = "User logged out")
   @PostMapping("/logout")
-  public ResponseEntity<Void> logout(
-      @Parameter(in = ParameterIn.COOKIE, name = "refresh_token")
-          @CookieValue(name = REFRESH_COOKIE_NAME, required = false)
-          final String refreshCookie) {
-    if (refreshCookie != null) {
-      revokeBestEffort(refreshCookie);
-    }
-
-    return noContent().header(SET_COOKIE, clearedRefreshCookie().toString()).build();
-  }
-
-  private void revokeBestEffort(final String refreshCookie) {
-    try {
-      var jti = jwtDecoder.decode(refreshCookie).getId();
-      refreshTokenApiPort.revoke(new RefreshTokenId(UUID.fromString(jti)));
-    } catch (JwtException | IllegalArgumentException e) {
-      // logout must be idempotent and never fail because the cookie is stale/invalid
-    }
+  public void logout() {
+    // marker method for Swagger
   }
 
   private Jwt decodeRefreshToken(final String token) {
@@ -196,9 +180,5 @@ public class AuthenticationRestController {
     return refreshTokenCookieFactory.create(
         issuedRefreshToken.value(),
         Duration.between(Instant.now(), issuedRefreshToken.expiresAt()));
-  }
-
-  private ResponseCookie clearedRefreshCookie() {
-    return refreshTokenCookieFactory.clear();
   }
 }
