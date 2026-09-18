@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface VendingMachineJpaRepository extends JpaRepository<JpaVendingMachine, UUID> {
+interface VendingMachineJpaRepository extends JpaRepository<JpaVendingMachine, UUID> {
 
   Optional<JpaVendingMachine> findBySerialNumber(String serialNumber);
 }

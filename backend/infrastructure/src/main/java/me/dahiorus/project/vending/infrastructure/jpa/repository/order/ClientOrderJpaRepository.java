@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ClientOrderJpaRepository extends JpaRepository<JpaClientOrder, UUID> {
+interface ClientOrderJpaRepository extends JpaRepository<JpaClientOrder, UUID> {
 
   List<JpaClientOrder> findAllByVendingMachineOrderByCreatedAtDesc(
       JpaVendingMachine vendingMachine);
