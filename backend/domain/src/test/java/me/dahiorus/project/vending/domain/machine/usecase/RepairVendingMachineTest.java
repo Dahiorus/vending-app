@@ -12,7 +12,7 @@ import static me.dahiorus.project.vending.domain.machine.entity.VendingMachineSt
 import static me.dahiorus.project.vending.domain.machine.entity.VendingMachineStatus.WorkingStatus.WORKING;
 import static me.dahiorus.project.vending.fixture.VendingMachineFixture.aVendingMachine;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mock.Strictness.LENIENT;
@@ -101,7 +101,7 @@ class RepairVendingMachineTest {
     given(vendingMachineRepository.find(vendingMachine.id())).willReturn(empty());
 
     // When / Then
-    assertThatThrownBy(() -> repairVendingMachine.execute(vendingMachine.id()))
+    assertThat(catchThrowable(() -> repairVendingMachine.execute(vendingMachine.id())))
         .isInstanceOf(ResourceNotFound.class);
   }
 }

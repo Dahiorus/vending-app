@@ -11,6 +11,7 @@ import static me.dahiorus.project.vending.fixture.VendingMachineFixture.aVending
 import static me.dahiorus.project.vending.fixture.VendingMachineStocksFixture.emptyStock;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -98,8 +99,9 @@ class ProvisionVendingMachineStockTest {
     given(itemRepository.find(coke.id())).willReturn(of(coke));
 
     // When / Then
-    assertThatThrownBy(
-            () -> provisionVendingMachineStock.execute(machine.id(), coke.id(), quantity))
+    assertThat(
+            catchThrowable(
+                () -> provisionVendingMachineStock.execute(machine.id(), coke.id(), quantity)))
         .isInstanceOf(UnsupportedItemToProvision.class)
         .hasMessage(
             "Cannot provision unsupported item 'Coke 330ml' in vending machine 'VM-123456'.");
@@ -117,7 +119,9 @@ class ProvisionVendingMachineStockTest {
     given(itemRepository.find(itemId)).willReturn(empty());
 
     // When / Then
-    assertThatThrownBy(() -> provisionVendingMachineStock.execute(machine.id(), itemId, quantity))
+    assertThat(
+            catchThrowable(
+                () -> provisionVendingMachineStock.execute(machine.id(), itemId, quantity)))
         .isInstanceOf(ResourceNotFound.class)
         .hasMessage(
             "Resource not found with ID: ItemId[value=12345678-1234-1234-1234-123456789012]");
@@ -154,8 +158,9 @@ class ProvisionVendingMachineStockTest {
     given(vendingMachineStockRepository.find(machine.id())).willReturn(empty());
 
     // When / Then
-    assertThatThrownBy(
-            () -> provisionVendingMachineStock.execute(machine.id(), curly.id(), quantity))
+    assertThat(
+            catchThrowable(
+                () -> provisionVendingMachineStock.execute(machine.id(), curly.id(), quantity)))
         .isInstanceOf(ResourceNotFound.class)
         .hasMessage(
             "Resource not found with ID: VendingMachineId[value=" + machine.id().value() + "]");
