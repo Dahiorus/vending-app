@@ -79,8 +79,7 @@ class RefreshTokenRepositoryAdapterTest {
     assertThat(repository.findById(valid.id())).contains(valid);
   }
 
-  private static RefreshToken token(
-      UUID id, String username, boolean revoked, Instant expiresAt) {
+  private static RefreshToken token(UUID id, String username, boolean revoked, Instant expiresAt) {
     return new RefreshToken(
         new RefreshTokenId(id),
         EmailAddress.of(username),
