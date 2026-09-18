@@ -31,6 +31,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
@@ -74,7 +75,12 @@ public class WebSecurityConfig {
             csrf ->
                 csrf.csrfTokenRepository(csrfTokenRepository)
                     .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
-                    .requireCsrfProtectionMatcher(csrfProtectedMatcher))
+                    .requireCsrfProtectionMatcher(csrfProtectedMatcher)
+                    // CsrfAuthenticationStrategy (session-fixation protection) is meaningless
+                    // without a session: with STATELESS + JWT, every authenticated request
+                    // re-authenticates, so its default wiring deletes the XSRF-TOKEN cookie on
+                    // every single authenticated request -- disable it explicitly.
+                    .sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy()))
         .cors(customizer -> customizer.configurationSource(corsConfigurationSource))
         .httpBasic(HttpBasicConfigurer::disable)
         .logout(LogoutConfigurer::disable)
