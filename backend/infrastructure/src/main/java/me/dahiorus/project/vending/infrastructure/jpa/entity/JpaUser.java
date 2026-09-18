@@ -102,8 +102,8 @@ public class JpaUser extends JpaEntity {
     jpaUser.lastName = toCreate.lastname().value();
 
     switch (toCreate) {
-      case AppUserToCreate appUser -> jpaUser.setRoles(Set.of(ROLE_USER));
-      case AdminUserToCreate adminUser -> jpaUser.setRoles(Set.of(ROLE_ADMIN));
+      case AppUserToCreate _ -> jpaUser.setRoles(Set.of(ROLE_USER));
+      case AdminUserToCreate _ -> jpaUser.setRoles(Set.of(ROLE_ADMIN));
     }
 
     return jpaUser;
