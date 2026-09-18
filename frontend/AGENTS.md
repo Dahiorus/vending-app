@@ -73,10 +73,22 @@ fixture.whenStable()` avant d'avoir flush une requête HTTP en attente —
 
 - L'access token vit **uniquement en mémoire** (signal privé de `TokenStore`) et
   ne doit jamais être persisté — un test unitaire verrouille cette propriété.
-- Le refresh token est en `sessionStorage`, faute de cookie `httpOnly` côté
-  backend.
-- Le backend **ne fait pas de rotation** du refresh token : `/authenticate/refresh`
-  renvoie le même jeton. Ne pas écrire de code qui suppose l'inverse.
-- Évolution prévue (chantier backend) : refresh token en cookie `httpOnly` +
-  `SameSite` et rotation à chaque renouvellement.
+- Le refresh token vit dans un cookie `httpOnly` + `SameSite=Strict` déposé par
+  le backend (`POST /authenticate`, path `/api/v1/authenticate`) : il n'est
+  plus jamais lisible ni manipulable en JS (fini le `sessionStorage`).
+  `TokenStore` n'expose donc plus de `refreshToken()`.
+- La rotation du refresh token est désormais gérée **côté serveur**
+  (`POST /authenticate/refresh` lit le cookie, aucun corps de requête côté
+  frontend) ; le frontend n'a plus à supposer quoi que ce soit sur la
+  rotation.
+- CSRF : le frontend utilise le support XSRF natif d'Angular
+  (`withXsrfConfiguration({ cookieName: 'XSRF-TOKEN', headerName:
+  'X-XSRF-TOKEN' })` dans `app.config.ts`) — Angular lit le cookie
+  `XSRF-TOKEN` (déposé par le backend à la connexion, `CookieCsrfTokenRepository`
+  Spring) et pose automatiquement l'en-tête `X-XSRF-TOKEN` sur les requêtes
+  non-GET same-origin. Aucun code manuel n'est nécessaire.
+- `logout()` appelle le backend (`POST /authenticate/logout`, révocation
+  serveur + suppression du cookie) en best-effort, puis nettoie toujours
+  l'état local (`TokenStore.clear()`, utilisateur courant) même si l'appel
+  réseau échoue — l'UI ne doit jamais rester bloquée « connectée ».
 - Interdits : jeton dans une URL, `innerHTML`, `bypassSecurityTrust*`.

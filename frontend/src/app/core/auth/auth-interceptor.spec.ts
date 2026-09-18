@@ -11,7 +11,6 @@ describe('authInterceptor', () => {
   let tokens: TokenStore;
 
   beforeEach(() => {
-    sessionStorage.clear();
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(withInterceptors([authInterceptor])),
@@ -34,7 +33,7 @@ describe('authInterceptor', () => {
   });
 
   it('attaches the bearer token to API requests', () => {
-    tokens.setTokens({ accessToken: 'access-1', refreshToken: 'refresh-1' });
+    tokens.setAccessToken('access-1');
 
     http.get('/api/v1/me').subscribe();
 
@@ -44,17 +43,17 @@ describe('authInterceptor', () => {
   });
 
   it('never attaches the bearer token to the authentication endpoints', () => {
-    tokens.setTokens({ accessToken: 'access-1', refreshToken: 'refresh-1' });
+    tokens.setAccessToken('access-1');
 
-    http.post('/api/v1/authenticate/refresh', { token: 'refresh-1' }).subscribe();
+    http.post('/api/v1/authenticate/refresh', {}).subscribe();
 
     const request = backend.expectOne('/api/v1/authenticate/refresh');
     expect(request.request.headers.has('Authorization')).toBe(false);
-    request.flush({ accessToken: 'access-2', refreshToken: 'refresh-1' });
+    request.flush({ accessToken: 'access-2' });
   });
 
   it('refreshes once and replays both requests when two calls fail with 401', () => {
-    tokens.setTokens({ accessToken: 'expired', refreshToken: 'refresh-1' });
+    tokens.setAccessToken('expired');
     const answers: unknown[] = [];
 
     http.get('/api/v1/me').subscribe((body) => answers.push(body));
@@ -67,7 +66,7 @@ describe('authInterceptor', () => {
 
     const refreshRequests = backend.match('/api/v1/authenticate/refresh');
     expect(refreshRequests.length).toBe(1);
-    refreshRequests[0].flush({ accessToken: 'access-2', refreshToken: 'refresh-1' });
+    refreshRequests[0].flush({ accessToken: 'access-2' });
 
     const replayedMe = backend.expectOne('/api/v1/me');
     expect(replayedMe.request.headers.get('Authorization')).toBe('Bearer access-2');
@@ -81,7 +80,7 @@ describe('authInterceptor', () => {
   });
 
   it('clears the session when the refresh itself fails', () => {
-    tokens.setTokens({ accessToken: 'expired', refreshToken: 'refresh-1' });
+    tokens.setAccessToken('expired');
     let failed = false;
 
     http.get('/api/v1/me').subscribe({ error: () => (failed = true) });
@@ -90,9 +89,9 @@ describe('authInterceptor', () => {
     backend
       .expectOne('/api/v1/authenticate/refresh')
       .flush(null, { status: 401, statusText: 'Unauthorized' });
+    backend.expectOne('/api/v1/authenticate/logout').flush(null);
 
     expect(failed).toBe(true);
     expect(tokens.accessToken()).toBeNull();
-    expect(tokens.refreshToken()).toBeNull();
   });
 });

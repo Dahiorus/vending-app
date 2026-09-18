@@ -47,7 +47,7 @@ describe('Login', () => {
       username: 'admin@vending.me',
       password: 'S3cret!Passw0rd',
     });
-    request.flush({ accessToken: 'header.eyJzdWIiOiJhIn0.sig', refreshToken: 'refresh-1' });
+    request.flush({ accessToken: 'header.eyJzdWIiOiJhIn0.sig' });
     backend.expectOne('/api/v1/me').flush({
       id: 'u-1',
       email: 'admin@vending.me',

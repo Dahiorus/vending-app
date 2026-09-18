@@ -38,7 +38,6 @@ describe('App', () => {
     auth.login({ username: 'admin@vending.me', password: 'secret' }).subscribe();
     http.expectOne('/api/v1/authenticate').flush({
       accessToken: fakeJwt({ sub: 'admin@vending.me', roles: ['ROLE_ADMIN'], exp: 1 }),
-      refreshToken: 'refresh-1',
     });
 
     const fixture = TestBed.createComponent(App);

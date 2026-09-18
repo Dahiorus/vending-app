@@ -13,31 +13,21 @@ describe('TokenStore', () => {
 
   it('starts empty', () => {
     expect(store.accessToken()).toBeNull();
-    expect(store.refreshToken()).toBeNull();
   });
 
-  it('keeps the access token in memory only', () => {
-    store.setTokens({ accessToken: 'access-1', refreshToken: 'refresh-1' });
+  it('keeps the access token in memory only, never in sessionStorage', () => {
+    store.setAccessToken('access-1');
 
     expect(store.accessToken()).toBe('access-1');
-    expect(sessionStorage.getItem('vending.refreshToken')).toBe('refresh-1');
-    expect(JSON.stringify(sessionStorage)).not.toContain('access-1');
+    expect(sessionStorage.length).toBe(0);
   });
 
-  it('reads a refresh token persisted by a previous page load', () => {
-    sessionStorage.setItem('vending.refreshToken', 'refresh-from-reload');
-    const reloaded = TestBed.inject(TokenStore);
-
-    expect(reloaded.refreshToken()).toBe('refresh-from-reload');
-  });
-
-  it('clears both tokens', () => {
-    store.setTokens({ accessToken: 'access-1', refreshToken: 'refresh-1' });
+  it('clears the access token', () => {
+    store.setAccessToken('access-1');
 
     store.clear();
 
     expect(store.accessToken()).toBeNull();
-    expect(store.refreshToken()).toBeNull();
-    expect(sessionStorage.getItem('vending.refreshToken')).toBeNull();
+    expect(sessionStorage.length).toBe(0);
   });
 });

@@ -18,7 +18,6 @@ describe('AuthService', () => {
   let tokens: TokenStore;
 
   beforeEach(() => {
-    sessionStorage.clear();
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting()],
     });
@@ -35,7 +34,7 @@ describe('AuthService', () => {
     expect(service.currentUser()).toBeNull();
   });
 
-  it('stores the tokens, exposes the roles and loads the current user on login', () => {
+  it('stores the access token, exposes the roles and loads the current user on login', () => {
     let loaded: unknown = null;
     service.login({ username: 'ada@vending.me', password: 'secret' }).subscribe((user) => {
       loaded = user;
@@ -43,13 +42,13 @@ describe('AuthService', () => {
 
     const loginRequest = http.expectOne('/api/v1/authenticate');
     expect(loginRequest.request.method).toBe('POST');
+    expect(loginRequest.request.withCredentials).toBe(true);
     expect(loginRequest.request.body).toEqual({
       username: 'ada@vending.me',
       password: 'secret',
     });
     loginRequest.flush({
       accessToken: fakeJwt({ sub: 'ada@vending.me', roles: ['ROLE_USER'], exp: 1 }),
-      refreshToken: 'refresh-1',
     });
 
     const meRequest = http.expectOne('/api/v1/me');
@@ -102,7 +101,6 @@ describe('AuthService', () => {
     });
     loginRequest.flush({
       accessToken: fakeJwt({ sub: 'ada@vending.me', roles: ['ROLE_USER'], exp: 1 }),
-      refreshToken: 'refresh-1',
     });
 
     const meRequest = http.expectOne('/api/v1/me');
@@ -138,7 +136,6 @@ describe('AuthService', () => {
     const loginRequest = http.expectOne('/api/v1/authenticate');
     loginRequest.flush({
       accessToken: fakeJwt({ sub: 'admin@vending.me', roles: ['ROLE_ADMIN'], exp: 1 }),
-      refreshToken: 'refresh-1',
     });
 
     http.expectNone('/api/v1/me');
@@ -149,35 +146,31 @@ describe('AuthService', () => {
     expect(loaded).toBeNull();
   });
 
-  it('reuses the same refresh token because the backend does not rotate it', () => {
-    tokens.setTokens({ accessToken: 'expired', refreshToken: 'refresh-1' });
+  it('refreshes the access token using the httpOnly cookie, with no request body', () => {
+    tokens.setAccessToken('expired');
 
     let refreshed: string | null = null;
     service.refreshAccessToken().subscribe((token) => (refreshed = token));
 
     const request = http.expectOne('/api/v1/authenticate/refresh');
-    expect(request.request.body).toEqual({ token: 'refresh-1' });
-    request.flush({ accessToken: 'access-2', refreshToken: 'refresh-1' });
+    expect(request.request.withCredentials).toBe(true);
+    expect(request.request.body).toEqual({});
+    request.flush({ accessToken: 'access-2' });
 
     expect(refreshed).toBe('access-2');
     expect(tokens.accessToken()).toBe('access-2');
-    expect(tokens.refreshToken()).toBe('refresh-1');
   });
 
-  it('fails the refresh when no refresh token is available', () => {
-    let error: unknown = null;
-    service.refreshAccessToken().subscribe({ error: (e) => (error = e) });
-
-    expect(error).toBeInstanceOf(Error);
-  });
-
-  it('clears every trace of the session on logout', () => {
-    tokens.setTokens({ accessToken: 'access-1', refreshToken: 'refresh-1' });
+  it('clears every trace of the session on logout, even if the server call fails', () => {
+    tokens.setAccessToken('access-1');
 
     service.logout();
 
+    const logoutRequest = http.expectOne('/api/v1/authenticate/logout');
+    expect(logoutRequest.request.withCredentials).toBe(true);
+    logoutRequest.flush(null, { status: 500, statusText: 'Server Error' });
+
     expect(service.isAuthenticated()).toBe(false);
     expect(service.currentUser()).toBeNull();
-    expect(sessionStorage.getItem('vending.refreshToken')).toBeNull();
   });
 });
