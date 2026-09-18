@@ -29,6 +29,7 @@ import me.dahiorus.project.vending.domain.user.entity.Lastname;
 import me.dahiorus.project.vending.domain.user.entity.Password;
 import me.dahiorus.project.vending.domain.user.entity.Role;
 import me.dahiorus.project.vending.domain.user.entity.UserId;
+import me.dahiorus.project.vending.domain.user.entity.UserToCreate;
 import me.dahiorus.project.vending.domain.user.entity.UserWithRoles;
 
 @Entity
@@ -93,13 +94,17 @@ public class JpaUser extends JpaEntity {
     this.profilePicture = profilePicture;
   }
 
-  public static JpaUser toCreateFrom(AdminUserToCreate toCreate) {
+  public static JpaUser toCreateFrom(UserToCreate toCreate) {
     var jpaUser = new JpaUser();
     jpaUser.email = toCreate.emailAddress().value();
     jpaUser.password = toCreate.password().value();
     jpaUser.firstName = toCreate.firstname().value();
     jpaUser.lastName = toCreate.lastname().value();
-    jpaUser.setRoles(Set.of(ROLE_ADMIN));
+
+    switch (toCreate) {
+      case AppUserToCreate appUser -> jpaUser.setRoles(Set.of(ROLE_USER));
+      case AdminUserToCreate adminUser -> jpaUser.setRoles(Set.of(ROLE_ADMIN));
+    }
 
     return jpaUser;
   }
@@ -110,16 +115,6 @@ public class JpaUser extends JpaEntity {
         EmailAddress.of(email),
         Firstname.of(firstName),
         Lastname.of(lastName));
-  }
-
-  public static JpaUser toCreateFrom(AppUserToCreate toCreate) {
-    var jpaUser = new JpaUser();
-    jpaUser.email = toCreate.emailAddress().value();
-    jpaUser.password = toCreate.password().value();
-    jpaUser.firstName = toCreate.firstname().value();
-    jpaUser.lastName = toCreate.lastname().value();
-    jpaUser.setRoles(Set.of(ROLE_USER));
-    return jpaUser;
   }
 
   public AppUser toUser() {
