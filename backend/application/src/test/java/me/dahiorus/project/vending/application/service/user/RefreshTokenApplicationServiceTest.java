@@ -31,7 +31,8 @@ class RefreshTokenApplicationServiceTest {
   void should_rotate_refresh_token_when_presented_token_is_usable() {
     var presentedId = new RefreshTokenId(UUID.randomUUID());
     var presentedToken = refreshToken(presentedId, Instant.now().plusSeconds(60), false);
-    var replacement = refreshToken(new RefreshTokenId(UUID.randomUUID()), Instant.now().plusSeconds(120), false);
+    var replacement =
+        refreshToken(new RefreshTokenId(UUID.randomUUID()), Instant.now().plusSeconds(120), false);
     given(refreshTokenRepository.findById(presentedId)).willReturn(Optional.of(presentedToken));
     given(refreshTokenRepository.save(replacement)).willReturn(replacement);
 
@@ -46,7 +47,8 @@ class RefreshTokenApplicationServiceTest {
   @Test
   void should_throw_exception_when_presented_token_is_unknown() {
     var presentedId = new RefreshTokenId(UUID.randomUUID());
-    var replacement = refreshToken(new RefreshTokenId(UUID.randomUUID()), Instant.now().plusSeconds(120), false);
+    var replacement =
+        refreshToken(new RefreshTokenId(UUID.randomUUID()), Instant.now().plusSeconds(120), false);
     given(refreshTokenRepository.findById(presentedId)).willReturn(Optional.empty());
 
     assertThatThrownBy(() -> refreshTokenApplicationService.rotate(presentedId, replacement))
@@ -60,7 +62,8 @@ class RefreshTokenApplicationServiceTest {
   void should_throw_exception_when_presented_token_is_expired() {
     var presentedId = new RefreshTokenId(UUID.randomUUID());
     var presentedToken = refreshToken(presentedId, Instant.now().minusSeconds(1), false);
-    var replacement = refreshToken(new RefreshTokenId(UUID.randomUUID()), Instant.now().plusSeconds(120), false);
+    var replacement =
+        refreshToken(new RefreshTokenId(UUID.randomUUID()), Instant.now().plusSeconds(120), false);
     given(refreshTokenRepository.findById(presentedId)).willReturn(Optional.of(presentedToken));
 
     assertThatThrownBy(() -> refreshTokenApplicationService.rotate(presentedId, replacement))
@@ -74,7 +77,8 @@ class RefreshTokenApplicationServiceTest {
   void should_throw_exception_when_presented_token_is_already_revoked() {
     var presentedId = new RefreshTokenId(UUID.randomUUID());
     var presentedToken = refreshToken(presentedId, Instant.now().plusSeconds(60), true);
-    var replacement = refreshToken(new RefreshTokenId(UUID.randomUUID()), Instant.now().plusSeconds(120), false);
+    var replacement =
+        refreshToken(new RefreshTokenId(UUID.randomUUID()), Instant.now().plusSeconds(120), false);
     given(refreshTokenRepository.findById(presentedId)).willReturn(Optional.of(presentedToken));
 
     assertThatThrownBy(() -> refreshTokenApplicationService.rotate(presentedId, replacement))
@@ -96,10 +100,6 @@ class RefreshTokenApplicationServiceTest {
   private static RefreshToken refreshToken(
       final RefreshTokenId id, final Instant expiresAt, final boolean revoked) {
     return new RefreshToken(
-        id,
-        EmailAddress.of("user@test.org"),
-        expiresAt.minusSeconds(60),
-        expiresAt,
-        revoked);
+        id, EmailAddress.of("user@test.org"), expiresAt.minusSeconds(60), expiresAt, revoked);
   }
 }
