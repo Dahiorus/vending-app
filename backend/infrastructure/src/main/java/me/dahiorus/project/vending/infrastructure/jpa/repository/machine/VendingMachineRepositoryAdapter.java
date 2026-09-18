@@ -35,7 +35,7 @@ public class VendingMachineRepositoryAdapter implements VendingMachineRepository
     return jpaRepository.save(JpaVendingMachine.fromDomain(machineToCreate)).toDomain();
   }
 
-  @Cacheable(key = "#id.value", unless = "#result.isEmpty()")
+  @Cacheable(key = "#id.value", unless = "#result == null")
   @Override
   public Optional<VendingMachine> find(VendingMachineId id) {
     return jpaRepository.findById(id.value()).map(JpaVendingMachine::toDomain);

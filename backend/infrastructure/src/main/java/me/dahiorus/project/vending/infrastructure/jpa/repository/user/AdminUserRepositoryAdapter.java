@@ -38,7 +38,7 @@ public class AdminUserRepositoryAdapter implements AdminUserRepositoryPort {
     return jpaUserRepository.save(jpaUserToCreate).toAdminUser();
   }
 
-  @Cacheable(key = "#id.value", unless = "#result.isEmpty()")
+  @Cacheable(key = "#id.value", unless = "#result == null")
   @Override
   public Optional<AdminUser> find(final UserId id) {
     return jpaUserRepository

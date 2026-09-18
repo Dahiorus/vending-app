@@ -48,7 +48,7 @@ public class AppUserProfilePictureRepositoryAdapter implements AppUserProfilePic
         .orElseThrow(() -> new ResourceNotFound(userId));
   }
 
-  @Cacheable(key = "#userId.value", unless = "#result.isEmpty()")
+  @Cacheable(key = "#userId.value", unless = "#result == null")
   @Override
   public Optional<UploadedFile> findPicture(final UserId userId) throws ResourceNotFound {
     var jpaUser =

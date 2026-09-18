@@ -42,7 +42,7 @@ public class AppUserRepositoryAdapter implements AppUserRepositoryPort, Password
     return jpaRepository.save(jpaUser).toUser();
   }
 
-  @Cacheable(key = "#id.value", unless = "#result.isEmpty()")
+  @Cacheable(key = "#id.value", unless = "#result == null")
   @Override
   public Optional<AppUser> find(final UserId id) {
     return jpaRepository.findByIdAndRoles(id.value(), Set.of(ROLE_USER)).map(JpaUser::toUser);
