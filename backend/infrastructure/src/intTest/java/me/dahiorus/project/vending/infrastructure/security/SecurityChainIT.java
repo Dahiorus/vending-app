@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.infrastructure.security;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.oauth2.jose.jws.SignatureAlgorithm.RS256;
@@ -38,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -209,22 +211,15 @@ class SecurityChainIT {
 
   @Test
   void should_refresh_an_access_token_from_a_refresh_token() throws Exception {
-    String loginResponse =
-        mockMvc
-            .perform(
-                post("/api/v1/authenticate")
-                    .contentType(APPLICATION_JSON)
-                    .content(
-                        objectMapper.writeValueAsString(
-                            new AuthenticateRequestDto(adminEmail, PASSWORD))))
-            .andReturn()
-            .getResponse()
-            .getCookie("refresh_token")
-            .getValue();
+    var loginResult = login(adminEmail);
+    String loginResponse = loginResult.getCookie("refresh_token").getValue();
+    Cookie xsrfCookie = loginResult.getCookie("XSRF-TOKEN");
 
     mockMvc
         .perform(
-            post("/api/v1/authenticate/refresh").cookie(new Cookie("refresh_token", loginResponse)))
+            post("/api/v1/authenticate/refresh")
+                .cookie(new Cookie("refresh_token", loginResponse), xsrfCookie)
+                .header("X-XSRF-TOKEN", xsrfCookie.getValue()))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.accessToken").isNotEmpty())
         .andExpect(jsonPath("$.accessToken").value(not(loginResponse)));
@@ -234,24 +229,59 @@ class SecurityChainIT {
   void should_reject_refresh_with_an_access_token() throws Exception {
     String accessToken =
         accessTokenFor(adminEmail, List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+    Cookie xsrfCookie = xsrfCookieFor(adminEmail);
 
     mockMvc
         .perform(
-            post("/api/v1/authenticate/refresh").cookie(new Cookie("refresh_token", accessToken)))
+            post("/api/v1/authenticate/refresh")
+                .cookie(new Cookie("refresh_token", accessToken), xsrfCookie)
+                .header("X-XSRF-TOKEN", xsrfCookie.getValue()))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
   void should_reject_refresh_without_a_cookie() throws Exception {
-    mockMvc.perform(post("/api/v1/authenticate/refresh")).andExpect(status().isUnauthorized());
+    Cookie xsrfCookie = xsrfCookieFor(adminEmail);
+
+    mockMvc
+        .perform(
+            post("/api/v1/authenticate/refresh")
+                .cookie(xsrfCookie)
+                .header("X-XSRF-TOKEN", xsrfCookie.getValue()))
+        .andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  void should_reject_refresh_without_a_csrf_token() throws Exception {
+    String refreshCookie = login(adminEmail).getCookie("refresh_token").getValue();
+
+    mockMvc
+        .perform(
+            post("/api/v1/authenticate/refresh").cookie(new Cookie("refresh_token", refreshCookie)))
+        .andExpect(status().isForbidden());
+  }
+
+  @Test
+  void should_deposit_an_xsrf_token_cookie_on_login() throws Exception {
+    assertThat(login(userEmail).getCookie("XSRF-TOKEN")).isNotNull();
   }
 
   @Test
   void should_logout_and_clear_the_refresh_cookie_even_without_one() throws Exception {
+    Cookie xsrfCookie = xsrfCookieFor(adminEmail);
+
     mockMvc
-        .perform(post("/api/v1/authenticate/logout"))
+        .perform(
+            post("/api/v1/authenticate/logout")
+                .cookie(xsrfCookie)
+                .header("X-XSRF-TOKEN", xsrfCookie.getValue()))
         .andExpect(status().isNoContent())
         .andExpect(header().exists(HttpHeaders.SET_COOKIE));
+  }
+
+  @Test
+  void should_reject_logout_without_a_csrf_token() throws Exception {
+    mockMvc.perform(post("/api/v1/authenticate/logout")).andExpect(status().isForbidden());
   }
 
   @Test
@@ -287,6 +317,22 @@ class SecurityChainIT {
 
   private String accessTokenFor(final String username, final List<SimpleGrantedAuthority> roles) {
     return tokenIssuer.createAccessToken(username, roles);
+  }
+
+  private MockHttpServletResponse login(final String username) throws Exception {
+    return mockMvc
+        .perform(
+            post("/api/v1/authenticate")
+                .contentType(APPLICATION_JSON)
+                .content(
+                    objectMapper.writeValueAsString(
+                        new AuthenticateRequestDto(username, PASSWORD))))
+        .andReturn()
+        .getResponse();
+  }
+
+  private Cookie xsrfCookieFor(final String username) throws Exception {
+    return login(username).getCookie("XSRF-TOKEN");
   }
 
   private static String tokenSignedWithAForeignKey(final String username) throws Exception {

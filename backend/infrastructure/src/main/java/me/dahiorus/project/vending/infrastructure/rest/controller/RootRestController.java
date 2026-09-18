@@ -40,7 +40,7 @@ public class RootRestController {
                 .withRel(VENDING_MACHINES))
         .add(linkTo(methodOn(SelfServiceRestController.class).get(null)).withRel(ME))
         .add(
-            linkTo(methodOn(AuthenticationRestController.class).authenticate(null))
+            linkTo(methodOn(AuthenticationRestController.class).authenticate(null, null))
                 .withRel(AUTHENTICATE))
         .add(linkTo(methodOn(UserRegistrationRestController.class).create(null)).withRel(REGISTER))
         .add(Link.of("/v3/api-docs").withRel(DOCS));

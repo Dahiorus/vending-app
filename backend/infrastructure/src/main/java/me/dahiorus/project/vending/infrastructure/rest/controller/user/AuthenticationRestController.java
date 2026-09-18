@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
@@ -41,6 +42,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -84,7 +86,14 @@ public class AuthenticationRestController {
   @ApiResponse(responseCode = "401", description = "Bad credentials")
   @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
   public ResponseEntity<AuthenticateResponseDto> authenticate(
-      @RequestBody final AuthenticateRequestDto authRequest) {
+      @RequestBody final AuthenticateRequestDto authRequest, final HttpServletRequest request) {
+    // login is excluded from required CSRF protection, so the deferred CsrfToken must be
+    // materialized explicitly to force the CsrfFilter to deposit the XSRF-TOKEN cookie
+    var csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+    if (csrfToken != null) {
+      csrfToken.getToken();
+    }
+
     var authentication =
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(

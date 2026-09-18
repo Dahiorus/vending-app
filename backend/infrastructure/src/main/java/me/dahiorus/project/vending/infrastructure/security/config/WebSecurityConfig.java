@@ -20,7 +20,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -31,6 +30,10 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -54,7 +57,16 @@ public class WebSecurityConfig {
       final CorsConfigurationSource corsConfigurationSource,
       final Clock clock)
       throws Exception {
-    return http.csrf(CsrfConfigurer::disable)
+    RequestMatcher csrfProtectedMatcher =
+        new OrRequestMatcher(
+            withDefaults().matcher(POST, REFRESH_TOKEN_PATH),
+            withDefaults().matcher(POST, LOGOUT_PATH));
+
+    return http.csrf(
+            csrf ->
+                csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                    .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+                    .requireCsrfProtectionMatcher(csrfProtectedMatcher))
         .cors(customizer -> customizer.configurationSource(corsConfigurationSource))
         .httpBasic(HttpBasicConfigurer::disable)
         .logout(LogoutConfigurer::disable)
@@ -140,11 +152,19 @@ public class WebSecurityConfig {
 
   @Bean
   CorsConfigurationSource corsConfigurationSource(final CorsProperties corsProperties) {
+    List<String> allowedOrigins = corsProperties.getAllowedOrigins();
+    if (allowedOrigins.isEmpty() || allowedOrigins.contains("*")) {
+      throw new IllegalStateException(
+          "app.cors.allowed-origins must list concrete origin(s) (no wildcard) when "
+              + "allowCredentials is enabled, as required by the CORS specification");
+    }
+
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(corsProperties.getAllowedOrigins());
+    configuration.setAllowedOrigins(allowedOrigins);
     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-    configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
-    configuration.setAllowCredentials(false);
+    configuration.setAllowedHeaders(
+        List.of("Authorization", "Content-Type", "Accept", "X-XSRF-TOKEN"));
+    configuration.setAllowCredentials(true);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);

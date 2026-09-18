@@ -24,6 +24,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import me.dahiorus.project.vending.domain.exception.InvalidRefreshToken;
@@ -50,6 +51,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -60,6 +62,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -69,6 +72,7 @@ import org.springframework.test.web.servlet.MockMvc;
   WebSecurityConfig.class,
   AuthenticationRestControllerTest.FixedClockConfig.class
 })
+@TestPropertySource(properties = "app.cors.allowed-origins=https://spa.example.test")
 class AuthenticationRestControllerTest {
 
   private static final String USERNAME = "user@test.org";
@@ -91,7 +95,6 @@ class AuthenticationRestControllerTest {
   @MockitoBean private RefreshTokenApiPort refreshTokenApiPort;
   @MockitoBean private RefreshTokenRepositoryPort refreshTokenRepository;
   @MockitoBean private JwtAuthenticationConverter jwtAuthenticationConverter;
-  @MockitoBean private CorsProperties corsProperties;
 
   @Test
   void should_authenticate_and_set_the_refresh_cookie() throws Exception {
@@ -385,6 +388,14 @@ class AuthenticationRestControllerTest {
     RefreshTokenCookieFactory refreshTokenCookieFactory(
         final RefreshTokenCookieProperties properties) {
       return new RefreshTokenCookieFactory(properties);
+    }
+
+    @Bean
+    @Primary
+    CorsProperties testCorsProperties() {
+      CorsProperties properties = new CorsProperties();
+      properties.setAllowedOrigins(List.of("https://spa.example.test"));
+      return properties;
     }
   }
 }
