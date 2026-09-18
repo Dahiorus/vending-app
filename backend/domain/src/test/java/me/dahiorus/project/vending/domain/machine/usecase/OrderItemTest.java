@@ -9,7 +9,7 @@ import static me.dahiorus.project.vending.fixture.ItemFixture.aSnack;
 import static me.dahiorus.project.vending.fixture.VendingMachineFixture.aVendingMachineWithWorkingStatus;
 import static me.dahiorus.project.vending.fixture.VendingMachineStocksFixture.emptyStock;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -88,7 +88,7 @@ class OrderItemTest {
     given(vendingMachineRepository.find(vendingMachine.id()))
         .willReturn(Optional.of(vendingMachine));
 
-    assertThatThrownBy(() -> orderItem.execute(vendingMachine.id(), kinderBueno.id()))
+    assertThat(catchThrowable(() -> orderItem.execute(vendingMachine.id(), kinderBueno.id())))
         .isInstanceOf(NotWorkingVendingMachine.class);
     then(vendingMachineStockRepository).shouldHaveNoInteractions();
     then(clientOrderRepository).shouldHaveNoInteractions();
@@ -105,7 +105,7 @@ class OrderItemTest {
     given(itemRepository.find(kinderBueno.id())).willReturn(Optional.of(kinderBueno));
     given(vendingMachineStockRepository.find(vendingMachine.id())).willReturn(Optional.of(stock));
 
-    assertThatThrownBy(() -> orderItem.execute(vendingMachine.id(), kinderBueno.id()))
+    assertThat(catchThrowable(() -> orderItem.execute(vendingMachine.id(), kinderBueno.id())))
         .isInstanceOf(ItemStockIsEmpty.class);
     then(vendingMachineStockRepository).should(never()).update(eq(vendingMachine.id()), any());
     then(clientOrderRepository).shouldHaveNoInteractions();
@@ -122,7 +122,7 @@ class OrderItemTest {
     given(itemRepository.find(kinderBueno.id())).willReturn(Optional.of(kinderBueno));
     given(vendingMachineStockRepository.find(vendingMachine.id())).willReturn(Optional.of(stock));
 
-    assertThatThrownBy(() -> orderItem.execute(vendingMachine.id(), kinderBueno.id()))
+    assertThat(catchThrowable(() -> orderItem.execute(vendingMachine.id(), kinderBueno.id())))
         .isInstanceOf(IllegalArgumentException.class);
     then(vendingMachineStockRepository).should(never()).update(eq(vendingMachine.id()), any());
     then(clientOrderRepository).shouldHaveNoInteractions();

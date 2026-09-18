@@ -1,7 +1,8 @@
 package me.dahiorus.project.vending.domain.user.usecase;
 
 import static me.dahiorus.project.vending.fixture.UserFixture.aUser;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willThrow;
@@ -51,9 +52,12 @@ class UpdateUserPasswordTest {
 
     given(passwordMatcher.matches(user.id(), oldPassword)).willReturn(false);
 
-    assertThatThrownBy(
-            () -> updateUserPassword.execute(user.id(), new EditPassword(oldPassword, newPassword)))
-        .isInstanceOf(OldPasswordNotMatch.class);
+    var throwable =
+        catchThrowable(
+            () ->
+                updateUserPassword.execute(user.id(), new EditPassword(oldPassword, newPassword)));
+
+    assertThat(throwable).isInstanceOf(OldPasswordNotMatch.class);
     then(appUserRepository).should(never()).updatePassword(user.id(), newPassword);
   }
 
@@ -68,9 +72,12 @@ class UpdateUserPasswordTest {
         .given(userPasswordValidator)
         .validate(newPassword);
 
-    assertThatThrownBy(
-            () -> updateUserPassword.execute(user.id(), new EditPassword(oldPassword, newPassword)))
-        .isInstanceOf(InvalidBusinessObject.class);
+    var throwable =
+        catchThrowable(
+            () ->
+                updateUserPassword.execute(user.id(), new EditPassword(oldPassword, newPassword)));
+
+    assertThat(throwable).isInstanceOf(InvalidBusinessObject.class);
     then(appUserRepository).should(never()).updatePassword(user.id(), newPassword);
   }
 }

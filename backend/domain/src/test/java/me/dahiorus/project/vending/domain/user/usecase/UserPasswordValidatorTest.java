@@ -2,12 +2,11 @@ package me.dahiorus.project.vending.domain.user.usecase;
 
 import static java.util.Optional.empty;
 import static java.util.stream.Collectors.toSet;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import static org.apache.commons.lang3.RandomStringUtils.insecure;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.assertj.core.api.InstanceOfAssertFactories.collection;
-import static org.assertj.core.api.InstanceOfAssertFactories.type;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mock.Strictness.LENIENT;
 
@@ -56,7 +55,7 @@ class UserPasswordValidatorTest {
 
   @Test
   void should_have_at_least_max_length() {
-    testOn(randomAlphabetic(24) + "Az1&", "validation.constraints.password.max-length");
+    testOn(insecure().nextAlphabetic(24) + "Az1&", "validation.constraints.password.max-length");
   }
 
   @Test
@@ -71,12 +70,14 @@ class UserPasswordValidatorTest {
 
   @Test
   void should_have_at_least_min_digit() {
-    testOn(randomAlphabetic(13) + '&', "validation.constraints.password.min-digits");
+    testOn(insecure().nextAlphabetic(13) + '&', "validation.constraints.password.min-digits");
   }
 
   @Test
   void should_have_at_least_min_special_char() {
-    testOn(randomAlphanumeric(13) + "Ééù2", "validation.constraints.password.min-special-chars");
+    testOn(
+        insecure().nextAlphanumeric(13) + "Ééù2",
+        "validation.constraints.password.min-special-chars");
   }
 
   @Test
@@ -108,9 +109,9 @@ class UserPasswordValidatorTest {
   }
 
   private void testOn(final String rawPassword, final String... expectedErrorCodes) {
-    assertThatThrownBy(() -> validator.validate(Password.of(rawPassword)))
-        .isInstanceOf(InvalidBusinessObject.class)
-        .asInstanceOf(type(InvalidBusinessObject.class))
+    assertThat(
+            catchThrowableOfType(
+                InvalidBusinessObject.class, () -> validator.validate(Password.of(rawPassword))))
         .extracting(this::errorCodes, collection(String.class))
         .containsExactlyInAnyOrder(expectedErrorCodes);
   }

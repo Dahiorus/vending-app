@@ -55,7 +55,7 @@ class JwtTokenIssuerTest {
     assertThat(issuedRefreshToken.jti()).isNotBlank();
     assertThat(issuedRefreshToken.expiresAt()).isEqualTo(claims.getExpiresAt());
     assertThat(claims.getSubject()).isEqualTo("user@test.org");
-    assertThat(claims.getIssuer().toString()).isEqualTo("https://issuer.test");
+    assertThat(claims.getIssuer()).hasToString("https://issuer.test");
     assertThat(claims.getClaimAsString(JwtTokenIssuer.TOKEN_TYPE_CLAIM))
         .isEqualTo(JwtTokenIssuer.REFRESH_TOKEN_TYPE);
   }
