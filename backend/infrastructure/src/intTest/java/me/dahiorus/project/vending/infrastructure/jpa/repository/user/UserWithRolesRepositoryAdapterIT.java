@@ -1,7 +1,7 @@
 package me.dahiorus.project.vending.infrastructure.jpa.repository.user;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.util.Set;
 import me.dahiorus.project.vending.domain.exception.ResourceNotFound;
@@ -56,7 +56,11 @@ class UserWithRolesRepositoryAdapterIT extends H2DbContainer {
         .usingRecursiveComparison()
         .ignoringFields("id")
         .isEqualTo(
-            new UserWithRoles(null, EmailAddress.of("admin@test.org"), Set.of(new Role("ADMIN"))));
+            new UserWithRoles(
+                null,
+                EmailAddress.of("admin@test.org"),
+                Password.of(null),
+                Set.of(new Role("ADMIN"))));
   }
 
   @Test
@@ -67,12 +71,18 @@ class UserWithRolesRepositoryAdapterIT extends H2DbContainer {
         .usingRecursiveComparison()
         .ignoringFields("id")
         .isEqualTo(
-            new UserWithRoles(null, EmailAddress.of("user@test.org"), Set.of(new Role("USER"))));
+            new UserWithRoles(
+                null,
+                EmailAddress.of("user@test.org"),
+                Password.of(null),
+                Set.of(new Role("USER"))));
   }
 
   @Test
   void should_throw_exception_given_unknown_username() {
-    assertThatThrownBy(() -> userWithRolesJpaRepository.getByUsername(EmailAddress.of("toto")))
+    var throwable =
+        catchThrowable(() -> userWithRolesJpaRepository.getByUsername(EmailAddress.of("toto")));
+    assertThat(throwable)
         .isInstanceOf(ResourceNotFound.class)
         .hasMessage("No user found with username [toto]");
   }

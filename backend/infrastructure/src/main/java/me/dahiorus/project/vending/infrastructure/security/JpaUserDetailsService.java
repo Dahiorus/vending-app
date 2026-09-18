@@ -1,34 +1,36 @@
 package me.dahiorus.project.vending.infrastructure.security;
 
-import me.dahiorus.project.vending.infrastructure.jpa.repository.user.UserJpaRepository;
+import static java.lang.String.format;
+
+import me.dahiorus.project.vending.domain.exception.ResourceNotFound;
+import me.dahiorus.project.vending.domain.user.entity.EmailAddress;
+import me.dahiorus.project.vending.domain.user.port.UserWithRolesRepositoryPort;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class JpaUserDetailsService implements UserDetailsService {
 
-  private final UserJpaRepository userJpaRepository;
+  private final UserWithRolesRepositoryPort userWithRolesRepository;
 
-  public JpaUserDetailsService(final UserJpaRepository userJpaRepository) {
-    this.userJpaRepository = userJpaRepository;
+  public JpaUserDetailsService(final UserWithRolesRepositoryPort userWithRolesRepository) {
+    this.userWithRolesRepository = userWithRolesRepository;
   }
 
   @Override
   public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-    return userJpaRepository
-        .findByEmail(username)
-        .map(
-            appUser ->
-                User.withUsername(appUser.getEmail())
-                    .password(appUser.getEncodedPassword())
-                    .roles(appUser.getRoles().toArray(String[]::new))
-                    .build())
-        .orElseThrow(
-            () ->
-                new UsernameNotFoundException(
-                    String.format("No user found with username '%s'.", username)));
+    try {
+      var user = userWithRolesRepository.getByUsername(EmailAddress.of(username));
+
+      return User.withUsername(user.username().value())
+          .password(user.encodedPassword().value())
+          .roles(user.rolesAsStringArray())
+          .build();
+    } catch (ResourceNotFound e) {
+      throw new UsernameNotFoundException(format("No user found with username '%s'.", username));
+    }
   }
 }

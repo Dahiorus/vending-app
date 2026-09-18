@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.UUID;
 import me.dahiorus.project.vending.domain.exception.ResourceNotFound;
 import me.dahiorus.project.vending.domain.user.entity.EmailAddress;
+import me.dahiorus.project.vending.domain.user.entity.Password;
 import me.dahiorus.project.vending.domain.user.entity.Role;
 import me.dahiorus.project.vending.domain.user.entity.UserId;
 import me.dahiorus.project.vending.domain.user.entity.UserWithRoles;
@@ -154,7 +155,10 @@ class AuthenticationRestControllerTest {
     var jwt = refreshJwt(REFRESH_TOKEN, USERNAME);
     var user =
         new UserWithRoles(
-            new UserId(UUID.randomUUID()), EmailAddress.of(USERNAME), Set.of(new Role("admin")));
+            new UserId(UUID.randomUUID()),
+            EmailAddress.of(USERNAME),
+            Password.of("hashed-password"),
+            Set.of(new Role("admin")));
     when(jwtDecoder.decode(REFRESH_TOKEN)).thenReturn(jwt);
     when(userWithRolesRepository.getByUsername(EmailAddress.of(USERNAME))).thenReturn(user);
     when(tokenIssuer.createAccessToken(eq(USERNAME), any())).thenReturn(ACCESS_TOKEN);

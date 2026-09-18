@@ -26,6 +26,7 @@ import me.dahiorus.project.vending.domain.user.entity.AppUserToCreate;
 import me.dahiorus.project.vending.domain.user.entity.EmailAddress;
 import me.dahiorus.project.vending.domain.user.entity.Firstname;
 import me.dahiorus.project.vending.domain.user.entity.Lastname;
+import me.dahiorus.project.vending.domain.user.entity.Password;
 import me.dahiorus.project.vending.domain.user.entity.Role;
 import me.dahiorus.project.vending.domain.user.entity.UserId;
 import me.dahiorus.project.vending.domain.user.entity.UserWithRoles;
@@ -133,6 +134,7 @@ public class JpaUser extends JpaEntity {
     return new UserWithRoles(
         new UserId(getId()),
         EmailAddress.of(email),
+        Password.of(getEncodedPassword()),
         roles.stream().map(Role::new).collect(toSet()));
   }
 
