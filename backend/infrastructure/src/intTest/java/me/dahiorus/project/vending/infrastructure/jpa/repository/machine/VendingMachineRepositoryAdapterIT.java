@@ -27,6 +27,7 @@ import me.dahiorus.project.vending.domain.machine.entity.VendingMachineId;
 import me.dahiorus.project.vending.domain.machine.entity.VendingMachineStatus;
 import me.dahiorus.project.vending.domain.machine.entity.VendingMachineStatus.Temperature;
 import me.dahiorus.project.vending.domain.machine.entity.VendingMachineToUpdate;
+import me.dahiorus.project.vending.domain.machine.port.VendingMachineRepositoryPort;
 import me.dahiorus.project.vending.domain.pagination.entity.Filter;
 import me.dahiorus.project.vending.domain.pagination.entity.FilterMatcher;
 import me.dahiorus.project.vending.domain.pagination.entity.Pagination;
@@ -41,7 +42,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 @ContextConfiguration(classes = VendingMachineRepositoryAdapterIT.TestConfig.class)
 class VendingMachineRepositoryAdapterIT extends H2DbContainer {
-  @Autowired VendingMachineRepositoryAdapter repository;
+  @Autowired VendingMachineRepositoryPort repository;
 
   @Test
   void should_create_vending_machine() {
@@ -290,8 +291,9 @@ class VendingMachineRepositoryAdapterIT extends H2DbContainer {
   @TestConfiguration
   static class TestConfig {
     @Bean
-    VendingMachineRepositoryAdapter repository(VendingMachineJpaRepository jpaRepository) {
-      return new VendingMachineRepositoryAdapter(jpaRepository);
+    VendingMachineRepositoryPort vendingMachineRepository(
+        VendingMachineJpaRepository vendingMachineJpaRepository) {
+      return new VendingMachineRepositoryAdapter(vendingMachineJpaRepository);
     }
   }
 }

@@ -13,9 +13,9 @@ import me.dahiorus.project.vending.domain.user.entity.Lastname;
 import me.dahiorus.project.vending.domain.user.entity.Password;
 import me.dahiorus.project.vending.domain.user.entity.Role;
 import me.dahiorus.project.vending.domain.user.entity.UserWithRoles;
+import me.dahiorus.project.vending.domain.user.port.UserWithRolesRepositoryPort;
 import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaUser;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
-import me.dahiorus.project.vending.infrastructure.jpa.repository.user.UserWithRolesRepositoryAdapterIT.TestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +23,10 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 
-@ContextConfiguration(classes = TestConfig.class)
+@ContextConfiguration(classes = UserWithRolesRepositoryAdapterIT.TestConfig.class)
 class UserWithRolesRepositoryAdapterIT extends H2DbContainer {
 
-  @Autowired UserWithRolesRepositoryAdapter userWithRolesJpaRepository;
+  @Autowired UserWithRolesRepositoryAdapter userWithRolesRepository;
 
   @BeforeEach
   void setUpUsers() {
@@ -50,7 +50,7 @@ class UserWithRolesRepositoryAdapterIT extends H2DbContainer {
 
   @Test
   void should_get_admin_user_given_username() {
-    var result = userWithRolesJpaRepository.getByUsername(EmailAddress.of("admin@test.org"));
+    var result = userWithRolesRepository.getByUsername(EmailAddress.of("admin@test.org"));
 
     assertThat(result)
         .usingRecursiveComparison()
@@ -65,7 +65,7 @@ class UserWithRolesRepositoryAdapterIT extends H2DbContainer {
 
   @Test
   void should_get_app_user_given_username() {
-    var result = userWithRolesJpaRepository.getByUsername(EmailAddress.of("user@test.org"));
+    var result = userWithRolesRepository.getByUsername(EmailAddress.of("user@test.org"));
 
     assertThat(result)
         .usingRecursiveComparison()
@@ -81,7 +81,7 @@ class UserWithRolesRepositoryAdapterIT extends H2DbContainer {
   @Test
   void should_throw_exception_given_unknown_username() {
     var throwable =
-        catchThrowable(() -> userWithRolesJpaRepository.getByUsername(EmailAddress.of("toto")));
+        catchThrowable(() -> userWithRolesRepository.getByUsername(EmailAddress.of("toto")));
     assertThat(throwable)
         .isInstanceOf(ResourceNotFound.class)
         .hasMessage("No user found with username [toto]");
@@ -90,8 +90,8 @@ class UserWithRolesRepositoryAdapterIT extends H2DbContainer {
   @TestConfiguration
   static class TestConfig {
     @Bean
-    UserWithRolesRepositoryAdapter userWithRolesJpaRepository(UserJpaRepository jpaUserDao) {
-      return new UserWithRolesRepositoryAdapter(jpaUserDao);
+    UserWithRolesRepositoryPort userWithRolesRepository(UserJpaRepository userJpaRepository) {
+      return new UserWithRolesRepositoryAdapter(userJpaRepository);
     }
   }
 }

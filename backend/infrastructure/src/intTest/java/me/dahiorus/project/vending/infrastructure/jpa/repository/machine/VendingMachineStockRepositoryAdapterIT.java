@@ -15,6 +15,7 @@ import me.dahiorus.project.vending.domain.machine.entity.VendingMachineId;
 import me.dahiorus.project.vending.domain.stock.entity.ItemQuantity;
 import me.dahiorus.project.vending.domain.stock.entity.Quantity;
 import me.dahiorus.project.vending.domain.stock.entity.VendingMachineStock;
+import me.dahiorus.project.vending.domain.stock.port.VendingMachineStockRepositoryPort;
 import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaItem;
 import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaVendingMachine;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
@@ -29,7 +30,7 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(classes = VendingMachineStockRepositoryAdapterIT.TestConfig.class)
 class VendingMachineStockRepositoryAdapterIT extends H2DbContainer {
 
-  @Autowired VendingMachineStockRepositoryAdapter repository;
+  @Autowired VendingMachineStockRepositoryPort repository;
 
   VendingMachine vendingMachine;
   Item bueno, lays;
@@ -140,7 +141,8 @@ class VendingMachineStockRepositoryAdapterIT extends H2DbContainer {
   @TestConfiguration
   static class TestConfig {
     @Bean
-    VendingMachineStockRepositoryAdapter repository(EntityManager entityManager) {
+    VendingMachineStockRepositoryPort vendingMachineStockRepositoryPort(
+        EntityManager entityManager) {
       return new VendingMachineStockRepositoryAdapter(entityManager);
     }
   }

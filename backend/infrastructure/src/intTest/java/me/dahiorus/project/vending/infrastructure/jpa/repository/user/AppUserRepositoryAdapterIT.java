@@ -3,6 +3,7 @@ package me.dahiorus.project.vending.infrastructure.jpa.repository.user;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.util.stream.Stream;
 import me.dahiorus.project.vending.domain.exception.ResourceNotFound;
@@ -17,7 +18,6 @@ import me.dahiorus.project.vending.domain.user.entity.UserId;
 import me.dahiorus.project.vending.domain.user.port.AppUserRepositoryPort;
 import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaUser;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
-import me.dahiorus.project.vending.infrastructure.jpa.repository.user.AppUserRepositoryAdapterIT.TestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 
-@ContextConfiguration(classes = TestConfig.class)
+@ContextConfiguration(classes = AppUserRepositoryAdapterIT.TestConfig.class)
 class AppUserRepositoryAdapterIT extends H2DbContainer {
 
   @Autowired PasswordEncoder passwordEncoder;
@@ -216,9 +216,11 @@ class AppUserRepositoryAdapterIT extends H2DbContainer {
 
     @Test
     void should_throw_exception_given_non_existing_user() {
-      assertThatThrownBy(
-              () -> repository.updatePassword(new UserId(randomUUID()), Password.of("newPassword")))
-          .isInstanceOf(ResourceNotFound.class);
+      var throwable =
+          catchThrowable(
+              () ->
+                  repository.updatePassword(new UserId(randomUUID()), Password.of("newPassword")));
+      assertThat(throwable).isInstanceOf(ResourceNotFound.class);
     }
   }
 
@@ -259,9 +261,9 @@ class AppUserRepositoryAdapterIT extends H2DbContainer {
     }
 
     @Bean
-    AppUserRepositoryPort appUserJpaRepository(
-        UserJpaRepository jpaUserDao, PasswordEncoder passwordEncoder) {
-      return new AppUserRepositoryAdapter(jpaUserDao, passwordEncoder);
+    AppUserRepositoryPort appUserRepository(
+        UserJpaRepository userJpaRepository, PasswordEncoder passwordEncoder) {
+      return new AppUserRepositoryAdapter(userJpaRepository, passwordEncoder);
     }
   }
 }

@@ -17,15 +17,18 @@ import me.dahiorus.project.vending.domain.machine.entity.SerialNumber;
 import me.dahiorus.project.vending.domain.machine.entity.VendingMachineStatus;
 import me.dahiorus.project.vending.domain.reporting.entity.VendingMachineStatusReport;
 import me.dahiorus.project.vending.domain.reporting.entity.VendingMachineStatusReportToCreate;
+import me.dahiorus.project.vending.domain.reporting.port.VendingMachineStatusReportRepositoryPort;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.test.context.ContextConfiguration;
 
+@ContextConfiguration(classes = VendingMachineStatusReportRepositoryAdapterIT.TestConfig.class)
 class VendingMachineStatusReportRepositoryAdapterIT extends H2DbContainer {
 
-  @Autowired VendingMachineStatusReportRepositoryAdapter repository;
+  @Autowired VendingMachineStatusReportRepositoryPort repository;
 
   @Test
   void should_create_status_report_of_given_vending_machine() {
@@ -58,7 +61,7 @@ class VendingMachineStatusReportRepositoryAdapterIT extends H2DbContainer {
   @TestConfiguration
   static class TestConfig {
     @Bean
-    VendingMachineStatusReportRepositoryAdapter vendingMachineStatusReportJpaRepository(
+    VendingMachineStatusReportRepositoryPort vendingMachineStatusReportRepository(
         EntityManager entityManager) {
       return new VendingMachineStatusReportRepositoryAdapter(entityManager);
     }
