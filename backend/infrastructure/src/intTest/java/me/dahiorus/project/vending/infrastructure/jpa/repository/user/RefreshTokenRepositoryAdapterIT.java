@@ -26,17 +26,17 @@ class RefreshTokenRepositoryAdapterIT extends H2DbContainer {
     var token =
         token(UUID.randomUUID(), "user@test.org", false, Instant.parse("2026-09-18T12:00:00Z"));
 
-    var saved = repository.save(token);
+    var saved = repository.create(token);
     entityManager.flush();
     entityManager.clear();
 
-    assertThat(repository.findById(saved.id())).contains(saved);
+    assertThat(repository.find(saved.id())).contains(saved);
   }
 
   @Test
   void should_revoke_token() {
     var token =
-        repository.save(
+        repository.create(
             token(randomUUID(), "user@test.org", false, Instant.parse("2026-09-18T12:00:00Z")));
     entityManager.flush();
     entityManager.clear();
@@ -45,19 +45,17 @@ class RefreshTokenRepositoryAdapterIT extends H2DbContainer {
     entityManager.flush();
     entityManager.clear();
 
-    assertThat(repository.findById(token.id()))
-        .get()
-        .extracting(RefreshToken::revoked)
-        .isEqualTo(true);
+    assertThat(repository.find(token.id())).get().extracting(RefreshToken::revoked).isEqualTo(true);
   }
 
   @Test
   void should_delete_only_expired_tokens() {
     var threshold = Instant.parse("2026-09-18T12:00:00Z");
     var expired =
-        repository.save(token(randomUUID(), "expired@test.org", false, threshold.minusSeconds(1)));
+        repository.create(
+            token(randomUUID(), "expired@test.org", false, threshold.minusSeconds(1)));
     var valid =
-        repository.save(token(randomUUID(), "valid@test.org", false, threshold.plusSeconds(1)));
+        repository.create(token(randomUUID(), "valid@test.org", false, threshold.plusSeconds(1)));
     entityManager.flush();
     entityManager.clear();
 
@@ -65,8 +63,8 @@ class RefreshTokenRepositoryAdapterIT extends H2DbContainer {
     entityManager.flush();
     entityManager.clear();
 
-    assertThat(repository.findById(expired.id())).isEmpty();
-    assertThat(repository.findById(valid.id())).contains(valid);
+    assertThat(repository.find(expired.id())).isEmpty();
+    assertThat(repository.find(valid.id())).contains(valid);
   }
 
   private static RefreshToken token(UUID id, String username, boolean revoked, Instant expiresAt) {

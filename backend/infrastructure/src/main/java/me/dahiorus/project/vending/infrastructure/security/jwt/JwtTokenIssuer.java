@@ -2,7 +2,6 @@ package me.dahiorus.project.vending.infrastructure.security.jwt;
 
 import static java.time.Instant.now;
 
-import java.time.Instant;
 import java.util.Collection;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -68,8 +67,6 @@ public class JwtTokenIssuer {
 
     return new IssuedRefreshToken(encode(claims), jti, expiresAt);
   }
-
-  public record IssuedRefreshToken(String value, String jti, Instant expiresAt) {}
 
   private String encode(final JwtClaimsSet claims) {
     return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();

@@ -19,12 +19,16 @@ public class RefreshTokenApplicationService implements RefreshTokenApiPort {
     this.refreshTokenRepository = refreshTokenRepository;
   }
 
+  public RefreshToken save(RefreshToken refreshToken) {
+    return refreshTokenRepository.create(refreshToken);
+  }
+
   @Override
   public RefreshToken rotate(final RefreshTokenId presentedId, final RefreshToken replacement)
       throws InvalidRefreshToken {
     var refreshToken =
         refreshTokenRepository
-            .findById(presentedId)
+            .find(presentedId)
             .orElseThrow(() -> new InvalidRefreshToken("Unknown refresh token"));
 
     if (!refreshToken.isUsable(Instant.now())) {
@@ -32,7 +36,7 @@ public class RefreshTokenApplicationService implements RefreshTokenApiPort {
     }
 
     refreshTokenRepository.revoke(presentedId);
-    return refreshTokenRepository.save(replacement);
+    return refreshTokenRepository.create(replacement);
   }
 
   @Override

@@ -24,13 +24,12 @@ import me.dahiorus.project.vending.domain.user.entity.RefreshToken;
 import me.dahiorus.project.vending.domain.user.entity.RefreshTokenId;
 import me.dahiorus.project.vending.domain.user.entity.Role;
 import me.dahiorus.project.vending.domain.user.port.RefreshTokenApiPort;
-import me.dahiorus.project.vending.domain.user.port.RefreshTokenRepositoryPort;
 import me.dahiorus.project.vending.domain.user.port.UserWithRolesRepositoryPort;
 import me.dahiorus.project.vending.infrastructure.rest.entity.user.AuthenticateRequestDto;
 import me.dahiorus.project.vending.infrastructure.rest.entity.user.AuthenticateResponseDto;
 import me.dahiorus.project.vending.infrastructure.security.cookie.RefreshTokenCookieFactory;
+import me.dahiorus.project.vending.infrastructure.security.jwt.IssuedRefreshToken;
 import me.dahiorus.project.vending.infrastructure.security.jwt.JwtTokenIssuer;
-import me.dahiorus.project.vending.infrastructure.security.jwt.JwtTokenIssuer.IssuedRefreshToken;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -60,7 +59,6 @@ public class AuthenticationRestController {
   private final JwtDecoder jwtDecoder;
   private final UserWithRolesRepositoryPort userWithRolesRepository;
   private final RefreshTokenApiPort refreshTokenApiPort;
-  private final RefreshTokenRepositoryPort refreshTokenRepository;
   private final RefreshTokenCookieFactory refreshTokenCookieFactory;
 
   public AuthenticationRestController(
@@ -69,14 +67,12 @@ public class AuthenticationRestController {
       final JwtDecoder jwtDecoder,
       final UserWithRolesRepositoryPort userWithRolesRepository,
       final RefreshTokenApiPort refreshTokenApiPort,
-      final RefreshTokenRepositoryPort refreshTokenRepository,
       final RefreshTokenCookieFactory refreshTokenCookieFactory) {
     this.authenticationManager = authenticationManager;
     this.tokenIssuer = tokenIssuer;
     this.jwtDecoder = jwtDecoder;
     this.userWithRolesRepository = userWithRolesRepository;
     this.refreshTokenApiPort = refreshTokenApiPort;
-    this.refreshTokenRepository = refreshTokenRepository;
     this.refreshTokenCookieFactory = refreshTokenCookieFactory;
   }
 
@@ -101,7 +97,7 @@ public class AuthenticationRestController {
     var accessToken = tokenIssuer.createAccessToken(user.getUsername(), user.getAuthorities());
     var issuedRefreshToken = tokenIssuer.createRefreshToken(user.getUsername());
 
-    refreshTokenRepository.save(newRefreshTokenEntity(user.getUsername(), issuedRefreshToken));
+    refreshTokenApiPort.save(newRefreshTokenEntity(user.getUsername(), issuedRefreshToken));
 
     return ok().header(SET_COOKIE, refreshCookie(issuedRefreshToken).toString())
         .body(new AuthenticateResponseDto(accessToken));
@@ -134,7 +130,7 @@ public class AuthenticationRestController {
       refreshTokenApiPort.rotate(
           new RefreshTokenId(UUID.fromString(refreshJwt.getId())),
           newRefreshTokenEntity(username, issuedRefreshToken));
-    } catch (InvalidRefreshToken e) {
+    } catch (InvalidRefreshToken _) {
       return status(UNAUTHORIZED)
           .header(SET_COOKIE, refreshTokenCookieFactory.clear().toString())
           .build();
