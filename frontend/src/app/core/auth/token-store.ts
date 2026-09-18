@@ -1,7 +1,4 @@
 import { Service, signal } from '@angular/core';
-import { AuthTokens } from './models/auth';
-
-const REFRESH_TOKEN_KEY = 'vending.refreshToken';
 
 @Service()
 export class TokenStore {
@@ -9,17 +6,11 @@ export class TokenStore {
 
   readonly accessToken = this.access.asReadonly();
 
-  refreshToken(): string | null {
-    return sessionStorage.getItem(REFRESH_TOKEN_KEY);
-  }
-
-  setTokens(tokens: AuthTokens): void {
-    this.access.set(tokens.accessToken);
-    sessionStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
+  setAccessToken(token: string): void {
+    this.access.set(token);
   }
 
   clear(): void {
     this.access.set(null);
-    sessionStorage.removeItem(REFRESH_TOKEN_KEY);
   }
 }

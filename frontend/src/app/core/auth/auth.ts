@@ -1,5 +1,5 @@
 import { computed, inject, Service, signal } from '@angular/core';
-import { map, Observable, of, switchMap, tap, throwError } from 'rxjs';
+import { catchError, map, Observable, of, switchMap, tap } from 'rxjs';
 import { AuthApi } from './auth-api';
 import { Credentials, JwtPayload } from './models/auth';
 import { User, UserToRegister } from './models/user';
@@ -40,9 +40,9 @@ export class AuthService {
    */
   login(credentials: Credentials): Observable<User | null> {
     return this.api.login(credentials).pipe(
-      tap((tokens) => this.tokens.setTokens(tokens)),
-      switchMap((tokens) => {
-        const isAdmin = (decodePayload(tokens.accessToken)?.roles ?? []).includes('ROLE_ADMIN');
+      tap((session) => this.tokens.setAccessToken(session.accessToken)),
+      switchMap((session) => {
+        const isAdmin = (decodePayload(session.accessToken)?.roles ?? []).includes('ROLE_ADMIN');
         return isAdmin ? of(null) : this.api.me();
       }),
       tap((user) => this.user.set(user)),
@@ -56,19 +56,19 @@ export class AuthService {
   }
 
   refreshAccessToken(): Observable<string> {
-    const refreshToken = this.tokens.refreshToken();
-    if (!refreshToken) {
-      return throwError(() => new Error('No refresh token available'));
-    }
-
-    return this.api.refresh(refreshToken).pipe(
-      tap((tokens) => this.tokens.setTokens(tokens)),
-      map((tokens) => tokens.accessToken),
+    return this.api.refresh().pipe(
+      tap((session) => this.tokens.setAccessToken(session.accessToken)),
+      map((session) => session.accessToken),
     );
   }
 
   logout(): void {
-    this.tokens.clear();
-    this.user.set(null);
+    this.api
+      .logout()
+      .pipe(catchError(() => of(undefined)))
+      .subscribe(() => {
+        this.tokens.clear();
+        this.user.set(null);
+      });
   }
 }

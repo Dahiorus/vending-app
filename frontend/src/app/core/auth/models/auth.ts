@@ -3,9 +3,8 @@ export interface Credentials {
   password: string;
 }
 
-export interface AuthTokens {
+export interface AuthSession {
   accessToken: string;
-  refreshToken: string;
 }
 
 /** Claims issued by JwtTokenIssuer. `roles` holds fully-qualified authorities such as "ROLE_ADMIN". */

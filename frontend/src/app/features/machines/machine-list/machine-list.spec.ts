@@ -93,10 +93,9 @@ describe('MachineList', () => {
 
     expect(component.isAdmin()).toBe(false);
 
-    TestBed.inject(TokenStore).setTokens({
-      accessToken: fakeJwt({ sub: 'admin@vending.me', roles: ['ROLE_ADMIN'], exp: 1 }),
-      refreshToken: 'refresh-1',
-    });
+    TestBed.inject(TokenStore).setAccessToken(
+      fakeJwt({ sub: 'admin@vending.me', roles: ['ROLE_ADMIN'], exp: 1 }),
+    );
 
     expect(component.isAdmin()).toBe(true);
   });

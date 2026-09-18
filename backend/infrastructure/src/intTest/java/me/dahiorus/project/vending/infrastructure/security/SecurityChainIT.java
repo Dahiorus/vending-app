@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.infrastructure.security;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.oauth2.jose.jws.SignatureAlgorithm.RS256;
@@ -14,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+import jakarta.servlet.http.Cookie;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
@@ -30,7 +32,6 @@ import me.dahiorus.project.vending.domain.user.entity.Password;
 import me.dahiorus.project.vending.domain.user.port.AdminUserRepositoryPort;
 import me.dahiorus.project.vending.domain.user.port.AppUserRepositoryPort;
 import me.dahiorus.project.vending.infrastructure.rest.entity.user.AuthenticateRequestDto;
-import me.dahiorus.project.vending.infrastructure.rest.entity.user.RefreshTokenRequestDto;
 import me.dahiorus.project.vending.infrastructure.security.jwt.JwtTokenIssuer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -105,7 +107,7 @@ class SecurityChainIT {
                         new AuthenticateRequestDto(userEmail, PASSWORD))))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.accessToken").isNotEmpty())
-        .andExpect(jsonPath("$.refreshToken").isNotEmpty());
+        .andExpect(header().exists(HttpHeaders.SET_COOKIE));
   }
 
   @Test
@@ -209,29 +211,85 @@ class SecurityChainIT {
 
   @Test
   void should_refresh_an_access_token_from_a_refresh_token() throws Exception {
-    String refreshToken = tokenIssuer.createRefreshToken(adminEmail);
+    var loginResult = login(adminEmail);
+    String loginResponse = loginResult.getCookie("refresh_token").getValue();
+    Cookie xsrfCookie = loginResult.getCookie("XSRF-TOKEN");
 
     mockMvc
         .perform(
             post("/api/v1/authenticate/refresh")
-                .contentType(APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(new RefreshTokenRequestDto(refreshToken))))
+                .cookie(new Cookie("refresh_token", loginResponse), xsrfCookie)
+                .header("X-XSRF-TOKEN", xsrfCookie.getValue()))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.accessToken").isNotEmpty())
-        .andExpect(jsonPath("$.accessToken").value(not(refreshToken)));
+        .andExpect(jsonPath("$.accessToken").value(not(loginResponse)));
   }
 
   @Test
   void should_reject_refresh_with_an_access_token() throws Exception {
     String accessToken =
         accessTokenFor(adminEmail, List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+    Cookie xsrfCookie = xsrfCookieFor(adminEmail);
 
     mockMvc
         .perform(
             post("/api/v1/authenticate/refresh")
-                .contentType(APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(new RefreshTokenRequestDto(accessToken))))
+                .cookie(new Cookie("refresh_token", accessToken), xsrfCookie)
+                .header("X-XSRF-TOKEN", xsrfCookie.getValue()))
         .andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  void should_reject_refresh_without_a_cookie() throws Exception {
+    Cookie xsrfCookie = xsrfCookieFor(adminEmail);
+
+    mockMvc
+        .perform(
+            post("/api/v1/authenticate/refresh")
+                .cookie(xsrfCookie)
+                .header("X-XSRF-TOKEN", xsrfCookie.getValue()))
+        .andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  void should_reject_refresh_without_a_csrf_token() throws Exception {
+    String refreshCookie = login(adminEmail).getCookie("refresh_token").getValue();
+
+    mockMvc
+        .perform(
+            post("/api/v1/authenticate/refresh").cookie(new Cookie("refresh_token", refreshCookie)))
+        .andExpect(status().isForbidden());
+  }
+
+  @Test
+  void should_deposit_an_xsrf_token_cookie_on_login() throws Exception {
+    assertThat(login(userEmail).getCookie("XSRF-TOKEN")).isNotNull();
+  }
+
+  @Test
+  void should_deposit_a_persistent_xsrf_token_cookie_so_it_outlives_the_browser_session()
+      throws Exception {
+    // a session-only XSRF-TOKEN cookie (maxAge -1) would vanish before the long-lived
+    // refresh_token cookie, breaking refresh/logout after a browser restart
+    assertThat(login(userEmail).getCookie("XSRF-TOKEN").getMaxAge()).isPositive();
+  }
+
+  @Test
+  void should_logout_and_clear_the_refresh_cookie_even_without_one() throws Exception {
+    Cookie xsrfCookie = xsrfCookieFor(adminEmail);
+
+    mockMvc
+        .perform(
+            post("/api/v1/authenticate/logout")
+                .cookie(xsrfCookie)
+                .header("X-XSRF-TOKEN", xsrfCookie.getValue()))
+        .andExpect(status().isNoContent())
+        .andExpect(header().exists(HttpHeaders.SET_COOKIE));
+  }
+
+  @Test
+  void should_reject_logout_without_a_csrf_token() throws Exception {
+    mockMvc.perform(post("/api/v1/authenticate/logout")).andExpect(status().isForbidden());
   }
 
   @Test
@@ -267,6 +325,22 @@ class SecurityChainIT {
 
   private String accessTokenFor(final String username, final List<SimpleGrantedAuthority> roles) {
     return tokenIssuer.createAccessToken(username, roles);
+  }
+
+  private MockHttpServletResponse login(final String username) throws Exception {
+    return mockMvc
+        .perform(
+            post("/api/v1/authenticate")
+                .contentType(APPLICATION_JSON)
+                .content(
+                    objectMapper.writeValueAsString(
+                        new AuthenticateRequestDto(username, PASSWORD))))
+        .andReturn()
+        .getResponse();
+  }
+
+  private Cookie xsrfCookieFor(final String username) throws Exception {
+    return login(username).getCookie("XSRF-TOKEN");
   }
 
   private static String tokenSignedWithAForeignKey(final String username) throws Exception {

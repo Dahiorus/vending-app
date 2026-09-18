@@ -33,7 +33,7 @@ test.beforeEach(async ({ page }) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify({ accessToken: fakeAccessToken(), refreshToken: 'refresh-1' }),
+      body: JSON.stringify({ accessToken: fakeAccessToken() }),
     });
   });
 
@@ -56,6 +56,10 @@ test.beforeEach(async ({ page }) => {
       contentType: 'application/hal+json',
       body: JSON.stringify(machinesPage),
     });
+  });
+
+  await page.route('**/api/v1/authenticate/logout', async (route) => {
+    await route.fulfill({ status: 204 });
   });
 });
 

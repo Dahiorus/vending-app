@@ -36,7 +36,7 @@ dépend d'aucun des deux autres.
 Le module `frontend/` garde son propre `AGENTS.md` et son propre workflow
 quotidien via `npm` (voir `frontend/README.md`) ; le wrapping Gradle sert
 uniquement à ce que `./gradlew build`/`check` à la racine agrège aussi le
-frontend (`:frontend:npmBuild`, `:frontend:npmTest`). Le compte de 140
+frontend (`:frontend:npmBuild`, `:frontend:npmTest`). Le compte de 251
 tests Gradle mentionné plus bas reste le garde-fou de non-régression du
 backend uniquement ; les tests du frontend (`npm test`, `npm run e2e`)
 s'exécutent et se vérifient séparément.
@@ -49,10 +49,11 @@ Toutes les commandes Gradle s'exécutent depuis la **racine du dépôt** :
 ./gradlew build                       # backend (compile + tests unitaires) + frontend (npm build + npm test)
 ./gradlew test                        # tests unitaires backend uniquement
 ./gradlew :backend:infrastructure:intTest   # tests d'intégration (*IT)
-./gradlew clean build                 # build complet, critère de non-régression (140 tests)
+./gradlew clean build                 # build complet, critère de non-régression (251 tests)
 ```
 
-Le nombre de tests exécutés (140 = 68 `domain` + 72 `infrastructure`) est le
+Le nombre de tests exécutés (251 = 73 `domain` + 78 `application` + 86
+`infrastructure` unitaires + 81 `infrastructure` d'intégration) est le
 garde-fou de non-régression à vérifier après toute modification.
 
 ## Conventions de nommage
@@ -111,7 +112,7 @@ garde-fou de non-régression à vérifier après toute modification.
 - Un commit (ou une suite de commits logiques) par branche, avec le
   trailer `Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>`
   si le travail a été assisté par l'agent.
-- Vérification du build (`./gradlew clean build`, 140 tests) avant chaque
+- Vérification du build (`./gradlew clean build`, 251 tests) avant chaque
   commit.
 - Fusion dans `develop` en fast-forward (`git merge --ff-only`, rebase au
   besoin) — jamais de commit de merge.
@@ -124,6 +125,15 @@ garde-fou de non-régression à vérifier après toute modification.
 - L'accès direct à un `RepositoryPort` depuis `infrastructure` (au lieu de
   passer par un `ApplicationService`) est acceptable quand il n'y a ni
   logique métier ni frontière transactionnelle à encapsuler.
+- Sécurité : serveur de ressources OAuth2 Spring Security
+  (`oauth2ResourceServer(jwt(...))`), pas de filtre JWT maison. Le claim
+  `roles` porte déjà les autorités complètes (préfixe vide) — ne pas
+  rajouter `ROLE_`. `/oauth2/jwks` n'expose jamais la clé privée. Le
+  refresh token vit dans un cookie `httpOnly`, est roté et révoqué côté
+  serveur via `RefreshTokenApiPort` + table `refresh_token`, et les POST
+  `/authenticate/refresh` + `/authenticate/logout` sont protégés par
+  `CookieCsrfTokenRepository` (`XSRF-TOKEN` / `X-XSRF-TOKEN`) avec CORS
+  `allowCredentials=true`.
 
 <!-- build-brief:instructions:start -->
 ## build-brief

@@ -31,13 +31,14 @@ dépend d'aucun des deux autres.
 ./gradlew build                             # backend (compile+tests) + frontend (npm build+test)
 ./gradlew test                              # tests unitaires backend uniquement
 ./gradlew :backend:infrastructure:intTest   # tests d'intégration (*IT)
-./gradlew clean build                       # build complet — critère de non-régression (140 tests)
+./gradlew clean build                       # build complet — critère de non-régression (251 tests)
 ./gradlew :backend:infrastructure:bootRun --args='--spring.profiles.active=dev'  # backend, :8080
 cd frontend && npm start                    # frontend, :4200 (proxy /api -> :8080)
 ```
 
-140 tests (68 `domain` + 72 `infrastructure`) = garde-fou de non-régression
-backend à vérifier après toute modification. Le script `./dev.sh` à la
+251 tests (73 `domain` + 78 `application` + 86 `infrastructure` unitaires +
+81 `infrastructure` d'intégration) = garde-fou de non-régression backend
+à vérifier après toute modification. Le script `./dev.sh` à la
 racine lance backend et frontend ensemble (PostgreSQL doit déjà tourner en
 local, aucun docker-compose fourni ici).
 
@@ -81,8 +82,11 @@ local, aucun docker-compose fourni ici).
   (`oauth2ResourceServer(jwt(...))`), pas de filtre JWT maison. Le claim
   `roles` porte déjà les autorités complètes (préfixe vide) — ne pas
   rajouter `ROLE_`. `/oauth2/jwks` n'expose jamais la clé privée. Le
-  refresh token n'est pas encore en rotation côté backend (le frontend ne
-  doit pas le supposer).
+  refresh token vit dans un cookie `httpOnly`, est roté et révoqué côté
+  serveur via `RefreshTokenApiPort` + table `refresh_token`, et les POST
+  `/authenticate/refresh` + `/authenticate/logout` sont protégés par
+  `CookieCsrfTokenRepository` (`XSRF-TOKEN` / `X-XSRF-TOKEN`) avec CORS
+  `allowCredentials=true`.
 
 ## Backend (Java 21, Spring Boot 3.4.0)
 
@@ -108,7 +112,8 @@ Voir `frontend/AGENTS.md` pour le détail complet. Points clés :
   le transverse app-wide, `shared/` pour l'utilitaire réutilisable.
 - Formulaires : Signal Forms (`@angular/forms/signals`).
 - Access token en mémoire uniquement (jamais persisté), refresh token en
-  `sessionStorage`. Jamais de jeton en URL, `innerHTML`, `bypassSecurityTrust*`.
+  cookie `httpOnly` déposé par le backend. Jamais de jeton en URL,
+  `innerHTML`, `bypassSecurityTrust*`.
 - Tests : toujours `npm test` (jamais `npx vitest run` directement) ; avec
   `httpResource()`, flush la requête HTTP avant `whenStable()`.
 
@@ -118,6 +123,6 @@ Voir `frontend/AGENTS.md` pour le détail complet. Points clés :
 - Un commit (ou suite de commits logiques) par branche, trailer
   `Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>` si
   assisté par l'agent.
-- Vérifier `./gradlew clean build` (140 tests) avant chaque commit.
+- Vérifier `./gradlew clean build` (251 tests) avant chaque commit.
 - Fusion en fast-forward uniquement (`git merge --ff-only`), jamais de
   commit de merge. Supprimer la branche locale après fusion.

@@ -14,23 +14,35 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Clock;
 import java.util.List;
 import java.util.Map;
+import me.dahiorus.project.vending.domain.user.port.RefreshTokenApiPort;
+import me.dahiorus.project.vending.infrastructure.security.cookie.RefreshTokenCookieFactory;
+import me.dahiorus.project.vending.infrastructure.security.cookie.RefreshTokenCookieProperties;
+import me.dahiorus.project.vending.infrastructure.security.cookie.RefreshTokenLogoutHandler;
+import me.dahiorus.project.vending.infrastructure.security.jwt.JwtProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
-import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -41,6 +53,7 @@ public class WebSecurityConfig {
 
   public static final String AUTHENTICATE_PATH = "/api/v1/authenticate";
   public static final String REFRESH_TOKEN_PATH = "/api/v1/authenticate/refresh";
+  public static final String LOGOUT_PATH = "/api/v1/authenticate/logout";
   public static final String JWKS_PATH = "/oauth2/jwks";
 
   private static final String DEFAULT_PWD_ENCODER_PREFIX = "bcrypt";
@@ -51,18 +64,47 @@ public class WebSecurityConfig {
       final ObjectMapper objectMapper,
       final JwtAuthenticationConverter jwtAuthenticationConverter,
       final CorsConfigurationSource corsConfigurationSource,
-      final Clock clock)
+      final JwtProperties jwtProperties,
+      final Clock clock,
+      final LogoutHandler refreshTokenLogoutHandler)
       throws Exception {
-    return http.csrf(CsrfConfigurer::disable)
+    RequestMatcher csrfProtectedMatcher =
+        new OrRequestMatcher(
+            withDefaults().matcher(POST, REFRESH_TOKEN_PATH),
+            withDefaults().matcher(POST, LOGOUT_PATH));
+
+    // the XSRF-TOKEN cookie must outlive a browser session, otherwise it disappears before the
+    // long-lived refresh_token cookie does, breaking refresh/logout after a browser restart
+    CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+    csrfTokenRepository.setCookieMaxAge(
+        jwtProperties.getRefreshTokenDuration().getDays() * 24 * 3600);
+
+    return http.csrf(
+            csrf ->
+                csrf.csrfTokenRepository(csrfTokenRepository)
+                    .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+                    .requireCsrfProtectionMatcher(csrfProtectedMatcher)
+                    // CsrfAuthenticationStrategy (session-fixation protection) is meaningless
+                    // without a session: with STATELESS + JWT, every authenticated request
+                    // re-authenticates, so its default wiring deletes the XSRF-TOKEN cookie on
+                    // every single authenticated request -- disable it explicitly.
+                    .sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy()))
         .cors(customizer -> customizer.configurationSource(corsConfigurationSource))
         .httpBasic(HttpBasicConfigurer::disable)
-        .logout(LogoutConfigurer::disable)
+        .logout(
+            customizer ->
+                customizer
+                    .logoutUrl(LOGOUT_PATH)
+                    .addLogoutHandler(refreshTokenLogoutHandler)
+                    .logoutSuccessHandler(
+                        new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT)))
         .sessionManagement(customizer -> customizer.sessionCreationPolicy(STATELESS))
         // request permissions
         .authorizeHttpRequests(
             customizer ->
                 customizer
-                    .requestMatchers(AUTHENTICATE_PATH, REFRESH_TOKEN_PATH, JWKS_PATH, "/api/v1")
+                    .requestMatchers(
+                        AUTHENTICATE_PATH, REFRESH_TOKEN_PATH, LOGOUT_PATH, JWKS_PATH, "/api/v1")
                     .permitAll()
                     .requestMatchers(
                         withDefaults().matcher(GET, "/api/v1/vending-machines/**"),
@@ -130,6 +172,16 @@ public class WebSecurityConfig {
   }
 
   @Bean
+  LogoutHandler refreshTokenLogoutHandler(
+      final JwtDecoder jwtDecoder,
+      final RefreshTokenApiPort refreshTokenApiPort,
+      final RefreshTokenCookieFactory refreshTokenCookieFactory,
+      final RefreshTokenCookieProperties refreshTokenCookieProperties) {
+    return new RefreshTokenLogoutHandler(
+        jwtDecoder, refreshTokenApiPort, refreshTokenCookieFactory, refreshTokenCookieProperties);
+  }
+
+  @Bean
   PasswordEncoder passwordEncoder() {
     return new DelegatingPasswordEncoder(
         DEFAULT_PWD_ENCODER_PREFIX,
@@ -138,11 +190,19 @@ public class WebSecurityConfig {
 
   @Bean
   CorsConfigurationSource corsConfigurationSource(final CorsProperties corsProperties) {
+    List<String> allowedOrigins = corsProperties.getAllowedOrigins();
+    if (allowedOrigins.isEmpty() || allowedOrigins.contains("*")) {
+      throw new IllegalStateException(
+          "app.cors.allowed-origins must list concrete origin(s) (no wildcard) when "
+              + "allowCredentials is enabled, as required by the CORS specification");
+    }
+
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(corsProperties.getAllowedOrigins());
+    configuration.setAllowedOrigins(allowedOrigins);
     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-    configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
-    configuration.setAllowCredentials(false);
+    configuration.setAllowedHeaders(
+        List.of("Authorization", "Content-Type", "Accept", "X-XSRF-TOKEN"));
+    configuration.setAllowCredentials(true);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
