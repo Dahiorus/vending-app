@@ -26,7 +26,7 @@ public class UserValidator implements Validator<UserToCreate> {
 
     userToCreateRepositoryPort
         .findDuplicateOf(userToCreate)
-        .map(userId -> notUnique(userToCreate))
+        .map(_ -> notUnique(userToCreate))
         .ifPresent(validationResults::addError);
 
     return validationResults;
