@@ -267,6 +267,14 @@ class SecurityChainIT {
   }
 
   @Test
+  void should_deposit_a_persistent_xsrf_token_cookie_so_it_outlives_the_browser_session()
+      throws Exception {
+    // a session-only XSRF-TOKEN cookie (maxAge -1) would vanish before the long-lived
+    // refresh_token cookie, breaking refresh/logout after a browser restart
+    assertThat(login(userEmail).getCookie("XSRF-TOKEN").getMaxAge()).isPositive();
+  }
+
+  @Test
   void should_logout_and_clear_the_refresh_cookie_even_without_one() throws Exception {
     Cookie xsrfCookie = xsrfCookieFor(adminEmail);
 

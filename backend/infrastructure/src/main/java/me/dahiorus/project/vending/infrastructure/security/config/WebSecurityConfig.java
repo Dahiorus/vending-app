@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Clock;
 import java.util.List;
 import java.util.Map;
+import me.dahiorus.project.vending.infrastructure.security.jwt.JwtProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -55,6 +56,7 @@ public class WebSecurityConfig {
       final ObjectMapper objectMapper,
       final JwtAuthenticationConverter jwtAuthenticationConverter,
       final CorsConfigurationSource corsConfigurationSource,
+      final JwtProperties jwtProperties,
       final Clock clock)
       throws Exception {
     RequestMatcher csrfProtectedMatcher =
@@ -62,9 +64,15 @@ public class WebSecurityConfig {
             withDefaults().matcher(POST, REFRESH_TOKEN_PATH),
             withDefaults().matcher(POST, LOGOUT_PATH));
 
+    // the XSRF-TOKEN cookie must outlive a browser session, otherwise it disappears before the
+    // long-lived refresh_token cookie does, breaking refresh/logout after a browser restart
+    CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+    csrfTokenRepository.setCookieMaxAge(
+        jwtProperties.getRefreshTokenDuration().getDays() * 24 * 3600);
+
     return http.csrf(
             csrf ->
-                csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                csrf.csrfTokenRepository(csrfTokenRepository)
                     .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
                     .requireCsrfProtectionMatcher(csrfProtectedMatcher))
         .cors(customizer -> customizer.configurationSource(corsConfigurationSource))

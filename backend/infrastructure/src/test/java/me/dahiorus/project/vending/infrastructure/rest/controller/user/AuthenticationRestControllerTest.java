@@ -38,12 +38,14 @@ import me.dahiorus.project.vending.domain.user.entity.UserWithRoles;
 import me.dahiorus.project.vending.domain.user.port.RefreshTokenApiPort;
 import me.dahiorus.project.vending.domain.user.port.RefreshTokenRepositoryPort;
 import me.dahiorus.project.vending.domain.user.port.UserWithRolesRepositoryPort;
+import me.dahiorus.project.vending.infrastructure.rest.controller.user.AuthenticationRestControllerTest.TestConfig;
 import me.dahiorus.project.vending.infrastructure.rest.entity.user.AuthenticateRequestDto;
 import me.dahiorus.project.vending.infrastructure.rest.exception.RestResponseExceptionHandler;
 import me.dahiorus.project.vending.infrastructure.security.config.CorsProperties;
 import me.dahiorus.project.vending.infrastructure.security.config.WebSecurityConfig;
 import me.dahiorus.project.vending.infrastructure.security.cookie.RefreshTokenCookieFactory;
 import me.dahiorus.project.vending.infrastructure.security.cookie.RefreshTokenCookieProperties;
+import me.dahiorus.project.vending.infrastructure.security.jwt.JwtProperties;
 import me.dahiorus.project.vending.infrastructure.security.jwt.JwtTokenIssuer;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -67,11 +69,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(AuthenticationRestController.class)
-@Import({
-  RestResponseExceptionHandler.class,
-  WebSecurityConfig.class,
-  AuthenticationRestControllerTest.FixedClockConfig.class
-})
+@Import({RestResponseExceptionHandler.class, WebSecurityConfig.class, TestConfig.class})
 @TestPropertySource(properties = "app.cors.allowed-origins=https://spa.example.test")
 class AuthenticationRestControllerTest {
 
@@ -373,7 +371,7 @@ class AuthenticationRestControllerTest {
         .build();
   }
 
-  static class FixedClockConfig {
+  static class TestConfig {
     @Bean
     Clock clock() {
       return Clock.fixed(NOW, ZoneOffset.UTC);
@@ -395,6 +393,13 @@ class AuthenticationRestControllerTest {
     CorsProperties testCorsProperties() {
       CorsProperties properties = new CorsProperties();
       properties.setAllowedOrigins(List.of("https://spa.example.test"));
+      return properties;
+    }
+
+    @Bean
+    JwtProperties jwtProperties() {
+      JwtProperties properties = new JwtProperties();
+      properties.setIssuerUri("https://issuer.example.test");
       return properties;
     }
   }
