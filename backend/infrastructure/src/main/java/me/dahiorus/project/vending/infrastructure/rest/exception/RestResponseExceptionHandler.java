@@ -84,4 +84,10 @@ public class RestResponseExceptionHandler {
 
     return body;
   }
+
+  @ExceptionHandler(UserNotAuthenticated.class)
+  @ResponseStatus(code = HttpStatus.UNAUTHORIZED)
+  public Object handleUserNotAuthenticated(UserNotAuthenticated ex) {
+    return initResponseBody(ex);
+  }
 }
