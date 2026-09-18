@@ -17,12 +17,12 @@ public class RefreshTokenRepositoryAdapter implements RefreshTokenRepositoryPort
   }
 
   @Override
-  public RefreshToken save(final RefreshToken token) {
+  public RefreshToken create(final RefreshToken token) {
     return jpaRepository.save(JpaRefreshToken.fromDomain(token)).toDomain();
   }
 
   @Override
-  public Optional<RefreshToken> findById(final RefreshTokenId id) {
+  public Optional<RefreshToken> find(final RefreshTokenId id) {
     return jpaRepository.findById(id.value()).map(JpaRefreshToken::toDomain);
   }
 

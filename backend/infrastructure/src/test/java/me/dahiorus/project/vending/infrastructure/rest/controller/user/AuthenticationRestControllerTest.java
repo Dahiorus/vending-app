@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.infrastructure.rest.controller.user;
 
+import static java.time.temporal.ChronoUnit.DAYS;
 import static me.dahiorus.project.vending.infrastructure.security.jwt.JwtTokenIssuer.ACCESS_TOKEN_TYPE;
 import static me.dahiorus.project.vending.infrastructure.security.jwt.JwtTokenIssuer.REFRESH_TOKEN_TYPE;
 import static me.dahiorus.project.vending.infrastructure.security.jwt.JwtTokenIssuer.TOKEN_TYPE_CLAIM;
@@ -21,7 +22,6 @@ import jakarta.servlet.http.Cookie;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -35,7 +35,6 @@ import me.dahiorus.project.vending.domain.user.entity.Role;
 import me.dahiorus.project.vending.domain.user.entity.UserId;
 import me.dahiorus.project.vending.domain.user.entity.UserWithRoles;
 import me.dahiorus.project.vending.domain.user.port.RefreshTokenApiPort;
-import me.dahiorus.project.vending.domain.user.port.RefreshTokenRepositoryPort;
 import me.dahiorus.project.vending.domain.user.port.UserWithRolesRepositoryPort;
 import me.dahiorus.project.vending.infrastructure.rest.controller.user.AuthenticationRestControllerTest.TestConfig;
 import me.dahiorus.project.vending.infrastructure.rest.entity.user.AuthenticateRequestDto;
@@ -44,6 +43,7 @@ import me.dahiorus.project.vending.infrastructure.security.config.CorsProperties
 import me.dahiorus.project.vending.infrastructure.security.config.WebSecurityConfig;
 import me.dahiorus.project.vending.infrastructure.security.cookie.RefreshTokenCookieFactory;
 import me.dahiorus.project.vending.infrastructure.security.cookie.RefreshTokenCookieProperties;
+import me.dahiorus.project.vending.infrastructure.security.jwt.IssuedRefreshToken;
 import me.dahiorus.project.vending.infrastructure.security.jwt.JwtProperties;
 import me.dahiorus.project.vending.infrastructure.security.jwt.JwtTokenIssuer;
 import org.junit.jupiter.api.Test;
@@ -90,7 +90,6 @@ class AuthenticationRestControllerTest {
   @MockitoBean private JwtDecoder jwtDecoder;
   @MockitoBean private UserWithRolesRepositoryPort userWithRolesRepository;
   @MockitoBean private RefreshTokenApiPort refreshTokenApiPort;
-  @MockitoBean private RefreshTokenRepositoryPort refreshTokenRepository;
   @MockitoBean private JwtAuthenticationConverter jwtAuthenticationConverter;
 
   @Test
@@ -105,9 +104,7 @@ class AuthenticationRestControllerTest {
     when(authenticationManager.authenticate(any(Authentication.class))).thenReturn(authentication);
     when(tokenIssuer.createAccessToken(eq(USERNAME), any())).thenReturn(ACCESS_TOKEN);
     when(tokenIssuer.createRefreshToken(USERNAME))
-        .thenReturn(
-            new JwtTokenIssuer.IssuedRefreshToken(
-                REFRESH_TOKEN, REFRESH_TOKEN_JTI, NOW.plus(365, ChronoUnit.DAYS)));
+        .thenReturn(new IssuedRefreshToken(REFRESH_TOKEN, REFRESH_TOKEN_JTI, NOW.plus(365, DAYS)));
 
     // When / Then
     mockMvc
@@ -126,7 +123,7 @@ class AuthenticationRestControllerTest {
         .andExpect(cookie().value(COOKIE_NAME, REFRESH_TOKEN))
         .andExpect(cookie().httpOnly(COOKIE_NAME, true));
 
-    verify(refreshTokenRepository).save(any());
+    verify(refreshTokenApiPort).save(any());
 
     var authenticationCaptor = ArgumentCaptor.forClass(Authentication.class);
     verify(authenticationManager).authenticate(authenticationCaptor.capture());
@@ -184,8 +181,7 @@ class AuthenticationRestControllerTest {
     when(tokenIssuer.createAccessToken(eq(USERNAME), any())).thenReturn(ACCESS_TOKEN);
     when(tokenIssuer.createRefreshToken(USERNAME))
         .thenReturn(
-            new JwtTokenIssuer.IssuedRefreshToken(
-                NEW_REFRESH_TOKEN, NEW_REFRESH_TOKEN_JTI, NOW.plus(365, ChronoUnit.DAYS)));
+            new IssuedRefreshToken(NEW_REFRESH_TOKEN, NEW_REFRESH_TOKEN_JTI, NOW.plus(365, DAYS)));
     when(refreshTokenApiPort.rotate(any(), any()))
         .thenAnswer(invocation -> invocation.getArgument(1));
 
@@ -293,8 +289,7 @@ class AuthenticationRestControllerTest {
     when(tokenIssuer.createAccessToken(eq(USERNAME), any())).thenReturn(ACCESS_TOKEN);
     when(tokenIssuer.createRefreshToken(USERNAME))
         .thenReturn(
-            new JwtTokenIssuer.IssuedRefreshToken(
-                NEW_REFRESH_TOKEN, NEW_REFRESH_TOKEN_JTI, NOW.plus(365, ChronoUnit.DAYS)));
+            new IssuedRefreshToken(NEW_REFRESH_TOKEN, NEW_REFRESH_TOKEN_JTI, NOW.plus(365, DAYS)));
     when(refreshTokenApiPort.rotate(any(), any()))
         .thenThrow(new InvalidRefreshToken("Refresh token already used"));
 

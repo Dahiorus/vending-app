@@ -1,5 +1,7 @@
 package me.dahiorus.project.vending.application.service.user;
 
+import static java.time.Instant.now;
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
@@ -8,7 +10,6 @@ import static org.mockito.Mockito.never;
 
 import java.time.Instant;
 import java.util.Optional;
-import java.util.UUID;
 import me.dahiorus.project.vending.domain.exception.InvalidRefreshToken;
 import me.dahiorus.project.vending.domain.user.entity.EmailAddress;
 import me.dahiorus.project.vending.domain.user.entity.RefreshToken;
@@ -28,69 +29,77 @@ class RefreshTokenApplicationServiceTest {
   @InjectMocks RefreshTokenApplicationService refreshTokenApplicationService;
 
   @Test
+  void should_save_refresh_token() {
+    var refreshTokenId = new RefreshTokenId(randomUUID());
+    var refreshToken = refreshToken(refreshTokenId, now().plusSeconds(60), false);
+    given(refreshTokenRepository.create(refreshToken)).willReturn(refreshToken);
+
+    var result = refreshTokenApplicationService.save(refreshToken);
+
+    assertThat(result).isEqualTo(refreshToken);
+    then(refreshTokenRepository).should().create(refreshToken);
+  }
+
+  @Test
   void should_rotate_refresh_token_when_presented_token_is_usable() {
-    var presentedId = new RefreshTokenId(UUID.randomUUID());
-    var presentedToken = refreshToken(presentedId, Instant.now().plusSeconds(60), false);
-    var replacement =
-        refreshToken(new RefreshTokenId(UUID.randomUUID()), Instant.now().plusSeconds(120), false);
-    given(refreshTokenRepository.findById(presentedId)).willReturn(Optional.of(presentedToken));
-    given(refreshTokenRepository.save(replacement)).willReturn(replacement);
+    var presentedId = new RefreshTokenId(randomUUID());
+    var presentedToken = refreshToken(presentedId, now().plusSeconds(60), false);
+    var replacement = refreshToken(new RefreshTokenId(randomUUID()), now().plusSeconds(120), false);
+    given(refreshTokenRepository.find(presentedId)).willReturn(Optional.of(presentedToken));
+    given(refreshTokenRepository.create(replacement)).willReturn(replacement);
 
     var result = refreshTokenApplicationService.rotate(presentedId, replacement);
 
     assertThat(result).isEqualTo(replacement);
-    then(refreshTokenRepository).should().findById(presentedId);
+    then(refreshTokenRepository).should().find(presentedId);
     then(refreshTokenRepository).should().revoke(presentedId);
-    then(refreshTokenRepository).should().save(replacement);
+    then(refreshTokenRepository).should().create(replacement);
   }
 
   @Test
   void should_throw_exception_when_presented_token_is_unknown() {
-    var presentedId = new RefreshTokenId(UUID.randomUUID());
-    var replacement =
-        refreshToken(new RefreshTokenId(UUID.randomUUID()), Instant.now().plusSeconds(120), false);
-    given(refreshTokenRepository.findById(presentedId)).willReturn(Optional.empty());
+    var presentedId = new RefreshTokenId(randomUUID());
+    var replacement = refreshToken(new RefreshTokenId(randomUUID()), now().plusSeconds(120), false);
+    given(refreshTokenRepository.find(presentedId)).willReturn(Optional.empty());
 
     assertThatThrownBy(() -> refreshTokenApplicationService.rotate(presentedId, replacement))
         .isInstanceOf(InvalidRefreshToken.class);
-    then(refreshTokenRepository).should().findById(presentedId);
+    then(refreshTokenRepository).should().find(presentedId);
     then(refreshTokenRepository).should(never()).revoke(presentedId);
-    then(refreshTokenRepository).should(never()).save(replacement);
+    then(refreshTokenRepository).should(never()).create(replacement);
   }
 
   @Test
   void should_throw_exception_when_presented_token_is_expired() {
-    var presentedId = new RefreshTokenId(UUID.randomUUID());
-    var presentedToken = refreshToken(presentedId, Instant.now().minusSeconds(1), false);
-    var replacement =
-        refreshToken(new RefreshTokenId(UUID.randomUUID()), Instant.now().plusSeconds(120), false);
-    given(refreshTokenRepository.findById(presentedId)).willReturn(Optional.of(presentedToken));
+    var presentedId = new RefreshTokenId(randomUUID());
+    var presentedToken = refreshToken(presentedId, now().minusSeconds(1), false);
+    var replacement = refreshToken(new RefreshTokenId(randomUUID()), now().plusSeconds(120), false);
+    given(refreshTokenRepository.find(presentedId)).willReturn(Optional.of(presentedToken));
 
     assertThatThrownBy(() -> refreshTokenApplicationService.rotate(presentedId, replacement))
         .isInstanceOf(InvalidRefreshToken.class);
-    then(refreshTokenRepository).should().findById(presentedId);
+    then(refreshTokenRepository).should().find(presentedId);
     then(refreshTokenRepository).should(never()).revoke(presentedId);
-    then(refreshTokenRepository).should(never()).save(replacement);
+    then(refreshTokenRepository).should(never()).create(replacement);
   }
 
   @Test
   void should_throw_exception_when_presented_token_is_already_revoked() {
-    var presentedId = new RefreshTokenId(UUID.randomUUID());
-    var presentedToken = refreshToken(presentedId, Instant.now().plusSeconds(60), true);
-    var replacement =
-        refreshToken(new RefreshTokenId(UUID.randomUUID()), Instant.now().plusSeconds(120), false);
-    given(refreshTokenRepository.findById(presentedId)).willReturn(Optional.of(presentedToken));
+    var presentedId = new RefreshTokenId(randomUUID());
+    var presentedToken = refreshToken(presentedId, now().plusSeconds(60), true);
+    var replacement = refreshToken(new RefreshTokenId(randomUUID()), now().plusSeconds(120), false);
+    given(refreshTokenRepository.find(presentedId)).willReturn(Optional.of(presentedToken));
 
     assertThatThrownBy(() -> refreshTokenApplicationService.rotate(presentedId, replacement))
         .isInstanceOf(InvalidRefreshToken.class);
-    then(refreshTokenRepository).should().findById(presentedId);
+    then(refreshTokenRepository).should().find(presentedId);
     then(refreshTokenRepository).should(never()).revoke(presentedId);
-    then(refreshTokenRepository).should(never()).save(replacement);
+    then(refreshTokenRepository).should(never()).create(replacement);
   }
 
   @Test
   void should_delegate_refresh_token_revocation() {
-    var refreshTokenId = new RefreshTokenId(UUID.randomUUID());
+    var refreshTokenId = new RefreshTokenId(randomUUID());
 
     refreshTokenApplicationService.revoke(refreshTokenId);
 
