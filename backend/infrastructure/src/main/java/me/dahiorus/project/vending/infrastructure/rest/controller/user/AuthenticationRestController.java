@@ -66,7 +66,7 @@ public class AuthenticationRestController {
     var accessToken = tokenIssuer.createAccessToken(user.getUsername(), user.getAuthorities());
     var refreshToken = tokenIssuer.createRefreshToken(user.getUsername());
 
-    return ok(new AuthenticateResponseDto(accessToken, refreshToken));
+    return ok(new AuthenticateResponseDto(accessToken, refreshToken.value()));
   }
 
   @Operation(description = "Refresh a user access token")

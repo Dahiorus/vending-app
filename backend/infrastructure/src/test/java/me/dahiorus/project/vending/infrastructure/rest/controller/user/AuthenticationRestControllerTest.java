@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
@@ -66,6 +67,7 @@ class AuthenticationRestControllerTest {
   private static final String PASSWORD = "secret-password";
   private static final String ACCESS_TOKEN = "access.jwt";
   private static final String REFRESH_TOKEN = "refresh.jwt";
+  private static final String REFRESH_TOKEN_JTI = "refresh-token-jti";
   private static final Instant NOW = Instant.parse("2026-09-15T15:35:17Z");
 
   @Autowired private MockMvc mockMvc;
@@ -89,7 +91,10 @@ class AuthenticationRestControllerTest {
     var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
     when(authenticationManager.authenticate(any(Authentication.class))).thenReturn(authentication);
     when(tokenIssuer.createAccessToken(eq(USERNAME), any())).thenReturn(ACCESS_TOKEN);
-    when(tokenIssuer.createRefreshToken(USERNAME)).thenReturn(REFRESH_TOKEN);
+    when(tokenIssuer.createRefreshToken(USERNAME))
+        .thenReturn(
+            new JwtTokenIssuer.IssuedRefreshToken(
+                REFRESH_TOKEN, REFRESH_TOKEN_JTI, NOW.plus(365, ChronoUnit.DAYS)));
 
     // When / Then
     mockMvc

@@ -2,7 +2,9 @@ package me.dahiorus.project.vending.infrastructure.security.jwt;
 
 import static java.time.Instant.now;
 
+import java.time.Instant;
 import java.util.Collection;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,7 +22,6 @@ public class JwtTokenIssuer {
   public static final String REFRESH_TOKEN_TYPE = "refresh";
 
   private static final String ROLES_CLAIM = "roles";
-
   private static final Logger logger = LoggerFactory.getLogger(JwtTokenIssuer.class);
 
   private final JwtEncoder jwtEncoder;
@@ -49,21 +50,26 @@ public class JwtTokenIssuer {
     return encode(claims);
   }
 
-  public String createRefreshToken(final String username) {
+  public IssuedRefreshToken createRefreshToken(final String username) {
     var now = now();
+    var expiresAt = now.plus(jwtProperties.getRefreshTokenDuration());
+    var jti = UUID.randomUUID().toString();
     var claims =
         JwtClaimsSet.builder()
             .subject(username)
             .issuer(jwtProperties.getIssuerUri())
             .issuedAt(now)
-            .expiresAt(now.plus(jwtProperties.getRefreshTokenDuration()))
+            .expiresAt(expiresAt)
+            .id(jti)
             .claim(TOKEN_TYPE_CLAIM, REFRESH_TOKEN_TYPE)
             .build();
 
     logger.debug("Creating a JWT refresh token for {}", username);
 
-    return encode(claims);
+    return new IssuedRefreshToken(encode(claims), jti, expiresAt);
   }
+
+  public record IssuedRefreshToken(String value, String jti, Instant expiresAt) {}
 
   private String encode(final JwtClaimsSet claims) {
     return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
