@@ -35,9 +35,7 @@ describe('adminGuard', () => {
 
   it('allows access when the user has the ROLE_ADMIN role', () => {
     const tokenStore = TestBed.inject(TokenStore);
-    tokenStore.setAccessToken(
-      fakeJwt({ sub: 'admin@vending.me', roles: ['ROLE_ADMIN'], exp: 1 }),
-    );
+    tokenStore.setAccessToken(fakeJwt({ sub: 'admin@vending.me', roles: ['ROLE_ADMIN'], exp: 1 }));
 
     const result = executeGuard({} as never, { url: '/machines/new' } as never);
 

@@ -11,7 +11,7 @@ Un seul projet Gradle multi-module (Kotlin DSL) englobe le dépôt entier —
 racine `settings.gradle.kts`/`build.gradle.kts`, wrapper `./gradlew` — à
 l'image des autres projets Vidal (`kisscool`, `renoshield`, `carmen`) :
 `backend/` regroupe les modules Java (architecture hexagonale / DDD, Spring
-Boot 3.4.0, Java 21) et `frontend/` est intégré comme un projet Gradle à
+Boot 3.4.0, Java 25) et `frontend/` est intégré comme un projet Gradle à
 part entière qui délègue à `npm` (aucun plugin Angular/Node Gradle : voir
 `frontend/build.gradle.kts`, de simples tâches `Exec` vers `npm ci`/
 `npm run build`/`npm test`). Chaque module a en plus son propre `AGENTS.md`

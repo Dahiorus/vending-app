@@ -27,8 +27,8 @@ Voir `AGENTS.md` (racine et par module) pour le détail des conventions.
 
 ## Stack technique
 
-- **Backend** : Java 21, Spring Boot 3.5, Spring Data JPA, Spring Security
-  (OAuth2 resource server / JWT), Spring HATEOAS, springdoc-openapi,
+- **Backend** : Java 25, Spring Boot 3.5, Spring Data JPA, Spring Security (OAuth2 resource server /
+  JWT), Spring HATEOAS, springdoc-openapi,
   Flyway, PostgreSQL, Ehcache.
 - **Frontend** : Angular 22, Angular Material, TailwindCSS, RxJS,
   Playwright (tests e2e), Vitest.
@@ -36,7 +36,7 @@ Voir `AGENTS.md` (racine et par module) pour le détail des conventions.
 
 ## Prérequis
 
-- JDK 21
+- JDK 25
 - Node.js / npm (voir `frontend/package.json`, champ `volta` : Node 24,
   npm 11)
 - Versions outillées via [mise](https://mise.jdx.dev/) (`mise.toml` à la

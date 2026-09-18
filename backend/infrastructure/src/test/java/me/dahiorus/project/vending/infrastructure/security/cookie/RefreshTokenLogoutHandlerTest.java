@@ -63,7 +63,8 @@ class RefreshTokenLogoutHandlerTest {
 
     // Then
     verify(refreshTokenApiPort).revoke(new RefreshTokenId(UUID.fromString(REFRESH_TOKEN_JTI)));
-    assertThat(response.getHeader(HttpHeaders.SET_COOKIE)).contains(COOKIE_NAME + "=;", "Max-Age=0");
+    assertThat(response.getHeader(HttpHeaders.SET_COOKIE))
+        .contains(COOKIE_NAME + "=;", "Max-Age=0");
   }
 
   @Test
@@ -74,7 +75,8 @@ class RefreshTokenLogoutHandlerTest {
     handler.logout(request, response, null);
 
     verify(refreshTokenApiPort, never()).revoke(any());
-    assertThat(response.getHeader(HttpHeaders.SET_COOKIE)).contains(COOKIE_NAME + "=;", "Max-Age=0");
+    assertThat(response.getHeader(HttpHeaders.SET_COOKIE))
+        .contains(COOKIE_NAME + "=;", "Max-Age=0");
   }
 
   @Test
@@ -87,6 +89,7 @@ class RefreshTokenLogoutHandlerTest {
     handler.logout(request, response, null);
 
     verify(refreshTokenApiPort, never()).revoke(any());
-    assertThat(response.getHeader(HttpHeaders.SET_COOKIE)).contains(COOKIE_NAME + "=;", "Max-Age=0");
+    assertThat(response.getHeader(HttpHeaders.SET_COOKIE))
+        .contains(COOKIE_NAME + "=;", "Max-Age=0");
   }
 }

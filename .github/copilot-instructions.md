@@ -88,7 +88,7 @@ local, aucun docker-compose fourni ici).
   `CookieCsrfTokenRepository` (`XSRF-TOKEN` / `X-XSRF-TOKEN`) avec CORS
   `allowCredentials=true`.
 
-## Backend (Java 21, Spring Boot 3.4.0)
+## Backend (Java 25, Spring Boot 3.4.0)
 
 - `domain` : voir `backend/domain/AGENTS.md` — structure par sous-domaine
   (`entity/`, `port/`, `usecase/`), exceptions métier sans concept

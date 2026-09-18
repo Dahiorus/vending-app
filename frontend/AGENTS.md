@@ -84,7 +84,7 @@ fixture.whenStable()` avant d'avoir flush une requête HTTP en attente —
   soit sur la rotation.
 - CSRF : le frontend utilise le support XSRF natif d'Angular
   (`withXsrfConfiguration({ cookieName: 'XSRF-TOKEN', headerName:
-  'X-XSRF-TOKEN' })` dans `app.config.ts`) — Angular lit le cookie
+'X-XSRF-TOKEN' })` dans `app.config.ts`) — Angular lit le cookie
   `XSRF-TOKEN` (déposé par le backend à la connexion, `CookieCsrfTokenRepository`
   Spring) et pose automatiquement l'en-tête `X-XSRF-TOKEN` sur les requêtes
   non-GET same-origin. Aucun code manuel n'est nécessaire.

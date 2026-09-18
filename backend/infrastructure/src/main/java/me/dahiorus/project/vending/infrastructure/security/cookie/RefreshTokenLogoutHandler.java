@@ -15,9 +15,9 @@ import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 /**
- * Revokes the refresh token carried by the {@code refresh_token} cookie (best effort, never
- * failing on a stale/invalid cookie so that logout stays idempotent) and always clears the
- * cookie, mirroring the attributes it was originally set with.
+ * Revokes the refresh token carried by the {@code refresh_token} cookie (best effort, never failing
+ * on a stale/invalid cookie so that logout stays idempotent) and always clears the cookie,
+ * mirroring the attributes it was originally set with.
  */
 public class RefreshTokenLogoutHandler implements LogoutHandler {
 
