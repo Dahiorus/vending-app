@@ -11,9 +11,9 @@ import me.dahiorus.project.vending.domain.user.entity.Firstname;
 import me.dahiorus.project.vending.domain.user.entity.Lastname;
 import me.dahiorus.project.vending.domain.user.entity.Password;
 import me.dahiorus.project.vending.domain.user.entity.UserId;
+import me.dahiorus.project.vending.domain.user.port.AdminUserRepositoryPort;
 import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaUser;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
-import me.dahiorus.project.vending.infrastructure.jpa.repository.user.AdminUserRepositoryAdapterIT.TestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -24,11 +24,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 
-@ContextConfiguration(classes = TestConfig.class)
+@ContextConfiguration(classes = AdminUserRepositoryAdapterIT.TestConfig.class)
 class AdminUserRepositoryAdapterIT extends H2DbContainer {
 
   @Autowired PasswordEncoder passwordEncoder;
-  @Autowired AdminUserRepositoryAdapter repository;
+  @Autowired AdminUserRepositoryPort repository;
 
   @Nested
   class Create {
@@ -128,9 +128,9 @@ class AdminUserRepositoryAdapterIT extends H2DbContainer {
     }
 
     @Bean
-    AdminUserRepositoryAdapter adminUserJpaRepository(
-        final UserJpaRepository jpaUserRepository, final PasswordEncoder passwordEncoder) {
-      return new AdminUserRepositoryAdapter(jpaUserRepository, passwordEncoder);
+    AdminUserRepositoryPort adminUserRepository(
+        final UserJpaRepository userJpaRepository, final PasswordEncoder passwordEncoder) {
+      return new AdminUserRepositoryAdapter(userJpaRepository, passwordEncoder);
     }
   }
 }

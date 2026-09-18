@@ -18,12 +18,12 @@ import me.dahiorus.project.vending.domain.item.entity.ItemId;
 import me.dahiorus.project.vending.domain.item.entity.ItemName;
 import me.dahiorus.project.vending.domain.item.entity.ItemToCreate;
 import me.dahiorus.project.vending.domain.item.entity.ItemToUpdate;
+import me.dahiorus.project.vending.domain.item.port.ItemRepositoryPort;
 import me.dahiorus.project.vending.domain.pagination.entity.Filter;
 import me.dahiorus.project.vending.domain.pagination.entity.FilterMatcher;
 import me.dahiorus.project.vending.domain.pagination.entity.Pagination;
 import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaUploadedFile;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
-import me.dahiorus.project.vending.infrastructure.jpa.repository.item.ItemRepositoryAdapterIT.TestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -32,10 +32,10 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 
-@ContextConfiguration(classes = TestConfig.class)
+@ContextConfiguration(classes = ItemRepositoryAdapterIT.TestConfig.class)
 class ItemRepositoryAdapterIT extends H2DbContainer {
 
-  @Autowired ItemRepositoryAdapter repository;
+  @Autowired ItemRepositoryPort repository;
 
   @Test
   void should_create_item() {
@@ -315,7 +315,7 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
   @TestConfiguration
   static class TestConfig {
     @Bean
-    ItemRepositoryAdapter itemJpaRepository(EntityManager entityManager) {
+    ItemRepositoryPort itemRepository(EntityManager entityManager) {
       return new ItemRepositoryAdapter(entityManager);
     }
   }

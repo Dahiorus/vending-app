@@ -22,7 +22,6 @@ import me.dahiorus.project.vending.domain.user.port.AppUserProfilePictureReposit
 import me.dahiorus.project.vending.domain.user.port.AppUserRepositoryPort;
 import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaUploadedFile;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
-import me.dahiorus.project.vending.infrastructure.jpa.repository.user.AppUserProfilePictureRepositoryAdapterIT.TestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -32,7 +31,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 
-@ContextConfiguration(classes = TestConfig.class)
+@ContextConfiguration(classes = AppUserProfilePictureRepositoryAdapterIT.TestConfig.class)
 class AppUserProfilePictureRepositoryAdapterIT extends H2DbContainer {
 
   @Autowired AppUserRepositoryAdapter appUserJpaRepository;
@@ -170,7 +169,7 @@ class AppUserProfilePictureRepositoryAdapterIT extends H2DbContainer {
   @TestConfiguration
   static class TestConfig {
     @Bean
-    AppUserRepositoryPort appUserJpaRepository(UserJpaRepository jpaUserDao) {
+    AppUserRepositoryPort appUserRepository(UserJpaRepository jpaUserDao) {
       return new AppUserRepositoryAdapter(jpaUserDao, new BCryptPasswordEncoder());
     }
 

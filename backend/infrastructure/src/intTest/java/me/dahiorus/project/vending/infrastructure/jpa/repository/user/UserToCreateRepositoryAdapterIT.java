@@ -8,9 +8,9 @@ import me.dahiorus.project.vending.domain.user.entity.EmailAddress;
 import me.dahiorus.project.vending.domain.user.entity.Firstname;
 import me.dahiorus.project.vending.domain.user.entity.Lastname;
 import me.dahiorus.project.vending.domain.user.entity.Password;
+import me.dahiorus.project.vending.domain.user.port.UserToCreateRepositoryPort;
 import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaUser;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
-import me.dahiorus.project.vending.infrastructure.jpa.repository.user.UserToCreateRepositoryAdapterIT.TestConfig;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 
-@ContextConfiguration(classes = TestConfig.class)
+@ContextConfiguration(classes = UserToCreateRepositoryAdapterIT.TestConfig.class)
 class UserToCreateRepositoryAdapterIT extends H2DbContainer {
 
   @Autowired UserToCreateRepositoryAdapter repository;
@@ -66,8 +66,8 @@ class UserToCreateRepositoryAdapterIT extends H2DbContainer {
   @TestConfiguration
   static class TestConfig {
     @Bean
-    UserToCreateRepositoryAdapter userToCreateJpaRepository(UserJpaRepository jpaUserDao) {
-      return new UserToCreateRepositoryAdapter(jpaUserDao);
+    UserToCreateRepositoryPort userToCreateRepository(UserJpaRepository userJpaRepository) {
+      return new UserToCreateRepositoryAdapter(userJpaRepository);
     }
   }
 }

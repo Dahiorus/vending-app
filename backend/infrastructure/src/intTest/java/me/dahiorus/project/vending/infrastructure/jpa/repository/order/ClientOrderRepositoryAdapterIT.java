@@ -10,7 +10,7 @@ import static me.dahiorus.project.vending.domain.item.entity.ItemType.COLD_BEVER
 import static me.dahiorus.project.vending.fixture.ItemFixture.aColdBeverage;
 import static me.dahiorus.project.vending.fixture.VendingMachineFixture.aVendingMachine;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
@@ -38,7 +38,7 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(classes = ClientOrderRepositoryAdapterIT.TestConfig.class)
 class ClientOrderRepositoryAdapterIT extends H2DbContainer {
 
-  @Autowired ClientOrderRepositoryAdapter clientOrderJpaRepository;
+  @Autowired ClientOrderRepositoryPort repository;
 
   VendingMachine vendingMachine;
   Item volvic33cl;
@@ -57,7 +57,7 @@ class ClientOrderRepositoryAdapterIT extends H2DbContainer {
   class Create {
     @Test
     void should_create_order_from_vending_machine_and_item() {
-      var result = clientOrderJpaRepository.create(vendingMachine.id(), volvic33cl.id());
+      var result = repository.create(vendingMachine.id(), volvic33cl.id());
 
       assertThat(result)
           .usingRecursiveComparison()
@@ -74,11 +74,10 @@ class ClientOrderRepositoryAdapterIT extends H2DbContainer {
 
     @Test
     void should_throw_exception_when_create_order_from_not_found_vending_machine() {
-      assertThatThrownBy(
-              () ->
-                  clientOrderJpaRepository.create(
-                      new VendingMachineId(randomUUID()), volvic33cl.id()))
-          .isInstanceOf(ResourceNotFound.class);
+      var throwable =
+          catchThrowable(
+              () -> repository.create(new VendingMachineId(randomUUID()), volvic33cl.id()));
+      assertThat(throwable).isInstanceOf(ResourceNotFound.class);
     }
   }
 
@@ -118,8 +117,7 @@ class ClientOrderRepositoryAdapterIT extends H2DbContainer {
       @Test
       void should_find_all_orders_of_vending_machine_since_given_date_time() {
         var since = LocalDateTime.of(2025, JUNE, 2, 10, 30, 15);
-        var result =
-            clientOrderJpaRepository.findAllOfVendingMachineSince(vendingMachine.id(), since);
+        var result = repository.findAllOfVendingMachineSince(vendingMachine.id(), since);
 
         assertThat(result)
             .hasSize(4)
@@ -132,11 +130,12 @@ class ClientOrderRepositoryAdapterIT extends H2DbContainer {
 
       @Test
       void should_throw_exception_when_vending_machine_not_found() {
-        assertThatThrownBy(
+        var throwable =
+            catchThrowable(
                 () ->
-                    clientOrderJpaRepository.findAllOfVendingMachineSince(
-                        new VendingMachineId(randomUUID()), now()))
-            .isInstanceOf(ResourceNotFound.class);
+                    repository.findAllOfVendingMachineSince(
+                        new VendingMachineId(randomUUID()), now()));
+        assertThat(throwable).isInstanceOf(ResourceNotFound.class);
       }
     }
 
@@ -144,7 +143,7 @@ class ClientOrderRepositoryAdapterIT extends H2DbContainer {
     class FindAll {
       @Test
       void should_find_all_orders_of_vending_machine() {
-        var result = clientOrderJpaRepository.findAllOfVendingMachine(vendingMachine.id());
+        var result = repository.findAllOfVendingMachine(vendingMachine.id());
 
         assertThat(result)
             .hasSize(7)
@@ -153,11 +152,10 @@ class ClientOrderRepositoryAdapterIT extends H2DbContainer {
 
       @Test
       void should_throw_exception_when_vending_machine_not_found() {
-        assertThatThrownBy(
-                () ->
-                    clientOrderJpaRepository.findAllOfVendingMachine(
-                        new VendingMachineId(randomUUID())))
-            .isInstanceOf(ResourceNotFound.class);
+        var throwable =
+            catchThrowable(
+                () -> repository.findAllOfVendingMachine(new VendingMachineId(randomUUID())));
+        assertThat(throwable).isInstanceOf(ResourceNotFound.class);
       }
     }
   }

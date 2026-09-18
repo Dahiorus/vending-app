@@ -8,28 +8,18 @@ import java.util.UUID;
 import me.dahiorus.project.vending.domain.user.entity.EmailAddress;
 import me.dahiorus.project.vending.domain.user.entity.RefreshToken;
 import me.dahiorus.project.vending.domain.user.entity.RefreshTokenId;
+import me.dahiorus.project.vending.domain.user.port.RefreshTokenRepositoryPort;
+import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.ContextConfiguration;
 
-@DataJpaTest
-@TestPropertySource(
-    properties = {
-      "spring.datasource.url=jdbc:h2:mem:vending-app;DB_CLOSE_DELAY=-1",
-      "spring.datasource.driverClassName=org.h2.Driver",
-      "spring.datasource.username=sa",
-      "spring.jpa.database-platform=org.hibernate.dialect.H2Dialect",
-      "spring.jpa.hibernate.ddl-auto=create",
-      "spring.flyway.enabled=false"
-    })
-class RefreshTokenRepositoryAdapterTest {
+@ContextConfiguration(classes = RefreshTokenRepositoryAdapterIT.TestConfig.class)
+class RefreshTokenRepositoryAdapterIT extends H2DbContainer {
 
   @Autowired private RefreshTokenRepositoryAdapter repository;
-  @Autowired private TestEntityManager entityManager;
 
   @Test
   void should_save_and_find_by_id() {
@@ -91,8 +81,7 @@ class RefreshTokenRepositoryAdapterTest {
   @TestConfiguration
   static class TestConfig {
     @Bean
-    RefreshTokenRepositoryAdapter refreshTokenRepositoryAdapter(
-        RefreshTokenJpaRepository jpaRepository) {
+    RefreshTokenRepositoryPort refreshTokenRepository(RefreshTokenJpaRepository jpaRepository) {
       return new RefreshTokenRepositoryAdapter(jpaRepository);
     }
   }

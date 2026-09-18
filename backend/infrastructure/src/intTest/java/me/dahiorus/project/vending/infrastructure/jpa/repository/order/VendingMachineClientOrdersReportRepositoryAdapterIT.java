@@ -20,8 +20,8 @@ import me.dahiorus.project.vending.domain.machine.entity.SerialNumber;
 import me.dahiorus.project.vending.domain.reporting.entity.VendingMachineClientOrdersReport;
 import me.dahiorus.project.vending.domain.reporting.entity.VendingMachineClientOrdersReport.ReportedClientOrder;
 import me.dahiorus.project.vending.domain.reporting.entity.VendingMachineClientOrdersReportToCreate;
+import me.dahiorus.project.vending.domain.reporting.port.VendingMachineClientOrdersReportRepositoryPort;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
-import me.dahiorus.project.vending.infrastructure.jpa.repository.order.VendingMachineClientOrdersReportRepositoryAdapterIT.TestConfig;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +29,11 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 
-@ContextConfiguration(classes = TestConfig.class)
+@ContextConfiguration(
+    classes = VendingMachineClientOrdersReportRepositoryAdapterIT.TestConfig.class)
 class VendingMachineClientOrdersReportRepositoryAdapterIT extends H2DbContainer {
 
-  @Autowired VendingMachineClientOrdersReportRepositoryAdapter repository;
+  @Autowired VendingMachineClientOrdersReportRepositoryPort repository;
 
   @Nested
   class Create {
@@ -159,9 +160,9 @@ class VendingMachineClientOrdersReportRepositoryAdapterIT extends H2DbContainer 
   @TestConfiguration
   static class TestConfig {
     @Bean
-    VendingMachineClientOrdersReportRepositoryAdapter vendingMachineClientOrdersReportJpaRepository(
-        ClientOrdersReportJpaRepository jpaClientOrdersReportDao) {
-      return new VendingMachineClientOrdersReportRepositoryAdapter(jpaClientOrdersReportDao);
+    VendingMachineClientOrdersReportRepositoryPort vendingMachineClientOrdersReportRepository(
+        ClientOrdersReportJpaRepository clientOrdersReportJpaRepository) {
+      return new VendingMachineClientOrdersReportRepositoryAdapter(clientOrdersReportJpaRepository);
     }
   }
 }
