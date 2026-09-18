@@ -1,6 +1,8 @@
 package me.dahiorus.project.vending.domain.user.entity;
 
-public record Password(String value) {
+import java.io.Serializable;
+
+public record Password(String value) implements Serializable {
 
   public static Password of(final String value) {
     return new Password(value);
