@@ -35,7 +35,7 @@ public class VendingMachineRepositoryAdapter implements VendingMachineRepository
     return jpaRepository.save(JpaVendingMachine.fromDomain(machineToCreate)).toDomain();
   }
 
-  @Cacheable(key = "#id.value")
+  @Cacheable(key = "#id.value", unless = "#result.isEmpty()")
   @Override
   public Optional<VendingMachine> find(VendingMachineId id) {
     return jpaRepository.findById(id.value()).map(JpaVendingMachine::toDomain);
@@ -52,7 +52,9 @@ public class VendingMachineRepositoryAdapter implements VendingMachineRepository
         .orElseThrow(() -> new ResourceNotFound(toUpdate.id()));
   }
 
-  @CacheEvict(key = "#id.value")
+  @CacheEvict(
+      key = "#id.value",
+      cacheNames = {"vendingMachineStocks", "vendingMachines"})
   @Override
   public void delete(VendingMachineId id) {
     jpaRepository.deleteById(id.value());

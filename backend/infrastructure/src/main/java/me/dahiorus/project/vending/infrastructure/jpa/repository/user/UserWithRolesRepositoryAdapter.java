@@ -19,7 +19,7 @@ public class UserWithRolesRepositoryAdapter implements UserWithRolesRepositoryPo
     this.jpaRepository = jpaRepository;
   }
 
-  @Cacheable(key = "#emailAddress.value()")
+  @Cacheable(key = "#emailAddress.value()", unless = "#result == null")
   @Override
   public UserWithRoles getByUsername(final EmailAddress emailAddress) throws ResourceNotFound {
     return jpaRepository

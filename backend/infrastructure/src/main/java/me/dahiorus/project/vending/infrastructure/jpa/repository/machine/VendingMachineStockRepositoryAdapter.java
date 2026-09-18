@@ -33,7 +33,7 @@ public class VendingMachineStockRepositoryAdapter implements VendingMachineStock
         new SimpleJpaRepository<>(JpaVendingMachineStockEntry.class, entityManager);
   }
 
-  @Cacheable(key = "#id.value")
+  @Cacheable(key = "#id.value", unless = "#result.isEmpty()")
   @Override
   public Optional<VendingMachineStock> find(VendingMachineId id) {
     return jpaRepository.findById(id.value()).map(JpaVendingMachine::toVendingMachineStocks);

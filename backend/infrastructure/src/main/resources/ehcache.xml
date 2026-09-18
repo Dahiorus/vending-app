@@ -59,5 +59,6 @@
   </cache>
 
   <cache alias="vendingMachineStocks" uses-template="default-cache">
+    <value-type>me.dahiorus.project.vending.domain.stock.entity.VendingMachineStock</value-type>
   </cache>
 </config>

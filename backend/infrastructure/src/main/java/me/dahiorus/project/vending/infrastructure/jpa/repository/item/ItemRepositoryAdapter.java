@@ -39,7 +39,7 @@ public class ItemRepositoryAdapter implements ItemRepositoryPort {
         new SimpleJpaRepository<>(JpaUploadedFile.class, entityManager);
   }
 
-  @Cacheable(key = "#id.value")
+  @Cacheable(key = "#id.value", unless = "#result.isEmpty()")
   @Override
   public Optional<Item> find(ItemId id) {
     return jpaRepository.findById(id.value()).map(JpaItem::toDomain);
