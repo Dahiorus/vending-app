@@ -34,12 +34,7 @@ import me.dahiorus.project.vending.domain.user.entity.UserWithRoles;
 @Table(
     name = "app_user",
     uniqueConstraints = @UniqueConstraint(columnNames = "email", name = "UK_USER_EMAIL"),
-    indexes = {
-      @Index(columnList = "firstName, lastName", name = "IDX_USER_FIRST_NAME_LAST_NAME"),
-      @Index(columnList = "firstName", name = "IDX_USER_FIRST_NAME"),
-      @Index(columnList = "lastName", name = "IDX_USER_LAST_NAME"),
-      @Index(columnList = "email", name = "IDX_USER_EMAIL")
-    })
+    indexes = @Index(columnList = "email", name = "IDX_USER_EMAIL"))
 @AttributeOverride(name = "id", column = @Column(name = "user_id"))
 public class JpaUser extends JpaEntity {
   public static final String ROLE_ADMIN = "ADMIN";
@@ -71,10 +66,6 @@ public class JpaUser extends JpaEntity {
           @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_USER_ROLE_USER_ID")))
   @Column(name = "role_name", nullable = false)
   private Set<String> roles = new HashSet<>();
-
-  public String getEmail() {
-    return email;
-  }
 
   public String getEncodedPassword() {
     return encodedPassword;
