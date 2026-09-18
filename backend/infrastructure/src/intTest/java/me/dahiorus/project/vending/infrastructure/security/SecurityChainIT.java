@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+import jakarta.servlet.http.Cookie;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
@@ -30,7 +31,6 @@ import me.dahiorus.project.vending.domain.user.entity.Password;
 import me.dahiorus.project.vending.domain.user.port.AdminUserRepositoryPort;
 import me.dahiorus.project.vending.domain.user.port.AppUserRepositoryPort;
 import me.dahiorus.project.vending.infrastructure.rest.entity.user.AuthenticateRequestDto;
-import me.dahiorus.project.vending.infrastructure.rest.entity.user.RefreshTokenRequestDto;
 import me.dahiorus.project.vending.infrastructure.security.jwt.JwtTokenIssuer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -105,7 +105,7 @@ class SecurityChainIT {
                         new AuthenticateRequestDto(userEmail, PASSWORD))))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.accessToken").isNotEmpty())
-        .andExpect(jsonPath("$.refreshToken").isNotEmpty());
+        .andExpect(header().exists(HttpHeaders.SET_COOKIE));
   }
 
   @Test
@@ -209,16 +209,25 @@ class SecurityChainIT {
 
   @Test
   void should_refresh_an_access_token_from_a_refresh_token() throws Exception {
-    String refreshToken = tokenIssuer.createRefreshToken(adminEmail);
+    String loginResponse =
+        mockMvc
+            .perform(
+                post("/api/v1/authenticate")
+                    .contentType(APPLICATION_JSON)
+                    .content(
+                        objectMapper.writeValueAsString(
+                            new AuthenticateRequestDto(adminEmail, PASSWORD))))
+            .andReturn()
+            .getResponse()
+            .getCookie("refresh_token")
+            .getValue();
 
     mockMvc
         .perform(
-            post("/api/v1/authenticate/refresh")
-                .contentType(APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(new RefreshTokenRequestDto(refreshToken))))
+            post("/api/v1/authenticate/refresh").cookie(new Cookie("refresh_token", loginResponse)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.accessToken").isNotEmpty())
-        .andExpect(jsonPath("$.accessToken").value(not(refreshToken)));
+        .andExpect(jsonPath("$.accessToken").value(not(loginResponse)));
   }
 
   @Test
@@ -228,10 +237,21 @@ class SecurityChainIT {
 
     mockMvc
         .perform(
-            post("/api/v1/authenticate/refresh")
-                .contentType(APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(new RefreshTokenRequestDto(accessToken))))
+            post("/api/v1/authenticate/refresh").cookie(new Cookie("refresh_token", accessToken)))
         .andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  void should_reject_refresh_without_a_cookie() throws Exception {
+    mockMvc.perform(post("/api/v1/authenticate/refresh")).andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  void should_logout_and_clear_the_refresh_cookie_even_without_one() throws Exception {
+    mockMvc
+        .perform(post("/api/v1/authenticate/logout"))
+        .andExpect(status().isNoContent())
+        .andExpect(header().exists(HttpHeaders.SET_COOKIE));
   }
 
   @Test
