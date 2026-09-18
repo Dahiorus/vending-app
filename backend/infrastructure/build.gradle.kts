@@ -25,7 +25,10 @@ testing {
                 implementation(platform(libs.spring.boot.dependencies))
                 implementation(libs.spring.boot.starter.test)
                 implementation(libs.spring.security.test) {
-                    exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
+                    exclude(
+                        group = "org.springframework.boot",
+                        module = "spring-boot-starter-logging"
+                    )
                 }
                 implementation(libs.h2)
             }
