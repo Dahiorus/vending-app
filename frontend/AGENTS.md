@@ -78,9 +78,10 @@ fixture.whenStable()` avant d'avoir flush une requête HTTP en attente —
   plus jamais lisible ni manipulable en JS (fini le `sessionStorage`).
   `TokenStore` n'expose donc plus de `refreshToken()`.
 - La rotation du refresh token est désormais gérée **côté serveur**
-  (`POST /authenticate/refresh` lit le cookie, aucun corps de requête côté
-  frontend) ; le frontend n'a plus à supposer quoi que ce soit sur la
-  rotation.
+  (`POST /authenticate/refresh` lit le cookie ; le frontend envoie
+  seulement la requête avec `withCredentials`, sans fournir lui-même le
+  token de rafraîchissement) ; le frontend n'a plus à supposer quoi que ce
+  soit sur la rotation.
 - CSRF : le frontend utilise le support XSRF natif d'Angular
   (`withXsrfConfiguration({ cookieName: 'XSRF-TOKEN', headerName:
   'X-XSRF-TOKEN' })` dans `app.config.ts`) — Angular lit le cookie
