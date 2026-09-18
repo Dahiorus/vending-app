@@ -49,6 +49,7 @@ configure(backendSubprojects) {
 
     tasks.named("check") {
         dependsOn("spotlessCheck")
+        dependsOn("format")
     }
 
     repositories {
