@@ -5,8 +5,8 @@ function fakeAccessToken(): string {
   const encode = (value: unknown) =>
     btoa(JSON.stringify(value)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   return `${encode({ alg: 'none' })}.${encode({
-    sub: 'admin@vending.me',
-    roles: ['ROLE_ADMIN'],
+    sub: 'user@vending.me',
+    roles: ['ROLE_USER'],
     exp: 4102444800,
     token_type: 'access',
   })}.signature`;
@@ -43,7 +43,7 @@ test.beforeEach(async ({ page }) => {
       contentType: 'application/hal+json',
       body: JSON.stringify({
         id: 'u-1',
-        email: 'admin@vending.me',
+        email: 'user@vending.me',
         firstname: 'Ada',
         lastname: 'Lovelace',
       }),
@@ -74,12 +74,12 @@ test('an anonymous visitor can browse the vending machines', async ({ page }) =>
 test('a user can sign in and sees their account in the toolbar', async ({ page }) => {
   await page.goto('/login');
 
-  await page.getByLabel('Email').fill('admin@vending.me');
+  await page.getByLabel('Email').fill('user@vending.me');
   await page.getByLabel('Password').fill('S3cret!Passw0rd');
   await page.getByRole('button', { name: 'Sign in' }).click();
 
   await expect(page).toHaveURL(/\/machines$/);
-  await expect(page.getByText('admin@vending.me')).toBeVisible();
+  await expect(page.getByText('user@vending.me')).toBeVisible();
   await expect(page.getByText('SN-0001')).toBeVisible();
 
   await page.getByRole('button', { name: 'Sign out' }).click();
