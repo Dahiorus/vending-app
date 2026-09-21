@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.infrastructure.rest.controller.user;
 
+import static java.time.ZoneOffset.UTC;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static me.dahiorus.project.vending.infrastructure.security.jwt.JwtTokenIssuer.ACCESS_TOKEN_TYPE;
 import static me.dahiorus.project.vending.infrastructure.security.jwt.JwtTokenIssuer.REFRESH_TOKEN_TYPE;
@@ -21,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import java.time.Clock;
 import java.time.Instant;
-import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -325,7 +325,7 @@ class AuthenticationRestControllerTest {
   static class TestConfig {
     @Bean
     Clock clock() {
-      return Clock.fixed(NOW, ZoneOffset.UTC);
+      return Clock.fixed(NOW, UTC);
     }
 
     @Bean

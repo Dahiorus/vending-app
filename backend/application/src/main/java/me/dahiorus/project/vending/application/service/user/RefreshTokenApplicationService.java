@@ -1,6 +1,8 @@
 package me.dahiorus.project.vending.application.service.user;
 
-import java.time.Instant;
+import static java.time.Instant.now;
+
+import java.time.Clock;
 import me.dahiorus.project.vending.domain.exception.InvalidRefreshToken;
 import me.dahiorus.project.vending.domain.user.entity.RefreshToken;
 import me.dahiorus.project.vending.domain.user.entity.RefreshTokenId;
@@ -15,8 +17,12 @@ public class RefreshTokenApplicationService implements RefreshTokenApiPort {
 
   private final RefreshTokenRepositoryPort refreshTokenRepository;
 
-  public RefreshTokenApplicationService(final RefreshTokenRepositoryPort refreshTokenRepository) {
+  private final Clock clock;
+
+  public RefreshTokenApplicationService(
+      final RefreshTokenRepositoryPort refreshTokenRepository, Clock clock) {
     this.refreshTokenRepository = refreshTokenRepository;
+    this.clock = clock;
   }
 
   public RefreshToken save(RefreshToken refreshToken) {
@@ -31,7 +37,7 @@ public class RefreshTokenApplicationService implements RefreshTokenApiPort {
             .find(presentedId)
             .orElseThrow(() -> new InvalidRefreshToken("Unknown refresh token"));
 
-    if (!refreshToken.isUsable(Instant.now())) {
+    if (!refreshToken.isUsable(now(clock))) {
       throw new InvalidRefreshToken("Expired or revoked refresh token");
     }
 
