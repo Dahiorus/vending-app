@@ -32,6 +32,17 @@ describe('halFormsInterceptor', () => {
     request.flush({});
   });
 
+  it('requests HAL-FORMS on an absolute API URL (HATEOAS `self` link)', () => {
+    const absoluteUrl = `http://localhost:8080${environment.apiBaseUrl}/vending-machines/1`;
+    http.get(absoluteUrl).subscribe();
+
+    const request = backend.expectOne(absoluteUrl);
+    expect(request.request.headers.get('Accept')).toBe(
+      'application/prs.hal-forms+json, application/hal+json;q=0.9, application/json;q=0.8',
+    );
+    request.flush({});
+  });
+
   it('leaves non-API requests untouched', () => {
     http.get('/assets/config.json').subscribe();
 
