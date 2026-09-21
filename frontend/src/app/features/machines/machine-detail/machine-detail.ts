@@ -4,8 +4,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ValueOrEmptyPipe } from '../../../shared/value-or-empty-pipe';
 import { machineUrl } from '../vending-machine-api';
 import { VendingMachine } from '../models/vending-machine';
+import { DatePipe } from '@angular/common';
 
 interface DetailNavigationState {
   href?: string;
@@ -13,7 +15,14 @@ interface DetailNavigationState {
 
 @Component({
   selector: 'app-machine-detail',
-  imports: [MatButtonModule, MatCardModule, MatProgressBarModule, RouterLink],
+  imports: [
+    MatButtonModule,
+    MatCardModule,
+    MatProgressBarModule,
+    RouterLink,
+    ValueOrEmptyPipe,
+    DatePipe,
+  ],
   templateUrl: './machine-detail.html',
 })
 export class MachineDetail {
@@ -32,4 +41,10 @@ export class MachineDetail {
   readonly isLoading = this.resource.isLoading;
   readonly hasError = computed(() => this.resource.error() !== undefined);
   readonly machine = computed(() => this.resource.value());
+  readonly address = computed(() => {
+    const address = this.machine()?.address;
+    return address
+      ? `${address.streetNumber} ${address.streetName}, ${address.postalCode} ${address.city}`
+      : null;
+  });
 }
