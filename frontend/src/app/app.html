@@ -1,6 +1,9 @@
 <mat-toolbar class="flex items-center gap-4">
   <span class="font-semibold">Vending</span>
   <a mat-button routerLink="/machines">Machines</a>
+  @if (isAdmin()) {
+    <a mat-button routerLink="/items">Items</a>
+  }
   <span class="flex-1"></span>
   @if (auth.isAuthenticated()) {
     <span class="text-sm">{{ auth.currentUser()?.email ?? 'Admin' }}</span>

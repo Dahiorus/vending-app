@@ -23,6 +23,12 @@ export const routes: Routes = [
     title: 'Vending machine details',
   },
   {
+    path: 'items',
+    loadComponent: () => import('./features/items/item-list/item-list').then((m) => m.ItemList),
+    canActivate: [adminGuard],
+    title: 'Items',
+  },
+  {
     path: 'login',
     loadComponent: () => import('./features/auth/login/login').then((m) => m.Login),
     title: 'Sign in',

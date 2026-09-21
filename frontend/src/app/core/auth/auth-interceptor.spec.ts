@@ -42,6 +42,16 @@ describe('authInterceptor', () => {
     request.flush({});
   });
 
+  it('attaches the bearer token to absolute HAL links pointing at the API', () => {
+    tokens.setAccessToken('access-1');
+
+    http.get('http://backend.example/api/v1/items').subscribe();
+
+    const request = backend.expectOne('http://backend.example/api/v1/items');
+    expect(request.request.headers.get('Authorization')).toBe('Bearer access-1');
+    request.flush({});
+  });
+
   it('never attaches the bearer token to the authentication endpoints', () => {
     tokens.setAccessToken('access-1');
 

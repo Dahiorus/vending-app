@@ -1,11 +1,6 @@
 import { HalResource } from '../../../shared/models/hal';
-import {
-  CardSystemStatus,
-  ChangeSystemStatus,
-  ItemType,
-  PowerStatus,
-  WorkingStatus,
-} from './enums';
+import { ItemType } from '../../../shared/models/item-type';
+import { CardSystemStatus, ChangeSystemStatus, PowerStatus, WorkingStatus } from './enums';
 
 export interface Address {
   latitude: number | null;

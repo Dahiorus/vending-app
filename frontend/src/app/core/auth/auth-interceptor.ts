@@ -20,6 +20,16 @@ function withBearer(request: HttpRequest<unknown>, token: string): HttpRequest<u
   return request.clone({ setHeaders: { Authorization: `Bearer ${token}` } });
 }
 
+/**
+ * HAL links returned by the backend (e.g. the `items`/`vendingMachines` root
+ * links) are absolute URLs, unlike the relative URLs built by hand elsewhere
+ * in the app. Resolve against the current origin so both forms are matched
+ * on their path alone.
+ */
+function pathOf(url: string): string {
+  return new URL(url, window.location.origin).pathname;
+}
+
 export const authInterceptor: HttpInterceptorFn = (
   request: HttpRequest<unknown>,
   next: HttpHandlerFn,
@@ -27,8 +37,9 @@ export const authInterceptor: HttpInterceptorFn = (
   const tokens = inject(TokenStore);
   const auth = inject(AuthService);
 
-  const isApiRequest = request.url.startsWith(environment.apiBaseUrl);
-  const isAuthenticationRequest = request.url.startsWith(AUTHENTICATION_PATH);
+  const requestPath = pathOf(request.url);
+  const isApiRequest = requestPath.startsWith(environment.apiBaseUrl);
+  const isAuthenticationRequest = requestPath.startsWith(AUTHENTICATION_PATH);
   const accessToken = tokens.accessToken();
 
   const outgoing =
