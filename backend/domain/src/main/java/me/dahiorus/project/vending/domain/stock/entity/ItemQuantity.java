@@ -2,11 +2,12 @@ package me.dahiorus.project.vending.domain.stock.entity;
 
 import static me.dahiorus.project.vending.domain.stock.entity.Quantity.empty;
 
+import java.io.Serializable;
 import me.dahiorus.project.vending.domain.item.entity.Item;
 import me.dahiorus.project.vending.domain.item.entity.ItemId;
 import me.dahiorus.project.vending.domain.item.entity.ItemName;
 
-public record ItemQuantity(Item item, Quantity quantity) {
+public record ItemQuantity(Item item, Quantity quantity) implements Serializable {
 
   public ItemQuantity {
     if (item == null || quantity == null) {
