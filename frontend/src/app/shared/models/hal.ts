@@ -3,8 +3,24 @@ export interface HalLink {
   templated?: boolean;
 }
 
+export interface HalTemplateProperty {
+  name: string;
+  required?: boolean;
+  readOnly?: boolean;
+  type?: string;
+}
+
+/** A HAL-FORMS `_templates` entry describing an action available on the resource. */
+export interface HalTemplate {
+  method: string;
+  contentType?: string;
+  properties?: HalTemplateProperty[];
+  target?: string;
+}
+
 export interface HalResource {
   _links?: Record<string, HalLink | HalLink[]>;
+  _templates?: Record<string, HalTemplate>;
 }
 
 export interface HalPageMetadata {
