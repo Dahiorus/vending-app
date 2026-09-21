@@ -33,5 +33,7 @@ public class VendingMachineStatusReportDtoModelAssembler
 
   @Override
   public void addLinks(
-      final CollectionModel<EntityModel<VendingMachineStatusReportDto>> resources) {}
+      final CollectionModel<EntityModel<VendingMachineStatusReportDto>> resources) {
+    // no action
+  }
 }

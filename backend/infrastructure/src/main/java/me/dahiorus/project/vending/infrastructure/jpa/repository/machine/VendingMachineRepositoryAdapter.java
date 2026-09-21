@@ -44,12 +44,14 @@ public class VendingMachineRepositoryAdapter implements VendingMachineRepository
   @CachePut(key = "#result.id.value")
   @Override
   public VendingMachine update(VendingMachineToUpdate toUpdate) {
-    return find(toUpdate.id())
-        .map(machine -> machine.updateFrom(toUpdate))
-        .map(JpaVendingMachine::fromDomain)
-        .map(jpaRepository::save)
-        .map(JpaVendingMachine::toDomain)
-        .orElseThrow(() -> new ResourceNotFound(toUpdate.id()));
+    var machineToUpdate =
+        jpaRepository
+            .findById(toUpdate.id().value())
+            .orElseThrow(() -> new ResourceNotFound(toUpdate.id()));
+    machineToUpdate.updateFrom(toUpdate);
+    var machineUpdated = jpaRepository.save(machineToUpdate);
+
+    return machineUpdated.toDomain();
   }
 
   @CacheEvict(

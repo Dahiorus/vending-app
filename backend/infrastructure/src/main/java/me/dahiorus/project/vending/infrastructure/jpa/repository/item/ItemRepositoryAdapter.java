@@ -54,12 +54,14 @@ public class ItemRepositoryAdapter implements ItemRepositoryPort {
   @CachePut(key = "#result.id")
   @Override
   public Item update(ItemToUpdate toUpdate) {
-    return find(toUpdate.id())
-        .map(item -> item.updateFrom(toUpdate))
-        .map(JpaItem::fromDomain)
-        .map(jpaRepository::save)
-        .map(JpaItem::toDomain)
-        .orElseThrow(() -> new ResourceNotFound(toUpdate.id()));
+    var itemToUpdate =
+        jpaRepository
+            .findById(toUpdate.id().value())
+            .orElseThrow(() -> new ResourceNotFound(toUpdate.id()));
+    itemToUpdate.updateFrom(toUpdate);
+    var itemUpdated = jpaRepository.save(itemToUpdate);
+
+    return itemUpdated.toDomain();
   }
 
   @CacheEvict(

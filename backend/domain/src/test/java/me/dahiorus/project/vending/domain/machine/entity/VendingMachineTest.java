@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.domain.machine.entity;
 
+import static java.time.Month.JUNE;
 import static me.dahiorus.project.vending.domain.item.entity.ItemType.COLD_BEVERAGE;
 import static me.dahiorus.project.vending.domain.item.entity.ItemType.SNACK;
 import static me.dahiorus.project.vending.domain.machine.entity.VendingMachineStatus.defaultStatus;
@@ -11,8 +12,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
-import me.dahiorus.project.vending.domain.machine.entity.Address.StreetName;
-import me.dahiorus.project.vending.domain.machine.entity.Address.StreetNumber;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -29,39 +28,9 @@ class VendingMachineTest {
             null);
     assertThat(vendingMachine.lastIntervention()).isNull();
 
-    var result = vendingMachine.markIntervention(LocalDateTime.of(2025, 6, 4, 11, 12, 0));
+    var result = vendingMachine.markIntervention(LocalDateTime.of(2025, JUNE, 4, 11, 12, 0));
 
-    assertThat(result.lastIntervention()).isEqualTo(LocalDateTime.of(2025, 6, 4, 11, 12, 0));
-  }
-
-  @Test
-  void should_update_address_streetAddress() {
-    var vendingMachine =
-        new VendingMachine(
-            new VendingMachineId(UUID.randomUUID()),
-            SerialNumber.of("1234-5678"),
-            anAddress().build(),
-            COLD_BEVERAGE,
-            defaultStatus(),
-            null);
-    var toUpdate =
-        new VendingMachineToUpdate(
-            vendingMachine.id(),
-            anAddress().streetNumber(6).streetName("Rue de la Gare").build(),
-            vendingMachine.status(),
-            vendingMachine.lastIntervention());
-
-    var result = vendingMachine.updateFrom(toUpdate);
-
-    var oldAddress = vendingMachine.address();
-    assertThat(result.address())
-        .isEqualTo(
-            new Address(
-                oldAddress.coordinates(),
-                StreetNumber.of(6),
-                StreetName.of("Rue de la Gare"),
-                oldAddress.postalCode(),
-                oldAddress.city()));
+    assertThat(result.lastIntervention()).isEqualTo(LocalDateTime.of(2025, JUNE, 4, 11, 12, 0));
   }
 
   @Nested

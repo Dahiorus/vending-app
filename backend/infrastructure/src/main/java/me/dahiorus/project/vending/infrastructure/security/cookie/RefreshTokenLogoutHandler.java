@@ -1,14 +1,15 @@
 package me.dahiorus.project.vending.infrastructure.security.cookie;
 
+import static java.util.Arrays.stream;
+import static org.springframework.http.HttpHeaders.SET_COOKIE;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 import me.dahiorus.project.vending.domain.user.entity.RefreshTokenId;
 import me.dahiorus.project.vending.domain.user.port.RefreshTokenApiPort;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
@@ -44,7 +45,7 @@ public class RefreshTokenLogoutHandler implements LogoutHandler {
       final Authentication authentication) {
     findRefreshCookie(request).ifPresent(this::revokeBestEffort);
 
-    response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookieFactory.clear().toString());
+    response.addHeader(SET_COOKIE, refreshTokenCookieFactory.clear().toString());
   }
 
   private Optional<String> findRefreshCookie(final HttpServletRequest request) {
@@ -53,7 +54,7 @@ public class RefreshTokenLogoutHandler implements LogoutHandler {
       return Optional.empty();
     }
 
-    return Arrays.stream(cookies)
+    return stream(cookies)
         .filter(cookie -> refreshTokenCookieProperties.getName().equals(cookie.getName()))
         .map(Cookie::getValue)
         .findFirst();
@@ -63,7 +64,7 @@ public class RefreshTokenLogoutHandler implements LogoutHandler {
     try {
       var jti = jwtDecoder.decode(refreshCookie).getId();
       refreshTokenApiPort.revoke(new RefreshTokenId(UUID.fromString(jti)));
-    } catch (JwtException | IllegalArgumentException e) {
+    } catch (JwtException | IllegalArgumentException _) {
       // logout must be idempotent and never fail because the cookie is stale/invalid
     }
   }

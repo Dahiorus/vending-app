@@ -31,6 +31,7 @@ import me.dahiorus.project.vending.domain.machine.entity.VendingMachineStatus.Ch
 import me.dahiorus.project.vending.domain.machine.entity.VendingMachineStatus.PowerStatus;
 import me.dahiorus.project.vending.domain.machine.entity.VendingMachineStatus.Temperature;
 import me.dahiorus.project.vending.domain.machine.entity.VendingMachineStatus.WorkingStatus;
+import me.dahiorus.project.vending.domain.machine.entity.VendingMachineToUpdate;
 import me.dahiorus.project.vending.domain.stock.entity.VendingMachineStock;
 
 @Entity
@@ -181,5 +182,19 @@ public class JpaVendingMachine extends JpaEntity {
   public VendingMachineStock toVendingMachineStocks() {
     return new VendingMachineStock(
         stocks.stream().map(JpaVendingMachineStockEntry::toDomain).collect(toSet()));
+  }
+
+  public void updateFrom(VendingMachineToUpdate toUpdate) {
+    address = JpaAddress.fromDomain(toUpdate.address());
+
+    var statusToUpdate = toUpdate.status();
+    temperature = statusToUpdate.temperature().value();
+    powerStatus = statusToUpdate.powerStatus();
+    workingStatus = statusToUpdate.workingStatus();
+    rfidStatus = statusToUpdate.rfidStatus();
+    smartCardStatus = statusToUpdate.smartCardStatus();
+    changeMoneyStatus = statusToUpdate.changeMoneyStatus();
+
+    lastIntervention = toUpdate.lastIntervention();
   }
 }
