@@ -41,7 +41,7 @@
         <dd>{{ machine.changeMoneyStatus | valueOrEmpty }}</dd>
 
         <dt class="font-medium">Last intervention</dt>
-        <dd>{{ machine.lastIntervention | valueOrEmpty | date: 'short' }}</dd>
+        <dd>{{ machine.lastIntervention | date: 'short' | valueOrEmpty }}</dd>
       </dl>
     </mat-card-content>
   </mat-card>
