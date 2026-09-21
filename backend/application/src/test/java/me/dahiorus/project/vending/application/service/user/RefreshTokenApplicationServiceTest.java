@@ -1,13 +1,17 @@
 package me.dahiorus.project.vending.application.service.user;
 
 import static java.time.Instant.now;
+import static java.time.ZoneId.systemDefault;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mock.Strictness.LENIENT;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.Optional;
 import me.dahiorus.project.vending.domain.exception.InvalidRefreshToken;
@@ -15,6 +19,7 @@ import me.dahiorus.project.vending.domain.user.entity.EmailAddress;
 import me.dahiorus.project.vending.domain.user.entity.RefreshToken;
 import me.dahiorus.project.vending.domain.user.entity.RefreshTokenId;
 import me.dahiorus.project.vending.domain.user.port.RefreshTokenRepositoryPort;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,7 +31,17 @@ class RefreshTokenApplicationServiceTest {
 
   @Mock RefreshTokenRepositoryPort refreshTokenRepository;
 
+  @Mock(strictness = LENIENT)
+  Clock clock;
+
   @InjectMocks RefreshTokenApplicationService refreshTokenApplicationService;
+
+  @BeforeEach
+  void setUpClock() {
+    var fixedClock = Clock.fixed(now(), systemDefault());
+    doReturn(fixedClock.instant()).when(clock).instant();
+    doReturn(fixedClock.getZone()).when(clock).getZone();
+  }
 
   @Test
   void should_save_refresh_token() {
