@@ -4,7 +4,7 @@
 </div>
 
 @if (isLoading()) {
-  <mat-progress-bar mode="indeterminate" />
+  <mat-progress-bar mode="indeterminate"/>
 }
 
 @if (hasError()) {
@@ -14,41 +14,34 @@
     <mat-card-content>
       <dl class="grid grid-cols-2 gap-x-4 gap-y-2">
         <dt class="font-medium">Serial number</dt>
-        <dd>{{ machine.serialNumber ?? '—' }}</dd>
+        <dd>{{ machine.serialNumber | valueOrEmpty }}</dd>
 
         <dt class="font-medium">Address</dt>
-        <dd>
-          @if (machine.address; as address) {
-            {{ address.streetNumber }} {{ address.streetName }}, {{ address.postalCode }}
-            {{ address.city }}
-          } @else {
-            —
-          }
-        </dd>
+        <dd>{{ address() | valueOrEmpty }}</dd>
 
         <dt class="font-medium">Item type</dt>
-        <dd>{{ machine.itemType ?? '—' }}</dd>
+        <dd>{{ machine.itemType | valueOrEmpty }}</dd>
 
         <dt class="font-medium">Working status</dt>
-        <dd>{{ machine.workingStatus ?? '—' }}</dd>
+        <dd>{{ machine.workingStatus | valueOrEmpty }}</dd>
 
         <dt class="font-medium">Power status</dt>
-        <dd>{{ machine.powerStatus ?? '—' }}</dd>
+        <dd>{{ machine.powerStatus | valueOrEmpty }}</dd>
 
         <dt class="font-medium">Temperature</dt>
-        <dd>{{ machine.temperature ?? '—' }}</dd>
+        <dd>{{ machine.temperature | valueOrEmpty }}</dd>
 
         <dt class="font-medium">RFID status</dt>
-        <dd>{{ machine.rfidStatus ?? '—' }}</dd>
+        <dd>{{ machine.rfidStatus | valueOrEmpty }}</dd>
 
         <dt class="font-medium">Smart card status</dt>
-        <dd>{{ machine.smartCardStatus ?? '—' }}</dd>
+        <dd>{{ machine.smartCardStatus | valueOrEmpty }}</dd>
 
         <dt class="font-medium">Change money status</dt>
-        <dd>{{ machine.changeMoneyStatus ?? '—' }}</dd>
+        <dd>{{ machine.changeMoneyStatus | valueOrEmpty }}</dd>
 
         <dt class="font-medium">Last intervention</dt>
-        <dd>{{ machine.lastIntervention ?? '—' }}</dd>
+        <dd>{{ machine.lastIntervention | valueOrEmpty | date: 'short' }}</dd>
       </dl>
     </mat-card-content>
   </mat-card>

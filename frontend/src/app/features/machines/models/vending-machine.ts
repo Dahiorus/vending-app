@@ -35,7 +35,7 @@ export interface VendingMachine extends HalResource {
   id: string;
   serialNumber: string | null;
   address: Address | null;
-  lastIntervention: string | null;
+  lastIntervention: Date | null;
   temperature: number | null;
   itemType: ItemType | null;
   powerStatus: PowerStatus | null;
