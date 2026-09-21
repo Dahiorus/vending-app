@@ -1,4 +1,4 @@
-import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.testing.jacoco.tasks.JacocoReport
 
 plugins {
     alias(libs.plugins.spring.boot) apply false
@@ -25,10 +25,15 @@ allprojects {
 configure(backendSubprojects) {
     apply(plugin = "java-library")
     apply(plugin = "com.diffplug.spotless")
+    apply(plugin = "jacoco")
 
     configure<JavaPluginExtension> {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(libsCatalog.findVersion("java").get().requiredVersion))
+            languageVersion.set(
+                JavaLanguageVersion.of(
+                    libsCatalog.findVersion("java").get().requiredVersion
+                )
+            )
         }
     }
 
@@ -65,6 +70,21 @@ configure(backendSubprojects) {
 
     tasks.withType<Test> {
         useJUnitPlatform()
+    }
+
+    // `jacocoTestReport` is wired to `test` by the jacoco plugin's own
+    // convention; :backend:infrastructure overrides it (see its own
+    // build.gradle.kts) to also merge the `intTest` execution data into a
+    // single report, so it must stay generic here.
+    tasks.named<JacocoReport>("jacocoTestReport") {
+        reports {
+            xml.required.set(true)
+            html.required.set(true)
+        }
+    }
+
+    tasks.named("check") {
+        dependsOn("jacocoTestReport")
     }
 }
 

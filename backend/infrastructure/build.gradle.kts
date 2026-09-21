@@ -1,3 +1,5 @@
+import org.gradle.testing.jacoco.tasks.JacocoReport
+
 plugins {
     alias(libs.plugins.spring.boot)
     `jvm-test-suite`
@@ -65,6 +67,16 @@ configurations.named("intTestRuntimeOnly") {
 
 tasks.named("check") {
     dependsOn(testing.suites.named("intTest"))
+}
+
+// The jacoco plugin's `jacocoTestReport` only wires to `test` by default;
+// this module's tests are split across `test` (unit) and `intTest`
+// (SecurityChainIT and friends), so the report is overridden here to merge
+// both execution data files into a single unified coverage report instead
+// of reporting unit-test coverage only.
+tasks.named<JacocoReport>("jacocoTestReport") {
+    executionData(tasks.named("test").get(), tasks.named("intTest").get())
+    dependsOn(tasks.named("test"), tasks.named("intTest"))
 }
 
 dependencies {
