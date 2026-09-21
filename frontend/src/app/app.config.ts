@@ -9,6 +9,7 @@ import { provideRouter } from '@angular/router';
 import { catchError, firstValueFrom, of } from 'rxjs';
 import { AuthService } from './core/auth/auth';
 import { authInterceptor } from './core/auth/auth-interceptor';
+import { halFormsInterceptor } from './core/http/hal-forms-interceptor';
 import { routes } from './app.routes';
 
 export function restoreSessionOnStartup(): Promise<string | undefined> {
@@ -25,7 +26,7 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(restoreSessionOnStartup),
     provideRouter(routes),
     provideHttpClient(
-      withInterceptors([authInterceptor]),
+      withInterceptors([halFormsInterceptor, authInterceptor]),
       withXsrfConfiguration({ cookieName: 'XSRF-TOKEN', headerName: 'X-XSRF-TOKEN' }),
     ),
   ],
