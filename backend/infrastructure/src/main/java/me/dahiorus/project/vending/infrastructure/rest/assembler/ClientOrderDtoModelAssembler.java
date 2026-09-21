@@ -35,5 +35,7 @@ public class ClientOrderDtoModelAssembler
   }
 
   @Override
-  public void addLinks(final CollectionModel<EntityModel<ClientOrderDto>> resources) {}
+  public void addLinks(final CollectionModel<EntityModel<ClientOrderDto>> resources) {
+    // no action
+  }
 }

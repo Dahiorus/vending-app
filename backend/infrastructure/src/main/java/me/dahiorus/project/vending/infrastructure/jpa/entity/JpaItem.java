@@ -18,6 +18,7 @@ import me.dahiorus.project.vending.domain.item.entity.Item;
 import me.dahiorus.project.vending.domain.item.entity.ItemId;
 import me.dahiorus.project.vending.domain.item.entity.ItemName;
 import me.dahiorus.project.vending.domain.item.entity.ItemToCreate;
+import me.dahiorus.project.vending.domain.item.entity.ItemToUpdate;
 import me.dahiorus.project.vending.domain.item.entity.ItemType;
 
 @Entity
@@ -89,5 +90,9 @@ public class JpaItem extends JpaEntity {
     jpaItem.type = item.type();
 
     return jpaItem;
+  }
+
+  public void updateFrom(ItemToUpdate toUpdate) {
+    price = toUpdate.price();
   }
 }

@@ -3,6 +3,7 @@ package me.dahiorus.project.vending.infrastructure.security.config;
 import static jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static java.time.LocalDateTime.now;
+import static java.time.temporal.ChronoUnit.DAYS;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -12,6 +13,7 @@ import static org.springframework.security.web.servlet.util.matcher.PathPatternR
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Clock;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import me.dahiorus.project.vending.domain.user.port.RefreshTokenApiPort;
@@ -76,8 +78,9 @@ public class WebSecurityConfig {
     // the XSRF-TOKEN cookie must outlive a browser session, otherwise it disappears before the
     // long-lived refresh_token cookie does, breaking refresh/logout after a browser restart
     CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
-    csrfTokenRepository.setCookieMaxAge(
-        jwtProperties.getRefreshTokenDuration().getDays() * 24 * 3600);
+    csrfTokenRepository.setCookieCustomizer(
+        cookie ->
+            cookie.maxAge(Duration.of(jwtProperties.getRefreshTokenDuration().getDays(), DAYS)));
 
     return http.csrf(
             csrf ->

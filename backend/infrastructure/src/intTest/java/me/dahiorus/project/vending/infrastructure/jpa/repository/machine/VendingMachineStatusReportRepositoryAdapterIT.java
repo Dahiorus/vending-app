@@ -1,6 +1,7 @@
 package me.dahiorus.project.vending.infrastructure.jpa.repository.machine;
 
 import static java.time.LocalDateTime.now;
+import static java.time.Month.JUNE;
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static me.dahiorus.project.vending.domain.machine.entity.VendingMachineStatus.CardSystemStatus.OK;
 import static me.dahiorus.project.vending.domain.machine.entity.VendingMachineStatus.ChangeSystemStatus.NORMAL;
@@ -35,7 +36,7 @@ class VendingMachineStatusReportRepositoryAdapterIT extends H2DbContainer {
     var reportToCreate =
         new VendingMachineStatusReportToCreate(
             SerialNumber.of("SN-1234-5678"),
-            LocalDateTime.of(2025, 6, 9, 10, 35, 25),
+            LocalDateTime.of(2025, JUNE, 9, 10, 35, 25),
             defaultStatus());
 
     var result = repository.create(reportToCreate);
@@ -53,7 +54,7 @@ class VendingMachineStatusReportRepositoryAdapterIT extends H2DbContainer {
             new VendingMachineStatusReport(
                 null,
                 SerialNumber.of("SN-1234-5678"),
-                LocalDateTime.of(2025, 6, 9, 10, 35, 25),
+                LocalDateTime.of(2025, JUNE, 9, 10, 35, 25),
                 new VendingMachineStatus(DEFAULT_TEMPERATURE, POWER_OFF, WORKING, OK, OK, NORMAL),
                 null));
   }

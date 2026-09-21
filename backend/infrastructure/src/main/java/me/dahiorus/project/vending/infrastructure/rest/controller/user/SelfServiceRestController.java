@@ -125,7 +125,7 @@ public class SelfServiceRestController {
   private AppUser getUserOrThrowNotAuthenticated(final EmailAddress email) {
     try {
       return appUserService.getByUsername(email);
-    } catch (ResourceNotFound e) {
+    } catch (ResourceNotFound _) {
       throw new UserNotAuthenticated();
     }
   }

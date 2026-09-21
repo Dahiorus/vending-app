@@ -22,16 +22,6 @@ public record VendingMachine(
     return new VendingMachine(id, serialNumber, address, itemType, status, at);
   }
 
-  public VendingMachine updateFrom(VendingMachineToUpdate toUpdate) {
-    return new VendingMachine(
-        id,
-        serialNumber,
-        toUpdate.address(),
-        itemType,
-        toUpdate.status(),
-        toUpdate.lastIntervention());
-  }
-
   public VendingMachineToUpdate toUpdate() {
     return new VendingMachineToUpdate(id, address, status, lastIntervention);
   }

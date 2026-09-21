@@ -83,5 +83,7 @@ public class VendingMachineStockDtoModelAssembler
   }
 
   @Override
-  public void addLinks(CollectionModel<EntityModel<VendingMachineStockDto>> resources) {}
+  public void addLinks(CollectionModel<EntityModel<VendingMachineStockDto>> resources) {
+    // no action
+  }
 }
