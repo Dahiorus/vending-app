@@ -24,7 +24,7 @@ public record VendingMachineStockDto(
             .collect(toCollection(LinkedHashSet::new)));
   }
 
-  public record ItemQuantityDto(@JsonIgnore UUID itemId, String itemName, Integer quantity) {
+  public record ItemQuantityDto(UUID itemId, String itemName, Integer quantity) {
     public static ItemQuantityDto fromDomain(ItemQuantity itemQuantity) {
       return new ItemQuantityDto(
           itemQuantity.itemId().value(),
