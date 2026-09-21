@@ -1,11 +1,18 @@
 import { environment } from '../../../environments/environment';
 
+/** Used for the create mutation, out of scope for the root-link discovery below. */
 export function machinesUrl(): string {
   return `${environment.apiBaseUrl}/vending-machines`;
 }
 
-export function machinesPageUrl(pageIndex: number, pageSize: number): string {
-  return `${machinesUrl()}?page=${pageIndex}&size=${pageSize}`;
+/** `undefined` until the `vendingMachines` root link is resolved (see `ApiRootApi`). */
+export function machinesPageUrl(
+  vendingMachinesHref: string | undefined,
+  pageIndex: number,
+  pageSize: number,
+): string | undefined {
+  if (!vendingMachinesHref) return undefined;
+  return `${vendingMachinesHref}?page=${pageIndex}&size=${pageSize}`;
 }
 
 /**
