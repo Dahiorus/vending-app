@@ -8,10 +8,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { ITEM_TYPES } from '../models/enums';
+import { ITEM_TYPES } from '../../../shared/models/item-type';
+import { parseValidationErrors } from '../../../shared/models/validation-error';
 import { VendingMachineToCreate } from '../models/vending-machine';
 import { machinesUrl } from '../vending-machine-api';
-import { parseValidationErrors } from '../../../shared/models/validation-error';
 const FORM_FIELDS = [
   'serialNumber',
   'itemType',
