@@ -35,6 +35,13 @@ describe('MachineList', () => {
     // `whenStable()` would deadlock here: trigger change detection synchronously
     // instead and only await stability after the pending request is flushed.
     fixture.detectChanges();
+    // The machines page URL is only resolved once the `/api/v1` root link is
+    // loaded, so every test needs that resolved first.
+    backend
+      .expectOne('/api/v1')
+      .flush({ _links: { vendingMachines: { href: '/api/v1/vending-machines' } } });
+    await Promise.resolve();
+    fixture.detectChanges();
   });
 
   afterEach(() => backend.verify());

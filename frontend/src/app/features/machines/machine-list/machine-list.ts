@@ -7,6 +7,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth';
+import { ApiRootApi } from '../../../core/http/api-root-api';
 import { machinesPageUrl } from '../vending-machine-api';
 import { HalPage, toPage } from '../../../shared/models/hal';
 import { VendingMachine } from '../models/vending-machine';
@@ -27,6 +28,7 @@ const DEFAULT_PAGE_SIZE = 10;
 })
 export class MachineList {
   private readonly auth = inject(AuthService);
+  private readonly apiRoot = inject(ApiRootApi);
 
   readonly isAdmin = computed(() => this.auth.roles().includes('ROLE_ADMIN'));
 
@@ -43,7 +45,7 @@ export class MachineList {
   readonly pageSize = signal(DEFAULT_PAGE_SIZE);
 
   private readonly resource = httpResource<HalPage<VendingMachine>>(() =>
-    machinesPageUrl(this.pageIndex(), this.pageSize()),
+    machinesPageUrl(this.apiRoot.link('vendingMachines'), this.pageIndex(), this.pageSize()),
   );
 
   readonly isLoading = this.resource.isLoading;
