@@ -17,7 +17,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @ConfigurationPropertiesScan(basePackages = "me.dahiorus.project.vending")
 public class VendingApplication {
-  public static void main(final String[] args) {
+  void main(final String[] args) {
     run(VendingApplication.class, args);
   }
 }
