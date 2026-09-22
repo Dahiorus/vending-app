@@ -39,3 +39,13 @@ export interface VendingMachine extends HalResource {
   smartCardStatus: CardSystemStatus | null;
   changeMoneyStatus: ChangeSystemStatus | null;
 }
+
+export interface ItemQuantity {
+  itemId: string;
+  itemName: string;
+  quantity: number;
+}
+
+export interface VendingMachineStock extends HalResource {
+  itemQuantities: ItemQuantity[];
+}

@@ -45,4 +45,44 @@
       </dl>
     </mat-card-content>
   </mat-card>
+
+  <h2 class="mt-6 mb-2 text-lg font-semibold">Stock</h2>
+
+  @if (stockLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+
+  @if (stockError()) {
+    <p class="text-red-600" role="alert">The stock could not be loaded.</p>
+  } @else if (itemQuantities().length === 0) {
+    <p>No stock for this vending machine.</p>
+  } @else {
+    <mat-card>
+      <mat-card-content>
+        <table class="w-full text-left">
+          <thead>
+            <tr>
+              <th class="font-medium">Item</th>
+              <th class="font-medium">Quantity</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (itemQuantity of itemQuantities(); track itemQuantity.itemId) {
+              <tr>
+                <td>
+                  {{ itemQuantity.itemName }}
+                  @if (isAdmin() && itemLink(itemQuantity.itemId); as href) {
+                    <a [href]="href" target="_blank" rel="noopener" aria-label="View item">
+                      <mat-icon inline class="align-middle text-base">open_in_new</mat-icon>
+                    </a>
+                  }
+                </td>
+                <td>{{ itemQuantity.quantity }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  }
 }

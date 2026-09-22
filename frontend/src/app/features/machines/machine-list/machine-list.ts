@@ -11,6 +11,7 @@ import { ApiRootApi } from '../../../core/http/api-root-api';
 import { machinesPageUrl } from '../vending-machine-api';
 import { HalPage, toPage } from '../../../shared/models/hal';
 import { VendingMachine } from '../models/vending-machine';
+import { ValueOrEmptyPipe } from '../../../shared/value-or-empty-pipe';
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -23,6 +24,7 @@ const DEFAULT_PAGE_SIZE = 10;
     MatProgressBarModule,
     MatTableModule,
     RouterLink,
+    ValueOrEmptyPipe,
   ],
   templateUrl: './machine-list.html',
 })
