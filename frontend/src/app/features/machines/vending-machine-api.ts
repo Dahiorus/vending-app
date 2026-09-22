@@ -1,4 +1,5 @@
 import { environment } from '../../../environments/environment';
+import { pagedUrl } from '../../shared/http/paged-url';
 
 /** Used for the create mutation, out of scope for the root-link discovery below. */
 export function machinesUrl(): string {
@@ -11,8 +12,7 @@ export function machinesPageUrl(
   pageIndex: number,
   pageSize: number,
 ): string | undefined {
-  if (!vendingMachinesHref) return undefined;
-  return `${vendingMachinesHref}?page=${pageIndex}&size=${pageSize}`;
+  return pagedUrl(vendingMachinesHref, { page: pageIndex + 1, size: pageSize });
 }
 
 /**

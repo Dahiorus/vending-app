@@ -1,17 +1,22 @@
 import { httpResource } from '@angular/common/http';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth';
 import { ApiRootApi } from '../../../core/http/api-root-api';
 import { machinesPageUrl } from '../vending-machine-api';
-import { HalPage, Page } from '../../../shared/models/hal';
+import { intQueryParam } from '../../../shared/http/query-params';
+import { HalPage } from '../../../shared/models/hal';
 import { VendingMachine } from '../models/vending-machine';
 import { ValueOrEmptyPipe } from '../../../shared/value-or-empty-pipe';
+import { Page } from '../../../shared/models/page';
+
+const DEFAULT_PAGE_SIZE = 20;
 
 @Component({
   selector: 'app-machine-list',
@@ -29,6 +34,8 @@ import { ValueOrEmptyPipe } from '../../../shared/value-or-empty-pipe';
 export class MachineList {
   private readonly auth = inject(AuthService);
   private readonly apiRoot = inject(ApiRootApi);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   readonly isAdmin = this.auth.isAdmin;
 
@@ -41,8 +48,11 @@ export class MachineList {
     'actions',
   ];
 
-  readonly pageIndex = signal(0);
-  readonly pageSize = signal(20);
+  private readonly queryParamMap = toSignal(this.route.queryParamMap, { requireSync: true });
+  readonly pageIndex = computed(() => intQueryParam(this.queryParamMap().get('page'), 0));
+  readonly pageSize = computed(() =>
+    intQueryParam(this.queryParamMap().get('size'), DEFAULT_PAGE_SIZE),
+  );
 
   private readonly resource = httpResource<HalPage<VendingMachine>>(() =>
     machinesPageUrl(this.apiRoot.link('vendingMachines'), this.pageIndex(), this.pageSize()),
@@ -58,7 +68,10 @@ export class MachineList {
   readonly totalElements = computed(() => this.machines().totalElements);
 
   onPageChange(event: Pick<PageEvent, 'pageIndex' | 'pageSize' | 'length'>): void {
-    this.pageIndex.set(event.pageIndex);
-    this.pageSize.set(event.pageSize);
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { page: event.pageIndex, size: event.pageSize },
+      queryParamsHandling: 'merge',
+    });
   }
 }

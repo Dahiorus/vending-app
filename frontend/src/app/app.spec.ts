@@ -45,7 +45,7 @@ describe('App', () => {
     await fixture.whenStable();
 
     const toolbar = fixture.nativeElement as HTMLElement;
-    expect(toolbar.textContent).toContain('Sign out');
+    expect(toolbar.textContent).toContain('Log out');
     expect(toolbar.textContent).toContain('Admin');
   });
 });
