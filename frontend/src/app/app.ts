@@ -14,7 +14,7 @@ export class App {
   protected readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
-  protected readonly isAdmin = computed(() => this.auth.roles().includes('ROLE_ADMIN'));
+  protected readonly isAdmin = this.auth.isAdmin;
   protected readonly isAuthenticated = computed(() => this.auth.isAuthenticated());
   protected readonly currentUser = computed(() => this.auth.currentUser());
 

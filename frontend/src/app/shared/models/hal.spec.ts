@@ -1,18 +1,18 @@
 import { describe, expect, it } from 'vitest';
-import { HalPage, HalResource, toPage } from './hal';
+import { HalPage, HalResource, Page } from './hal';
 
 interface Sample {
   id: string;
 }
 
-describe('toPage', () => {
+describe('Page.fromHalPage', () => {
   it('unwraps the _embedded.elements collection and the page metadata', () => {
     const hal: HalPage<Sample> = {
       _embedded: { elements: [{ id: 'a' }, { id: 'b' }] },
       page: { size: 20, totalElements: 42, totalPages: 3, number: 1 },
     };
 
-    expect(toPage(hal)).toEqual({
+    expect(Page.fromHalPage(hal)).toEqual({
       elements: [{ id: 'a' }, { id: 'b' }],
       totalElements: 42,
       totalPages: 3,
@@ -26,8 +26,8 @@ describe('toPage', () => {
       page: { size: 20, totalElements: 0, totalPages: 0, number: 0 },
     };
 
-    expect(toPage(hal).elements).toEqual([]);
-    expect(toPage(hal).totalElements).toBe(0);
+    expect(Page.fromHalPage(hal).elements).toEqual([]);
+    expect(Page.fromHalPage(hal).totalElements).toBe(0);
   });
 });
 

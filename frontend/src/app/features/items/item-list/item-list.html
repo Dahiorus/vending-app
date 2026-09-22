@@ -9,7 +9,7 @@
 @if (hasError()) {
   <p class="text-red-600" role="alert">Items could not be loaded.</p>
 } @else {
-  <table mat-table [dataSource]="items()" class="w-full">
+  <table mat-table [dataSource]="items().elements" class="w-full">
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef>Name</th>
       <td mat-cell *matCellDef="let item">{{ item.name ?? '—' }}</td>
@@ -29,7 +29,7 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   </table>
 
-  @if (!isLoading() && items().length === 0) {
+  @if (!isLoading() && items().isEmpty) {
     <p class="p-4 text-sm text-gray-600">No item found.</p>
   }
 

@@ -4,11 +4,9 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
 import { ApiRootApi } from '../../../core/http/api-root-api';
-import { HalPage, toPage } from '../../../shared/models/hal';
+import { HalPage, Page } from '../../../shared/models/hal';
 import { itemsPageUrl } from '../item-api';
 import { Item } from '../models/item';
-
-const DEFAULT_PAGE_SIZE = 10;
 
 @Component({
   selector: 'app-item-list',
@@ -21,7 +19,7 @@ export class ItemList {
   protected readonly displayedColumns = ['name', 'type', 'price'];
 
   readonly pageIndex = signal(0);
-  readonly pageSize = signal(DEFAULT_PAGE_SIZE);
+  readonly pageSize = signal(20);
 
   private readonly resource = httpResource<HalPage<Item>>(() =>
     itemsPageUrl(this.apiRoot.link('items'), this.pageIndex(), this.pageSize()),
@@ -30,11 +28,9 @@ export class ItemList {
   readonly isLoading = this.resource.isLoading;
   readonly hasError = computed(() => this.resource.error() !== undefined);
   readonly items = computed(() =>
-    this.resource.hasValue() ? toPage(this.resource.value()).elements : [],
+    this.resource.hasValue() ? Page.fromHalPage(this.resource.value()) : Page.empty<Item>(),
   );
-  readonly totalElements = computed(() =>
-    this.resource.hasValue() ? toPage(this.resource.value()).totalElements : 0,
-  );
+  readonly totalElements = computed(() => this.items().totalElements);
 
   onPageChange(event: Pick<PageEvent, 'pageIndex' | 'pageSize' | 'length'>): void {
     this.pageIndex.set(event.pageIndex);

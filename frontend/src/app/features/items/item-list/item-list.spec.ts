@@ -7,7 +7,7 @@ import { ItemList } from './item-list';
 describe('ItemList', () => {
   let fixture: ComponentFixture<ItemList>;
   let component: ItemList;
-  let backend: HttpTestingController;
+  let http: HttpTestingController;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -17,22 +17,17 @@ describe('ItemList', () => {
 
     fixture = TestBed.createComponent(ItemList);
     component = fixture.componentInstance;
-    backend = TestBed.inject(HttpTestingController);
-    // `httpResource` keeps the fixture unstable while its request is pending, so
-    // `whenStable()` would deadlock here: trigger change detection synchronously
-    // instead and only await stability after the pending request is flushed.
+    http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
-    // The items page URL is only resolved once the `/api/v1` root link is
-    // loaded, so every test needs that resolved first.
-    backend.expectOne('/api/v1').flush({ _links: { items: { href: '/api/v1/items' } } });
+    http.expectOne('/api/v1').flush({ _links: { items: { href: '/api/v1/items' } } });
     await Promise.resolve();
     fixture.detectChanges();
   });
 
-  afterEach(() => backend.verify());
+  afterEach(() => http.verify());
 
   it('requests the first page on load and exposes the unwrapped elements', async () => {
-    const request = backend.expectOne('/api/v1/items?page=0&size=10');
+    const request = http.expectOne('/api/v1/items?page=0&size=10');
     expect(request.request.method).toBe('GET');
 
     request.flush({
@@ -43,28 +38,26 @@ describe('ItemList', () => {
     });
     await fixture.whenStable();
 
-    expect(component.items()).toHaveLength(1);
-    expect(component.items()[0].name).toBe('Cola');
+    expect(component.items().elements).toHaveLength(1);
+    expect(component.items().elements[0].name).toBe('Cola');
     expect(component.totalElements()).toBe(1);
   });
 
   it('requests the next page when the paginator moves', async () => {
-    backend
+    http
       .expectOne('/api/v1/items?page=0&size=10')
       .flush({ page: { size: 10, totalElements: 30, totalPages: 3, number: 0 } });
     await fixture.whenStable();
 
     component.onPageChange({ pageIndex: 2, pageSize: 10, length: 30 });
-    // Trigger CD synchronously so the resource issues its next request; awaiting
-    // `whenStable()` here would deadlock while that request is still pending.
     fixture.detectChanges();
 
-    backend
+    http
       .expectOne('/api/v1/items?page=2&size=10')
       .flush({ page: { size: 10, totalElements: 30, totalPages: 3, number: 2 } });
     await fixture.whenStable();
 
-    expect(component.items()).toEqual([]);
+    expect(component.items().elements).toEqual([]);
     expect(component.totalElements()).toBe(30);
   });
 });

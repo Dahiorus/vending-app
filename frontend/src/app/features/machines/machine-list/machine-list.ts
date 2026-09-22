@@ -9,11 +9,9 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth';
 import { ApiRootApi } from '../../../core/http/api-root-api';
 import { machinesPageUrl } from '../vending-machine-api';
-import { HalPage, toPage } from '../../../shared/models/hal';
+import { HalPage, Page } from '../../../shared/models/hal';
 import { VendingMachine } from '../models/vending-machine';
 import { ValueOrEmptyPipe } from '../../../shared/value-or-empty-pipe';
-
-const DEFAULT_PAGE_SIZE = 10;
 
 @Component({
   selector: 'app-machine-list',
@@ -32,7 +30,7 @@ export class MachineList {
   private readonly auth = inject(AuthService);
   private readonly apiRoot = inject(ApiRootApi);
 
-  readonly isAdmin = computed(() => this.auth.roles().includes('ROLE_ADMIN'));
+  readonly isAdmin = this.auth.isAdmin;
 
   protected readonly displayedColumns = [
     'serialNumber',
@@ -44,7 +42,7 @@ export class MachineList {
   ];
 
   readonly pageIndex = signal(0);
-  readonly pageSize = signal(DEFAULT_PAGE_SIZE);
+  readonly pageSize = signal(20);
 
   private readonly resource = httpResource<HalPage<VendingMachine>>(() =>
     machinesPageUrl(this.apiRoot.link('vendingMachines'), this.pageIndex(), this.pageSize()),
@@ -53,11 +51,11 @@ export class MachineList {
   readonly isLoading = this.resource.isLoading;
   readonly hasError = computed(() => this.resource.error() !== undefined);
   readonly machines = computed(() =>
-    this.resource.hasValue() ? toPage(this.resource.value()).elements : [],
+    this.resource.hasValue()
+      ? Page.fromHalPage(this.resource.value())
+      : Page.empty<VendingMachine>(),
   );
-  readonly totalElements = computed(() =>
-    this.resource.hasValue() ? toPage(this.resource.value()).totalElements : 0,
-  );
+  readonly totalElements = computed(() => this.machines().totalElements);
 
   onPageChange(event: Pick<PageEvent, 'pageIndex' | 'pageSize' | 'length'>): void {
     this.pageIndex.set(event.pageIndex);

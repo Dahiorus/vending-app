@@ -36,20 +36,30 @@ export interface HalPage<T> extends HalResource {
   page: HalPageMetadata;
 }
 
-export interface Page<T> {
-  elements: T[];
-  totalElements: number;
-  totalPages: number;
-  pageIndex: number;
-  pageSize: number;
-}
+export class Page<T> {
+  constructor(
+    readonly elements: T[],
+    readonly totalElements: number,
+    readonly totalPages: number,
+    readonly pageIndex: number,
+    readonly pageSize: number,
+  ) {}
 
-export function toPage<T>(hal: HalPage<T>): Page<T> {
-  return {
-    elements: hal._embedded?.elements ?? [],
-    totalElements: hal.page.totalElements,
-    totalPages: hal.page.totalPages,
-    pageIndex: hal.page.number,
-    pageSize: hal.page.size,
-  };
+  static empty<T>(): Page<T> {
+    return new Page<T>([], 0, 0, 0, 0);
+  }
+
+  static fromHalPage<T>(hal: HalPage<T>): Page<T> {
+    return new Page(
+      hal._embedded?.elements ?? [],
+      hal.page.totalElements,
+      hal.page.totalPages,
+      hal.page.number,
+      hal.page.size,
+    );
+  }
+
+  get isEmpty(): boolean {
+    return this.elements.length === 0;
+  }
 }

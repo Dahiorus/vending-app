@@ -31,6 +31,7 @@ export class AuthService {
     const token = this.tokens.accessToken();
     return token ? (decodePayload(token)?.roles ?? []) : [];
   });
+  readonly isAdmin = computed(() => this.roles().includes('ROLE_ADMIN'));
 
   /**
    * Loads the current user's profile after login, except for admin accounts:
