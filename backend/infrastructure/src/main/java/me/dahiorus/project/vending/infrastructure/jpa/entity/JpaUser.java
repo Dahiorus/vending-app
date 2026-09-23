@@ -12,6 +12,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -32,6 +34,9 @@ import me.dahiorus.project.vending.domain.user.entity.UserId;
 import me.dahiorus.project.vending.domain.user.entity.UserToCreate;
 import me.dahiorus.project.vending.domain.user.entity.UserWithRoles;
 
+@NamedEntityGraph(
+    name = "JpaUser.profilePicture",
+    attributeNodes = @NamedAttributeNode("profilePicture"))
 @Entity
 @Table(
     name = "app_user",

@@ -20,6 +20,7 @@ import me.dahiorus.project.vending.domain.stock.entity.Quantity;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.quickperf.sql.annotation.ExpectInsert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -33,6 +34,7 @@ class VendingMachineStockReportRepositoryAdapterIT extends H2DbContainer {
   @Nested
   class Create {
     @Test
+    @ExpectInsert
     void should_create_stock_report() {
       // Given
       var stockReportToCreate =
@@ -44,19 +46,19 @@ class VendingMachineStockReportRepositoryAdapterIT extends H2DbContainer {
 
       // When
       var result = repository.create(stockReportToCreate);
+      entityManager.flush();
 
       // Then
       assertThat(result)
           .satisfies(
               stockReport -> {
-                assertThat(stockReport.id()).isNotNull();
                 assertThat(stockReport.reportedAt()).isCloseTo(now(), within(200, MILLIS));
               })
           .usingRecursiveComparison()
-          .ignoringFields("id", "reportedAt")
+          .ignoringFields("reportedAt")
           .isEqualTo(
               new VendingMachineStockReport(
-                  null,
+                  result.id(),
                   SerialNumber.of("SN123456"),
                   Set.of(
                       new ReportedStockEntry(ItemName.of("Lays 80g"), Quantity.of(6)),

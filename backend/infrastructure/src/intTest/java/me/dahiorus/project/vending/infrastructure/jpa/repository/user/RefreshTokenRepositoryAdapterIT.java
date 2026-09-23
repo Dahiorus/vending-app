@@ -11,17 +11,28 @@ import me.dahiorus.project.vending.domain.user.entity.RefreshTokenId;
 import me.dahiorus.project.vending.domain.user.port.RefreshTokenRepositoryPort;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
 import org.junit.jupiter.api.Test;
+import org.quickperf.junit5.QuickPerfTest;
+import org.quickperf.spring.sql.QuickPerfSqlConfig;
+import org.quickperf.sql.annotation.ExpectDelete;
+import org.quickperf.sql.annotation.ExpectInsert;
+import org.quickperf.sql.annotation.ExpectSelect;
+import org.quickperf.sql.annotation.ExpectUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 
+@QuickPerfTest
+@Import(QuickPerfSqlConfig.class)
 @ContextConfiguration(classes = RefreshTokenRepositoryAdapterIT.TestConfig.class)
 class RefreshTokenRepositoryAdapterIT extends H2DbContainer {
 
   @Autowired private RefreshTokenRepositoryAdapter repository;
 
   @Test
+  @ExpectInsert
+  @ExpectSelect
   void should_save_and_find_by_id() {
     var token =
         token(UUID.randomUUID(), "user@test.org", false, Instant.parse("2026-09-18T12:00:00Z"));
@@ -34,6 +45,7 @@ class RefreshTokenRepositoryAdapterIT extends H2DbContainer {
   }
 
   @Test
+  @ExpectUpdate
   void should_revoke_token() {
     var token =
         createAndFlush(
@@ -49,6 +61,7 @@ class RefreshTokenRepositoryAdapterIT extends H2DbContainer {
   }
 
   @Test
+  @ExpectDelete
   void should_delete_only_expired_tokens() {
     var threshold = Instant.parse("2026-09-18T12:00:00Z");
     var expired =

@@ -4,12 +4,16 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PostPersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.time.Instant;
 import java.util.UUID;
 import me.dahiorus.project.vending.domain.user.entity.EmailAddress;
 import me.dahiorus.project.vending.domain.user.entity.RefreshToken;
 import me.dahiorus.project.vending.domain.user.entity.RefreshTokenId;
+import org.springframework.data.domain.Persistable;
 
 @Entity
 @Table(
@@ -18,11 +22,13 @@ import me.dahiorus.project.vending.domain.user.entity.RefreshTokenId;
       @Index(columnList = "username", name = "IDX_REFRESH_TOKEN_USERNAME"),
       @Index(columnList = "expires_at", name = "IDX_REFRESH_TOKEN_EXPIRES_AT")
     })
-public class JpaRefreshToken {
+public class JpaRefreshToken implements Persistable<UUID> {
 
   @Id
   @Column(updatable = false, nullable = false)
   private UUID id;
+
+  @Transient private boolean isNew = true;
 
   @Column(nullable = false)
   private String username;
@@ -52,28 +58,19 @@ public class JpaRefreshToken {
     this.username = username;
   }
 
-  public Instant getIssuedAt() {
-    return issuedAt;
-  }
-
-  public void setIssuedAt(final Instant issuedAt) {
-    this.issuedAt = issuedAt;
-  }
-
-  public Instant getExpiresAt() {
-    return expiresAt;
-  }
-
-  public void setExpiresAt(final Instant expiresAt) {
-    this.expiresAt = expiresAt;
-  }
-
-  public boolean isRevoked() {
-    return revoked;
-  }
-
   public void setRevoked(final boolean revoked) {
     this.revoked = revoked;
+  }
+
+  @Override
+  public boolean isNew() {
+    return isNew;
+  }
+
+  @PostLoad
+  @PostPersist
+  void markNotNew() {
+    isNew = false;
   }
 
   public RefreshToken toDomain() {

@@ -35,16 +35,26 @@ import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.quickperf.junit5.QuickPerfTest;
+import org.quickperf.spring.sql.QuickPerfSqlConfig;
+import org.quickperf.sql.annotation.ExpectDelete;
+import org.quickperf.sql.annotation.ExpectInsert;
+import org.quickperf.sql.annotation.ExpectSelect;
+import org.quickperf.sql.annotation.ExpectUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 
-@ContextConfiguration(classes = VendingMachineRepositoryAdapterIT.TestConfig.class)
+@QuickPerfTest
+@Import(QuickPerfSqlConfig.class)
+@ContextConfiguration(classes = {VendingMachineRepositoryAdapterIT.TestConfig.class})
 class VendingMachineRepositoryAdapterIT extends H2DbContainer {
   @Autowired VendingMachineRepositoryPort repository;
 
   @Test
+  @ExpectInsert
   void should_create_vending_machine() {
     var vendingMachine =
         aVendingMachine()
@@ -72,14 +82,13 @@ class VendingMachineRepositoryAdapterIT extends H2DbContainer {
             .build();
 
     var result = repository.create(vendingMachine);
+    entityManager.flush();
 
     assertThat(result)
-        .satisfies(vm -> assertThat(vm.id()).isNotNull())
         .usingRecursiveComparison()
-        .ignoringFields("id")
         .isEqualTo(
             new VendingMachine(
-                null,
+                result.id(),
                 SerialNumber.of("SN1234"),
                 new Address(
                     GeoCoordinates.of(1.5235791, 48.5478201),
@@ -95,6 +104,7 @@ class VendingMachineRepositoryAdapterIT extends H2DbContainer {
   @Nested
   class Find {
     @Test
+    @ExpectSelect
     void should_get_vending_machine_by_id() {
       var vendingMachine =
           aVendingMachine()
@@ -120,6 +130,7 @@ class VendingMachineRepositoryAdapterIT extends H2DbContainer {
   @Nested
   class Update {
     @Test
+    @ExpectUpdate
     void should_update_given_vending_machine_by_id() {
       var vendingMachineCreated = createAndFlush(repository, aVendingMachine().build());
 
@@ -154,6 +165,7 @@ class VendingMachineRepositoryAdapterIT extends H2DbContainer {
     }
 
     @Test
+    @ExpectUpdate(0)
     void should_throw_exception_when_update_non_existent_vending_machine() {
       var vendingMachineId = new VendingMachineId(UUID.randomUUID());
       var vendingMachineToUpdate =
@@ -167,6 +179,7 @@ class VendingMachineRepositoryAdapterIT extends H2DbContainer {
   }
 
   @Test
+  @ExpectDelete
   void should_delete_given_vending_machine() {
     var vendingMachineCreated =
         createAndFlush(
@@ -184,6 +197,7 @@ class VendingMachineRepositoryAdapterIT extends H2DbContainer {
   @Nested
   class FindDuplicateOf {
     @Test
+    @ExpectSelect
     void should_find_duplicate_vending_machine_by_serial_number() {
       var serialNumber = "VM-1234";
       var vendingMachine =
@@ -226,6 +240,7 @@ class VendingMachineRepositoryAdapterIT extends H2DbContainer {
     @Nested
     class Search {
       @Test
+      @ExpectSelect
       void should_search_vending_machines_by_filter() {
         var result =
             repository.search(
@@ -244,6 +259,7 @@ class VendingMachineRepositoryAdapterIT extends H2DbContainer {
       }
 
       @Test
+      @ExpectSelect
       void should_list_all_given_empty_filter() {
         var result =
             repository.search(
@@ -258,6 +274,7 @@ class VendingMachineRepositoryAdapterIT extends H2DbContainer {
     @Nested
     class Count {
       @Test
+      @ExpectSelect
       void should_count_vending_machines_by_filter() {
         var result =
             repository.count(

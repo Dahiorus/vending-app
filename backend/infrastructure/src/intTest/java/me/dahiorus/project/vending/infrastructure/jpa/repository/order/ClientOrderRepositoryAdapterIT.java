@@ -4,6 +4,7 @@ import static java.time.LocalDateTime.now;
 import static java.time.Month.APRIL;
 import static java.time.Month.JUNE;
 import static java.time.Month.MAY;
+import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.util.Comparator.comparing;
 import static java.util.UUID.randomUUID;
 import static me.dahiorus.project.vending.domain.item.entity.ItemType.COLD_BEVERAGE;
@@ -11,6 +12,7 @@ import static me.dahiorus.project.vending.fixture.ItemFixture.aColdBeverage;
 import static me.dahiorus.project.vending.fixture.VendingMachineFixture.aVendingMachine;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.Assertions.within;
 
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
@@ -19,7 +21,6 @@ import me.dahiorus.project.vending.domain.exception.ResourceNotFound;
 import me.dahiorus.project.vending.domain.item.entity.Item;
 import me.dahiorus.project.vending.domain.machine.entity.ClientOrder;
 import me.dahiorus.project.vending.domain.machine.entity.ClientOrder.OrderedItem;
-import me.dahiorus.project.vending.domain.machine.entity.ClientOrderId;
 import me.dahiorus.project.vending.domain.machine.entity.VendingMachine;
 import me.dahiorus.project.vending.domain.machine.entity.VendingMachineId;
 import me.dahiorus.project.vending.domain.machine.port.ClientOrderRepositoryPort;
@@ -30,11 +31,18 @@ import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.quickperf.junit5.QuickPerfTest;
+import org.quickperf.spring.sql.QuickPerfSqlConfig;
+import org.quickperf.sql.annotation.ExpectInsert;
+import org.quickperf.sql.annotation.ExpectSelect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 
+@QuickPerfTest
+@Import(QuickPerfSqlConfig.class)
 @ContextConfiguration(classes = ClientOrderRepositoryAdapterIT.TestConfig.class)
 class ClientOrderRepositoryAdapterIT extends H2DbContainer {
 
@@ -56,20 +64,21 @@ class ClientOrderRepositoryAdapterIT extends H2DbContainer {
   @Nested
   class Create {
     @Test
+    @ExpectInsert
     void should_create_order_from_vending_machine_and_item() {
       var result = repository.create(vendingMachine.id(), volvic33cl.id());
+      entityManager.flush();
 
       assertThat(result)
           .usingRecursiveComparison()
-          .ignoringFields("id", "orderAt")
+          .ignoringFields("orderAt")
           .isEqualTo(
               new ClientOrder(
-                  new ClientOrderId(randomUUID()),
+                  result.id(),
                   vendingMachine,
                   new OrderedItem(volvic33cl.id(), volvic33cl.name(), volvic33cl.price()),
                   now()));
-      assertThat(result.id()).isNotNull();
-      assertThat(result.orderAt()).isNotNull();
+      assertThat(result.orderAt()).isCloseTo(now(), within(200, MILLIS));
     }
 
     @Test
@@ -115,6 +124,7 @@ class ClientOrderRepositoryAdapterIT extends H2DbContainer {
     class Since {
 
       @Test
+      @ExpectSelect
       void should_find_all_orders_of_vending_machine_since_given_date_time() {
         var since = LocalDateTime.of(2025, JUNE, 2, 10, 30, 15);
         var result = repository.findAllOfVendingMachineSince(vendingMachine.id(), since);
@@ -142,6 +152,7 @@ class ClientOrderRepositoryAdapterIT extends H2DbContainer {
     @Nested
     class FindAll {
       @Test
+      @ExpectSelect
       void should_find_all_orders_of_vending_machine() {
         var result = repository.findAllOfVendingMachine(vendingMachine.id());
 

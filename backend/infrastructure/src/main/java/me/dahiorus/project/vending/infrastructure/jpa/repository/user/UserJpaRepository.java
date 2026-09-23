@@ -1,9 +1,12 @@
 package me.dahiorus.project.vending.infrastructure.jpa.repository.user;
 
+import static org.springframework.data.jpa.repository.EntityGraph.EntityGraphType.*;
+
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaUser;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -27,6 +30,9 @@ interface UserJpaRepository extends JpaRepository<JpaUser, UUID> {
           WHERE appUser.email = :email AND roles IN :roles
           """)
   Optional<JpaUser> findByEmailAndRoles(final String email, final Set<String> roles);
+
+  @EntityGraph(value = "JpaUser.profilePicture", type = FETCH)
+  Optional<JpaUser> findWithProfilePictureById(final UUID id);
 
   boolean existsByEmail(String email);
 }

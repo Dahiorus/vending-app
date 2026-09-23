@@ -1,5 +1,3 @@
-import org.gradle.testing.jacoco.tasks.JacocoReport
-
 plugins {
     alias(libs.plugins.spring.boot)
     `jvm-test-suite`
@@ -33,6 +31,8 @@ testing {
                     )
                 }
                 implementation(libs.h2)
+                implementation(libs.quick.perf.junit5)
+                implementation(libs.quick.perf.springboot2.sql.starter)
             }
 
             targets {

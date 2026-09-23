@@ -21,17 +21,24 @@ import me.dahiorus.project.vending.domain.reporting.entity.VendingMachineStatusR
 import me.dahiorus.project.vending.domain.reporting.port.VendingMachineStatusReportRepositoryPort;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
 import org.junit.jupiter.api.Test;
+import org.quickperf.junit5.QuickPerfTest;
+import org.quickperf.spring.sql.QuickPerfSqlConfig;
+import org.quickperf.sql.annotation.ExpectInsert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 
+@QuickPerfTest
+@Import(QuickPerfSqlConfig.class)
 @ContextConfiguration(classes = VendingMachineStatusReportRepositoryAdapterIT.TestConfig.class)
 class VendingMachineStatusReportRepositoryAdapterIT extends H2DbContainer {
 
   @Autowired VendingMachineStatusReportRepositoryPort repository;
 
   @Test
+  @ExpectInsert
   void should_create_status_report_of_given_vending_machine() {
     var reportToCreate =
         new VendingMachineStatusReportToCreate(
@@ -40,18 +47,18 @@ class VendingMachineStatusReportRepositoryAdapterIT extends H2DbContainer {
             defaultStatus());
 
     var result = repository.create(reportToCreate);
+    entityManager.flush();
 
     assertThat(result)
         .satisfies(
             report -> {
-              assertThat(report.id()).isNotNull();
               assertThat(report.reportedAt()).isCloseTo(now(), within(200, MILLIS));
             })
         .usingRecursiveComparison()
-        .ignoringFields("id", "reportedAt")
+        .ignoringFields("reportedAt")
         .isEqualTo(
             new VendingMachineStatusReport(
-                null,
+                result.id(),
                 SerialNumber.of("SN-1234-5678"),
                 LocalDateTime.of(2025, JUNE, 9, 10, 35, 25),
                 new VendingMachineStatus(DEFAULT_TEMPERATURE, POWER_OFF, WORKING, OK, OK, NORMAL),
