@@ -1,6 +1,5 @@
 package me.dahiorus.project.vending.infrastructure.jpa.entity;
 
-import static jakarta.persistence.FetchType.EAGER;
 import static jakarta.persistence.FetchType.LAZY;
 import static java.util.stream.Collectors.toSet;
 
@@ -65,7 +64,7 @@ public class JpaUser extends JpaEntity {
   @JoinColumn(name = "profile_picture_id", foreignKey = @ForeignKey(name = "FK_USER_PICTURE_ID"))
   private JpaUploadedFile profilePicture;
 
-  @ElementCollection(fetch = EAGER)
+  @ElementCollection
   @CollectionTable(
       name = "app_user_role",
       indexes = @Index(columnList = "role_name", name = "IDX_USER_ROLE_NAME"),

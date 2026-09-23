@@ -52,6 +52,7 @@ class UserWithRolesRepositoryAdapterIT extends H2DbContainer {
     entityManager.persist(JpaUser.toCreateFrom(admin));
     entityManager.persist(JpaUser.toCreateFrom(user));
     entityManager.flush();
+    entityManager.clear();
   }
 
   @Test

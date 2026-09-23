@@ -13,21 +13,27 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 interface UserJpaRepository extends JpaRepository<JpaUser, UUID> {
+  @Query(
+      """
+        FROM JpaUser user
+        JOIN FETCH user.roles roles
+        WHERE user.email = :email
+        """)
   Optional<JpaUser> findByEmail(final String email);
 
   @Query(
       """
-          FROM JpaUser appUser
-          JOIN appUser.roles roles
-          WHERE appUser.id = :id AND roles IN :roles
+          FROM JpaUser user
+          JOIN user.roles roles
+          WHERE user.id = :id AND roles IN :roles
           """)
   Optional<JpaUser> findByIdAndRoles(final UUID id, final Set<String> roles);
 
   @Query(
       """
-          FROM JpaUser appUser
-          JOIN appUser.roles roles
-          WHERE appUser.email = :email AND roles IN :roles
+          FROM JpaUser user
+          JOIN user.roles roles
+          WHERE user.email = :email AND roles IN :roles
           """)
   Optional<JpaUser> findByEmailAndRoles(final String email, final Set<String> roles);
 

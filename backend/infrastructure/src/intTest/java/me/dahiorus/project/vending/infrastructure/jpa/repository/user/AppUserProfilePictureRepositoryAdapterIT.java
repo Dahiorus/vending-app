@@ -142,7 +142,7 @@ class AppUserProfilePictureRepositoryAdapterIT extends H2DbContainer {
   @Nested
   class FindPicture {
     @Test
-    @ExpectSelect(0)
+    @ExpectSelect
     void should_find_empty_picture_for_given_user() {
       var result = repository.findPicture(appUser.id());
       entityManager.flush();
