@@ -44,7 +44,6 @@ class VendingMachineStockReportRepositoryAdapterIT extends H2DbContainer {
 
       // When
       var result = repository.create(stockReportToCreate);
-      entityManager.flush();
 
       // Then
       assertThat(result)

@@ -2,10 +2,10 @@ package me.dahiorus.project.vending.infrastructure.jpa.repository.user;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Set;
 import java.util.UUID;
 import me.dahiorus.project.vending.domain.user.entity.AdminUser;
 import me.dahiorus.project.vending.domain.user.entity.AdminUserToCreate;
+import me.dahiorus.project.vending.domain.user.entity.AppUserToCreate;
 import me.dahiorus.project.vending.domain.user.entity.EmailAddress;
 import me.dahiorus.project.vending.domain.user.entity.Firstname;
 import me.dahiorus.project.vending.domain.user.entity.Lastname;
@@ -42,7 +42,6 @@ class AdminUserRepositoryAdapterIT extends H2DbContainer {
               Lastname.of("User"));
 
       var result = repository.create(adminUserToCreate);
-      entityManager.flush();
 
       assertThat(result)
           .usingRecursiveComparison()
@@ -65,7 +64,6 @@ class AdminUserRepositoryAdapterIT extends H2DbContainer {
               Lastname.of("User"));
 
       var result = repository.create(adminUserToCreate);
-      entityManager.flush();
 
       assertThat(entityManager.find(JpaUser.class, result.id().value()))
           .satisfies(
@@ -91,8 +89,7 @@ class AdminUserRepositoryAdapterIT extends H2DbContainer {
               Firstname.of("Admin"),
               Lastname.of("User"));
 
-      adminUser = repository.create(adminUserToCreate);
-      entityManager.flush();
+      adminUser = createAndFlush(repository, adminUserToCreate);
     }
 
     @Test
@@ -106,12 +103,11 @@ class AdminUserRepositoryAdapterIT extends H2DbContainer {
     void should_not_find_other_user_by_id() {
       var otherUser =
           JpaUser.toCreateFrom(
-              new AdminUserToCreate(
+              new AppUserToCreate(
                   EmailAddress.of("other-user@vending-app.fr"),
                   Password.of("password"),
                   Firstname.of("Other"),
                   Lastname.of("User")));
-      otherUser.setRoles(Set.of("ROLE_USER"));
       entityManager.persistAndFlush(otherUser);
 
       var result = repository.find(new UserId(otherUser.getId()));

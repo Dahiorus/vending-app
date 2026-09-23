@@ -42,13 +42,13 @@ class AppUserProfilePictureRepositoryAdapterIT extends H2DbContainer {
   @BeforeEach
   void setUp() {
     appUser =
-        appUserJpaRepository.create(
+        createAndFlush(
+            appUserJpaRepository,
             new AppUserToCreate(
                 EmailAddress.of("user@test.org"),
                 Password.of("password"),
                 Firstname.of("User"),
                 Lastname.of("Test")));
-    entityManager.flush();
   }
 
   @Nested

@@ -40,7 +40,6 @@ class VendingMachineStatusReportRepositoryAdapterIT extends H2DbContainer {
             defaultStatus());
 
     var result = repository.create(reportToCreate);
-    entityManager.flush();
 
     assertThat(result)
         .satisfies(

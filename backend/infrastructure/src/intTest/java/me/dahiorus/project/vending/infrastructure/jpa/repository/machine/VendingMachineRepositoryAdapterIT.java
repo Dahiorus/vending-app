@@ -72,7 +72,6 @@ class VendingMachineRepositoryAdapterIT extends H2DbContainer {
             .build();
 
     var result = repository.create(vendingMachine);
-    entityManager.flush();
 
     assertThat(result)
         .satisfies(vm -> assertThat(vm.id()).isNotNull())
@@ -101,8 +100,7 @@ class VendingMachineRepositoryAdapterIT extends H2DbContainer {
           aVendingMachine()
               .id(new VendingMachineId(UUID.fromString("c29e78d0-e8fa-4c0e-82a9-0f05af4be3d2")))
               .build();
-      repository.create(vendingMachine);
-      entityManager.flush();
+      createAndFlush(repository, vendingMachine);
 
       var result =
           repository.find(
@@ -123,7 +121,7 @@ class VendingMachineRepositoryAdapterIT extends H2DbContainer {
   class Update {
     @Test
     void should_update_given_vending_machine_by_id() {
-      var vendingMachineCreated = repository.create(aVendingMachine().build());
+      var vendingMachineCreated = createAndFlush(repository, aVendingMachine().build());
 
       var result =
           repository.update(
@@ -171,7 +169,8 @@ class VendingMachineRepositoryAdapterIT extends H2DbContainer {
   @Test
   void should_delete_given_vending_machine() {
     var vendingMachineCreated =
-        repository.create(
+        createAndFlush(
+            repository,
             aVendingMachine()
                 .id(new VendingMachineId(UUID.fromString("c29e78d0-e8fa-4c0e-82a9-0f05af4be3d2")))
                 .build());
@@ -188,8 +187,7 @@ class VendingMachineRepositoryAdapterIT extends H2DbContainer {
     void should_find_duplicate_vending_machine_by_serial_number() {
       var serialNumber = "VM-1234";
       var vendingMachine =
-          repository.create(aVendingMachine().id(null).serialNumber(serialNumber).build());
-      entityManager.flush();
+          createAndFlush(repository, aVendingMachine().id(null).serialNumber(serialNumber).build());
 
       var vendingMachineWithSameSerialNumber =
           aVendingMachine().id(null).serialNumber(serialNumber).build();

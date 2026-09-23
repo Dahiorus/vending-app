@@ -47,7 +47,6 @@ class AppUserRepositoryAdapterIT extends H2DbContainer {
             Lastname.of("Test"));
 
     var result = repository.create(user);
-    entityManager.flush();
 
     assertThat(result)
         .satisfies(u -> assertThat(u.id()).isNotNull())
@@ -70,13 +69,13 @@ class AppUserRepositoryAdapterIT extends H2DbContainer {
     @Test
     void should_get_user_by_id() {
       var user =
-          repository.create(
+          createAndFlush(
+              repository,
               new AppUserToCreate(
                   EmailAddress.of("user@test.org"),
                   Password.of("password"),
                   Firstname.of("User"),
                   Lastname.of("Test")));
-      entityManager.flush();
 
       var result = repository.find(user.id());
 
@@ -112,13 +111,13 @@ class AppUserRepositoryAdapterIT extends H2DbContainer {
     @Test
     void should_get_user_by_username() {
       var user =
-          repository.create(
+          createAndFlush(
+              repository,
               new AppUserToCreate(
                   EmailAddress.of("user@test.org"),
                   Password.of("password"),
                   Firstname.of("User"),
                   Lastname.of("Test")));
-      entityManager.flush();
 
       var result = repository.findByUsername(user.email());
 
@@ -138,13 +137,13 @@ class AppUserRepositoryAdapterIT extends H2DbContainer {
     @Test
     void should_update_given_user_by_id() {
       var userCreated =
-          repository.create(
+          createAndFlush(
+              repository,
               new AppUserToCreate(
                   EmailAddress.of("user@test.org"),
                   Password.of("password"),
                   Firstname.of("User"),
                   Lastname.of("Test")));
-      entityManager.flush();
 
       var result =
           repository.update(
@@ -181,13 +180,13 @@ class AppUserRepositoryAdapterIT extends H2DbContainer {
   @Test
   void should_delete_given_user() {
     var user =
-        repository.create(
+        createAndFlush(
+            repository,
             new AppUserToCreate(
                 EmailAddress.of("user@test.org"),
                 Password.of("password"),
                 Firstname.of("User"),
                 Lastname.of("Test")));
-    entityManager.flush();
 
     repository.delete(user.id());
     entityManager.flush();
@@ -200,13 +199,13 @@ class AppUserRepositoryAdapterIT extends H2DbContainer {
     @Test
     void should_update_password_of_given_user_by_id() {
       var userCreated =
-          repository.create(
+          createAndFlush(
+              repository,
               new AppUserToCreate(
                   EmailAddress.of("user@test.org"),
                   Password.of("password"),
                   Firstname.of("User"),
                   Lastname.of("Test")));
-      entityManager.flush();
 
       repository.updatePassword(userCreated.id(), Password.of("newPassword"));
       entityManager.flush();
@@ -232,13 +231,13 @@ class AppUserRepositoryAdapterIT extends H2DbContainer {
     @BeforeEach
     void setUpUser() {
       appUser =
-          repository.create(
+          createAndFlush(
+              repository,
               new AppUserToCreate(
                   EmailAddress.of("user@test.org"),
                   Password.of("password"),
                   Firstname.of("User"),
                   Lastname.of("Test")));
-      entityManager.flush();
     }
 
     private static Stream<Arguments> passwordAndExpectedValue() {

@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.infrastructure.jpa.repository;
 
+import me.dahiorus.project.vending.domain.Creatable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,5 +17,11 @@ public abstract class H2DbContainer {
   @AfterEach
   void clearDatabase() {
     entityManager.clear();
+  }
+
+  protected <P, D> D createAndFlush(Creatable<P, D> creatable, P toCreate) {
+    D created = creatable.create(toCreate);
+    entityManager.flush();
+    return created;
   }
 }

@@ -57,8 +57,7 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
     void should_find_item_by_id() {
       var itemToCreate =
           new ItemToCreate(ItemName.of("Coca-Cola 33cL"), COLD_BEVERAGE, BigDecimal.valueOf(1.50));
-      var createdItem = repository.create(itemToCreate);
-      entityManager.flush();
+      var createdItem = createAndFlush(repository, itemToCreate);
 
       var result = repository.find(createdItem.id());
 
@@ -79,8 +78,7 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
     void should_update_given_item_by_id() {
       var itemToCreate =
           new ItemToCreate(ItemName.of("Coca-Cola 33cL"), COLD_BEVERAGE, BigDecimal.valueOf(1.50));
-      var createdItem = repository.create(itemToCreate);
-      entityManager.flush();
+      var createdItem = createAndFlush(repository, itemToCreate);
 
       var itemToUpdate = new ItemToUpdate(createdItem.id(), BigDecimal.valueOf(2.00));
       var updatedItem = repository.update(itemToUpdate);
@@ -108,8 +106,7 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
   void should_delete_item_by_id() {
     var itemToCreate =
         new ItemToCreate(ItemName.of("Coca-Cola 33cL"), COLD_BEVERAGE, BigDecimal.valueOf(1.50));
-    var createdItem = repository.create(itemToCreate);
-    entityManager.flush();
+    var createdItem = createAndFlush(repository, itemToCreate);
 
     repository.delete(createdItem.id());
 
@@ -192,10 +189,10 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
     @BeforeEach
     void setUpItem() {
       item =
-          repository.create(
+          createAndFlush(
+              repository,
               new ItemToCreate(
                   ItemName.of("Coca-Cola 33cL"), COLD_BEVERAGE, BigDecimal.valueOf(1.50)));
-      entityManager.flush();
     }
 
     @Nested

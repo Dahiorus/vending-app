@@ -36,9 +36,9 @@ class RefreshTokenRepositoryAdapterIT extends H2DbContainer {
   @Test
   void should_revoke_token() {
     var token =
-        repository.create(
+        createAndFlush(
+            repository,
             token(randomUUID(), "user@test.org", false, Instant.parse("2026-09-18T12:00:00Z")));
-    entityManager.flush();
     entityManager.clear();
 
     repository.revoke(token.id());
