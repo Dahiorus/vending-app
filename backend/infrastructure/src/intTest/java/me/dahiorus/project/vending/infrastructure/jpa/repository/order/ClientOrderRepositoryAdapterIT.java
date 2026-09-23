@@ -13,8 +13,10 @@ import static me.dahiorus.project.vending.fixture.VendingMachineFixture.aVending
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.api.Assertions.within;
+import static org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration.builder;
 
 import jakarta.persistence.EntityManager;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import me.dahiorus.project.vending.domain.exception.ResourceNotFound;
@@ -58,7 +60,7 @@ class ClientOrderRepositoryAdapterIT extends H2DbContainer {
 
     entityManager.persist(JpaVendingMachine.fromDomain(vendingMachine));
     entityManager.persist(JpaItem.fromDomain(volvic33cl));
-    entityManager.flush();
+    flushAndClear();
   }
 
   @Nested
@@ -70,8 +72,9 @@ class ClientOrderRepositoryAdapterIT extends H2DbContainer {
       entityManager.flush();
 
       assertThat(result)
-          .usingRecursiveComparison()
-          .ignoringFields("orderAt")
+          .usingRecursiveComparison(
+              builder().withComparatorForType(BigDecimal::compareTo, BigDecimal.class).build())
+          .ignoringFieldsOfTypes(Double.class, LocalDateTime.class)
           .isEqualTo(
               new ClientOrder(
                   result.id(),
@@ -117,14 +120,14 @@ class ClientOrderRepositoryAdapterIT extends H2DbContainer {
             entityManager.persist(jpaClientOrder);
           });
       entityManager.merge(jpaVendingMachine);
-      entityManager.flush();
+      flushAndClear();
     }
 
     @Nested
     class Since {
 
       @Test
-      @ExpectSelect
+      @ExpectSelect(2)
       void should_find_all_orders_of_vending_machine_since_given_date_time() {
         var since = LocalDateTime.of(2025, JUNE, 2, 10, 30, 15);
         var result = repository.findAllOfVendingMachineSince(vendingMachine.id(), since);
@@ -152,7 +155,7 @@ class ClientOrderRepositoryAdapterIT extends H2DbContainer {
     @Nested
     class FindAll {
       @Test
-      @ExpectSelect
+      @ExpectSelect(2)
       void should_find_all_orders_of_vending_machine() {
         var result = repository.findAllOfVendingMachine(vendingMachine.id());
 

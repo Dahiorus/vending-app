@@ -26,6 +26,7 @@ import me.dahiorus.project.vending.domain.pagination.entity.Pagination;
 import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaUploadedFile;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
 import org.assertj.core.api.RecursiveComparisonAssert;
+import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -48,10 +49,12 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
 
   @Autowired ItemRepositoryPort repository;
 
-  private static RecursiveComparisonAssert<?> assertThatItem(Item updatedItem) {
-    return assertThat(updatedItem)
-        .usingRecursiveComparison(
-            builder().withComparatorForType(BigDecimal::compareTo, BigDecimal.class).build());
+  private static RecursiveComparisonConfiguration itemComparator() {
+    return builder().withComparatorForType(BigDecimal::compareTo, BigDecimal.class).build();
+  }
+
+  private static RecursiveComparisonAssert<?> assertThatItem(Item item) {
+    return assertThat(item).usingRecursiveComparison(itemComparator());
   }
 
   @Test
@@ -84,11 +87,7 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
 
       var result = repository.find(createdItem.id());
 
-      assertThat(result)
-          .get()
-          .usingRecursiveComparison(
-              builder().withComparatorForType(BigDecimal::compareTo, BigDecimal.class).build())
-          .isEqualTo(createdItem);
+      assertThat(result).get().usingRecursiveComparison(itemComparator()).isEqualTo(createdItem);
     }
 
     @Test
@@ -164,7 +163,7 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
       item3 =
           repository.create(
               new ItemToCreate(ItemName.of("Fanta 33cL"), COLD_BEVERAGE, BigDecimal.valueOf(1.50)));
-      entityManager.flush();
+      flushAndClear();
     }
 
     @Nested
@@ -177,7 +176,9 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
                 new Pagination(),
                 new Filter<>(new Item(null, null, null, null), new FilterMatcher()));
 
-        assertThat(result).containsExactly(item1, item2, item3);
+        assertThat(result)
+            .usingRecursiveFieldByFieldElementComparator(itemComparator())
+            .containsExactly(item1, item2, item3);
       }
 
       @Test
@@ -190,7 +191,9 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
                     new Item(null, ItemName.of("Coca-Cola 33cL"), null, null),
                     new FilterMatcher()));
 
-        assertThat(result).containsExactly(item1);
+        assertThat(result)
+            .usingRecursiveFieldByFieldElementComparator(itemComparator())
+            .containsExactly(item1);
       }
     }
 
@@ -228,6 +231,7 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
               repository,
               new ItemToCreate(
                   ItemName.of("Coca-Cola 33cL"), COLD_BEVERAGE, BigDecimal.valueOf(1.50)));
+      entityManager.clear();
     }
 
     @Nested
@@ -268,13 +272,14 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
       }
 
       @Test
+      @ExpectInsert(2)
       void should_upload_and_replace_old_picture() {
         // Given
         var oldPicture =
             new FileToUpload(
                 new Filename("old-coca-cola.jpg"), new BinaryContent(new byte[] {1, 2, 3}), JPG);
         var itemWithPictureToReplace = repository.uploadImage(item.id(), oldPicture);
-        entityManager.flush();
+        flushAndClear();
 
         // When
         var newPicture =
@@ -285,10 +290,10 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
 
         assertThat(result)
             .usingRecursiveComparison()
-            .ignoringFields("id", "uploadedAt")
+            .ignoringFields("uploadedAt")
             .isEqualTo(
                 new UploadedFile(
-                    null,
+                    result.id(),
                     new Filename("new-coca-cola.jpg"),
                     new BinaryContent(new byte[] {4, 5, 6}),
                     JPG,

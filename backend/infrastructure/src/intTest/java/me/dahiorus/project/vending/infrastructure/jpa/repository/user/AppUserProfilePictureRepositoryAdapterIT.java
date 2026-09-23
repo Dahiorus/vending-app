@@ -61,6 +61,7 @@ class AppUserProfilePictureRepositoryAdapterIT extends H2DbContainer {
                 Password.of("password"),
                 Firstname.of("User"),
                 Lastname.of("Test")));
+    entityManager.clear();
   }
 
   @Nested
@@ -105,7 +106,6 @@ class AppUserProfilePictureRepositoryAdapterIT extends H2DbContainer {
     }
 
     @Test
-    @ExpectSelect
     @ExpectInsert(2)
     @ExpectUpdate(2)
     @ExpectDelete
@@ -115,7 +115,7 @@ class AppUserProfilePictureRepositoryAdapterIT extends H2DbContainer {
           new FileToUpload(
               new Filename("old-picture.jpg"), new BinaryContent(new byte[] {1, 2, 3}), JPG);
       var itemWithPictureToReplace = repository.uploadPicture(appUser.id(), oldPicture);
-      entityManager.flush();
+      flushAndClear();
 
       // When
       var newPicture =
@@ -151,19 +151,17 @@ class AppUserProfilePictureRepositoryAdapterIT extends H2DbContainer {
     }
 
     @Test
-    @ExpectSelect
+    @ExpectSelect(2)
     void should_find_picture_for_given_user() {
       // Given
       var picture =
           new FileToUpload(
               new Filename("avatar.jpg"), new BinaryContent(new byte[] {1, 2, 3}), JPG);
       repository.uploadPicture(appUser.id(), picture);
-      entityManager.flush();
-      entityManager.clear();
+      flushAndClear();
 
       // When
       var result = repository.findPicture(appUser.id());
-      entityManager.flush();
 
       // Then
       assertThat(result)

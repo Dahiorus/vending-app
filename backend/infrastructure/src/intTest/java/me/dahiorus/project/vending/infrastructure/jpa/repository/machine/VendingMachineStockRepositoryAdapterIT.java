@@ -58,7 +58,7 @@ class VendingMachineStockRepositoryAdapterIT extends H2DbContainer {
     entityManager.persist(JpaItem.fromDomain(bueno));
     entityManager.persist(JpaItem.fromDomain(lays));
 
-    entityManager.flush();
+    flushAndClear();
   }
 
   @Nested

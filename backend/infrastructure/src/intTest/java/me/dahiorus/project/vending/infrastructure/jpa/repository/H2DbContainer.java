@@ -28,4 +28,9 @@ public abstract class H2DbContainer {
     entityManager.flush();
     return created;
   }
+
+  protected void flushAndClear() {
+    entityManager.flush();
+    entityManager.clear();
+  }
 }

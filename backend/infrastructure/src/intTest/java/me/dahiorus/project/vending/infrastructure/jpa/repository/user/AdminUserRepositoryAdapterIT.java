@@ -99,6 +99,7 @@ class AdminUserRepositoryAdapterIT extends H2DbContainer {
               Lastname.of("User"));
 
       adminUser = createAndFlush(repository, adminUserToCreate);
+      entityManager.clear();
     }
 
     @Test

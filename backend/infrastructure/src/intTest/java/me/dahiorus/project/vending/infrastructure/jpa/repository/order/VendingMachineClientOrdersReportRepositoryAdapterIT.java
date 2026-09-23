@@ -23,6 +23,7 @@ import me.dahiorus.project.vending.domain.reporting.entity.VendingMachineClientO
 import me.dahiorus.project.vending.domain.reporting.entity.VendingMachineClientOrdersReportToCreate;
 import me.dahiorus.project.vending.domain.reporting.port.VendingMachineClientOrdersReportRepositoryPort;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
+import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.quickperf.junit5.QuickPerfTest;
@@ -42,6 +43,10 @@ import org.springframework.test.context.ContextConfiguration;
 class VendingMachineClientOrdersReportRepositoryAdapterIT extends H2DbContainer {
 
   @Autowired VendingMachineClientOrdersReportRepositoryPort repository;
+
+  private static RecursiveComparisonConfiguration itemComparator() {
+    return builder().withComparatorForType(BigDecimal::compareTo, BigDecimal.class).build();
+  }
 
   @Nested
   class Create {
@@ -71,8 +76,7 @@ class VendingMachineClientOrdersReportRepositoryAdapterIT extends H2DbContainer 
 
       // Then
       assertThat(result)
-          .usingRecursiveComparison(
-              builder().withComparatorForType(BigDecimal::compareTo, BigDecimal.class).build())
+          .usingRecursiveComparison(itemComparator())
           .ignoringFields("reportedAt")
           .isEqualTo(
               new VendingMachineClientOrdersReport(
@@ -149,8 +153,7 @@ class VendingMachineClientOrdersReportRepositoryAdapterIT extends H2DbContainer 
       // Then
       assertThat(result)
           .get()
-          .usingRecursiveComparison(
-              builder().withComparatorForType(BigDecimal::compareTo, BigDecimal.class).build())
+          .usingRecursiveComparison(itemComparator())
           .ignoringFields("id", "reportedAt")
           .isEqualTo(
               new VendingMachineClientOrdersReport(

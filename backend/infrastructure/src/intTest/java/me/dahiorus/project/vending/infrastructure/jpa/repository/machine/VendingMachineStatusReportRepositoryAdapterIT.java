@@ -50,10 +50,7 @@ class VendingMachineStatusReportRepositoryAdapterIT extends H2DbContainer {
     entityManager.flush();
 
     assertThat(result)
-        .satisfies(
-            report -> {
-              assertThat(report.reportedAt()).isCloseTo(now(), within(200, MILLIS));
-            })
+        .satisfies(report -> assertThat(report.reportedAt()).isCloseTo(now(), within(200, MILLIS)))
         .usingRecursiveComparison()
         .ignoringFields("reportedAt")
         .isEqualTo(

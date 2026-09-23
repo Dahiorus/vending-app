@@ -38,8 +38,7 @@ class RefreshTokenRepositoryAdapterIT extends H2DbContainer {
         token(UUID.randomUUID(), "user@test.org", false, Instant.parse("2026-09-18T12:00:00Z"));
 
     var saved = repository.create(token);
-    entityManager.flush();
-    entityManager.clear();
+    flushAndClear();
 
     assertThat(repository.find(saved.id())).contains(saved);
   }
@@ -69,12 +68,10 @@ class RefreshTokenRepositoryAdapterIT extends H2DbContainer {
             token(randomUUID(), "expired@test.org", false, threshold.minusSeconds(1)));
     var valid =
         repository.create(token(randomUUID(), "valid@test.org", false, threshold.plusSeconds(1)));
-    entityManager.flush();
-    entityManager.clear();
+    flushAndClear();
 
     repository.deleteExpiredBefore(threshold);
-    entityManager.flush();
-    entityManager.clear();
+    flushAndClear();
 
     assertThat(repository.find(expired.id())).isEmpty();
     assertThat(repository.find(valid.id())).contains(valid);

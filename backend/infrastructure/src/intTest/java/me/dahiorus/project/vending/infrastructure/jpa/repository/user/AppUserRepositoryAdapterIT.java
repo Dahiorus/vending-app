@@ -257,6 +257,7 @@ class AppUserRepositoryAdapterIT extends H2DbContainer {
                   Password.of("password"),
                   Firstname.of("User"),
                   Lastname.of("Test")));
+      entityManager.clear();
     }
 
     private static Stream<Arguments> passwordAndExpectedValue() {

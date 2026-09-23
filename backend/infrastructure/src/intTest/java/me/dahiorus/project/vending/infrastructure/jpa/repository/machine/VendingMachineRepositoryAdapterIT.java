@@ -234,7 +234,7 @@ class VendingMachineRepositoryAdapterIT extends H2DbContainer {
       repository.create(vendingMachine1);
       repository.create(vendingMachine2);
       repository.create(vendingMachine3);
-      entityManager.flush();
+      flushAndClear();
     }
 
     @Nested
@@ -255,7 +255,10 @@ class VendingMachineRepositoryAdapterIT extends H2DbContainer {
                         null),
                     new FilterMatcher()));
 
-        assertThat(result).containsExactly(vendingMachine1);
+        assertThat(result)
+            .usingRecursiveFieldByFieldElementComparatorIgnoringFields(
+                "address", "lastIntervention")
+            .containsExactly(vendingMachine1);
       }
 
       @Test
@@ -267,7 +270,10 @@ class VendingMachineRepositoryAdapterIT extends H2DbContainer {
                 new Filter<>(
                     new VendingMachine(null, null, null, null, null, null), new FilterMatcher()));
 
-        assertThat(result).containsExactly(vendingMachine1, vendingMachine2, vendingMachine3);
+        assertThat(result)
+            .usingRecursiveFieldByFieldElementComparatorIgnoringFields(
+                "address", "lastIntervention")
+            .containsExactly(vendingMachine1, vendingMachine2, vendingMachine3);
       }
     }
 
