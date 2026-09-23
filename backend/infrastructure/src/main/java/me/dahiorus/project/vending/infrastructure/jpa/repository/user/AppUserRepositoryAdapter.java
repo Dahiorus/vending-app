@@ -2,6 +2,7 @@ package me.dahiorus.project.vending.infrastructure.jpa.repository.user;
 
 import static me.dahiorus.project.vending.infrastructure.jpa.entity.JpaUser.ROLE_USER;
 
+import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
 import java.util.Set;
 import me.dahiorus.project.vending.domain.exception.ResourceNotFound;
@@ -51,12 +52,15 @@ public class AppUserRepositoryAdapter implements AppUserRepositoryPort, Password
   @CachePut(key = "#result.id.value")
   @Override
   public AppUser update(final AppUser toUpdate) {
-    return jpaRepository
-        .findById(toUpdate.id().value())
-        .map(jpaUser -> jpaUser.updateFrom(toUpdate))
-        .map(jpaRepository::save)
-        .map(JpaUser::toUser)
-        .orElseThrow(() -> new ResourceNotFound(toUpdate.id()));
+    try {
+      var userToUpdate = jpaRepository.getReferenceById(toUpdate.id().value());
+      userToUpdate.updateFrom(toUpdate);
+      var userUpdated = jpaRepository.save(userToUpdate);
+
+      return userUpdated.toUser();
+    } catch (EntityNotFoundException _) {
+      throw new ResourceNotFound(toUpdate.id());
+    }
   }
 
   @CacheEvict(
@@ -76,11 +80,13 @@ public class AppUserRepositoryAdapter implements AppUserRepositoryPort, Password
 
   @Override
   public void updatePassword(final UserId userId, final Password password) throws ResourceNotFound {
-    var jpaUser =
-        jpaRepository.findById(userId.value()).orElseThrow(() -> new ResourceNotFound(userId));
-
-    jpaUser.setEncodedPassword(passwordEncoder.encode(password.value()));
-    jpaRepository.save(jpaUser);
+    try {
+      var jpaUser = jpaRepository.getReferenceById(userId.value());
+      jpaUser.setEncodedPassword(passwordEncoder.encode(password.value()));
+      jpaRepository.save(jpaUser);
+    } catch (EntityNotFoundException _) {
+      throw new ResourceNotFound(userId);
+    }
   }
 
   @Override

@@ -143,10 +143,8 @@ public class JpaUser extends JpaEntity {
     return jpaUser;
   }
 
-  public JpaUser updateFrom(final AppUser toUpdate) {
+  public void updateFrom(final AppUser toUpdate) {
     this.firstName = toUpdate.firstname().value();
     this.lastName = toUpdate.lastname().value();
-
-    return this;
   }
 }
