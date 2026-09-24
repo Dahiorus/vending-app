@@ -1,3 +1,5 @@
+import { pagedUrl } from '../../shared/http/paged-url';
+
 /**
  * `undefined` until the `items` root link is resolved (see `ApiRootApi`).
  */
@@ -6,6 +8,5 @@ export function itemsPageUrl(
   pageIndex: number,
   pageSize: number,
 ): string | undefined {
-  if (!itemsHref) return undefined;
-  return `${itemsHref}?page=${pageIndex}&size=${pageSize}`;
+  return pagedUrl(itemsHref, { page: pageIndex + 1, size: pageSize });
 }
