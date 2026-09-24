@@ -77,16 +77,16 @@ class AppUserProfilePictureRepositoryAdapterIT extends H2DbContainer {
       var result = repository.uploadPicture(appUser.id(), picture);
       entityManager.flush();
 
+      assertThat(result.id()).isNotNull();
       assertThat(result)
           .usingRecursiveComparison()
-          .ignoringFields("uploadedAt")
           .isEqualTo(
               new UploadedFile(
                   result.id(),
                   new Filename("profile-picture.jpg"),
                   new BinaryContent(new byte[] {1, 2, 3}),
                   JPG,
-                  null));
+                  result.uploadedAt()));
       assertThat(result.uploadedAt()).isCloseTo(now(), within(200, MILLIS));
     }
 

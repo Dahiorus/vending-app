@@ -52,6 +52,7 @@ class VendingMachineStockReportRepositoryAdapterIT extends H2DbContainer {
       assertThat(result)
           .satisfies(
               stockReport -> {
+                assertThat(stockReport.id()).isNotNull();
                 assertThat(stockReport.reportedAt()).isCloseTo(now(), within(200, MILLIS));
               })
           .usingRecursiveComparison()
@@ -63,7 +64,7 @@ class VendingMachineStockReportRepositoryAdapterIT extends H2DbContainer {
                   Set.of(
                       new ReportedStockEntry(ItemName.of("Lays 80g"), Quantity.of(6)),
                       new ReportedStockEntry(ItemName.of("Twix"), Quantity.of(5))),
-                  null));
+                  result.reportedAt()));
     }
   }
 

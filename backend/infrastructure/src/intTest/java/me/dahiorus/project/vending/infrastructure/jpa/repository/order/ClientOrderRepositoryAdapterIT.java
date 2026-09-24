@@ -71,6 +71,7 @@ class ClientOrderRepositoryAdapterIT extends H2DbContainer {
       var result = repository.create(vendingMachine.id(), volvic33cl.id());
       entityManager.flush();
 
+      assertThat(result.id()).isNotNull();
       assertThat(result)
           .usingRecursiveComparison(
               builder().withComparatorForType(BigDecimal::compareTo, BigDecimal.class).build())

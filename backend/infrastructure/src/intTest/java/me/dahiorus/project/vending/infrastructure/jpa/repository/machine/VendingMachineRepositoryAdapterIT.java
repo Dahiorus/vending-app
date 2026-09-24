@@ -84,6 +84,7 @@ class VendingMachineRepositoryAdapterIT extends H2DbContainer {
     var result = repository.create(vendingMachine);
     entityManager.flush();
 
+    assertThat(result.id()).isNotNull();
     assertThat(result)
         .usingRecursiveComparison()
         .isEqualTo(
@@ -98,7 +99,7 @@ class VendingMachineRepositoryAdapterIT extends H2DbContainer {
                     City.of("Paris")),
                 SNACK,
                 new VendingMachineStatus(Temperature.of(8), POWER_ON, WORKING, OK, OK, NORMAL),
-                null));
+                result.lastIntervention()));
   }
 
   @Nested

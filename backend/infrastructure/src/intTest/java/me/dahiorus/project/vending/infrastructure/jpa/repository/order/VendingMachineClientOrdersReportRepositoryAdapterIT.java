@@ -75,9 +75,9 @@ class VendingMachineClientOrdersReportRepositoryAdapterIT extends H2DbContainer 
       entityManager.flush();
 
       // Then
+      assertThat(result.id()).isNotNull();
       assertThat(result)
           .usingRecursiveComparison(itemComparator())
-          .ignoringFields("reportedAt")
           .isEqualTo(
               new VendingMachineClientOrdersReport(
                   result.id(),
@@ -93,7 +93,7 @@ class VendingMachineClientOrdersReportRepositoryAdapterIT extends H2DbContainer 
                           ItemName.of("Coke"),
                           BigDecimal.valueOf(1.5),
                           LocalDateTime.of(2025, MAY, 5, 9, 0, 26))),
-                  null));
+                  result.reportedAt()));
       assertThat(result.reportedAt()).isCloseTo(now(), within(200, MILLIS));
     }
   }

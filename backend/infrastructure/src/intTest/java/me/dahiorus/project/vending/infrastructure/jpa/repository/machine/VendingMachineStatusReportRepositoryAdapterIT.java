@@ -50,6 +50,7 @@ class VendingMachineStatusReportRepositoryAdapterIT extends H2DbContainer {
     entityManager.flush();
 
     assertThat(result)
+        .satisfies(report -> assertThat(report.id()).isNotNull())
         .satisfies(report -> assertThat(report.reportedAt()).isCloseTo(now(), within(200, MILLIS)))
         .usingRecursiveComparison()
         .ignoringFields("reportedAt")
@@ -59,7 +60,7 @@ class VendingMachineStatusReportRepositoryAdapterIT extends H2DbContainer {
                 SerialNumber.of("SN-1234-5678"),
                 LocalDateTime.of(2025, JUNE, 9, 10, 35, 25),
                 new VendingMachineStatus(DEFAULT_TEMPERATURE, POWER_OFF, WORKING, OK, OK, NORMAL),
-                null));
+                result.reportedAt()));
   }
 
   @TestConfiguration
