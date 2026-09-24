@@ -1,18 +1,41 @@
-import { httpResource } from '@angular/common/http';
-import { Component, computed, inject } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { HttpClient, HttpErrorResponse, httpResource } from '@angular/common/http';
+import { Component, computed, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth';
 import { ValueOrEmptyPipe } from '../../../shared/value-or-empty-pipe';
+import { ClientOrder } from '../models/client-order';
+import { ItemQuantity, VendingMachine, VendingMachineStock } from '../models/vending-machine';
+import {
+  OrderConfirmDialog,
+  OrderConfirmDialogData,
+} from '../order-confirm-dialog/order-confirm-dialog';
 import { machineUrl } from '../vending-machine-api';
-import { VendingMachine, VendingMachineStock } from '../models/vending-machine';
-import { DatePipe } from '@angular/common';
 
 interface DetailNavigationState {
   href?: string;
+}
+
+function extractErrorMessage(error: unknown): string | undefined {
+  if (
+    error instanceof HttpErrorResponse &&
+    typeof error.error === 'object' &&
+    error.error !== null &&
+    'message' in error.error &&
+    typeof error.error.message === 'string'
+  ) {
+    return error.error.message;
+  }
+
+  return undefined;
 }
 
 @Component({
@@ -22,6 +45,7 @@ interface DetailNavigationState {
     MatCardModule,
     MatIconModule,
     MatProgressBarModule,
+    MatProgressSpinnerModule,
     RouterLink,
     ValueOrEmptyPipe,
     DatePipe,
@@ -30,9 +54,13 @@ interface DetailNavigationState {
 })
 export class MachineDetail {
   private readonly route = inject(ActivatedRoute);
-  private readonly auth = inject(AuthService);
+  readonly auth = inject(AuthService);
+  private readonly http = inject(HttpClient);
+  private readonly dialog = inject(MatDialog);
+  private readonly snackBar = inject(MatSnackBar);
 
   readonly isAdmin = computed(() => this.auth.roles().includes('ROLE_ADMIN'));
+  readonly ordering = signal<string | null>(null);
 
   // Follow the HATEOAS `self` link carried over from the listing via router
   // navigation state rather than reconstructing the resource URL. Fall back to
@@ -66,6 +94,63 @@ export class MachineDetail {
     const links = this.stockResource.value()?._links?.['item'];
     const itemLinks = Array.isArray(links) ? links : links ? [links] : [];
     return itemLinks.find((link) => link.href.includes(itemId))?.href;
+  }
+
+  orderLink(itemId: string): string | undefined {
+    const links = this.stockResource.value()?._links?.['order'];
+    const orderLinks = Array.isArray(links) ? links : links ? [links] : [];
+    return orderLinks.find((link) => link.href.includes(itemId))?.href;
+  }
+
+  canOrder(itemId: string): boolean {
+    return this.auth.isAuthenticated() && this.orderLink(itemId) !== undefined;
+  }
+
+  orderItem(itemQuantity: ItemQuantity): void {
+    const orderLink = this.orderLink(itemQuantity.itemId);
+    if (!orderLink) {
+      return;
+    }
+
+    this.dialog
+      .open(OrderConfirmDialog, {
+        data: {
+          itemName: itemQuantity.itemName,
+          quantity: itemQuantity.quantity,
+        } satisfies OrderConfirmDialogData,
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed !== true) {
+          return;
+        }
+
+        this.ordering.set(itemQuantity.itemId);
+
+        this.http
+          .post<ClientOrder>(orderLink, {})
+          .pipe(finalize(() => this.ordering.set(null)))
+          .subscribe({
+            next: (order) => {
+              this.snackBar.open(
+                `Ordered ${itemQuantity.itemName} for ${order.amount} €`,
+                'Close',
+                {
+                  duration: 5000,
+                },
+              );
+              this.stockResource.reload();
+            },
+            error: (error) => {
+              this.snackBar.open(
+                extractErrorMessage(error) ?? 'The item could not be ordered.',
+                'Close',
+                { duration: 5000 },
+              );
+              this.stockResource.reload();
+            },
+          });
+      });
   }
 
   readonly address = computed(() => {

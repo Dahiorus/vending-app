@@ -1,0 +1,25 @@
+<h2 mat-dialog-title>Confirm order</h2>
+
+<mat-dialog-content>
+  <p>Order 1x {{ data.itemName }}? Remaining stock: {{ data.quantity }}.</p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    mat-button
+    type="button"
+    data-testid="order-confirm-dialog-cancel"
+    (click)="dialogRef.close(false)"
+  >
+    Cancel
+  </button>
+  <button
+    mat-flat-button
+    type="button"
+    color="primary"
+    data-testid="order-confirm-dialog-confirm"
+    (click)="dialogRef.close(true)"
+  >
+    Order
+  </button>
+</mat-dialog-actions>

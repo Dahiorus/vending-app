@@ -29,12 +29,28 @@ const machinesPage = {
 };
 
 test.beforeEach(async ({ page }) => {
+  await page.route('**/api/v1', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/hal+json',
+      body: JSON.stringify({
+        _links: {
+          vendingMachines: { href: '/api/v1/vending-machines' },
+        },
+      }),
+    });
+  });
+
   await page.route('**/api/v1/authenticate', async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify({ accessToken: fakeAccessToken() }),
     });
+  });
+
+  await page.route('**/api/v1/authenticate/refresh', async (route) => {
+    await route.fulfill({ status: 401 });
   });
 
   await page.route('**/api/v1/me', async (route) => {
@@ -82,6 +98,6 @@ test('a user can sign in and sees their account in the toolbar', async ({ page }
   await expect(page.getByText('user@vending.me')).toBeVisible();
   await expect(page.getByText('SN-0001')).toBeVisible();
 
-  await page.getByRole('button', { name: 'Sign out' }).click();
+  await page.getByRole('button', { name: 'Log out' }).click();
   await expect(page).toHaveURL(/\/login$/);
 });
