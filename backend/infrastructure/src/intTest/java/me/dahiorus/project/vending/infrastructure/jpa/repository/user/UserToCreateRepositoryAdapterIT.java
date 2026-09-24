@@ -13,11 +13,17 @@ import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaUser;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.quickperf.junit5.QuickPerfTest;
+import org.quickperf.spring.sql.QuickPerfSqlConfig;
+import org.quickperf.sql.annotation.ExpectSelect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 
+@QuickPerfTest
+@Import(QuickPerfSqlConfig.class)
 @ContextConfiguration(classes = UserToCreateRepositoryAdapterIT.TestConfig.class)
 class UserToCreateRepositoryAdapterIT extends H2DbContainer {
 
@@ -26,6 +32,7 @@ class UserToCreateRepositoryAdapterIT extends H2DbContainer {
   @Nested
   class FindDuplicateOf {
     @Test
+    @ExpectSelect
     void should_return_empty_given_no_duplicate() {
       var result =
           repository.findDuplicateOf(
@@ -39,6 +46,7 @@ class UserToCreateRepositoryAdapterIT extends H2DbContainer {
     }
 
     @Test
+    @ExpectSelect
     void should_return_userId_given_existing_duplicate_by_email() {
       var duplicate =
           entityManager

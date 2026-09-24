@@ -18,11 +18,17 @@ import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaUser;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.quickperf.junit5.QuickPerfTest;
+import org.quickperf.spring.sql.QuickPerfSqlConfig;
+import org.quickperf.sql.annotation.ExpectSelect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 
+@QuickPerfTest
+@Import(QuickPerfSqlConfig.class)
 @ContextConfiguration(classes = UserWithRolesRepositoryAdapterIT.TestConfig.class)
 class UserWithRolesRepositoryAdapterIT extends H2DbContainer {
 
@@ -45,40 +51,41 @@ class UserWithRolesRepositoryAdapterIT extends H2DbContainer {
 
     entityManager.persist(JpaUser.toCreateFrom(admin));
     entityManager.persist(JpaUser.toCreateFrom(user));
-    entityManager.flush();
+    flushAndClear();
   }
 
   @Test
+  @ExpectSelect
   void should_get_admin_user_given_username() {
     var result = userWithRolesRepository.getByUsername(EmailAddress.of("admin@test.org"));
 
     assertThat(result)
         .usingRecursiveComparison()
-        .ignoringFields("id")
         .isEqualTo(
             new UserWithRoles(
-                null,
+                result.id(),
                 EmailAddress.of("admin@test.org"),
                 Password.of(null),
                 Set.of(new Role("ADMIN"))));
   }
 
   @Test
+  @ExpectSelect
   void should_get_app_user_given_username() {
     var result = userWithRolesRepository.getByUsername(EmailAddress.of("user@test.org"));
 
     assertThat(result)
         .usingRecursiveComparison()
-        .ignoringFields("id")
         .isEqualTo(
             new UserWithRoles(
-                null,
+                result.id(),
                 EmailAddress.of("user@test.org"),
                 Password.of(null),
                 Set.of(new Role("USER"))));
   }
 
   @Test
+  @ExpectSelect
   void should_throw_exception_given_unknown_username() {
     var throwable =
         catchThrowable(() -> userWithRolesRepository.getByUsername(EmailAddress.of("toto")));

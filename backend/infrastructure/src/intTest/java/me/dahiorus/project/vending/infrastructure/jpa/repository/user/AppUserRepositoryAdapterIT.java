@@ -24,13 +24,22 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.quickperf.junit5.QuickPerfTest;
+import org.quickperf.spring.sql.QuickPerfSqlConfig;
+import org.quickperf.sql.annotation.ExpectDelete;
+import org.quickperf.sql.annotation.ExpectInsert;
+import org.quickperf.sql.annotation.ExpectSelect;
+import org.quickperf.sql.annotation.ExpectUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 
+@QuickPerfTest
+@Import(QuickPerfSqlConfig.class)
 @ContextConfiguration(classes = AppUserRepositoryAdapterIT.TestConfig.class)
 class AppUserRepositoryAdapterIT extends H2DbContainer {
 
@@ -38,6 +47,7 @@ class AppUserRepositoryAdapterIT extends H2DbContainer {
   @Autowired AppUserRepositoryAdapter repository;
 
   @Test
+  @ExpectInsert(2) // insert user and their roles
   void should_create_app_user() {
     var user =
         new AppUserToCreate(
@@ -68,15 +78,16 @@ class AppUserRepositoryAdapterIT extends H2DbContainer {
   @Nested
   class FindById {
     @Test
+    @ExpectSelect
     void should_get_user_by_id() {
       var user =
-          repository.create(
+          createAndFlush(
+              repository,
               new AppUserToCreate(
                   EmailAddress.of("user@test.org"),
                   Password.of("password"),
                   Firstname.of("User"),
                   Lastname.of("Test")));
-      entityManager.flush();
 
       var result = repository.find(user.id());
 
@@ -91,6 +102,7 @@ class AppUserRepositoryAdapterIT extends H2DbContainer {
     }
 
     @Test
+    @ExpectSelect
     void should_not_get_admin_user_by_id() {
       var admin =
           new AdminUserToCreate(
@@ -110,15 +122,16 @@ class AppUserRepositoryAdapterIT extends H2DbContainer {
   @Nested
   class FindByUsername {
     @Test
+    @ExpectSelect
     void should_get_user_by_username() {
       var user =
-          repository.create(
+          createAndFlush(
+              repository,
               new AppUserToCreate(
                   EmailAddress.of("user@test.org"),
                   Password.of("password"),
                   Firstname.of("User"),
                   Lastname.of("Test")));
-      entityManager.flush();
 
       var result = repository.findByUsername(user.email());
 
@@ -136,15 +149,16 @@ class AppUserRepositoryAdapterIT extends H2DbContainer {
   @Nested
   class Update {
     @Test
+    @ExpectUpdate
     void should_update_given_user_by_id() {
       var userCreated =
-          repository.create(
+          createAndFlush(
+              repository,
               new AppUserToCreate(
                   EmailAddress.of("user@test.org"),
                   Password.of("password"),
                   Firstname.of("User"),
                   Lastname.of("Test")));
-      entityManager.flush();
 
       var result =
           repository.update(
@@ -166,6 +180,7 @@ class AppUserRepositoryAdapterIT extends H2DbContainer {
     }
 
     @Test
+    @ExpectUpdate(0)
     void should_throw_exception_when_update_non_existent_vending_machine() {
       var userId = new UserId(randomUUID());
       var userToUpdate =
@@ -179,15 +194,16 @@ class AppUserRepositoryAdapterIT extends H2DbContainer {
   }
 
   @Test
+  @ExpectDelete(2) // delete user and their roles
   void should_delete_given_user() {
     var user =
-        repository.create(
+        createAndFlush(
+            repository,
             new AppUserToCreate(
                 EmailAddress.of("user@test.org"),
                 Password.of("password"),
                 Firstname.of("User"),
                 Lastname.of("Test")));
-    entityManager.flush();
 
     repository.delete(user.id());
     entityManager.flush();
@@ -198,15 +214,16 @@ class AppUserRepositoryAdapterIT extends H2DbContainer {
   @Nested
   class UpdatePassword {
     @Test
+    @ExpectUpdate
     void should_update_password_of_given_user_by_id() {
       var userCreated =
-          repository.create(
+          createAndFlush(
+              repository,
               new AppUserToCreate(
                   EmailAddress.of("user@test.org"),
                   Password.of("password"),
                   Firstname.of("User"),
                   Lastname.of("Test")));
-      entityManager.flush();
 
       repository.updatePassword(userCreated.id(), Password.of("newPassword"));
       entityManager.flush();
@@ -215,6 +232,7 @@ class AppUserRepositoryAdapterIT extends H2DbContainer {
     }
 
     @Test
+    @ExpectUpdate(0)
     void should_throw_exception_given_non_existing_user() {
       var throwable =
           catchThrowable(
@@ -232,13 +250,14 @@ class AppUserRepositoryAdapterIT extends H2DbContainer {
     @BeforeEach
     void setUpUser() {
       appUser =
-          repository.create(
+          createAndFlush(
+              repository,
               new AppUserToCreate(
                   EmailAddress.of("user@test.org"),
                   Password.of("password"),
                   Firstname.of("User"),
                   Lastname.of("Test")));
-      entityManager.flush();
+      entityManager.clear();
     }
 
     private static Stream<Arguments> passwordAndExpectedValue() {

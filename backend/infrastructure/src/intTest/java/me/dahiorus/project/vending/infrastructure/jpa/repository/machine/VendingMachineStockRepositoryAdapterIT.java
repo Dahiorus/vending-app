@@ -5,8 +5,10 @@ import static me.dahiorus.project.vending.fixture.ItemFixture.aColdBeverage;
 import static me.dahiorus.project.vending.fixture.ItemFixture.aSnack;
 import static me.dahiorus.project.vending.fixture.VendingMachineFixture.aVendingMachine;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration.builder;
 
 import jakarta.persistence.EntityManager;
+import java.math.BigDecimal;
 import java.util.Set;
 import java.util.UUID;
 import me.dahiorus.project.vending.domain.item.entity.Item;
@@ -19,6 +21,7 @@ import me.dahiorus.project.vending.domain.stock.port.VendingMachineStockReposito
 import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaItem;
 import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaVendingMachine;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
+import org.assertj.core.api.RecursiveComparisonAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -35,6 +38,12 @@ class VendingMachineStockRepositoryAdapterIT extends H2DbContainer {
   VendingMachine vendingMachine;
   Item bueno, lays;
 
+  private static RecursiveComparisonAssert<?> assertThatStock(VendingMachineStock result) {
+    return assertThat(result)
+        .usingRecursiveComparison(
+            builder().withComparatorForType(BigDecimal::compareTo, BigDecimal.class).build());
+  }
+
   @BeforeEach
   void setUpVendingMachineAndItems() {
     vendingMachine =
@@ -49,11 +58,12 @@ class VendingMachineStockRepositoryAdapterIT extends H2DbContainer {
     entityManager.persist(JpaItem.fromDomain(bueno));
     entityManager.persist(JpaItem.fromDomain(lays));
 
-    entityManager.flush();
+    flushAndClear();
   }
 
   @Nested
   class Update {
+
     @Test
     void should_add_stock_to_empty_vending_machine_stock() {
       var stockToAdd =
@@ -64,7 +74,7 @@ class VendingMachineStockRepositoryAdapterIT extends H2DbContainer {
 
       var result = repository.update(vendingMachine.id(), stockToAdd);
 
-      assertThat(result)
+      assertThatStock(result)
           .isEqualTo(
               new VendingMachineStock(
                   Set.of(
@@ -89,7 +99,7 @@ class VendingMachineStockRepositoryAdapterIT extends H2DbContainer {
       var result = repository.update(vendingMachine.id(), stockToUpdate);
 
       // Then
-      assertThat(result)
+      assertThatStock(result)
           .isEqualTo(
               new VendingMachineStock(
                   Set.of(
@@ -114,7 +124,7 @@ class VendingMachineStockRepositoryAdapterIT extends H2DbContainer {
       var result = repository.update(vendingMachine.id(), stockToRemove);
 
       // Then
-      assertThat(result)
+      assertThatStock(result)
           .isEqualTo(new VendingMachineStock(Set.of(new ItemQuantity(bueno, new Quantity(5)))));
     }
   }

@@ -29,7 +29,7 @@ public class JpaUserDetailsService implements UserDetailsService {
           .password(user.encodedPassword().value())
           .roles(user.rolesAsStringArray())
           .build();
-    } catch (ResourceNotFound e) {
+    } catch (ResourceNotFound _) {
       throw new UsernameNotFoundException(format("No user found with username '%s'.", username));
     }
   }

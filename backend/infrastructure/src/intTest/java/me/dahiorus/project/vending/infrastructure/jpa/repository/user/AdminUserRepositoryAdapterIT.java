@@ -2,10 +2,9 @@ package me.dahiorus.project.vending.infrastructure.jpa.repository.user;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Set;
-import java.util.UUID;
 import me.dahiorus.project.vending.domain.user.entity.AdminUser;
 import me.dahiorus.project.vending.domain.user.entity.AdminUserToCreate;
+import me.dahiorus.project.vending.domain.user.entity.AppUserToCreate;
 import me.dahiorus.project.vending.domain.user.entity.EmailAddress;
 import me.dahiorus.project.vending.domain.user.entity.Firstname;
 import me.dahiorus.project.vending.domain.user.entity.Lastname;
@@ -17,13 +16,20 @@ import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.quickperf.junit5.QuickPerfTest;
+import org.quickperf.spring.sql.QuickPerfSqlConfig;
+import org.quickperf.sql.annotation.ExpectInsert;
+import org.quickperf.sql.annotation.ExpectSelect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 
+@QuickPerfTest
+@Import(QuickPerfSqlConfig.class)
 @ContextConfiguration(classes = AdminUserRepositoryAdapterIT.TestConfig.class)
 class AdminUserRepositoryAdapterIT extends H2DbContainer {
 
@@ -33,6 +39,7 @@ class AdminUserRepositoryAdapterIT extends H2DbContainer {
   @Nested
   class Create {
     @Test
+    @ExpectInsert(2)
     void should_create_admin_user_with_encoded_password() {
       var adminUserToCreate =
           new AdminUserToCreate(
@@ -46,16 +53,16 @@ class AdminUserRepositoryAdapterIT extends H2DbContainer {
 
       assertThat(result)
           .usingRecursiveComparison()
-          .ignoringFields("id")
           .isEqualTo(
               new AdminUser(
-                  new UserId(UUID.randomUUID()),
+                  result.id(),
                   EmailAddress.of("admin@vending-app.fr"),
                   Firstname.of("Admin"),
                   Lastname.of("User")));
     }
 
     @Test
+    @ExpectInsert(2)
     void should_create_admin_user_with_password_and_role() {
       var adminUserToCreate =
           new AdminUserToCreate(
@@ -91,11 +98,12 @@ class AdminUserRepositoryAdapterIT extends H2DbContainer {
               Firstname.of("Admin"),
               Lastname.of("User"));
 
-      adminUser = repository.create(adminUserToCreate);
-      entityManager.flush();
+      adminUser = createAndFlush(repository, adminUserToCreate);
+      entityManager.clear();
     }
 
     @Test
+    @ExpectSelect
     void should_find_admin_user_by_id() {
       var result = repository.find(adminUser.id());
 
@@ -103,15 +111,15 @@ class AdminUserRepositoryAdapterIT extends H2DbContainer {
     }
 
     @Test
+    @ExpectSelect
     void should_not_find_other_user_by_id() {
       var otherUser =
           JpaUser.toCreateFrom(
-              new AdminUserToCreate(
+              new AppUserToCreate(
                   EmailAddress.of("other-user@vending-app.fr"),
                   Password.of("password"),
                   Firstname.of("Other"),
                   Lastname.of("User")));
-      otherUser.setRoles(Set.of("ROLE_USER"));
       entityManager.persistAndFlush(otherUser);
 
       var result = repository.find(new UserId(otherUser.getId()));

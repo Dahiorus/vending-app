@@ -5,6 +5,7 @@ commonsCollections4 = "4.4"
 commonsIo = "2.12.0"
 nimbusJoseJwt = "9.31"
 springdocOpenapi = "2.8.13"
+quickPerf = "1.1.0"
 spotless = "8.10.2"
 googleJavaFormat = "1.36.1"
 
@@ -35,6 +36,8 @@ springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openap
 commons-lang3 = { module = "org.apache.commons:commons-lang3" }
 commons-collections4 = { module = "org.apache.commons:commons-collections4", version.ref = "commonsCollections4" }
 commons-io = { module = "commons-io:commons-io", version.ref = "commonsIo" }
+quick-perf-junit5 = { module = "org.quickperf:quick-perf-junit5", version.ref = "quickPerf" }
+quick-perf-springboot2-sql-starter = { module = "org.quickperf:quick-perf-springboot2-sql-starter", version.ref = "quickPerf" }
 
 [plugins]
 spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }

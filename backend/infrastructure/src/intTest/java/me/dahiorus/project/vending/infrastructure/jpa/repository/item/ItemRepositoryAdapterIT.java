@@ -4,6 +4,7 @@ import static me.dahiorus.project.vending.domain.file.entity.ContentType.JPG;
 import static me.dahiorus.project.vending.domain.item.entity.ItemType.COLD_BEVERAGE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration.builder;
 
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
@@ -24,45 +25,69 @@ import me.dahiorus.project.vending.domain.pagination.entity.FilterMatcher;
 import me.dahiorus.project.vending.domain.pagination.entity.Pagination;
 import me.dahiorus.project.vending.infrastructure.jpa.entity.JpaUploadedFile;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
+import org.assertj.core.api.RecursiveComparisonAssert;
+import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.quickperf.junit5.QuickPerfTest;
+import org.quickperf.spring.sql.QuickPerfSqlConfig;
+import org.quickperf.sql.annotation.ExpectDelete;
+import org.quickperf.sql.annotation.ExpectInsert;
+import org.quickperf.sql.annotation.ExpectSelect;
+import org.quickperf.sql.annotation.ExpectUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 
+@QuickPerfTest
+@Import(QuickPerfSqlConfig.class)
 @ContextConfiguration(classes = ItemRepositoryAdapterIT.TestConfig.class)
 class ItemRepositoryAdapterIT extends H2DbContainer {
 
   @Autowired ItemRepositoryPort repository;
 
+  private static RecursiveComparisonConfiguration itemComparator() {
+    return builder().withComparatorForType(BigDecimal::compareTo, BigDecimal.class).build();
+  }
+
+  private static RecursiveComparisonAssert<?> assertThatItem(Item item) {
+    return assertThat(item).usingRecursiveComparison(itemComparator());
+  }
+
   @Test
+  @ExpectInsert
   void should_create_item() {
     var itemToCreate =
         new ItemToCreate(ItemName.of("Coca-Cola 33cL"), COLD_BEVERAGE, BigDecimal.valueOf(1.50));
 
     var result = repository.create(itemToCreate);
+    entityManager.flush();
 
-    assertThat(result)
-        .usingRecursiveComparison()
-        .ignoringFields("id")
+    assertThatItem(result)
         .isEqualTo(
-            new Item(null, ItemName.of("Coca-Cola 33cL"), BigDecimal.valueOf(1.50), COLD_BEVERAGE));
+            new Item(
+                result.id(),
+                ItemName.of("Coca-Cola 33cL"),
+                BigDecimal.valueOf(1.50),
+                COLD_BEVERAGE));
   }
 
   @Nested
   class Find {
     @Test
+    @ExpectSelect
     void should_find_item_by_id() {
       var itemToCreate =
           new ItemToCreate(ItemName.of("Coca-Cola 33cL"), COLD_BEVERAGE, BigDecimal.valueOf(1.50));
-      var createdItem = repository.create(itemToCreate);
-      entityManager.flush();
+      var createdItem = createAndFlush(repository, itemToCreate);
+      entityManager.clear();
 
       var result = repository.find(createdItem.id());
 
-      assertThat(result).contains(createdItem);
+      assertThat(result).get().usingRecursiveComparison(itemComparator()).isEqualTo(createdItem);
     }
 
     @Test
@@ -76,16 +101,18 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
   @Nested
   class Update {
     @Test
+    @ExpectUpdate
+    @ExpectSelect(0)
     void should_update_given_item_by_id() {
       var itemToCreate =
           new ItemToCreate(ItemName.of("Coca-Cola 33cL"), COLD_BEVERAGE, BigDecimal.valueOf(1.50));
-      var createdItem = repository.create(itemToCreate);
-      entityManager.flush();
+      var createdItem = createAndFlush(repository, itemToCreate);
 
       var itemToUpdate = new ItemToUpdate(createdItem.id(), BigDecimal.valueOf(2.00));
       var updatedItem = repository.update(itemToUpdate);
+      entityManager.flush();
 
-      assertThat(updatedItem)
+      assertThatItem(updatedItem)
           .isEqualTo(
               new Item(
                   createdItem.id(),
@@ -95,6 +122,7 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
     }
 
     @Test
+    @ExpectUpdate(0)
     void should_throw_exception_when_update_non_existent_item() {
       var itemToUpdate = new ItemToUpdate(new ItemId(UUID.randomUUID()), BigDecimal.valueOf(2.00));
 
@@ -105,13 +133,14 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
   }
 
   @Test
+  @ExpectDelete
   void should_delete_item_by_id() {
     var itemToCreate =
         new ItemToCreate(ItemName.of("Coca-Cola 33cL"), COLD_BEVERAGE, BigDecimal.valueOf(1.50));
-    var createdItem = repository.create(itemToCreate);
-    entityManager.flush();
+    var createdItem = createAndFlush(repository, itemToCreate);
 
     repository.delete(createdItem.id());
+    entityManager.flush();
 
     assertThat(repository.find(createdItem.id())).isEmpty();
   }
@@ -134,22 +163,26 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
       item3 =
           repository.create(
               new ItemToCreate(ItemName.of("Fanta 33cL"), COLD_BEVERAGE, BigDecimal.valueOf(1.50)));
-      entityManager.flush();
+      flushAndClear();
     }
 
     @Nested
     class Search {
       @Test
+      @ExpectSelect
       void should_return_all_items_given_empty_filter() {
         var result =
             repository.search(
                 new Pagination(),
                 new Filter<>(new Item(null, null, null, null), new FilterMatcher()));
 
-        assertThat(result).containsExactly(item1, item2, item3);
+        assertThat(result)
+            .usingRecursiveFieldByFieldElementComparator(itemComparator())
+            .containsExactly(item1, item2, item3);
       }
 
       @Test
+      @ExpectSelect
       void should_return_filtered_items() {
         var result =
             repository.search(
@@ -158,7 +191,9 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
                     new Item(null, ItemName.of("Coca-Cola 33cL"), null, null),
                     new FilterMatcher()));
 
-        assertThat(result).containsExactly(item1);
+        assertThat(result)
+            .usingRecursiveFieldByFieldElementComparator(itemComparator())
+            .containsExactly(item1);
       }
     }
 
@@ -192,10 +227,11 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
     @BeforeEach
     void setUpItem() {
       item =
-          repository.create(
+          createAndFlush(
+              repository,
               new ItemToCreate(
                   ItemName.of("Coca-Cola 33cL"), COLD_BEVERAGE, BigDecimal.valueOf(1.50)));
-      entityManager.flush();
+      entityManager.clear();
     }
 
     @Nested
@@ -236,13 +272,14 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
       }
 
       @Test
+      @ExpectInsert(2)
       void should_upload_and_replace_old_picture() {
         // Given
         var oldPicture =
             new FileToUpload(
                 new Filename("old-coca-cola.jpg"), new BinaryContent(new byte[] {1, 2, 3}), JPG);
         var itemWithPictureToReplace = repository.uploadImage(item.id(), oldPicture);
-        entityManager.flush();
+        flushAndClear();
 
         // When
         var newPicture =
@@ -253,10 +290,10 @@ class ItemRepositoryAdapterIT extends H2DbContainer {
 
         assertThat(result)
             .usingRecursiveComparison()
-            .ignoringFields("id", "uploadedAt")
+            .ignoringFields("uploadedAt")
             .isEqualTo(
                 new UploadedFile(
-                    null,
+                    result.id(),
                     new Filename("new-coca-cola.jpg"),
                     new BinaryContent(new byte[] {4, 5, 6}),
                     JPG,

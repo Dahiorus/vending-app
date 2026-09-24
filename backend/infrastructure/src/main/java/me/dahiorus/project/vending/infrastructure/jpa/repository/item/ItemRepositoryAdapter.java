@@ -4,6 +4,7 @@ import static me.dahiorus.project.vending.infrastructure.jpa.repository.ExampleM
 import static me.dahiorus.project.vending.infrastructure.jpa.repository.ToPageableConverter.toPageable;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -51,17 +52,18 @@ public class ItemRepositoryAdapter implements ItemRepositoryPort {
     return jpaRepository.save(JpaItem.createFrom(itemToCreate)).toDomain();
   }
 
-  @CachePut(key = "#result.id")
+  @CachePut(key = "#result.id.value")
   @Override
   public Item update(ItemToUpdate toUpdate) {
-    var itemToUpdate =
-        jpaRepository
-            .findById(toUpdate.id().value())
-            .orElseThrow(() -> new ResourceNotFound(toUpdate.id()));
-    itemToUpdate.updateFrom(toUpdate);
-    var itemUpdated = jpaRepository.save(itemToUpdate);
+    try {
+      var itemToUpdate = jpaRepository.getReferenceById(toUpdate.id().value());
+      itemToUpdate.updateFrom(toUpdate);
+      var itemUpdated = jpaRepository.save(itemToUpdate);
 
-    return itemUpdated.toDomain();
+      return itemUpdated.toDomain();
+    } catch (EntityNotFoundException _) {
+      throw new ResourceNotFound(toUpdate.id());
+    }
   }
 
   @CacheEvict(

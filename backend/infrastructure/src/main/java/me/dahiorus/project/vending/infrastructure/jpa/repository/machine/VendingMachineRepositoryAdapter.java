@@ -4,6 +4,7 @@ import static java.util.function.Predicate.not;
 import static me.dahiorus.project.vending.infrastructure.jpa.repository.ExampleMatcherAdapter.toExample;
 import static me.dahiorus.project.vending.infrastructure.jpa.repository.ToPageableConverter.toPageable;
 
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import me.dahiorus.project.vending.domain.exception.ResourceNotFound;
@@ -44,14 +45,15 @@ public class VendingMachineRepositoryAdapter implements VendingMachineRepository
   @CachePut(key = "#result.id.value")
   @Override
   public VendingMachine update(VendingMachineToUpdate toUpdate) {
-    var machineToUpdate =
-        jpaRepository
-            .findById(toUpdate.id().value())
-            .orElseThrow(() -> new ResourceNotFound(toUpdate.id()));
-    machineToUpdate.updateFrom(toUpdate);
-    var machineUpdated = jpaRepository.save(machineToUpdate);
+    try {
+      var machineToUpdate = jpaRepository.getReferenceById(toUpdate.id().value());
+      machineToUpdate.updateFrom(toUpdate);
+      var machineUpdated = jpaRepository.save(machineToUpdate);
 
-    return machineUpdated.toDomain();
+      return machineUpdated.toDomain();
+    } catch (EntityNotFoundException _) {
+      throw new ResourceNotFound(toUpdate.id());
+    }
   }
 
   @CacheEvict(

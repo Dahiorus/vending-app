@@ -10,6 +10,7 @@ import static me.dahiorus.project.vending.fixture.VendingMachineFixture.aVending
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.assertj.core.api.InstanceOfAssertFactories.type;
+import static org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration.builder;
 import static org.awaitility.Awaitility.await;
 
 import java.math.BigDecimal;
@@ -22,22 +23,35 @@ import me.dahiorus.project.vending.domain.reporting.entity.VendingMachineClientO
 import me.dahiorus.project.vending.domain.reporting.entity.VendingMachineClientOrdersReportToCreate;
 import me.dahiorus.project.vending.domain.reporting.port.VendingMachineClientOrdersReportRepositoryPort;
 import me.dahiorus.project.vending.infrastructure.jpa.repository.H2DbContainer;
+import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.quickperf.junit5.QuickPerfTest;
+import org.quickperf.spring.sql.QuickPerfSqlConfig;
+import org.quickperf.sql.annotation.ExpectInsert;
+import org.quickperf.sql.annotation.ExpectSelect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 
+@QuickPerfTest
+@Import(QuickPerfSqlConfig.class)
 @ContextConfiguration(
     classes = VendingMachineClientOrdersReportRepositoryAdapterIT.TestConfig.class)
 class VendingMachineClientOrdersReportRepositoryAdapterIT extends H2DbContainer {
 
   @Autowired VendingMachineClientOrdersReportRepositoryPort repository;
 
+  private static RecursiveComparisonConfiguration itemComparator() {
+    return builder().withComparatorForType(BigDecimal::compareTo, BigDecimal.class).build();
+  }
+
   @Nested
   class Create {
     @Test
+    @ExpectInsert(3)
     void should_create_client_orders_report() {
       // Given
       var vendingMachine = aVendingMachine().serialNumber("VM-123-456").build();
@@ -61,12 +75,12 @@ class VendingMachineClientOrdersReportRepositoryAdapterIT extends H2DbContainer 
       entityManager.flush();
 
       // Then
+      assertThat(result.id()).isNotNull();
       assertThat(result)
-          .usingRecursiveComparison()
-          .ignoringFields("id", "reportedAt")
+          .usingRecursiveComparison(itemComparator())
           .isEqualTo(
               new VendingMachineClientOrdersReport(
-                  null,
+                  result.id(),
                   vendingMachine.serialNumber(),
                   List.of(
                       new ReportedClientOrder(
@@ -79,9 +93,8 @@ class VendingMachineClientOrdersReportRepositoryAdapterIT extends H2DbContainer 
                           ItemName.of("Coke"),
                           BigDecimal.valueOf(1.5),
                           LocalDateTime.of(2025, MAY, 5, 9, 0, 26))),
-                  null));
+                  result.reportedAt()));
       assertThat(result.reportedAt()).isCloseTo(now(), within(200, MILLIS));
-      assertThat(result.id()).isNotNull();
     }
   }
 
@@ -101,6 +114,7 @@ class VendingMachineClientOrdersReportRepositoryAdapterIT extends H2DbContainer 
     }
 
     @Test
+    @ExpectSelect
     void should_return_last_generated_report_of_given_vending_machine() {
       // Given
       var vendingMachine = aVendingMachine().serialNumber("VM-123-456").build();
@@ -139,7 +153,7 @@ class VendingMachineClientOrdersReportRepositoryAdapterIT extends H2DbContainer 
       // Then
       assertThat(result)
           .get()
-          .usingRecursiveComparison()
+          .usingRecursiveComparison(itemComparator())
           .ignoringFields("id", "reportedAt")
           .isEqualTo(
               new VendingMachineClientOrdersReport(

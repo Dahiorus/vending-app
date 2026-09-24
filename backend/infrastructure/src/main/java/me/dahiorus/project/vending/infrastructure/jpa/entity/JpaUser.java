@@ -1,6 +1,5 @@
 package me.dahiorus.project.vending.infrastructure.jpa.entity;
 
-import static jakarta.persistence.FetchType.EAGER;
 import static jakarta.persistence.FetchType.LAZY;
 import static java.util.stream.Collectors.toSet;
 
@@ -12,6 +11,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -32,6 +33,9 @@ import me.dahiorus.project.vending.domain.user.entity.UserId;
 import me.dahiorus.project.vending.domain.user.entity.UserToCreate;
 import me.dahiorus.project.vending.domain.user.entity.UserWithRoles;
 
+@NamedEntityGraph(
+    name = "JpaUser.profilePicture",
+    attributeNodes = @NamedAttributeNode("profilePicture"))
 @Entity
 @Table(
     name = "app_user",
@@ -60,7 +64,7 @@ public class JpaUser extends JpaEntity {
   @JoinColumn(name = "profile_picture_id", foreignKey = @ForeignKey(name = "FK_USER_PICTURE_ID"))
   private JpaUploadedFile profilePicture;
 
-  @ElementCollection(fetch = EAGER)
+  @ElementCollection
   @CollectionTable(
       name = "app_user_role",
       indexes = @Index(columnList = "role_name", name = "IDX_USER_ROLE_NAME"),
@@ -143,10 +147,8 @@ public class JpaUser extends JpaEntity {
     return jpaUser;
   }
 
-  public JpaUser updateFrom(final AppUser toUpdate) {
+  public void updateFrom(final AppUser toUpdate) {
     this.firstName = toUpdate.firstname().value();
     this.lastName = toUpdate.lastname().value();
-
-    return this;
   }
 }
