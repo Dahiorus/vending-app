@@ -64,6 +64,7 @@
             <tr>
               <th class="font-medium">Item</th>
               <th class="font-medium">Quantity</th>
+              <th class="font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -78,6 +79,25 @@
                   }
                 </td>
                 <td>{{ itemQuantity.quantity }}</td>
+                <td>
+                  @if (canOrder(itemQuantity.itemId)) {
+                    <button
+                      mat-button
+                      type="button"
+                      [disabled]="ordering() === itemQuantity.itemId"
+                      (click)="orderItem(itemQuantity)"
+                    >
+                      @if (ordering() === itemQuantity.itemId) {
+                        <mat-progress-spinner
+                          diameter="16"
+                          mode="indeterminate"
+                          class="mr-2 inline-block align-middle"
+                        />
+                      }
+                      <span>Order</span>
+                    </button>
+                  }
+                </td>
               </tr>
             }
           </tbody>
