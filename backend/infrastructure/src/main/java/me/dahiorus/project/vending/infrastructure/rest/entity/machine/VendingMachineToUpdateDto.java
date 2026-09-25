@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.infrastructure.rest.entity.machine;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -14,7 +15,7 @@ import me.dahiorus.project.vending.domain.machine.entity.VendingMachineStatus.Wo
 import me.dahiorus.project.vending.domain.machine.entity.VendingMachineToUpdate;
 
 public record VendingMachineToUpdateDto(
-    @NotNull AddressDto address,
+    @Valid @NotNull AddressDto address,
     @NotNull Integer temperature,
     @NotNull ItemType itemType,
     @NotNull PowerStatus powerStatus,

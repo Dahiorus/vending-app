@@ -67,7 +67,8 @@ public class SelfServiceRestController {
   @ApiResponse(responseCode = "200", description = "Authenticated user updated")
   @PutMapping
   @ResponseStatus(OK)
-  public EntityModel<UserDto> update(Authentication authentication, UserToUpdateDto userDto) {
+  public EntityModel<UserDto> update(
+      Authentication authentication, @RequestBody UserToUpdateDto userDto) {
     var authenticatedUser = getAuthenticatedUser(authentication);
     var updatedUser = appUserService.update(userDto.toDomain(authenticatedUser.id()));
 

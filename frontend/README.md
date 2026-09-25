@@ -43,20 +43,27 @@ npm test         # tests unitaires Vitest
 npm run e2e      # tests end-to-end Playwright (API mockée, aucun backend requis)
 ```
 
-## Périmètre actuel (walking skeleton)
+## Périmètre actuel
 
-Ce frontend est volontairement réduit à un squelette fonctionnel de bout en
-bout :
+- **Authentification** : login, inscription, jeton d'accès en mémoire
+  uniquement (jamais persisté), refresh token en cookie `httpOnly` géré par le
+  backend (rotation + révocation côté serveur), renouvellement automatique sur
+  401, protection CSRF (`XSRF-TOKEN`/`X-XSRF-TOKEN`), déconnexion. Garde de
+  route `adminGuard` sur les pages réservées aux admins.
+- **Distributeurs** : liste paginée (table Material + paginator), création
+  (admin), détail avec consultation du stock et commande d'un article
+  (utilisateur connecté avec le rôle `ROLE_USER`).
+- **Articles** : liste paginée en lecture seule (admin).
 
-- **Authentification** : page de login, jeton d'accès en mémoire, refresh
-  token en `sessionStorage`, renouvellement automatique sur 401, déconnexion.
-- **Un flux public** : liste paginée des distributeurs
-  (`GET /api/v1/vending-machines`), table Material + paginator.
-
-**Non planifié pour l'instant** (suites possibles) : CRUD admin (articles,
-distributeurs, stock, images), les rapports (statut, stock, commandes
-clients), commande d'article, inscription, édition du profil, gardes de
-route (`authGuard`/`adminGuard`), layouts séparés public/admin, i18n.
+**Reste à faire** (backend déjà exposé, frontend absent) :
+- CRUD complet articles (création/édition/suppression — seule la liste
+  existe) et gestion des images d'article
+- Édition/suppression d'un distributeur (seules la liste et la création
+  existent)
+- Rapports admin : statut des distributeurs, stock, commandes clients
+- Profil utilisateur (consultation/édition, changement de mot de passe)
+- Layouts séparés public/admin, navigation admin dédiée
+- i18n
 
 ## Tests
 
