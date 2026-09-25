@@ -1,5 +1,7 @@
 package me.dahiorus.project.vending.infrastructure.rest.entity.machine;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import me.dahiorus.project.vending.domain.machine.entity.Address;
 import me.dahiorus.project.vending.domain.machine.entity.Address.City;
 import me.dahiorus.project.vending.domain.machine.entity.Address.GeoCoordinates;
@@ -8,12 +10,12 @@ import me.dahiorus.project.vending.domain.machine.entity.Address.StreetName;
 import me.dahiorus.project.vending.domain.machine.entity.Address.StreetNumber;
 
 public record AddressDto(
-    Double latitude,
-    Double longitude,
-    Integer streetNumber,
-    String streetName,
-    String postalCode,
-    String city) {
+    @NotNull Double latitude,
+    @NotNull Double longitude,
+    @NotNull Integer streetNumber,
+    @NotBlank String streetName,
+    @NotBlank String postalCode,
+    @NotBlank String city) {
   public static AddressDto fromDomain(Address address) {
     return new AddressDto(
         address.coordinates().latitude(),
