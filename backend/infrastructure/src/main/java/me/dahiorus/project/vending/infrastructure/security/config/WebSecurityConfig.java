@@ -116,7 +116,7 @@ public class WebSecurityConfig {
                     .requestMatchers(
                         withDefaults()
                             .matcher(POST, "/api/v1/vending-machines/{vendingMachineId}/order/**"))
-                    .permitAll()
+                    .hasRole("USER")
                     .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**")
                     .permitAll()
                     .requestMatchers("/api/v1/register")
