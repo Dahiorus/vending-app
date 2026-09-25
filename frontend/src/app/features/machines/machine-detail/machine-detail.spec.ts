@@ -236,6 +236,20 @@ describe('MachineDetail', () => {
     expect(queryOrderButton()).toBeNull();
   });
 
+  it('hides the order button when the user is authenticated but not ROLE_USER', async () => {
+    TestBed.inject(TokenStore).setAccessToken(
+      fakeJwt({ sub: 'admin@vending.me', roles: ['ROLE_ADMIN'], exp: 1 }),
+    );
+
+    await navigate();
+    await flushMachineAndStock({
+      stockOrderLinks: [{ href: 'https://api.example.test/vending-machines/m-1/items/i-1/order' }],
+    });
+    await harness.fixture.whenStable();
+
+    expect(queryOrderButton()).toBeNull();
+  });
+
   it('hides the order button when the stock item has no order link', async () => {
     authenticate();
 

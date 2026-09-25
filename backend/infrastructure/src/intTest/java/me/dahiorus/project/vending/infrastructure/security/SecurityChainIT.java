@@ -163,6 +163,38 @@ class SecurityChainIT {
   }
 
   @Test
+  void should_reject_ordering_an_item_without_a_token() throws Exception {
+    mockMvc
+        .perform(
+            post("/api/v1/vending-machines/" + UUID.randomUUID() + "/order/" + UUID.randomUUID()))
+        .andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  void should_reject_ordering_an_item_with_an_admin_only_token() throws Exception {
+    String accessToken =
+        accessTokenFor(adminEmail, List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+
+    mockMvc
+        .perform(
+            post("/api/v1/vending-machines/" + UUID.randomUUID() + "/order/" + UUID.randomUUID())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
+        .andExpect(status().isForbidden());
+  }
+
+  @Test
+  void should_allow_ordering_an_item_with_a_user_token() throws Exception {
+    String accessToken =
+        accessTokenFor(userEmail, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+
+    mockMvc
+        .perform(
+            post("/api/v1/vending-machines/" + UUID.randomUUID() + "/order/" + UUID.randomUUID())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
+        .andExpect(status().is(not(403)));
+  }
+
+  @Test
   void should_reject_a_malformed_token() throws Exception {
     mockMvc
         .perform(get("/api/v1/items").header(HttpHeaders.AUTHORIZATION, "Bearer not-a-jwt"))

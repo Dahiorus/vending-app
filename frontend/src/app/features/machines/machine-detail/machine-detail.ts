@@ -103,7 +103,7 @@ export class MachineDetail {
   }
 
   canOrder(itemId: string): boolean {
-    return this.auth.isAuthenticated() && this.orderLink(itemId) !== undefined;
+    return this.auth.roles().includes('ROLE_USER') && this.orderLink(itemId) !== undefined;
   }
 
   orderItem(itemQuantity: ItemQuantity): void {
