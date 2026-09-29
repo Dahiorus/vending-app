@@ -88,7 +88,11 @@ public class SelfServiceRestController {
         appUserService.uploadProfilePicture(authenticatedUser.id(), toFileToUpload(multipartFile));
 
     return modelAssembler.toModel(
-        new UserDto(appUserWithPicture.userId().value(), null, null, null));
+        new UserDto(
+            appUserWithPicture.userId().value(),
+            authenticatedUser.email().value(),
+            authenticatedUser.firstname().value(),
+            authenticatedUser.lastname().value()));
   }
 
   @Operation(description = "Get the authenticated user's profile picture")
