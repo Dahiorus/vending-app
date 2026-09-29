@@ -90,4 +90,51 @@ describe('Profile', () => {
 
     expect(component.profile()?.firstname).toBe('Grace');
   });
+
+  it('keeps the profile-picture instance alive across a reload so its cache-busted preview is not lost', async () => {
+    const component = await harness.navigateByUrl('/profile', Profile);
+    harness.fixture.detectChanges();
+
+    backend.expectOne('/api/v1/me').flush({
+      id: 'u-1',
+      email: 'ada@vending.me',
+      firstname: 'Ada',
+      lastname: 'Lovelace',
+      _links: {
+        self: { href: '/api/v1/me' },
+        'me:picture': { href: '/api/v1/me/picture' },
+      },
+    });
+    await harness.fixture.whenStable();
+    harness.fixture.detectChanges();
+
+    const page = harness.fixture.nativeElement as HTMLElement;
+    const pictureBefore = page.querySelector('app-profile-picture');
+    expect(pictureBefore).not.toBeNull();
+
+    component.reload();
+    harness.fixture.detectChanges();
+
+    // The <app-profile-picture> element must stay the same DOM node while the
+    // resource is reloading, otherwise the component's local cache-buster
+    // state (and any optimistic preview) is lost and the uploaded picture
+    // appears not to update.
+    const pictureDuringReload = page.querySelector('app-profile-picture');
+    expect(pictureDuringReload).toBe(pictureBefore);
+
+    backend.expectOne('/api/v1/me').flush({
+      id: 'u-1',
+      email: 'ada@vending.me',
+      firstname: 'Ada',
+      lastname: 'Lovelace',
+      _links: {
+        self: { href: '/api/v1/me' },
+        'me:picture': { href: '/api/v1/me/picture' },
+      },
+    });
+    await harness.fixture.whenStable();
+    harness.fixture.detectChanges();
+
+    expect(page.querySelector('app-profile-picture')).toBe(pictureBefore);
+  });
 });
