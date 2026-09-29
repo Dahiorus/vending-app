@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { itemsPageUrl } from './item-api';
+import { itemImageUrl, itemsPageUrl, itemUrl } from './item-api';
 
 describe('itemsPageUrl', () => {
   it('builds the paged URL from the resolved items href, converting the 0-based pageIndex to the backend’s 1-based page param', () => {
@@ -14,5 +14,17 @@ describe('itemsPageUrl', () => {
     expect(itemsPageUrl('/api/v1/items?type=SNACK', 2, 10)).toBe(
       '/api/v1/items?type=SNACK&page=3&size=10',
     );
+  });
+});
+
+describe('itemUrl', () => {
+  it('builds the item resource URL from its id', () => {
+    expect(itemUrl('i-1')).toBe('/api/v1/items/i-1');
+  });
+});
+
+describe('itemImageUrl', () => {
+  it('builds the public item image URL from its id', () => {
+    expect(itemImageUrl('i-1')).toBe('/api/v1/items/i-1/image');
   });
 });

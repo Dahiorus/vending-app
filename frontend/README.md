@@ -56,6 +56,7 @@ npm run e2e      # tests end-to-end Playwright (API mockée, aucun backend requi
 - **Articles** : liste paginée en lecture seule (admin).
 
 **Reste à faire** (backend déjà exposé, frontend absent) :
+
 - CRUD complet articles (création/édition/suppression — seule la liste
   existe) et gestion des images d'article
 - Édition/suppression d'un distributeur (seules la liste et la création

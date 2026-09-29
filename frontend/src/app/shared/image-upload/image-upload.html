@@ -1,0 +1,32 @@
+<div class="flex items-center gap-4">
+  @if (displayedUrl(); as url) {
+    <img
+      [src]="url"
+      [alt]="label()"
+      class="h-24 w-24 rounded object-cover"
+      data-testid="image-upload-preview"
+      (error)="onImageError()"
+    />
+  } @else {
+    <mat-icon
+      class="!h-24 !w-24 !text-8xl text-gray-400"
+      aria-hidden="true"
+      data-testid="image-upload-fallback"
+      >{{ fallbackIcon() }}</mat-icon
+    >
+  }
+
+  <label class="flex flex-col gap-1">
+    <span class="text-sm font-medium">{{ label() }}</span>
+    <input
+      type="file"
+      [accept]="accept"
+      data-testid="image-upload-input"
+      (change)="onFileChange($event)"
+    />
+  </label>
+</div>
+
+@if (message(); as text) {
+  <p class="mt-2 text-sm text-red-600" role="alert">{{ text }}</p>
+}
