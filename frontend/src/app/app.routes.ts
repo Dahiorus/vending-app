@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from './core/auth/admin-guard';
+import { userGuard } from './core/auth/user-guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'machines' },
@@ -27,6 +28,12 @@ export const routes: Routes = [
     loadComponent: () => import('./features/items/item-list/item-list').then((m) => m.ItemList),
     canActivate: [adminGuard],
     title: 'Items',
+  },
+  {
+    path: 'profile',
+    loadComponent: () => import('./features/profile/profile/profile').then((m) => m.Profile),
+    canActivate: [userGuard],
+    title: 'My profile',
   },
   {
     path: 'login',
