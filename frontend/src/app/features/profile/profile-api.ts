@@ -25,10 +25,6 @@ export function updatePassword(
   return http.post<void>(href, payload);
 }
 
-export function uploadProfilePicture(
-  http: HttpClient,
-  href: string,
-  file: File,
-): Observable<User> {
+export function uploadProfilePicture(http: HttpClient, href: string, file: File): Observable<User> {
   return uploadImageFile<User>(http, href, file);
 }

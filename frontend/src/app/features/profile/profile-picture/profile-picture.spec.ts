@@ -37,7 +37,10 @@ describe('ProfilePicture', () => {
   });
 
   it('preserves an absolute picture URL origin when adding the cache-busting version', async () => {
-    fixture.componentRef.setInput('pictureHref', 'https://api.example.test/api/v1/me/picture?size=small');
+    fixture.componentRef.setInput(
+      'pictureHref',
+      'https://api.example.test/api/v1/me/picture?size=small',
+    );
     fixture.detectChanges();
     const file = new File(['avatar'], 'avatar.png', { type: 'image/png' });
 

@@ -109,10 +109,12 @@ describe('ProfilePassword', () => {
 
     component.submit();
 
-    backend.expectOne('/api/v1/me/password').flush(
-      { timestamp: '2026-09-25T12:00:00Z', message: 'Old password does not match' },
-      { status: 400, statusText: 'Bad Request' },
-    );
+    backend
+      .expectOne('/api/v1/me/password')
+      .flush(
+        { timestamp: '2026-09-25T12:00:00Z', message: 'Old password does not match' },
+        { status: 400, statusText: 'Bad Request' },
+      );
     await fixture.whenStable();
 
     expect(component.fieldErrors()).toEqual({

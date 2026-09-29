@@ -68,7 +68,9 @@ export class ProfileInfo {
         const parsed = parseValidationErrors(error, FORM_FIELDS);
         if (parsed) {
           this.fieldErrors.set(parsed.fieldErrors);
-          this.errorMessage.set(parsed.hasObjectLevelError ? 'Profile could not be updated.' : null);
+          this.errorMessage.set(
+            parsed.hasObjectLevelError ? 'Profile could not be updated.' : null,
+          );
           return;
         }
 

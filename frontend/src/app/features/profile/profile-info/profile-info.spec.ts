@@ -42,7 +42,9 @@ describe('ProfileInfo', () => {
   afterEach(() => backend.verify());
 
   it('shows email as read-only and initializes firstname and lastname', () => {
-    const emailInput = fixture.nativeElement.querySelector('input[type="email"]') as HTMLInputElement;
+    const emailInput = fixture.nativeElement.querySelector(
+      'input[type="email"]',
+    ) as HTMLInputElement;
 
     expect(emailInput.value).toBe('ada@vending.me');
     expect(emailInput.readOnly).toBe(true);
