@@ -16,7 +16,7 @@ public class JwtProperties {
   private Duration accessTokenDuration = Duration.ofHours(1);
 
   @DurationUnit(ChronoUnit.DAYS)
-  private Period refreshTokenDuration = Period.ofDays(365);
+  private Period refreshTokenDuration = Period.ofDays(30);
 
   /** PEM-encoded RSA public key. When blank, an ephemeral key pair is generated at startup. */
   private String publicKey;
