@@ -3,6 +3,7 @@ package me.dahiorus.project.vending;
 import static org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType.HAL_FORMS;
 
 import java.util.Arrays;
+import me.dahiorus.project.vending.infrastructure.command.CreateDevEnvironmentAdmin;
 import me.dahiorus.project.vending.infrastructure.command.PurgeExpiredRefreshTokenCommand;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
@@ -24,7 +25,9 @@ public class VendingApplication {
     // One-shot CLI commands (e.g. PurgeExpiredRefreshTokenCommand) run the full Spring context
     // but skip starting the embedded web server, and exit as soon as the ApplicationRunners
     // complete instead of staying up to serve HTTP requests.
-    var cliMode = isCommand(args, PurgeExpiredRefreshTokenCommand.OPTION_NAME);
+    var cliMode =
+        isCommand(args, PurgeExpiredRefreshTokenCommand.OPTION_NAME)
+            || isCommand(args, CreateDevEnvironmentAdmin.OPTION_NAME);
 
     var application = new SpringApplication(VendingApplication.class);
     if (cliMode) {

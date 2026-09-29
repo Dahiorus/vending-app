@@ -17,6 +17,8 @@ import org.springframework.stereotype.Component;
 @Profile("dev")
 public class CreateDevEnvironmentAdmin implements ApplicationRunner {
 
+  public static final String OPTION_NAME = "create-dev-environment-admin";
+
   private static final Logger logger = LoggerFactory.getLogger(CreateDevEnvironmentAdmin.class);
 
   private final AdminUserRepositoryPort adminUserRepository;
@@ -27,6 +29,10 @@ public class CreateDevEnvironmentAdmin implements ApplicationRunner {
 
   @Override
   public void run(ApplicationArguments args) {
+    if (!args.containsOption(OPTION_NAME)) {
+      return;
+    }
+
     logger.info("Creating default admin user...");
 
     var username = EmailAddress.of("admin@vending-app.org");

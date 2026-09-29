@@ -6,11 +6,14 @@ where:
     -h  show this help text
     -d  activate remote debug mode for the backend (on port 5005)
     -p  purge expired refresh tokens then exit, instead of running the app
-        (equivalent to: ./gradlew :backend:infrastructure:bootRun --args='--spring.profiles.active=dev --purge-expired-refresh-tokens')"
+        (equivalent to: ./gradlew :backend:infrastructure:bootRun --args='--spring.profiles.active=dev --purge-expired-refresh-tokens')
+    -a  create default admin user for development environment then exit, instead of running the app
+        (equivalent to: ./gradlew :backend:infrastructure:bootRun --args='--spring.profiles.active=dev --create-dev-environment-admin')"
 
 DEBUG_OPT=""
 PURGE_REFRESH_TOKENS=""
-while getopts "hdp" OPTION; do
+CREATE_DEV_ENVIRONMENT_ADMIN=""
+while getopts "hdpa" OPTION; do
   case ${OPTION} in
   h)
     echo "$usage"
@@ -22,6 +25,9 @@ while getopts "hdp" OPTION; do
   p)
     PURGE_REFRESH_TOKENS="true"
     ;;
+  a)
+    CREATE_DEV_ENVIRONMENT_ADMIN="true"
+    ;;
   *)
     echo "$usage"
     exit
@@ -31,6 +37,11 @@ done
 
 if [ -n "$PURGE_REFRESH_TOKENS" ]; then
   ./gradlew :backend:infrastructure:bootRun --args='--spring.profiles.active=dev --purge-expired-refresh-tokens'
+  exit
+fi
+
+if [ -n "$CREATE_DEV_ENVIRONMENT_ADMIN" ]; then
+  ./gradlew :backend:infrastructure:bootRun --args='--spring.profiles.active=dev --create-dev-environment-admin'
   exit
 fi
 
