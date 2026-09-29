@@ -132,3 +132,19 @@ Points à respecter en cas d'évolution :
 best-effort et ne jamais faire échouer le démarrage de l'application ; en
 cas d'ajustement du bloc `catch`, conserver la cause complète dans le log
 (`logger.error("...", e)`), pas seulement `e.getMessage()`.
+
+`command/PurgeExpiredRefreshTokenCommand` est une commande CLI ponctuelle,
+complémentaire à `security/RefreshTokenPurgeJob` (planifié quotidiennement
+via `@Scheduled`) : elle ne s'exécute que si l'option
+`--purge-expired-refresh-tokens` est passée sur la ligne de commande
+(`ApplicationArguments#containsOption`), sinon son `ApplicationRunner#run`
+est un no-op. `VendingApplication.main` détecte cette option en amont du
+démarrage du contexte, force `WebApplicationType.NONE` (pas de serveur web
+embarqué pour un usage CLI) et appelle `SpringApplication.exit(...)` juste
+après l'exécution des runners, pour ne pas laisser le processus tourner
+indéfiniment. Invocation typique :
+`./gradlew :backend:infrastructure:bootRun --args='--purge-expired-refresh-tokens'`
+(ou `java -jar <jar> --purge-expired-refresh-tokens` en production). Tout
+nouvel ajout de commande CLI doit suivre le même patron (option dédiée +
+détection dans `main` + sortie explicite), plutôt que d'introduire une
+dépendance vers un framework CLI externe.

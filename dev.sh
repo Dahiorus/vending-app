@@ -4,10 +4,13 @@ usage="$(basename "$0") [options] -- run vending-app for development
 
 where:
     -h  show this help text
-    -d  activate remote debug mode for the backend (on port 5005)"
+    -d  activate remote debug mode for the backend (on port 5005)
+    -p  purge expired refresh tokens then exit, instead of running the app
+        (equivalent to: ./gradlew :backend:infrastructure:bootRun --args='--spring.profiles.active=dev --purge-expired-refresh-tokens')"
 
 DEBUG_OPT=""
-while getopts "hd" OPTION; do
+PURGE_REFRESH_TOKENS=""
+while getopts "hdp" OPTION; do
   case ${OPTION} in
   h)
     echo "$usage"
@@ -16,12 +19,20 @@ while getopts "hd" OPTION; do
   d)
     DEBUG_OPT=" --debug-jvm"
     ;;
+  p)
+    PURGE_REFRESH_TOKENS="true"
+    ;;
   *)
     echo "$usage"
     exit
     ;;
   esac
 done
+
+if [ -n "$PURGE_REFRESH_TOKENS" ]; then
+  ./gradlew :backend:infrastructure:bootRun --args='--spring.profiles.active=dev --purge-expired-refresh-tokens'
+  exit
+fi
 
 cleanup() {
   killport 4200
