@@ -10,8 +10,17 @@ describe('ProfilePicture', () => {
   let component: ProfilePicture;
   let backend: HttpTestingController;
   let snackBar: { open: ReturnType<typeof vi.fn> };
+  let createObjectURL: ReturnType<typeof vi.fn>;
+  let revokeObjectURL: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
+    // jsdom does not implement object URLs.
+    let counter = 0;
+    createObjectURL = vi.fn(() => `blob:picture-${++counter}`);
+    revokeObjectURL = vi.fn();
+    URL.createObjectURL = createObjectURL as unknown as typeof URL.createObjectURL;
+    URL.revokeObjectURL = revokeObjectURL as unknown as typeof URL.revokeObjectURL;
+
     snackBar = { open: vi.fn() };
     await TestBed.configureTestingModule({
       imports: [ProfilePicture],
@@ -24,51 +33,81 @@ describe('ProfilePicture', () => {
 
     fixture = TestBed.createComponent(ProfilePicture);
     component = fixture.componentInstance;
-    fixture.componentRef.setInput('pictureHref', '/api/v1/me/picture');
-    fixture.detectChanges();
-    await fixture.whenStable();
     backend = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => backend.verify());
-
-  it('passes the original picture URL to the shared upload component before the first upload', () => {
-    expect(component.currentImageUrl()).toBe('/api/v1/me/picture');
+  afterEach(() => {
+    backend.verify();
+    vi.restoreAllMocks();
   });
 
-  it('preserves an absolute picture URL origin when adding the cache-busting version', async () => {
-    fixture.componentRef.setInput(
-      'pictureHref',
-      'https://api.example.test/api/v1/me/picture?size=small',
-    );
+  it('does not fetch anything when no pictureHref is available', async () => {
+    fixture.componentRef.setInput('pictureHref', undefined);
     fixture.detectChanges();
-    const file = new File(['avatar'], 'avatar.png', { type: 'image/png' });
-
-    component.onFileSelected(file);
-
-    backend.expectOne('https://api.example.test/api/v1/me/picture?size=small').flush({ id: 'u-1' });
     await fixture.whenStable();
 
-    expect(component.currentImageUrl()).toBe(
-      'https://api.example.test/api/v1/me/picture?size=small&v=1',
-    );
+    backend.expectNone(() => true);
+    expect(component.currentImageUrl()).toBeNull();
   });
 
-  it('uploads a selected image, increments the cache-busting version, and emits uploaded', async () => {
+  it('loads the current picture with an authenticated GET request when the page displays it', async () => {
+    // A plain <img src> would bypass the auth interceptor (no Authorization header), so the
+    // protected /me/picture endpoint must be fetched through HttpClient instead.
+    fixture.componentRef.setInput('pictureHref', '/api/v1/me/picture');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const request = backend.expectOne('/api/v1/me/picture');
+    expect(request.request.method).toBe('GET');
+    expect(request.request.responseType).toBe('blob');
+    request.flush(new Blob(['picture-bytes'], { type: 'image/png' }));
+    await fixture.whenStable();
+
+    expect(createObjectURL).toHaveBeenCalledTimes(1);
+    expect(component.currentImageUrl()).toBe('blob:picture-1');
+  });
+
+  it('shows no picture when the user has not uploaded one yet (404)', async () => {
+    fixture.componentRef.setInput('pictureHref', '/api/v1/me/picture');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const request = backend.expectOne('/api/v1/me/picture');
+    request.flush(null, { status: 404, statusText: 'Not Found' });
+    await fixture.whenStable();
+
+    expect(component.currentImageUrl()).toBeNull();
+  });
+
+  it('re-fetches and revokes the previous picture after a successful upload', async () => {
+    fixture.componentRef.setInput('pictureHref', '/api/v1/me/picture');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    backend.expectOne('/api/v1/me/picture').flush(new Blob(['old-bytes'], { type: 'image/png' }));
+    await fixture.whenStable();
+    expect(component.currentImageUrl()).toBe('blob:picture-1');
+
     const emitted: void[] = [];
     component.uploaded.subscribe(() => emitted.push(undefined));
     const file = new File(['avatar'], 'avatar.png', { type: 'image/png' });
 
     component.onFileSelected(file);
 
-    const request = backend.expectOne('/api/v1/me/picture');
-    expect(request.request.method).toBe('POST');
-    expect(request.request.body).toBeInstanceOf(FormData);
-    expect((request.request.body as FormData).get('file')).toBe(file);
-    request.flush({ id: 'u-1' });
+    const uploadRequest = backend.expectOne('/api/v1/me/picture');
+    expect(uploadRequest.request.method).toBe('POST');
+    expect(uploadRequest.request.body).toBeInstanceOf(FormData);
+    expect((uploadRequest.request.body as FormData).get('file')).toBe(file);
+    uploadRequest.flush({ id: 'u-1' });
     await fixture.whenStable();
 
-    expect(component.currentImageUrl()).toBe('/api/v1/me/picture?v=1');
+    const reloadRequest = backend.expectOne('/api/v1/me/picture');
+    expect(reloadRequest.request.method).toBe('GET');
+    reloadRequest.flush(new Blob(['new-bytes'], { type: 'image/png' }));
+    await fixture.whenStable();
+
+    expect(revokeObjectURL).toHaveBeenCalledWith('blob:picture-1');
+    expect(component.currentImageUrl()).toBe('blob:picture-2');
     expect(snackBar.open).toHaveBeenCalledWith('Profile picture updated.', 'Close', {
       duration: 5000,
     });
@@ -76,9 +115,13 @@ describe('ProfilePicture', () => {
   });
 
   it('does not send a request when the shared upload component rejects a file and emits null', () => {
+    fixture.componentRef.setInput('pictureHref', '/api/v1/me/picture');
+    fixture.detectChanges();
+    backend.expectOne('/api/v1/me/picture').flush(null, { status: 404, statusText: 'Not Found' });
+
     component.onFileSelected(null);
 
-    backend.expectNone('/api/v1/me/picture');
+    backend.expectNone(() => true);
   });
 
   it('shows a clear error when the picture link is unavailable', () => {
@@ -87,7 +130,7 @@ describe('ProfilePicture', () => {
 
     component.onFileSelected(new File(['avatar'], 'avatar.png', { type: 'image/png' }));
 
-    backend.expectNone('/api/v1/me/picture');
+    backend.expectNone(() => true);
     expect(component.errorMessage()).toBe('Profile picture upload link is unavailable.');
   });
 });

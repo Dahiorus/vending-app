@@ -1,9 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, computed, inject, input, output, signal } from '@angular/core';
+import { Component, DestroyRef, effect, inject, input, output, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { firstValueFrom } from 'rxjs';
-import { withCacheBuster } from '../../../shared/http/cache-buster';
 import { ImageUpload } from '../../../shared/image-upload/image-upload';
 import { uploadProfilePicture } from '../profile-api';
 
@@ -19,13 +18,18 @@ export class ProfilePicture {
   readonly pictureHref = input<string | undefined>(undefined);
   readonly uploaded = output<void>();
 
-  readonly version = signal(0);
   readonly uploading = signal(false);
   readonly errorMessage = signal<string | null>(null);
-  readonly currentImageUrl = computed(() => {
-    const href = this.pictureHref();
-    return href ? withCacheBuster(href, this.version()) : null;
-  });
+  readonly currentImageUrl = signal<string | null>(null);
+
+  constructor() {
+    // A plain <img [src]="pictureHref"> would bypass the auth interceptor (it only attaches the
+    // Authorization header to HttpClient requests), so the protected /me/picture endpoint would
+    // silently fail to load. Fetch it through HttpClient instead and expose it as an object URL.
+    effect(() => this.loadPicture(this.pictureHref()));
+
+    inject(DestroyRef).onDestroy(() => this.revokeCurrentImageUrl());
+  }
 
   onFileSelected(file: File | null): void {
     if (!file) {
@@ -44,7 +48,7 @@ export class ProfilePicture {
     void firstValueFrom(uploadProfilePicture(this.http, href, file))
       .then(() => {
         this.uploading.set(false);
-        this.version.update((value) => value + 1);
+        this.loadPicture(href);
         this.snackBar.open('Profile picture updated.', 'Close', { duration: 5000 });
         this.uploaded.emit();
       })
@@ -52,5 +56,31 @@ export class ProfilePicture {
         this.uploading.set(false);
         this.errorMessage.set('Profile picture could not be updated.');
       });
+  }
+
+  private loadPicture(href: string | undefined): void {
+    if (!href) {
+      this.revokeCurrentImageUrl();
+      this.currentImageUrl.set(null);
+      return;
+    }
+
+    void firstValueFrom(this.http.get(href, { responseType: 'blob' }))
+      .then((blob) => {
+        this.revokeCurrentImageUrl();
+        this.currentImageUrl.set(URL.createObjectURL(blob));
+      })
+      .catch(() => {
+        // No picture uploaded yet (404) or a transient error: fall back to the placeholder icon.
+        this.revokeCurrentImageUrl();
+        this.currentImageUrl.set(null);
+      });
+  }
+
+  private revokeCurrentImageUrl(): void {
+    const url = this.currentImageUrl();
+    if (url) {
+      URL.revokeObjectURL(url);
+    }
   }
 }

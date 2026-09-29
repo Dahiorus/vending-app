@@ -54,6 +54,8 @@ describe('Profile', () => {
     });
     await harness.fixture.whenStable();
     harness.fixture.detectChanges();
+    backend.expectOne('/api/v1/me/picture').flush(null, { status: 404, statusText: 'Not Found' });
+    await harness.fixture.whenStable();
 
     const page = harness.fixture.nativeElement as HTMLElement;
     expect(component.profile()?.email).toBe('ada@vending.me');
@@ -91,7 +93,7 @@ describe('Profile', () => {
     expect(component.profile()?.firstname).toBe('Grace');
   });
 
-  it('keeps the profile-picture instance alive across a reload so its cache-busted preview is not lost', async () => {
+  it('keeps the profile-picture instance alive across a reload so it does not refetch the picture unnecessarily', async () => {
     const component = await harness.navigateByUrl('/profile', Profile);
     harness.fixture.detectChanges();
 
@@ -107,6 +109,8 @@ describe('Profile', () => {
     });
     await harness.fixture.whenStable();
     harness.fixture.detectChanges();
+    backend.expectOne('/api/v1/me/picture').flush(null, { status: 404, statusText: 'Not Found' });
+    await harness.fixture.whenStable();
 
     const page = harness.fixture.nativeElement as HTMLElement;
     const pictureBefore = page.querySelector('app-profile-picture');
@@ -116,9 +120,9 @@ describe('Profile', () => {
     harness.fixture.detectChanges();
 
     // The <app-profile-picture> element must stay the same DOM node while the
-    // resource is reloading, otherwise the component's local cache-buster
-    // state (and any optimistic preview) is lost and the uploaded picture
-    // appears not to update.
+    // resource is reloading, otherwise the component's local picture-loading
+    // state (and any in-flight/loaded picture) is lost and the uploaded
+    // picture appears not to update.
     const pictureDuringReload = page.querySelector('app-profile-picture');
     expect(pictureDuringReload).toBe(pictureBefore);
 
@@ -135,6 +139,8 @@ describe('Profile', () => {
     await harness.fixture.whenStable();
     harness.fixture.detectChanges();
 
+    // The picture href did not change, so the picture must not be re-fetched.
+    backend.expectNone('/api/v1/me/picture');
     expect(page.querySelector('app-profile-picture')).toBe(pictureBefore);
   });
 });
