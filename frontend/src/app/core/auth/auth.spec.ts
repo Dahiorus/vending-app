@@ -161,6 +161,39 @@ describe('AuthService', () => {
     expect(tokens.accessToken()).toBe('access-2');
   });
 
+  it('restores the session on startup by refreshing the token and loading the current user profile', () => {
+    let restored: string | null = null;
+    service.restoreSession().subscribe((token) => (restored = token));
+
+    const refreshRequest = http.expectOne('/api/v1/authenticate/refresh');
+    refreshRequest.flush({
+      accessToken: fakeJwt({ sub: 'ada@vending.me', roles: ['ROLE_USER'], exp: 1 }),
+    });
+
+    const meRequest = http.expectOne('/api/v1/me');
+    meRequest.flush({
+      id: 'u-1',
+      email: 'ada@vending.me',
+      firstname: 'Ada',
+      lastname: 'Lovelace',
+    });
+
+    expect(restored).not.toBeNull();
+    expect(service.currentUser()?.email).toBe('ada@vending.me');
+  });
+
+  it('restores the session for an admin account without loading /me', () => {
+    service.restoreSession().subscribe();
+
+    const refreshRequest = http.expectOne('/api/v1/authenticate/refresh');
+    refreshRequest.flush({
+      accessToken: fakeJwt({ sub: 'admin@vending.me', roles: ['ROLE_ADMIN'], exp: 1 }),
+    });
+
+    http.expectNone('/api/v1/me');
+    expect(service.currentUser()).toBeNull();
+  });
+
   it('clears every trace of the session on logout, even if the server call fails', () => {
     tokens.setAccessToken('access-1');
 
