@@ -8,12 +8,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.validation.annotation.Validated;
 
-@ConfigurationProperties(prefix = "jwt")
+@ConfigurationProperties(prefix = "app.jwt")
 @Validated
 public class JwtProperties {
   @NotBlank private String issuerUri;
 
-  private Duration accessTokenDuration = Duration.ofHours(1);
+  private Duration accessTokenDuration = Duration.ofMinutes(15);
 
   @DurationUnit(ChronoUnit.DAYS)
   private Period refreshTokenDuration = Period.ofDays(30);
