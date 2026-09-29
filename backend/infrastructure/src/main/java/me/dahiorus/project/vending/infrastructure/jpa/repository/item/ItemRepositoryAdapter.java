@@ -104,7 +104,7 @@ public class ItemRepositoryAdapter implements ItemRepositoryPort {
         .orElseThrow(() -> new ResourceNotFound(itemId));
   }
 
-  @Cacheable(value = "itemImages", key = "#itemId.value", unless = "#result.isEmpty()")
+  @Cacheable(value = "itemImages", key = "#itemId.value", unless = "#result == null")
   @Override
   public Optional<UploadedFile> findImage(final ItemId itemId) {
     var jpaItem =
