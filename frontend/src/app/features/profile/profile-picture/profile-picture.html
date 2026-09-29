@@ -1,0 +1,17 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Profile picture</mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="pt-4">
+    <app-image-upload
+      [currentImageUrl]="currentImageUrl()"
+      label="Profile picture"
+      fallbackIcon="account_circle"
+      [error]="errorMessage()"
+      (fileSelected)="onFileSelected($event)"
+    />
+    @if (uploading()) {
+      <p class="text-sm text-slate-600">Uploading…</p>
+    }
+  </mat-card-content>
+</mat-card>
