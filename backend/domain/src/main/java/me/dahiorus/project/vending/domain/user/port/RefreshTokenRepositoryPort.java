@@ -10,5 +10,8 @@ public interface RefreshTokenRepositoryPort
     extends Creatable<RefreshToken, RefreshToken>, Findable<RefreshTokenId, RefreshToken> {
   void revoke(RefreshTokenId id);
 
+  /** Revokes {@code id} and records {@code replacedBy} as its successor, for grace-period reuse. */
+  void markReplaced(RefreshTokenId id, RefreshTokenId replacedBy, Instant revokedAt);
+
   void deleteExpiredBefore(Instant instant);
 }

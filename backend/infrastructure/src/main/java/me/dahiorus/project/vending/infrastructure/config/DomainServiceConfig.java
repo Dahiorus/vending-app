@@ -4,7 +4,9 @@ import static java.time.Clock.systemDefaultZone;
 import static org.springframework.context.annotation.FilterType.ANNOTATION;
 
 import java.time.Clock;
+import java.time.Duration;
 import me.dahiorus.project.vending.domain.documentation.DomainService;
+import me.dahiorus.project.vending.infrastructure.security.jwt.RefreshTokenRotationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -18,5 +20,10 @@ public class DomainServiceConfig {
   @Bean
   Clock clock() {
     return systemDefaultZone();
+  }
+
+  @Bean
+  Duration refreshTokenReuseGracePeriod(final RefreshTokenRotationProperties properties) {
+    return properties.getReuseGracePeriod();
   }
 }

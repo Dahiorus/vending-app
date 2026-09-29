@@ -169,7 +169,9 @@ public class AuthenticationRestController {
         EmailAddress.of(username),
         Instant.now(),
         issuedRefreshToken.expiresAt(),
-        false);
+        false,
+        null,
+        null);
   }
 
   private ResponseCookie refreshCookie(final IssuedRefreshToken issuedRefreshToken) {

@@ -258,6 +258,56 @@ class SecurityChainIT {
   }
 
   @Test
+  void should_allow_concurrent_refresh_of_the_same_refresh_token_within_the_grace_period()
+      throws Exception {
+    var loginResult = login(adminEmail);
+    String originalRefreshToken = loginResult.getCookie("refresh_token").getValue();
+    Cookie xsrfCookie = loginResult.getCookie("XSRF-TOKEN");
+
+    // Simulate two browser tabs racing to refresh the same (soon to be revoked) refresh token
+    mockMvc
+        .perform(
+            post("/api/v1/authenticate/refresh")
+                .cookie(new Cookie("refresh_token", originalRefreshToken), xsrfCookie)
+                .header("X-XSRF-TOKEN", xsrfCookie.getValue()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.accessToken").isNotEmpty());
+
+    mockMvc
+        .perform(
+            post("/api/v1/authenticate/refresh")
+                .cookie(new Cookie("refresh_token", originalRefreshToken), xsrfCookie)
+                .header("X-XSRF-TOKEN", xsrfCookie.getValue()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.accessToken").isNotEmpty());
+  }
+
+  @Test
+  void should_reject_reuse_of_a_replaced_refresh_token_after_the_grace_period_elapses()
+      throws Exception {
+    var loginResult = login(adminEmail);
+    String originalRefreshToken = loginResult.getCookie("refresh_token").getValue();
+    Cookie xsrfCookie = loginResult.getCookie("XSRF-TOKEN");
+
+    mockMvc
+        .perform(
+            post("/api/v1/authenticate/refresh")
+                .cookie(new Cookie("refresh_token", originalRefreshToken), xsrfCookie)
+                .header("X-XSRF-TOKEN", xsrfCookie.getValue()))
+        .andExpect(status().isOk());
+
+    // app.refresh-token-rotation.reuse-grace-period is set to 1s in the int-test profile
+    Thread.sleep(1_100);
+
+    mockMvc
+        .perform(
+            post("/api/v1/authenticate/refresh")
+                .cookie(new Cookie("refresh_token", originalRefreshToken), xsrfCookie)
+                .header("X-XSRF-TOKEN", xsrfCookie.getValue()))
+        .andExpect(status().isUnauthorized());
+  }
+
+  @Test
   void should_reject_refresh_with_an_access_token() throws Exception {
     String accessToken =
         accessTokenFor(adminEmail, List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));

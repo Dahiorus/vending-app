@@ -60,6 +60,30 @@ class RefreshTokenRepositoryAdapterIT extends H2DbContainer {
   }
 
   @Test
+  @ExpectUpdate
+  void should_mark_token_as_replaced() {
+    var token =
+        createAndFlush(
+            repository,
+            token(randomUUID(), "user@test.org", false, Instant.parse("2026-09-18T12:00:00Z")));
+    var successor =
+        createAndFlush(
+            repository,
+            token(randomUUID(), "user@test.org", false, Instant.parse("2026-09-19T12:00:00Z")));
+    entityManager.clear();
+    var revokedAt = Instant.parse("2026-09-18T11:00:00Z");
+
+    repository.markReplaced(token.id(), successor.id(), revokedAt);
+    entityManager.flush();
+    entityManager.clear();
+
+    var reloaded = repository.find(token.id()).orElseThrow();
+    assertThat(reloaded.revoked()).isTrue();
+    assertThat(reloaded.revokedAt()).isEqualTo(revokedAt);
+    assertThat(reloaded.replacedBy()).isEqualTo(successor.id());
+  }
+
+  @Test
   @ExpectDelete
   void should_delete_only_expired_tokens() {
     var threshold = Instant.parse("2026-09-18T12:00:00Z");
@@ -83,7 +107,9 @@ class RefreshTokenRepositoryAdapterIT extends H2DbContainer {
         EmailAddress.of(username),
         expiresAt.minusSeconds(3600),
         expiresAt,
-        revoked);
+        revoked,
+        null,
+        null);
   }
 
   @TestConfiguration

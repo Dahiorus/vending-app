@@ -42,6 +42,10 @@ public class JpaRefreshToken implements Persistable<UUID> {
   @Column(nullable = false)
   private boolean revoked;
 
+  @Column private Instant revokedAt;
+
+  @Column private UUID replacedBy;
+
   public UUID getId() {
     return id;
   }
@@ -62,6 +66,14 @@ public class JpaRefreshToken implements Persistable<UUID> {
     this.revoked = revoked;
   }
 
+  public void setRevokedAt(final Instant revokedAt) {
+    this.revokedAt = revokedAt;
+  }
+
+  public void setReplacedBy(final UUID replacedBy) {
+    this.replacedBy = replacedBy;
+  }
+
   @Override
   public boolean isNew() {
     return isNew;
@@ -75,7 +87,13 @@ public class JpaRefreshToken implements Persistable<UUID> {
 
   public RefreshToken toDomain() {
     return new RefreshToken(
-        new RefreshTokenId(id), EmailAddress.of(username), issuedAt, expiresAt, revoked);
+        new RefreshTokenId(id),
+        EmailAddress.of(username),
+        issuedAt,
+        expiresAt,
+        revoked,
+        revokedAt,
+        replacedBy == null ? null : new RefreshTokenId(replacedBy));
   }
 
   public static JpaRefreshToken fromDomain(final RefreshToken refreshToken) {
@@ -85,6 +103,9 @@ public class JpaRefreshToken implements Persistable<UUID> {
     jpaRefreshToken.issuedAt = refreshToken.issuedAt();
     jpaRefreshToken.expiresAt = refreshToken.expiresAt();
     jpaRefreshToken.revoked = refreshToken.revoked();
+    jpaRefreshToken.revokedAt = refreshToken.revokedAt();
+    jpaRefreshToken.replacedBy =
+        refreshToken.replacedBy() == null ? null : refreshToken.replacedBy().value();
 
     return jpaRefreshToken;
   }

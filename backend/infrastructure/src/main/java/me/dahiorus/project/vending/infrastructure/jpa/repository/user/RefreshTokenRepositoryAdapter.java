@@ -38,6 +38,20 @@ public class RefreshTokenRepositoryAdapter implements RefreshTokenRepositoryPort
   }
 
   @Override
+  public void markReplaced(
+      final RefreshTokenId id, final RefreshTokenId replacedBy, final Instant revokedAt) {
+    jpaRepository
+        .findById(id.value())
+        .ifPresent(
+            token -> {
+              token.setRevoked(true);
+              token.setRevokedAt(revokedAt);
+              token.setReplacedBy(replacedBy.value());
+              jpaRepository.save(token);
+            });
+  }
+
+  @Override
   public void deleteExpiredBefore(final Instant instant) {
     jpaRepository.deleteAllByExpiresAtBefore(instant);
   }
