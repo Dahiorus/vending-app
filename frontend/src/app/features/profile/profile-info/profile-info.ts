@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, effect, inject, input, output, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { form, FormField, required, submit } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -37,9 +37,13 @@ export class ProfileInfo {
   readonly fieldErrors = signal<Record<string, string>>({});
 
   constructor() {
+    // Track the name values rather than the user object: reloading the user after a picture
+    // upload yields a new object with the same names and must not wipe unsaved edits.
+    const firstname = computed(() => this.user().firstname);
+    const lastname = computed(() => this.user().lastname);
+
     effect(() => {
-      const user = this.user();
-      this.profile.set({ firstname: user.firstname, lastname: user.lastname });
+      this.profile.set({ firstname: firstname(), lastname: lastname() });
       this.fieldErrors.set({});
       this.errorMessage.set(null);
     });

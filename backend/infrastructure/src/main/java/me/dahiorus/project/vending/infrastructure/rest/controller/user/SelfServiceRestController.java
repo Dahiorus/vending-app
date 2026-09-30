@@ -104,7 +104,7 @@ public class SelfServiceRestController {
     var maybeProfilePicture = appUserService.getProfilePicture(authenticatedUser.id());
 
     return maybeProfilePicture
-        .map(ToByteArrayResponseConverter::toResponseEntity)
+        .map(ToByteArrayResponseConverter::toPrivateResponseEntity)
         .orElse(notFound().build());
   }
 

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, DestroyRef, effect, inject, input, output, signal } from '@angular/core';
+import { Component, DestroyRef, effect, inject, input, output, signal, untracked } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { firstValueFrom } from 'rxjs';
@@ -26,7 +26,12 @@ export class ProfilePicture {
     // A plain <img [src]="pictureHref"> would bypass the auth interceptor (it only attaches the
     // Authorization header to HttpClient requests), so the protected /me/picture endpoint would
     // silently fail to load. Fetch it through HttpClient instead and expose it as an object URL.
-    effect(() => this.loadPicture(this.pictureHref()));
+    // untracked: the auth interceptor reads the access token signal during the subscription; without
+    // it a token refresh would re-run this effect and re-download the picture.
+    effect(() => {
+      const href = this.pictureHref();
+      untracked(() => this.loadPicture(href));
+    });
 
     inject(DestroyRef).onDestroy(() => this.revokeCurrentImageUrl());
   }
