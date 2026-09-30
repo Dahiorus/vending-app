@@ -1,5 +1,14 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, DestroyRef, effect, inject, input, output, signal, untracked } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  effect,
+  inject,
+  input,
+  output,
+  signal,
+  untracked,
+} from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { firstValueFrom } from 'rxjs';
@@ -14,6 +23,7 @@ import { uploadProfilePicture } from '../profile-api';
 export class ProfilePicture {
   private readonly http = inject(HttpClient);
   private readonly snackBar = inject(MatSnackBar);
+  private latestLoadId = 0;
 
   readonly pictureHref = input<string | undefined>(undefined);
   readonly uploaded = output<void>();
@@ -65,17 +75,27 @@ export class ProfilePicture {
 
   private loadPicture(href: string | undefined): void {
     if (!href) {
+      this.latestLoadId++;
       this.revokeCurrentImageUrl();
       this.currentImageUrl.set(null);
       return;
     }
 
+    // Only the latest request may update the picture: a slow earlier GET must not overwrite it.
+    const requestId = ++this.latestLoadId;
+
     void firstValueFrom(this.http.get(href, { responseType: 'blob' }))
       .then((blob) => {
+        if (requestId !== this.latestLoadId) {
+          return;
+        }
         this.revokeCurrentImageUrl();
         this.currentImageUrl.set(URL.createObjectURL(blob));
       })
       .catch(() => {
+        if (requestId !== this.latestLoadId) {
+          return;
+        }
         // No picture uploaded yet (404) or a transient error: fall back to the placeholder icon.
         this.revokeCurrentImageUrl();
         this.currentImageUrl.set(null);

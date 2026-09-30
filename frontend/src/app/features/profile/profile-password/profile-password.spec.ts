@@ -1,4 +1,5 @@
 import { provideHttpClient } from '@angular/common/http';
+import { of } from 'rxjs';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -16,7 +17,7 @@ describe('ProfilePassword', () => {
   let snackBar: { open: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
-    auth = { logout: vi.fn() };
+    auth = { logout: vi.fn(() => of(undefined)) };
     snackBar = { open: vi.fn() };
     await TestBed.configureTestingModule({
       imports: [ProfilePassword],
@@ -104,22 +105,38 @@ describe('ProfilePassword', () => {
     expect(component.errorMessage()).toBeNull();
   });
 
-  it('maps a 400 without validation errors to the current password field', async () => {
+  it('maps an OLD_PASSWORD_NOT_MATCH 400 to the current password field', async () => {
     fillPasswords();
 
     component.submit();
 
-    backend
-      .expectOne('/api/v1/me/password')
-      .flush(
-        { timestamp: '2026-09-25T12:00:00Z', message: 'Old password does not match' },
-        { status: 400, statusText: 'Bad Request' },
-      );
+    backend.expectOne('/api/v1/me/password').flush(
+      {
+        timestamp: '2026-09-25T12:00:00Z',
+        message: 'Old password does not match',
+        code: 'OLD_PASSWORD_NOT_MATCH',
+      },
+      { status: 400, statusText: 'Bad Request' },
+    );
     await fixture.whenStable();
 
     expect(component.fieldErrors()).toEqual({
       oldPassword: 'Current password is incorrect.',
     });
     expect(component.errorMessage()).toBeNull();
+  });
+
+  it('shows a generic error for any other 400', async () => {
+    fillPasswords();
+
+    component.submit();
+
+    backend
+      .expectOne('/api/v1/me/password')
+      .flush({ message: 'Malformed body' }, { status: 400, statusText: 'Bad Request' });
+    await fixture.whenStable();
+
+    expect(component.fieldErrors()).toEqual({});
+    expect(component.errorMessage()).toBe('Password could not be changed.');
   });
 });

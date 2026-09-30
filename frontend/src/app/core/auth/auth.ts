@@ -1,5 +1,5 @@
 import { computed, inject, Service, signal } from '@angular/core';
-import { catchError, map, Observable, of, switchMap, tap } from 'rxjs';
+import { catchError, map, Observable, of, switchMap, tap, throwError } from 'rxjs';
 import { AuthApi } from './auth-api';
 import { Credentials, JwtPayload } from './models/auth';
 import { User, UserToRegister } from './models/user';
@@ -77,18 +77,30 @@ export class AuthService {
         this.loadCurrentUserIfNeeded(accessToken).pipe(
           tap((user) => this.user.set(user)),
           map(() => accessToken),
+          // /me failed (network blip, 5xx): don't stay authenticated without a profile.
+          catchError((error: unknown) => {
+            this.tokens.clear();
+            this.user.set(null);
+            return throwError(() => error);
+          }),
         ),
       ),
     );
   }
 
-  logout(): void {
-    this.api
-      .logout()
-      .pipe(catchError(() => of(undefined)))
-      .subscribe(() => {
+  /**
+   * Best-effort server logout; always clears local state. Returns a cold
+   * Observable that completes once the local state is cleared, so callers
+   * can wait before navigating. Callers that don't care must subscribe.
+   */
+  logout(): Observable<void> {
+    return this.api.logout().pipe(
+      catchError(() => of(undefined)),
+      tap(() => {
         this.tokens.clear();
         this.user.set(null);
-      });
+      }),
+      map(() => undefined),
+    );
   }
 }

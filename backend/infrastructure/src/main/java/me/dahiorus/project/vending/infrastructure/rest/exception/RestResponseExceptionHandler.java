@@ -60,14 +60,18 @@ public class RestResponseExceptionHandler {
     return errors;
   }
 
-  @ExceptionHandler({
-    UnsupportedItemToProvision.class,
-    NotWorkingVendingMachine.class,
-    OldPasswordNotMatch.class
-  })
+  @ExceptionHandler({UnsupportedItemToProvision.class, NotWorkingVendingMachine.class})
   @ResponseStatus(code = HttpStatus.BAD_REQUEST)
   public Object handleBadRequest(RuntimeException ex) {
     return initResponseBody(ex);
+  }
+
+  @ExceptionHandler(OldPasswordNotMatch.class)
+  @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+  public Object handleOldPasswordNotMatch(OldPasswordNotMatch ex) {
+    Map<String, Object> body = initResponseBody(ex);
+    body.put("code", "OLD_PASSWORD_NOT_MATCH");
+    return body;
   }
 
   @ExceptionHandler({ResourceNotFound.class, ItemStockIsEmpty.class})

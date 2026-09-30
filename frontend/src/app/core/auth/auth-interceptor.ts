@@ -56,7 +56,7 @@ export const authInterceptor: HttpInterceptorFn = (
 
       inFlightRefresh ??= auth.refreshAccessToken().pipe(
         catchError((refreshError: unknown) => {
-          auth.logout();
+          auth.logout().subscribe();
           return throwError(() => refreshError);
         }),
         shareReplay({ bufferSize: 1, refCount: false }),

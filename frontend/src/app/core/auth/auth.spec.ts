@@ -182,6 +182,20 @@ describe('AuthService', () => {
     expect(service.currentUser()?.email).toBe('ada@vending.me');
   });
 
+  it('clears the token when /me fails during session restore', () => {
+    let failed = false;
+    service.restoreSession().subscribe({ error: () => (failed = true) });
+
+    http
+      .expectOne('/api/v1/authenticate/refresh')
+      .flush({ accessToken: fakeJwt({ sub: 'ada@vending.me', roles: ['ROLE_USER'], exp: 1 }) });
+    http.expectOne('/api/v1/me').flush(null, { status: 500, statusText: 'Server Error' });
+
+    expect(failed).toBe(true);
+    expect(service.isAuthenticated()).toBe(false);
+    expect(service.currentUser()).toBeNull();
+  });
+
   it('restores the session for an admin account without loading /me', () => {
     service.restoreSession().subscribe();
 
@@ -197,7 +211,7 @@ describe('AuthService', () => {
   it('clears every trace of the session on logout, even if the server call fails', () => {
     tokens.setAccessToken('access-1');
 
-    service.logout();
+    service.logout().subscribe();
 
     const logoutRequest = http.expectOne('/api/v1/authenticate/logout');
     expect(logoutRequest.request.withCredentials).toBe(true);

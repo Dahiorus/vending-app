@@ -62,7 +62,7 @@ export class ProfilePassword {
         const { oldPassword, newPassword } = this.passwords();
         await firstValueFrom(updatePassword(this.http, href, { oldPassword, newPassword }));
         this.submitting.set(false);
-        this.auth.logout();
+        await firstValueFrom(this.auth.logout());
         await this.router.navigate(['/login']);
         this.snackBar.open('Password changed. Please sign in again.', 'Close', { duration: 5000 });
       } catch (error) {
@@ -74,7 +74,11 @@ export class ProfilePassword {
           return;
         }
 
-        if (error instanceof HttpErrorResponse && error.status === 400) {
+        if (
+          error instanceof HttpErrorResponse &&
+          error.status === 400 &&
+          error.error?.code === 'OLD_PASSWORD_NOT_MATCH'
+        ) {
           this.fieldErrors.set({ oldPassword: 'Current password is incorrect.' });
           return;
         }

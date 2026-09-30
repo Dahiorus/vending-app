@@ -2,6 +2,7 @@ import { Component, computed, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { AuthService } from './core/auth/auth';
 
 @Component({
@@ -19,7 +20,6 @@ export class App {
   protected readonly currentUser = computed(() => this.auth.currentUser());
 
   protected logout(): void {
-    this.auth.logout();
-    void this.router.navigate(['/login']);
+    void firstValueFrom(this.auth.logout()).then(() => this.router.navigate(['/login']));
   }
 }
