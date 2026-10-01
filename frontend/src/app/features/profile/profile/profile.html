@@ -1,0 +1,24 @@
+<section class="mx-auto flex max-w-3xl flex-col gap-6">
+  <header>
+    <h1 class="text-2xl font-semibold">My profile</h1>
+  </header>
+
+  @if (profile(); as user) {
+    <!--
+      Keep these components mounted once the profile has loaded so a
+      `reload()` (which briefly sets isLoading again while keeping the
+      stale value) does not destroy/recreate them, e.g. losing
+      app-profile-picture's local cache-buster/preview state right after
+      an upload.
+    -->
+    <app-profile-info [user]="user" (saved)="reload()" />
+    <app-profile-picture [pictureHref]="pictureHref()" (uploaded)="reload()" />
+    <app-profile-password [passwordHref]="passwordHref()" />
+  } @else if (isLoading()) {
+    <div class="flex justify-center p-8">
+      <mat-spinner aria-label="Loading profile" />
+    </div>
+  } @else if (hasError()) {
+    <p class="text-sm text-red-600" role="alert">Profile could not be loaded.</p>
+  }
+</section>

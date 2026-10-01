@@ -4,6 +4,9 @@
   @if (isAdmin()) {
     <a mat-button routerLink="/items">Items</a>
   }
+  @if (isAuthenticated() && !isAdmin()) {
+    <a mat-button routerLink="/profile">My profile</a>
+  }
   <span class="flex-1"></span>
   @if (isAuthenticated()) {
     <span class="text-sm">{{ currentUser()?.email ?? 'Admin' }}</span>

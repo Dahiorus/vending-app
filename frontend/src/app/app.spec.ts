@@ -31,6 +31,30 @@ describe('App', () => {
 
     const toolbar = fixture.nativeElement as HTMLElement;
     expect(toolbar.textContent).toContain('Sign in');
+    expect(toolbar.textContent).not.toContain('My profile');
+  });
+
+  it('offers a profile link and sign-out button to a logged-in user', async () => {
+    const auth = TestBed.inject(AuthService);
+    auth.login({ username: 'ada@vending.me', password: 'secret' }).subscribe();
+    http.expectOne('/api/v1/authenticate').flush({
+      accessToken: fakeJwt({ sub: 'ada@vending.me', roles: ['ROLE_USER'], exp: 1 }),
+    });
+    http.expectOne('/api/v1/me').flush({
+      id: 'u-1',
+      email: 'ada@vending.me',
+      firstname: 'Ada',
+      lastname: 'Lovelace',
+    });
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const toolbar = fixture.nativeElement as HTMLElement;
+    expect(toolbar.textContent).toContain('My profile');
+    expect(toolbar.querySelector('a[routerLink="/profile"]')?.textContent).toContain('My profile');
+    expect(toolbar.textContent).toContain('Log out');
   });
 
   it('offers a sign-out button to a logged-in admin without a /me profile', async () => {
@@ -47,5 +71,6 @@ describe('App', () => {
     const toolbar = fixture.nativeElement as HTMLElement;
     expect(toolbar.textContent).toContain('Log out');
     expect(toolbar.textContent).toContain('Admin');
+    expect(toolbar.textContent).not.toContain('My profile');
   });
 });

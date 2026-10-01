@@ -54,6 +54,9 @@ npm run e2e      # tests end-to-end Playwright (API mockée, aucun backend requi
   (admin), détail avec consultation du stock et commande d'un article
   (utilisateur connecté avec le rôle `ROLE_USER`).
 - **Articles** : liste paginée en lecture seule (admin).
+- **Profil utilisateur** : page `/profile` réservée aux utilisateurs connectés
+  non admin, consultation/édition du prénom et du nom, email en lecture seule,
+  upload de photo de profil et changement de mot de passe avec déconnexion.
 
 **Reste à faire** (backend déjà exposé, frontend absent) :
 
@@ -62,7 +65,6 @@ npm run e2e      # tests end-to-end Playwright (API mockée, aucun backend requi
 - Édition/suppression d'un distributeur (seules la liste et la création
   existent)
 - Rapports admin : statut des distributeurs, stock, commandes clients
-- Profil utilisateur (consultation/édition, changement de mot de passe)
 - Layouts séparés public/admin, navigation admin dédiée
 - i18n
 

@@ -15,7 +15,7 @@ import { routes } from './app.routes';
 export function restoreSessionOnStartup(): Promise<string | undefined> {
   return firstValueFrom(
     inject(AuthService)
-      .refreshAccessToken()
+      .restoreSession()
       .pipe(catchError(() => of(undefined))),
   );
 }

@@ -15,6 +15,10 @@ Analyse basée sur les contrôleurs REST du backend
   formulaire Signal Forms dédié (`machines/new`)
 - **Liste des items** (`ROLE_ADMIN`, `GET /items`) — lecture seule, paginée
   (`items`), sans création/édition/suppression ni image
+- **Espace profil utilisateur** (`/profile`, `ROLE_USER`) — consultation/
+  édition des informations personnelles (`GET`/`PUT /me`), photo de profil
+  (`GET`/`POST /me/picture`) et changement de mot de passe
+  (`POST /me/password`)
 
 ## 🌐 Public / client (sans authentification)
 
@@ -23,26 +27,23 @@ Analyse basée sur les contrôleurs REST du backend
 
 ## 👤 Espace utilisateur connecté (`/api/v1/me/**`)
 
-2. **Profil** : consulter/modifier ses infos (`GET`/`PUT /me`)
-3. **Photo de profil** : afficher/uploader (`GET`/`POST /me/picture`)
-4. **Changement de mot de passe** (`POST /me/password`)
+Tous les points identifiés pour l'espace profil sont implémentés côté frontend.
 
 ## 🔐 Back-office admin (`ROLE_ADMIN`, tout le reste)
 
-5. **Gestion des items** : création/édition/suppression + upload d'image
+2. **Gestion des items** : création/édition/suppression + upload d'image
    (`/items`) — seule la liste en lecture seule existe
-6. **Gestion des machines** : modification / suppression (la création est
+3. **Gestion des machines** : modification / suppression (la création est
    faite, il manque édition et suppression pour un CRUD complet)
-7. **Gestion du stock d'une machine** : ajouter du stock, rapport de stock
+4. **Gestion du stock d'une machine** : ajouter du stock, rapport de stock
    (`/vending-machines/{id}/stock`, `/stock/report`) — la consultation du
    stock existe déjà côté client (point commande), pas côté admin ni le
    rapport
-8. **Statut machine** : reset (`/reset`), rapport de statut
+5. **Statut machine** : reset (`/reset`), rapport de statut
    (`/status/report`)
-9. **Rapport des commandes** par machine (`/orders/report`)
+6. **Rapport des commandes** par machine (`/orders/report`)
 
 ## Priorité suggérée
 
-1. Espace profil (points 2-4)
-2. Back-office admin (points 5-9, le plus gros lot)
-3. Visuel item public (point 1)
+1. Back-office admin (points 2-6, le plus gros lot)
+2. Visuel item public (point 1)
