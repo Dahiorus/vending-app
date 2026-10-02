@@ -111,7 +111,9 @@ export class ItemEdit {
         const parsed = parseValidationErrors(error, FORM_FIELDS);
         if (parsed) {
           this.fieldErrors.set(parsed.fieldErrors);
-          this.errorMessage.set(parsed.hasObjectLevelError ? 'The item could not be updated.' : null);
+          this.errorMessage.set(
+            parsed.hasObjectLevelError ? 'The item could not be updated.' : null,
+          );
           return;
         }
 

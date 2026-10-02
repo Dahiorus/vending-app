@@ -11,10 +11,7 @@ import { AuthService } from '../../../core/auth/auth';
 import { withCacheBuster } from '../../../shared/http/cache-buster';
 import { ValueOrEmptyPipe } from '../../../shared/value-or-empty-pipe';
 import { itemImageHref, itemImageUrl, itemSelfHref, itemUrl } from '../item-api';
-import {
-  ItemDeleteDialog,
-  ItemDeleteDialogData,
-} from '../item-delete-dialog/item-delete-dialog';
+import { ItemDeleteDialog, ItemDeleteDialogData } from '../item-delete-dialog/item-delete-dialog';
 import { Item } from '../models/item';
 
 interface DetailNavigationState {
@@ -50,8 +47,7 @@ export class ItemDetail {
   );
 
   private readonly resourceUrl =
-    this.navigationState?.href ??
-    itemUrl(this.route.snapshot.paramMap.get('id')!);
+    this.navigationState?.href ?? itemUrl(this.route.snapshot.paramMap.get('id')!);
 
   private readonly resource = httpResource<Item>(() => this.resourceUrl);
 

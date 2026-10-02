@@ -106,12 +106,10 @@ describe('ItemList', () => {
   it('reads the initial page from the URL query params', async () => {
     const component = await navigate('/items?page=2&size=10&type=SNACK');
 
-    http
-      .expectOne('/api/v1/items?page=3&size=10')
-      .flush({
-        _links: { self: { href: '/api/v1/items' } },
-        page: { size: 10, totalElements: 30, totalPages: 3, number: 2 },
-      });
+    http.expectOne('/api/v1/items?page=3&size=10').flush({
+      _links: { self: { href: '/api/v1/items' } },
+      page: { size: 10, totalElements: 30, totalPages: 3, number: 2 },
+    });
     await harness.fixture.whenStable();
 
     expect(component.pageIndex()).toBe(2);
@@ -121,12 +119,10 @@ describe('ItemList', () => {
   it('navigates to the new page/size while preserving other query params', async () => {
     const component = await navigate('/items?type=SNACK');
 
-    http
-      .expectOne('/api/v1/items?page=1&size=20')
-      .flush({
-        _links: { self: { href: '/api/v1/items' } },
-        page: { size: 20, totalElements: 30, totalPages: 2, number: 0 },
-      });
+    http.expectOne('/api/v1/items?page=1&size=20').flush({
+      _links: { self: { href: '/api/v1/items' } },
+      page: { size: 20, totalElements: 30, totalPages: 2, number: 0 },
+    });
     await harness.fixture.whenStable();
 
     component.onPageChange({ pageIndex: 2, pageSize: 10, length: 30 });
@@ -134,12 +130,10 @@ describe('ItemList', () => {
     harness.fixture.detectChanges();
 
     expect(TestBed.inject(Router).url).toBe('/items?type=SNACK&page=2&size=10');
-    http
-      .expectOne('/api/v1/items?page=3&size=10')
-      .flush({
-        _links: { self: { href: '/api/v1/items' } },
-        page: { size: 10, totalElements: 30, totalPages: 3, number: 2 },
-      });
+    http.expectOne('/api/v1/items?page=3&size=10').flush({
+      _links: { self: { href: '/api/v1/items' } },
+      page: { size: 10, totalElements: 30, totalPages: 3, number: 2 },
+    });
     await harness.fixture.whenStable();
 
     expect(component.items().elements).toEqual([]);

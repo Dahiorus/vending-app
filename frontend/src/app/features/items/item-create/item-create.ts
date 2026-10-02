@@ -70,7 +70,9 @@ export class ItemCreate {
   readonly createdItem = signal<Item | null>(null);
 
   private get createHref(): string | undefined {
-    return (history.state as CreateNavigationState | null)?.createHref ?? this.apiRoot.link('items');
+    return (
+      (history.state as CreateNavigationState | null)?.createHref ?? this.apiRoot.link('items')
+    );
   }
 
   onFileSelected(file: File | null): void {
@@ -112,7 +114,9 @@ export class ItemCreate {
         const parsed = parseValidationErrors(error, FORM_FIELDS);
         if (parsed) {
           this.fieldErrors.set(parsed.fieldErrors);
-          this.errorMessage.set(parsed.hasObjectLevelError ? 'The item could not be created.' : null);
+          this.errorMessage.set(
+            parsed.hasObjectLevelError ? 'The item could not be created.' : null,
+          );
           return;
         }
 
