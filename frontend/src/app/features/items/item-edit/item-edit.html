@@ -1,0 +1,62 @@
+<div class="mb-4 flex items-center justify-between">
+  <h1 class="text-xl font-semibold">Edit item</h1>
+  <a
+    mat-button
+    [routerLink]="['/items', itemId()]"
+    [state]="{ href: resourceHref(), imageVersion: imageVersion() }"
+    >Back to item</a
+  >
+</div>
+
+@if (isLoading()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+@if (hasError()) {
+  <p class="text-red-600" role="alert">The item could not be loaded.</p>
+} @else if (item(); as item) {
+  <mat-card class="w-full max-w-md">
+    <mat-card-content>
+      <form class="flex flex-col gap-4 pt-4" (submit)="$event.preventDefault(); submit()">
+        <dl class="grid grid-cols-2 gap-x-4 gap-y-2">
+          <dt class="font-medium">Name</dt>
+          <dd>{{ item.name | valueOrEmpty }}</dd>
+
+          <dt class="font-medium">Type</dt>
+          <dd>{{ item.type | valueOrEmpty }}</dd>
+        </dl>
+
+        <app-price-input label="Price" [formField]="itemForm.price" />
+        @if (itemForm.price().touched() && itemForm.price().errors().length) {
+          <p class="text-sm text-red-600" role="alert">Price must be greater than 0.</p>
+        }
+        @if (fieldErrors()['price']; as message) {
+          <p class="text-sm text-red-600" role="alert">{{ message }}</p>
+        }
+
+        <app-image-upload
+          label="Item image"
+          fallbackIcon="image"
+          [currentImageUrl]="currentImageUrl()"
+          [error]="imageError()"
+          (fileSelected)="onFileSelected($event)"
+        />
+
+        @if (errorMessage(); as message) {
+          <p class="text-sm text-red-600" role="alert">{{ message }}</p>
+        }
+
+        <button mat-flat-button type="submit" [disabled]="submitting() || !itemForm().valid()">
+          @if (submitting()) {
+            <mat-progress-spinner
+              diameter="16"
+              mode="indeterminate"
+              class="mr-2 inline-block align-middle"
+            />
+          }
+          Save item
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+}

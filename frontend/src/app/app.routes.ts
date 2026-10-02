@@ -30,6 +30,26 @@ export const routes: Routes = [
     title: 'Items',
   },
   {
+    path: 'items/new',
+    loadComponent: () =>
+      import('./features/items/item-create/item-create').then((m) => m.ItemCreate),
+    canActivate: [adminGuard],
+    title: 'New item',
+  },
+  {
+    path: 'items/:id',
+    loadComponent: () =>
+      import('./features/items/item-detail/item-detail').then((m) => m.ItemDetail),
+    canActivate: [adminGuard],
+    title: 'Item details',
+  },
+  {
+    path: 'items/:id/edit',
+    loadComponent: () => import('./features/items/item-edit/item-edit').then((m) => m.ItemEdit),
+    canActivate: [adminGuard],
+    title: 'Edit item',
+  },
+  {
     path: 'profile',
     loadComponent: () => import('./features/profile/profile/profile').then((m) => m.Profile),
     canActivate: [userGuard],

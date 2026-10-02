@@ -53,15 +53,14 @@ npm run e2e      # tests end-to-end Playwright (API mockée, aucun backend requi
 - **Distributeurs** : liste paginée (table Material + paginator), création
   (admin), détail avec consultation du stock et commande d'un article
   (utilisateur connecté avec le rôle `ROLE_USER`).
-- **Articles** : liste paginée en lecture seule (admin).
+- **Articles** : liste paginée back-office (admin), détail, création,
+  édition du prix, suppression et gestion d'image JPEG/PNG.
 - **Profil utilisateur** : page `/profile` réservée aux utilisateurs connectés
   non admin, consultation/édition du prénom et du nom, email en lecture seule,
   upload de photo de profil et changement de mot de passe avec déconnexion.
 
 **Reste à faire** (backend déjà exposé, frontend absent) :
 
-- CRUD complet articles (création/édition/suppression — seule la liste
-  existe) et gestion des images d'article
 - Édition/suppression d'un distributeur (seules la liste et la création
   existent)
 - Rapports admin : statut des distributeurs, stock, commandes clients

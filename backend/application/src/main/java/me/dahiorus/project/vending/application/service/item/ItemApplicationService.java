@@ -1,5 +1,6 @@
 package me.dahiorus.project.vending.application.service.item;
 
+import me.dahiorus.project.vending.domain.exception.ItemStillInStock;
 import me.dahiorus.project.vending.domain.exception.ResourceNotFound;
 import me.dahiorus.project.vending.domain.item.entity.Item;
 import me.dahiorus.project.vending.domain.item.entity.ItemId;
@@ -12,6 +13,7 @@ import me.dahiorus.project.vending.domain.pagination.entity.FilterMatcher;
 import me.dahiorus.project.vending.domain.pagination.entity.PageResult;
 import me.dahiorus.project.vending.domain.pagination.entity.Pagination;
 import me.dahiorus.project.vending.domain.pagination.entity.Total;
+import me.dahiorus.project.vending.domain.stock.port.VendingMachineStockRepositoryPort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +23,13 @@ public class ItemApplicationService implements ItemApiPort {
 
   private final ItemRepositoryPort itemRepository;
 
-  public ItemApplicationService(final ItemRepositoryPort itemRepository) {
+  private final VendingMachineStockRepositoryPort stockRepository;
+
+  public ItemApplicationService(
+      final ItemRepositoryPort itemRepository,
+      final VendingMachineStockRepositoryPort stockRepository) {
     this.itemRepository = itemRepository;
+    this.stockRepository = stockRepository;
   }
 
   @Override
@@ -42,6 +49,10 @@ public class ItemApplicationService implements ItemApiPort {
 
   @Override
   public void delete(final ItemId id) {
+    if (stockRepository.isInStockOfAnyMachine(id)) {
+      throw new ItemStillInStock(id);
+    }
+
     itemRepository.delete(id);
   }
 

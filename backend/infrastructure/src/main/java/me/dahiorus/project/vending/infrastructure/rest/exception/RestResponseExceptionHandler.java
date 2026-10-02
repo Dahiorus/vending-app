@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import me.dahiorus.project.vending.domain.exception.InvalidBusinessObject;
+import me.dahiorus.project.vending.domain.exception.ItemStillInStock;
 import me.dahiorus.project.vending.domain.exception.ItemStockIsEmpty;
 import me.dahiorus.project.vending.domain.exception.NotWorkingVendingMachine;
 import me.dahiorus.project.vending.domain.exception.OldPasswordNotMatch;
@@ -63,6 +64,12 @@ public class RestResponseExceptionHandler {
   @ExceptionHandler({UnsupportedItemToProvision.class, NotWorkingVendingMachine.class})
   @ResponseStatus(code = HttpStatus.BAD_REQUEST)
   public Object handleBadRequest(RuntimeException ex) {
+    return initResponseBody(ex);
+  }
+
+  @ExceptionHandler(ItemStillInStock.class)
+  @ResponseStatus(code = HttpStatus.CONFLICT)
+  public Object handleItemStillInStock(ItemStillInStock ex) {
     return initResponseBody(ex);
   }
 

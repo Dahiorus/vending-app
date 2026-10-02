@@ -14,6 +14,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -26,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
+import me.dahiorus.project.vending.domain.exception.ItemStillInStock;
 import me.dahiorus.project.vending.domain.exception.ResourceNotFound;
 import me.dahiorus.project.vending.domain.item.entity.Item;
 import me.dahiorus.project.vending.domain.item.entity.ItemId;
@@ -161,6 +163,16 @@ class ItemCrudRestControllerTest {
     mockMvc.perform(delete("/api/v1/items/{id}", id)).andExpect(status().isNoContent());
 
     then(itemApiPort).should().delete(new ItemId(id));
+  }
+
+  @Test
+  void should_respond_conflict_when_deleting_an_item_still_in_stock() throws Exception {
+    // Given
+    var id = UUID.randomUUID();
+    willThrow(new ItemStillInStock(new ItemId(id))).given(itemApiPort).delete(new ItemId(id));
+
+    // When / Then
+    mockMvc.perform(delete("/api/v1/items/{id}", id)).andExpect(status().isConflict());
   }
 
   @Test

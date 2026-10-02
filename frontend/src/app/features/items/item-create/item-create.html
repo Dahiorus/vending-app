@@ -1,0 +1,73 @@
+<div class="flex min-h-screen items-center justify-center p-4">
+  <mat-card class="w-full max-w-md">
+    <mat-card-header>
+      <mat-card-title>New item</mat-card-title>
+      <a mat-button routerLink="/items" class="ml-auto">Back to items</a>
+    </mat-card-header>
+    <mat-card-content>
+      <form class="flex flex-col gap-4 pt-4" (submit)="$event.preventDefault(); submit()">
+        <mat-form-field>
+          <mat-label>Name</mat-label>
+          <input matInput type="text" [formField]="itemForm.name" />
+        </mat-form-field>
+        @if (itemForm.name().touched() && itemForm.name().errors().length) {
+          <p class="text-sm text-red-600" role="alert">Name is required.</p>
+        }
+        @if (fieldErrors()['name']; as message) {
+          <p class="text-sm text-red-600" role="alert">{{ message }}</p>
+        }
+
+        <mat-form-field>
+          <mat-label>Type</mat-label>
+          <mat-select [formField]="itemForm.type">
+            @for (itemType of itemTypes; track itemType) {
+              <mat-option [value]="itemType">{{ itemType }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        @if (itemForm.type().touched() && itemForm.type().errors().length) {
+          <p class="text-sm text-red-600" role="alert">Type is required.</p>
+        }
+        @if (fieldErrors()['type']; as message) {
+          <p class="text-sm text-red-600" role="alert">{{ message }}</p>
+        }
+
+        <app-price-input label="Price" [formField]="itemForm.price" />
+        @if (itemForm.price().touched() && itemForm.price().errors().length) {
+          <p class="text-sm text-red-600" role="alert">Price must be greater than 0.</p>
+        }
+        @if (fieldErrors()['price']; as message) {
+          <p class="text-sm text-red-600" role="alert">{{ message }}</p>
+        }
+
+        <app-image-upload
+          label="Item image"
+          fallbackIcon="image"
+          [error]="imageError()"
+          (fileSelected)="onFileSelected($event)"
+        />
+
+        @if (createdItem() && imageError()) {
+          <p class="text-sm text-amber-700" role="status">
+            The item was created. Retry the image upload or leave the page from the items list.
+          </p>
+        }
+
+        @if (errorMessage(); as message) {
+          <p class="text-sm text-red-600" role="alert">{{ message }}</p>
+        }
+
+        <button mat-flat-button type="submit" [disabled]="submitting() || !itemForm().valid()">
+          @if (submitting()) {
+            <mat-progress-spinner
+              diameter="16"
+              mode="indeterminate"
+              class="mr-2 inline-block align-middle"
+            />
+          }
+          {{ createdItem() ? 'Retry image upload' : 'Create item' }}
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

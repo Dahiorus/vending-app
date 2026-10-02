@@ -93,6 +93,9 @@ public class ItemCrudRestController {
 
   @Operation(description = "Delete an existing vending machine targeted by its ID")
   @ApiResponse(responseCode = "204", description = "Entity deleted")
+  @ApiResponse(
+      responseCode = "409",
+      description = "The item is still in stock in at least one vending machine")
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable("id") UUID id) {
     service.delete(new ItemId(id));
