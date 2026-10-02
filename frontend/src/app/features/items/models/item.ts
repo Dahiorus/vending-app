@@ -7,3 +7,13 @@ export interface Item extends HalResource {
   type: ItemType | null;
   price: number | null;
 }
+
+export interface ItemToCreate {
+  name: string;
+  type: ItemType;
+  price: number;
+}
+
+export interface ItemToUpdate {
+  price: number;
+}
