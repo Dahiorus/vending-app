@@ -13,8 +13,8 @@ Analyse basée sur les contrôleurs REST du backend
   /vending-machines/{id}/order/{itemId}`) pour un utilisateur `ROLE_USER`
 - **Création d'une machine** (`ROLE_ADMIN`, `POST /vending-machines`) —
   formulaire Signal Forms dédié (`machines/new`)
-- **Liste des items** (`ROLE_ADMIN`, `GET /items`) — lecture seule, paginée
-  (`items`), sans création/édition/suppression ni image
+- **Gestion des items** (`ROLE_ADMIN`, `/items`) — liste paginée, détail,
+  création, édition du prix, suppression et upload d'image
 - **Espace profil utilisateur** (`/profile`, `ROLE_USER`) — consultation/
   édition des informations personnelles (`GET`/`PUT /me`), photo de profil
   (`GET`/`POST /me/picture`) et changement de mot de passe
@@ -31,19 +31,17 @@ Tous les points identifiés pour l'espace profil sont implémentés côté front
 
 ## 🔐 Back-office admin (`ROLE_ADMIN`, tout le reste)
 
-2. **Gestion des items** : création/édition/suppression + upload d'image
-   (`/items`) — seule la liste en lecture seule existe
-3. **Gestion des machines** : modification / suppression (la création est
+2. **Gestion des machines** : modification / suppression (la création est
    faite, il manque édition et suppression pour un CRUD complet)
-4. **Gestion du stock d'une machine** : ajouter du stock, rapport de stock
+3. **Gestion du stock d'une machine** : ajouter du stock, rapport de stock
    (`/vending-machines/{id}/stock`, `/stock/report`) — la consultation du
    stock existe déjà côté client (point commande), pas côté admin ni le
    rapport
-5. **Statut machine** : reset (`/reset`), rapport de statut
+4. **Statut machine** : reset (`/reset`), rapport de statut
    (`/status/report`)
-6. **Rapport des commandes** par machine (`/orders/report`)
+5. **Rapport des commandes** par machine (`/orders/report`)
 
 ## Priorité suggérée
 
-1. Back-office admin (points 2-6, le plus gros lot)
+1. Back-office admin (points 2-5, le plus gros lot)
 2. Visuel item public (point 1)
