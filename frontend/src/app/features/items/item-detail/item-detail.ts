@@ -19,6 +19,7 @@ import { Item } from '../models/item';
 
 interface DetailNavigationState {
   href?: string;
+  imageVersion?: number;
 }
 
 @Component({
@@ -43,10 +44,13 @@ export class ItemDetail {
 
   readonly isAdmin = this.auth.isAdmin;
   readonly showImageFallback = signal(false);
-  readonly imageVersion = signal(0);
+  private readonly navigationState = history.state as DetailNavigationState | null;
+  readonly imageVersion = signal(
+    typeof this.navigationState?.imageVersion === 'number' ? this.navigationState.imageVersion : 0,
+  );
 
   private readonly resourceUrl =
-    (history.state as DetailNavigationState | null)?.href ??
+    this.navigationState?.href ??
     itemUrl(this.route.snapshot.paramMap.get('id')!);
 
   private readonly resource = httpResource<Item>(() => this.resourceUrl);

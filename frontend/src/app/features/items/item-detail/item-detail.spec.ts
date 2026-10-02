@@ -108,6 +108,17 @@ describe('ItemDetail', () => {
     expect(component.showImageFallback()).toBe(true);
   });
 
+  it('seeds the image cache-buster from the imageVersion carried in navigation state', async () => {
+    const component = await navigate({ href: '/api/v1/items/i-1', imageVersion: 1234 });
+    flushItem();
+    await harness.fixture.whenStable();
+    harness.fixture.detectChanges();
+
+    expect(component.imageUrl()).toBe('/api/v1/items/i-1/image?v=1234');
+    const img: HTMLImageElement = harness.fixture.nativeElement.querySelector('img');
+    expect(img.getAttribute('src')).toBe('/api/v1/items/i-1/image?v=1234');
+  });
+
   it('renders the visual fallback instead of a broken image when the image fails to load', async () => {
     await navigate();
     flushItem();
