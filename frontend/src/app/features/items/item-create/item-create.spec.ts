@@ -54,12 +54,22 @@ describe('ItemCreate', () => {
     expect(link?.textContent?.trim()).toBe('Back to items');
   });
 
-  it('renders a price input accepting decimal prices', async () => {
+  it('renders a euro price input accepting decimal prices with comma or dot', async () => {
     await resolveRootItemsLink();
-    const input = fixture.nativeElement.querySelector('input[type="number"]') as HTMLInputElement;
-    expect(input.getAttribute('step')).toBe('0.01');
-    input.value = '1.5';
-    expect(input.checkValidity()).toBe(true);
+    const input = fixture.nativeElement.querySelector('app-price-input input') as HTMLInputElement;
+    expect(input.type).toBe('text');
+    expect(fixture.nativeElement.querySelector('app-price-input')?.textContent).toContain('€');
+
+    for (const text of ['1,5', '1.5']) {
+      input.value = text;
+      input.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+      await fixture.whenStable();
+      expect(component.itemForm.price().value()).toBe(1.5);
+      component.itemForm.price().value.set(0);
+      fixture.detectChanges();
+      await fixture.whenStable();
+    }
   });
 
   it('rejects an empty form without calling the API and marks fields as touched', async () => {

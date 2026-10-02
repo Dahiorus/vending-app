@@ -14,6 +14,7 @@ import { ApiRootApi } from '../../../core/http/api-root-api';
 import { intQueryParam } from '../../../shared/http/query-params';
 import { HalPage } from '../../../shared/models/hal';
 import { Page } from '../../../shared/models/page';
+import { PricePipe } from '../../../shared/price/price';
 import { ItemDeleteDialog, ItemDeleteDialogData } from '../item-delete-dialog/item-delete-dialog';
 import { createItemHref, itemSelfHref, itemUrl, itemsPageUrl } from '../item-api';
 import { Item } from '../models/item';
@@ -23,6 +24,7 @@ const DEFAULT_PAGE_SIZE = 20;
 @Component({
   selector: 'app-item-list',
   imports: [
+    PricePipe,
     MatButtonModule,
     MatIconModule,
     MatPaginatorModule,

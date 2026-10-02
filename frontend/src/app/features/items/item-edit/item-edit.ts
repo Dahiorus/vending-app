@@ -1,10 +1,8 @@
 import { HttpClient, httpResource } from '@angular/common/http';
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { form, FormField, min, submit } from '@angular/forms/signals';
+import { form, FormField, min, required, submit } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -12,6 +10,7 @@ import { firstValueFrom } from 'rxjs';
 import { withCacheBuster } from '../../../shared/http/cache-buster';
 import { uploadImageFile } from '../../../shared/http/upload-image-file';
 import { ImageUpload } from '../../../shared/image-upload/image-upload';
+import { PriceInput } from '../../../shared/price-input/price-input';
 import { parseValidationErrors } from '../../../shared/models/validation-error';
 import { ValueOrEmptyPipe } from '../../../shared/value-or-empty-pipe';
 import { itemImageHref, itemImageUrl, itemSelfHref, itemUrl } from '../item-api';
@@ -31,10 +30,9 @@ interface EditNavigationState {
     ImageUpload,
     MatButtonModule,
     MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
+    PriceInput,
     RouterLink,
     ValueOrEmptyPipe,
   ],
@@ -64,6 +62,7 @@ export class ItemEdit {
 
   readonly itemPatch = signal<ItemToUpdate>({ price: 0 });
   readonly itemForm = form(this.itemPatch, (path) => {
+    required(path.price);
     min(path.price, 0.01);
   });
 

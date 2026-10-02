@@ -37,7 +37,9 @@
             <dd>{{ item.type | valueOrEmpty }}</dd>
 
             <dt class="font-medium">Price</dt>
-            <dd>{{ item.price | valueOrEmpty }}</dd>
+            <dd>
+              {{ item.price | price }}
+            </dd>
           </dl>
         </div>
 

@@ -26,10 +26,7 @@
           <dd>{{ item.type | valueOrEmpty }}</dd>
         </dl>
 
-        <mat-form-field>
-          <mat-label>Price</mat-label>
-          <input matInput type="number" step="0.01" [formField]="itemForm.price" />
-        </mat-form-field>
+        <app-price-input label="Price" [formField]="itemForm.price" />
         @if (itemForm.price().touched() && itemForm.price().errors().length) {
           <p class="text-sm text-red-600" role="alert">Price must be greater than 0.</p>
         }

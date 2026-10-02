@@ -103,6 +103,17 @@ describe('ItemList', () => {
     expect(component.displayedColumns).toEqual(['name', 'type', 'price', 'actions']);
   });
 
+  it('displays prices as French euro amounts', async () => {
+    await navigate('/items');
+    flushItemsPage();
+    await harness.fixture.whenStable();
+
+    const cell = (harness.fixture.nativeElement as HTMLElement).querySelector(
+      'td.mat-column-price',
+    );
+    expect(cell?.textContent?.replace(/\s/g, ' ').trim()).toBe('1,50 €');
+  });
+
   it('reads the initial page from the URL query params', async () => {
     const component = await navigate('/items?page=2&size=10&type=SNACK');
 

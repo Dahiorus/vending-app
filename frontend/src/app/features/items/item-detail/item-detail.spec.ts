@@ -82,6 +82,15 @@ describe('ItemDetail', () => {
     expect(component.item()?.name).toBe('Cola');
   });
 
+  it('displays the price as a French euro amount', async () => {
+    await navigate();
+    flushItem();
+    await harness.fixture.whenStable();
+
+    const text = (harness.fixture.nativeElement as HTMLElement).textContent ?? '';
+    expect(text.replace(/\s/g, ' ')).toContain('1,50 €');
+  });
+
   it('follows the HATEOAS self link carried over via router navigation state', async () => {
     const component = await navigate({ href: 'https://api.example.test/items/i-1' });
 

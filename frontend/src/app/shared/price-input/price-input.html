@@ -1,0 +1,17 @@
+<mat-form-field class="w-full">
+  <mat-label>{{ label() }}</mat-label>
+  <input
+    matInput
+    type="text"
+    inputmode="decimal"
+    autocomplete="off"
+    [value]="text()"
+    [disabled]="disabled()"
+    [readOnly]="readonly()"
+    [required]="required()"
+    [attr.name]="name() || null"
+    (input)="onInput($event)"
+    (blur)="onBlur()"
+  />
+  <span matTextSuffix>{{ currencySymbol() }}</span>
+</mat-form-field>

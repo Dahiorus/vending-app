@@ -193,7 +193,7 @@ test('an admin can create, edit image, and delete an item', async ({ page }) => 
   await page.getByRole('button', { name: 'Save item' }).click();
 
   await expect(page).toHaveURL(new RegExp(`/items/${itemId}$`));
-  await expect(page.getByRole('definition').filter({ hasText: /^2$/ })).toBeVisible();
+  await expect(page.getByRole('definition').filter({ hasText: /2,00.€/ })).toBeVisible();
   expect(uploadCount).toBe(1);
   // After an upload the detail page must bust the image cache with `?v=`.
   await expect.poll(() => imageRequests.some((url) => /[?&]v=\d+/.test(url))).toBe(true);

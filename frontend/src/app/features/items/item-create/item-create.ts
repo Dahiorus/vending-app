@@ -12,6 +12,7 @@ import { firstValueFrom } from 'rxjs';
 import { ApiRootApi } from '../../../core/http/api-root-api';
 import { uploadImageFile } from '../../../shared/http/upload-image-file';
 import { ImageUpload } from '../../../shared/image-upload/image-upload';
+import { PriceInput } from '../../../shared/price-input/price-input';
 import { ITEM_TYPES, ItemType } from '../../../shared/models/item-type';
 import { parseValidationErrors } from '../../../shared/models/validation-error';
 import { itemImageHref, itemImageUrl } from '../item-api';
@@ -39,6 +40,7 @@ interface ItemCreateForm {
     MatFormFieldModule,
     MatInputModule,
     MatProgressSpinnerModule,
+    PriceInput,
     MatSelectModule,
     RouterLink,
   ],
@@ -60,6 +62,7 @@ export class ItemCreate {
   readonly itemForm = form(this.item, (path) => {
     required(path.name);
     required(path.type);
+    required(path.price);
     min(path.price, 0.01);
   });
 

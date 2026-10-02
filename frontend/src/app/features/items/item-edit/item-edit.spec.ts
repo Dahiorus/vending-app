@@ -60,14 +60,24 @@ describe('ItemEdit', () => {
     expect(component.currentImageUrl()).toBe('/api/v1/items/i-1/image');
   });
 
-  it('renders a price input accepting decimal prices', async () => {
-    await navigate();
-    const input = harness.fixture.nativeElement.querySelector(
-      'input[type="number"]',
-    ) as HTMLInputElement;
-    expect(input.getAttribute('step')).toBe('0.01');
-    input.value = '1.5';
-    expect(input.checkValidity()).toBe(true);
+  it('renders the price formatted in euros and accepts decimals with comma or dot', async () => {
+    const component = await navigate();
+    const element = harness.fixture.nativeElement as HTMLElement;
+    const input = element.querySelector('app-price-input input') as HTMLInputElement;
+    expect(input.type).toBe('text');
+    expect(input.value).toBe('1,50');
+    expect(element.querySelector('app-price-input')?.textContent).toContain('€');
+
+    for (const text of ['2,5', '2.5']) {
+      input.value = text;
+      input.dispatchEvent(new Event('input'));
+      harness.fixture.detectChanges();
+      await harness.fixture.whenStable();
+      expect(component.itemForm.price().value()).toBe(2.5);
+      component.itemForm.price().value.set(1.5);
+      harness.fixture.detectChanges();
+      await harness.fixture.whenStable();
+    }
   });
 
   it('puts the updated price and navigates to the item detail without image upload', async () => {

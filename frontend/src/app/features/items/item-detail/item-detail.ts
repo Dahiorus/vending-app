@@ -11,6 +11,7 @@ import { AuthService } from '../../../core/auth/auth';
 import { withCacheBuster } from '../../../shared/http/cache-buster';
 import { ValueOrEmptyPipe } from '../../../shared/value-or-empty-pipe';
 import { itemImageHref, itemImageUrl, itemSelfHref, itemUrl } from '../item-api';
+import { PricePipe } from '../../../shared/price/price';
 import { ItemDeleteDialog, ItemDeleteDialogData } from '../item-delete-dialog/item-delete-dialog';
 import { Item } from '../models/item';
 
@@ -22,6 +23,7 @@ interface DetailNavigationState {
 @Component({
   selector: 'app-item-detail',
   imports: [
+    PricePipe,
     MatButtonModule,
     MatCardModule,
     MatIconModule,
