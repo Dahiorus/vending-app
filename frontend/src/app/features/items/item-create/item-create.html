@@ -33,7 +33,7 @@
 
         <mat-form-field>
           <mat-label>Price</mat-label>
-          <input matInput type="number" [formField]="itemForm.price" />
+          <input matInput type="number" step="0.01" [formField]="itemForm.price" />
         </mat-form-field>
         @if (itemForm.price().touched() && itemForm.price().errors().length) {
           <p class="text-sm text-red-600" role="alert">Price must be greater than 0.</p>
@@ -61,7 +61,11 @@
 
         <button mat-flat-button type="submit" [disabled]="submitting() || !itemForm().valid()">
           @if (submitting()) {
-            <mat-progress-spinner diameter="16" mode="indeterminate" class="mr-2 inline-block align-middle" />
+            <mat-progress-spinner
+              diameter="16"
+              mode="indeterminate"
+              class="mr-2 inline-block align-middle"
+            />
           }
           {{ createdItem() ? 'Retry image upload' : 'Create item' }}
         </button>

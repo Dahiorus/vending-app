@@ -46,6 +46,14 @@ describe('ItemCreate', () => {
     component.itemForm.price().value.set(1.5);
   }
 
+  it('renders a price input accepting decimal prices', async () => {
+    await resolveRootItemsLink();
+    const input = fixture.nativeElement.querySelector('input[type="number"]') as HTMLInputElement;
+    expect(input.getAttribute('step')).toBe('0.01');
+    input.value = '1.5';
+    expect(input.checkValidity()).toBe(true);
+  });
+
   it('rejects an empty form without calling the API and marks fields as touched', async () => {
     await resolveRootItemsLink();
     component.submit();

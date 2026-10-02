@@ -59,6 +59,16 @@ describe('ItemEdit', () => {
     expect(component.currentImageUrl()).toBe('/api/v1/items/i-1/image');
   });
 
+  it('renders a price input accepting decimal prices', async () => {
+    await navigate();
+    const input = harness.fixture.nativeElement.querySelector(
+      'input[type="number"]',
+    ) as HTMLInputElement;
+    expect(input.getAttribute('step')).toBe('0.01');
+    input.value = '1.5';
+    expect(input.checkValidity()).toBe(true);
+  });
+
   it('puts the updated price and navigates to the item detail without image upload', async () => {
     const component = await navigate();
     component.itemForm.price().value.set(2);
