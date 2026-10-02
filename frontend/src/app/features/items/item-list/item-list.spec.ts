@@ -199,4 +199,53 @@ describe('ItemList', () => {
     expect(snackBar.open).toHaveBeenCalledWith('Deleted Cola', 'Close', { duration: 5000 });
     expect(component.items().elements).toEqual([]);
   });
+
+  it('explains that an item still in stock cannot be deleted', async () => {
+    authenticateAdmin();
+    dialog.open.mockReturnValue({ afterClosed: () => of(true) });
+    const component = await navigate('/items');
+    flushItemsPage();
+    await harness.fixture.whenStable();
+
+    component.deleteItem(component.items().elements[0]);
+    http.expectOne('/api/v1/items/i-1').flush(null, { status: 409, statusText: 'Conflict' });
+
+    expect(snackBar.open).toHaveBeenCalledWith(
+      'The item cannot be deleted while a vending machine still has stock of it.',
+      'Close',
+      { duration: 5000 },
+    );
+    http.expectNone('/api/v1/items?page=1&size=20');
+  });
+
+  it('steps back one page when the last item of a later page is deleted', async () => {
+    authenticateAdmin();
+    dialog.open.mockReturnValue({ afterClosed: () => of(true) });
+    const component = await navigate('/items?page=1');
+    http.expectOne('/api/v1/items?page=2&size=20').flush({
+      _embedded: {
+        elements: [
+          {
+            id: 'i-21',
+            name: 'Chips',
+            type: 'SNACK',
+            price: 2,
+            _links: { self: { href: '/api/v1/items/i-21' } },
+          },
+        ],
+      },
+      _links: { self: { href: '/api/v1/items' } },
+      page: { size: 20, totalElements: 21, totalPages: 2, number: 1 },
+    });
+    await harness.fixture.whenStable();
+
+    component.deleteItem(component.items().elements[0]);
+    http.expectOne('/api/v1/items/i-21').flush(null, { status: 204, statusText: 'No Content' });
+    await new Promise((resolve) => setTimeout(resolve));
+    harness.fixture.detectChanges();
+
+    expect(TestBed.inject(Router).url).toBe('/items?page=0&size=20');
+    flushItemsPage();
+    await harness.fixture.whenStable();
+  });
 });

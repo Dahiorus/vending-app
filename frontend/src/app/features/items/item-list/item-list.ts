@@ -16,7 +16,13 @@ import { HalPage } from '../../../shared/models/hal';
 import { Page } from '../../../shared/models/page';
 import { PricePipe } from '../../../shared/price/price';
 import { ItemDeleteDialog, ItemDeleteDialogData } from '../item-delete-dialog/item-delete-dialog';
-import { createItemHref, itemSelfHref, itemUrl, itemsPageUrl } from '../item-api';
+import {
+  createItemHref,
+  deleteErrorMessage,
+  itemSelfHref,
+  itemUrl,
+  itemsPageUrl,
+} from '../item-api';
 import { Item } from '../models/item';
 
 const DEFAULT_PAGE_SIZE = 20;
@@ -90,10 +96,18 @@ export class ItemList {
         this.http.delete(itemSelfHref(item) ?? itemUrl(item.id)).subscribe({
           next: () => {
             this.snackBar.open(`Deleted ${item.name ?? 'item'}`, 'Close', { duration: 5000 });
-            this.resource.reload();
+            if (this.pageIndex() > 0 && this.items().elements.length <= 1) {
+              this.onPageChange({
+                pageIndex: this.pageIndex() - 1,
+                pageSize: this.pageSize(),
+                length: this.totalElements() - 1,
+              });
+            } else {
+              this.resource.reload();
+            }
           },
-          error: () => {
-            this.snackBar.open('The item could not be deleted.', 'Close', { duration: 5000 });
+          error: (error: unknown) => {
+            this.snackBar.open(deleteErrorMessage(error), 'Close', { duration: 5000 });
           },
         });
       });

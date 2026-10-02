@@ -200,4 +200,41 @@ describe('ItemDetail', () => {
     expect(snackBar.open).toHaveBeenCalledWith('Deleted Cola', 'Close', { duration: 5000 });
     expect(TestBed.inject(Router).url).toBe('/items');
   });
+
+  it('explains that an item still in stock cannot be deleted', async () => {
+    authenticateAdmin();
+    dialog.open.mockReturnValue({ afterClosed: () => of(true) });
+    const component = await navigate();
+    flushItem();
+    await harness.fixture.whenStable();
+
+    component.deleteItem();
+    backend.expectOne('/api/v1/items/i-1').flush(null, { status: 409, statusText: 'Conflict' });
+
+    expect(snackBar.open).toHaveBeenCalledWith(
+      'The item cannot be deleted while a vending machine still has stock of it.',
+      'Close',
+      { duration: 5000 },
+    );
+    expect(TestBed.inject(Router).url).toBe('/items/i-1');
+  });
+
+  it('loads the new item when the route is reused with another id', async () => {
+    const component = await navigate();
+    flushItem();
+    await harness.fixture.whenStable();
+
+    await TestBed.inject(Router).navigateByUrl('/items/i-2');
+    harness.fixture.detectChanges();
+    backend.expectOne('/api/v1/items/i-2').flush({
+      id: 'i-2',
+      name: 'Chips',
+      type: 'SNACK',
+      price: 2,
+      _links: { self: { href: '/api/v1/items/i-2' } },
+    });
+    await harness.fixture.whenStable();
+
+    expect(component.item()?.name).toBe('Chips');
+  });
 });

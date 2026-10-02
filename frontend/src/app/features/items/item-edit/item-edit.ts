@@ -1,5 +1,6 @@
 import { HttpClient, httpResource } from '@angular/common/http';
 import { Component, computed, effect, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { form, FormField, min, required, submit } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -43,11 +44,17 @@ export class ItemEdit {
   private readonly router = inject(Router);
   private readonly http = inject(HttpClient);
 
-  protected readonly itemId = this.route.snapshot.paramMap.get('id')!;
+  private readonly paramMap = toSignal(this.route.paramMap, { requireSync: true });
+  protected readonly itemId = computed(() => this.paramMap().get('id')!);
   private readonly navigationState = history.state as EditNavigationState | null;
-  private readonly resourceUrl = this.navigationState?.href ?? itemUrl(this.itemId);
+
+  // The navigation state only describes the item the page was opened for: another id falls back to the built URL.
+  private readonly resourceUrl = computed(() => {
+    const href = this.navigationState?.href;
+    return href?.endsWith(`/${this.itemId()}`) ? href : itemUrl(this.itemId());
+  });
   protected readonly resourceHref = this.resourceUrl;
-  private readonly resource = httpResource<Item>(() => this.resourceUrl);
+  private readonly resource = httpResource<Item>(() => this.resourceUrl());
 
   readonly item = computed(() => this.resource.value());
   readonly isLoading = this.resource.isLoading;
@@ -56,7 +63,7 @@ export class ItemEdit {
     typeof this.navigationState?.imageVersion === 'number' ? this.navigationState.imageVersion : 0,
   );
   readonly currentImageUrl = computed(() => {
-    const href = itemImageHref(this.item()) ?? itemImageUrl(this.itemId);
+    const href = itemImageHref(this.item()) ?? itemImageUrl(this.itemId());
     return withCacheBuster(href, this.imageVersion());
   });
 
@@ -66,21 +73,21 @@ export class ItemEdit {
     min(path.price, 0.01);
   });
 
-  readonly initialized = signal(false);
   readonly submitting = signal(false);
   readonly errorMessage = signal<string | null>(null);
   readonly imageError = signal<string | null>(null);
   readonly fieldErrors = signal<Record<string, string>>({});
   readonly selectedImage = signal<File | null>(null);
 
+  private syncedItemId: string | undefined;
   private readonly syncItemToForm = effect(() => {
     const item = this.item();
-    if (!item || this.initialized()) {
+    if (!item || item.id === this.syncedItemId) {
       return;
     }
 
+    this.syncedItemId = item.id;
     this.itemPatch.set({ price: item.price ?? 0 });
-    this.initialized.set(true);
   });
 
   onFileSelected(file: File | null): void {
@@ -98,14 +105,14 @@ export class ItemEdit {
       let priceSaved = false;
       try {
         const updated = await firstValueFrom(
-          this.http.put<Item>(this.resourceUrl, { price: this.itemPatch().price }),
+          this.http.put<Item>(this.resourceUrl(), { price: this.itemPatch().price }),
         );
         priceSaved = true;
         const uploaded = await this.uploadSelectedImage(updated);
         this.submitting.set(false);
         void this.router.navigate(['/items', updated.id], {
           state: {
-            href: itemSelfHref(updated) ?? this.resourceUrl,
+            href: itemSelfHref(updated) ?? this.resourceUrl(),
             ...(uploaded
               ? { imageVersion: Date.now() }
               : this.imageVersion() !== 0

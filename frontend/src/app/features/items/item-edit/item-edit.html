@@ -2,8 +2,8 @@
   <h1 class="text-xl font-semibold">Edit item</h1>
   <a
     mat-button
-    [routerLink]="['/items', itemId]"
-    [state]="{ href: resourceHref, imageVersion: imageVersion() }"
+    [routerLink]="['/items', itemId()]"
+    [state]="{ href: resourceHref(), imageVersion: imageVersion() }"
     >Back to item</a
   >
 </div>

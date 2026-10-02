@@ -1,5 +1,6 @@
 import { HttpClient, httpResource } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
@@ -10,7 +11,13 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth';
 import { withCacheBuster } from '../../../shared/http/cache-buster';
 import { ValueOrEmptyPipe } from '../../../shared/value-or-empty-pipe';
-import { itemImageHref, itemImageUrl, itemSelfHref, itemUrl } from '../item-api';
+import {
+  deleteErrorMessage,
+  itemImageHref,
+  itemImageUrl,
+  itemSelfHref,
+  itemUrl,
+} from '../item-api';
 import { PricePipe } from '../../../shared/price/price';
 import { ItemDeleteDialog, ItemDeleteDialogData } from '../item-delete-dialog/item-delete-dialog';
 import { Item } from '../models/item';
@@ -48,18 +55,23 @@ export class ItemDetail {
     typeof this.navigationState?.imageVersion === 'number' ? this.navigationState.imageVersion : 0,
   );
 
-  private readonly resourceUrl =
-    this.navigationState?.href ?? itemUrl(this.route.snapshot.paramMap.get('id')!);
+  private readonly paramMap = toSignal(this.route.paramMap, { requireSync: true });
+  private readonly itemId = computed(() => this.paramMap().get('id')!);
 
-  private readonly resource = httpResource<Item>(() => this.resourceUrl);
+  // The navigation state only describes the item the page was opened for: another id falls back to the built URL.
+  private readonly resourceUrl = computed(() => {
+    const href = this.navigationState?.href;
+    return href?.endsWith(`/${this.itemId()}`) ? href : itemUrl(this.itemId());
+  });
+
+  private readonly resource = httpResource<Item>(() => this.resourceUrl());
 
   readonly isLoading = this.resource.isLoading;
   readonly hasError = computed(() => this.resource.error() !== undefined);
   readonly item = computed(() => this.resource.value());
   readonly selfHref = computed(() => itemSelfHref(this.item()));
   readonly imageUrl = computed(() => {
-    const href =
-      itemImageHref(this.item()) ?? itemImageUrl(this.route.snapshot.paramMap.get('id')!);
+    const href = itemImageHref(this.item()) ?? itemImageUrl(this.itemId());
     return withCacheBuster(href, this.imageVersion());
   });
 
@@ -88,8 +100,8 @@ export class ItemDetail {
             this.snackBar.open(`Deleted ${item.name ?? 'item'}`, 'Close', { duration: 5000 });
             void this.router.navigate(['/items']);
           },
-          error: () => {
-            this.snackBar.open('The item could not be deleted.', 'Close', { duration: 5000 });
+          error: (error: unknown) => {
+            this.snackBar.open(deleteErrorMessage(error), 'Close', { duration: 5000 });
           },
         });
       });

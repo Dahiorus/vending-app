@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { pagedUrl } from '../../shared/http/paged-url';
 import { HalPage, linkHref } from '../../shared/models/hal';
@@ -46,4 +47,11 @@ export function itemSelfHref(item: Item | null | undefined): string | undefined 
 
 export function itemImageHref(item: Item | null | undefined): string | undefined {
   return linkHref(item, 'item:image');
+}
+
+/** The backend answers 409 when a vending machine still holds stock of the item. */
+export function deleteErrorMessage(error: unknown): string {
+  return error instanceof HttpErrorResponse && error.status === 409
+    ? 'The item cannot be deleted while a vending machine still has stock of it.'
+    : 'The item could not be deleted.';
 }
