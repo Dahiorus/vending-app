@@ -148,6 +148,39 @@ class VendingMachineStockRepositoryAdapterIT extends H2DbContainer {
     }
   }
 
+  @Nested
+  class IsInStockOfAnyMachine {
+    @Test
+    void should_be_false_when_no_machine_has_stock_of_the_item() {
+      assertThat(repository.isInStockOfAnyMachine(lays.id())).isFalse();
+    }
+
+    @Test
+    void should_be_true_when_a_machine_has_stock_of_the_item() {
+      repository.update(
+          vendingMachine.id(),
+          new VendingMachineStock(Set.of(new ItemQuantity(lays, new Quantity(3)))));
+      flushAndClear();
+
+      assertThat(repository.isInStockOfAnyMachine(lays.id())).isTrue();
+      assertThat(repository.isInStockOfAnyMachine(bueno.id())).isFalse();
+    }
+
+    @Test
+    void should_be_false_once_the_stock_of_the_item_is_emptied() {
+      repository.update(
+          vendingMachine.id(),
+          new VendingMachineStock(Set.of(new ItemQuantity(lays, new Quantity(3)))));
+      flushAndClear();
+      repository.update(
+          vendingMachine.id(),
+          new VendingMachineStock(Set.of(new ItemQuantity(lays, new Quantity(0)))));
+      flushAndClear();
+
+      assertThat(repository.isInStockOfAnyMachine(lays.id())).isFalse();
+    }
+  }
+
   @TestConfiguration
   static class TestConfig {
     @Bean

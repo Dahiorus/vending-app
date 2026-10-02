@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 import me.dahiorus.project.vending.domain.exception.ResourceNotFound;
+import me.dahiorus.project.vending.domain.item.entity.ItemId;
 import me.dahiorus.project.vending.domain.machine.entity.VendingMachineId;
 import me.dahiorus.project.vending.domain.stock.entity.ItemQuantity;
 import me.dahiorus.project.vending.domain.stock.entity.VendingMachineStock;
@@ -24,10 +25,12 @@ import org.springframework.stereotype.Repository;
 @CacheConfig(cacheNames = "vendingMachineStocks")
 @Repository
 public class VendingMachineStockRepositoryAdapter implements VendingMachineStockRepositoryPort {
+  private final EntityManager entityManager;
   private final JpaRepository<JpaVendingMachine, UUID> jpaRepository;
   private final JpaRepository<JpaVendingMachineStockEntry, JpaStockId> jpaStockRepository;
 
   public VendingMachineStockRepositoryAdapter(EntityManager entityManager) {
+    this.entityManager = entityManager;
     this.jpaRepository = new SimpleJpaRepository<>(JpaVendingMachine.class, entityManager);
     this.jpaStockRepository =
         new SimpleJpaRepository<>(JpaVendingMachineStockEntry.class, entityManager);
@@ -37,6 +40,18 @@ public class VendingMachineStockRepositoryAdapter implements VendingMachineStock
   @Override
   public Optional<VendingMachineStock> find(VendingMachineId id) {
     return jpaRepository.findById(id.value()).map(JpaVendingMachine::toVendingMachineStocks);
+  }
+
+  @Override
+  public boolean isInStockOfAnyMachine(ItemId itemId) {
+    return !entityManager
+        .createQuery(
+            "select 1 from JpaVendingMachineStockEntry s where s.item.id = :itemId and s.quantity > 0",
+            Integer.class)
+        .setParameter("itemId", itemId.value())
+        .setMaxResults(1)
+        .getResultList()
+        .isEmpty();
   }
 
   @CachePut(key = "#id.value")
