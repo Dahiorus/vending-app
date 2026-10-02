@@ -1,3 +1,21 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import 'tailwindcss';
+
+/* Colour-coded item actions (Material tokens, so they hold for icon and labelled buttons). */
+.action-view {
+  --mat-icon-button-icon-color: var(--color-sky-600);
+  --mat-button-outlined-label-text-color: var(--color-sky-700);
+}
+
+.action-edit {
+  --mat-icon-button-icon-color: var(--color-amber-600);
+  --mat-button-outlined-label-text-color: var(--color-amber-700);
+  --mat-button-outlined-outline-color: var(--color-amber-600);
+}
+
+.action-delete {
+  --mat-icon-button-icon-color: var(--color-red-600);
+  --mat-button-filled-container-color: var(--color-red-600);
+  --mat-button-filled-label-text-color: white;
+}

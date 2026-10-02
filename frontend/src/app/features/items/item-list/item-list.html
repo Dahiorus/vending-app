@@ -43,6 +43,7 @@
       <td mat-cell *matCellDef="let item">
         <a
           mat-icon-button
+          class="action-view"
           [routerLink]="['/items', item.id]"
           [state]="{ href: item._links?.self?.href }"
           aria-label="View details"
@@ -53,6 +54,7 @@
         @if (isAdmin()) {
           <a
             mat-icon-button
+            class="action-edit"
             [routerLink]="['/items', item.id, 'edit']"
             [state]="{ href: item._links?.self?.href }"
             aria-label="Edit item"
@@ -62,6 +64,7 @@
           </a>
           <button
             mat-icon-button
+            class="action-delete"
             type="button"
             aria-label="Delete item"
             (click)="deleteItem(item, $event)"
