@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ApiRootApi } from '../../../core/http/api-root-api';
 import { uploadImageFile } from '../../../shared/http/upload-image-file';
@@ -40,6 +40,7 @@ interface ItemCreateForm {
     MatInputModule,
     MatProgressSpinnerModule,
     MatSelectModule,
+    RouterLink,
   ],
   templateUrl: './item-create.html',
 })

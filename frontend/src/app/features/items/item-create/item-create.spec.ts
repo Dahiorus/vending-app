@@ -46,6 +46,14 @@ describe('ItemCreate', () => {
     component.itemForm.price().value.set(1.5);
   }
 
+  it('offers a link back to the items list', async () => {
+    await resolveRootItemsLink();
+    const link = fixture.nativeElement.querySelector(
+      'a[href="/items"]',
+    ) as HTMLAnchorElement | null;
+    expect(link?.textContent?.trim()).toBe('Back to items');
+  });
+
   it('renders a price input accepting decimal prices', async () => {
     await resolveRootItemsLink();
     const input = fixture.nativeElement.querySelector('input[type="number"]') as HTMLInputElement;
