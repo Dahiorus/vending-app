@@ -46,7 +46,7 @@
             <a
               mat-stroked-button
               [routerLink]="['/items', item.id, 'edit']"
-              [state]="{ href: selfHref() }"
+              [state]="{ href: selfHref(), imageVersion: imageVersion() }"
             >
               Edit
             </a>

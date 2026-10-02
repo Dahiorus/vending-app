@@ -1,6 +1,11 @@
 <div class="mb-4 flex items-center justify-between">
   <h1 class="text-xl font-semibold">Edit item</h1>
-  <a mat-button [routerLink]="['/items', itemId]" [state]="{ href: resourceHref }">Back to item</a>
+  <a
+    mat-button
+    [routerLink]="['/items', itemId]"
+    [state]="{ href: resourceHref, imageVersion: imageVersion() }"
+    >Back to item</a
+  >
 </div>
 
 @if (isLoading()) {

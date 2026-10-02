@@ -21,6 +21,7 @@ const FORM_FIELDS = ['price'];
 
 interface EditNavigationState {
   href?: string;
+  imageVersion?: number;
 }
 
 @Component({
@@ -45,15 +46,17 @@ export class ItemEdit {
   private readonly http = inject(HttpClient);
 
   protected readonly itemId = this.route.snapshot.paramMap.get('id')!;
-  private readonly resourceUrl =
-    (history.state as EditNavigationState | null)?.href ?? itemUrl(this.itemId);
+  private readonly navigationState = history.state as EditNavigationState | null;
+  private readonly resourceUrl = this.navigationState?.href ?? itemUrl(this.itemId);
   protected readonly resourceHref = this.resourceUrl;
   private readonly resource = httpResource<Item>(() => this.resourceUrl);
 
   readonly item = computed(() => this.resource.value());
   readonly isLoading = this.resource.isLoading;
   readonly hasError = computed(() => this.resource.error() !== undefined);
-  readonly imageVersion = signal(0);
+  readonly imageVersion = signal(
+    typeof this.navigationState?.imageVersion === 'number' ? this.navigationState.imageVersion : 0,
+  );
   readonly currentImageUrl = computed(() => {
     const href = itemImageHref(this.item()) ?? itemImageUrl(this.itemId);
     return withCacheBuster(href, this.imageVersion());
@@ -93,16 +96,22 @@ export class ItemEdit {
       this.imageError.set(null);
       this.fieldErrors.set({});
 
+      let priceSaved = false;
       try {
         const updated = await firstValueFrom(
           this.http.put<Item>(this.resourceUrl, { price: this.itemPatch().price }),
         );
+        priceSaved = true;
         const uploaded = await this.uploadSelectedImage(updated);
         this.submitting.set(false);
         void this.router.navigate(['/items', updated.id], {
           state: {
             href: itemSelfHref(updated) ?? this.resourceUrl,
-            ...(uploaded ? { imageVersion: Date.now() } : {}),
+            ...(uploaded
+              ? { imageVersion: Date.now() }
+              : this.imageVersion() !== 0
+                ? { imageVersion: this.imageVersion() }
+                : {}),
           },
         });
       } catch (error) {
@@ -117,7 +126,7 @@ export class ItemEdit {
           return;
         }
 
-        if (this.selectedImage()) {
+        if (priceSaved && this.selectedImage()) {
           this.imageError.set('The image could not be uploaded.');
           return;
         }

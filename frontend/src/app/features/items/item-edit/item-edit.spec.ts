@@ -1,7 +1,8 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { Router, provideRouter } from '@angular/router';
+import { By } from '@angular/platform-browser';
+import { Router, RouterLink, provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ItemEdit } from './item-edit';
@@ -126,6 +127,51 @@ describe('ItemEdit', () => {
     expect(navigateSpy).toHaveBeenCalledWith(['/items', 'i-1'], {
       state: { href: '/api/v1/items/i-1', imageVersion: expect.any(Number) },
     });
+  });
+
+  it('seeds the image cache-buster from navigation state and carries it on the Back link', async () => {
+    const component = await navigate({ href: '/api/v1/items/i-1', imageVersion: 1234 });
+
+    expect(component.currentImageUrl()).toBe('/api/v1/items/i-1/image?v=1234');
+    const link = harness.fixture.debugElement
+      .queryAll(By.directive(RouterLink))
+      .map((el) => el.injector.get(RouterLink))[0];
+    expect(link.state).toEqual({ href: '/api/v1/items/i-1', imageVersion: 1234 });
+  });
+
+  it('forwards the seeded imageVersion to the detail page when no image is uploaded', async () => {
+    const component = await navigate({ href: '/api/v1/items/i-1', imageVersion: 1234 });
+    component.itemForm.price().value.set(2);
+
+    component.submit();
+
+    backend.expectOne('/api/v1/items/i-1').flush({
+      id: 'i-1',
+      price: 2,
+      _links: { self: { href: '/api/v1/items/i-1' } },
+    });
+    await harness.fixture.whenStable();
+    await nextTick();
+
+    expect(navigateSpy).toHaveBeenCalledWith(['/items', 'i-1'], {
+      state: { href: '/api/v1/items/i-1', imageVersion: 1234 },
+    });
+  });
+
+  it('shows the generic error, not the image error, when the PUT fails with a file selected', async () => {
+    const component = await navigate();
+    component.itemForm.price().value.set(2);
+    component.onFileSelected(new File(['image'], 'cola.jpg', { type: 'image/jpeg' }));
+
+    component.submit();
+
+    backend.expectOne('/api/v1/items/i-1').flush(null, { status: 500, statusText: 'Server Error' });
+    await harness.fixture.whenStable();
+    await nextTick();
+
+    expect(component.imageError()).toBeNull();
+    expect(component.errorMessage()).toBe('Update failed. Please try again.');
+    backend.expectNone('/api/v1/items/i-1/image');
   });
 
   it('keeps the form open with an image field error when only the upload fails', async () => {

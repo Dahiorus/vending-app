@@ -3,7 +3,8 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router, provideRouter } from '@angular/router';
+import { By } from '@angular/platform-browser';
+import { Router, RouterLink, provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -117,6 +118,20 @@ describe('ItemDetail', () => {
     expect(component.imageUrl()).toBe('/api/v1/items/i-1/image?v=1234');
     const img: HTMLImageElement = harness.fixture.nativeElement.querySelector('img');
     expect(img.getAttribute('src')).toBe('/api/v1/items/i-1/image?v=1234');
+  });
+
+  it('carries the image cache-buster in the Edit link state', async () => {
+    authenticateAdmin();
+    await navigate({ href: '/api/v1/items/i-1', imageVersion: 1234 });
+    flushItem();
+    await harness.fixture.whenStable();
+    harness.fixture.detectChanges();
+
+    const link = harness.fixture.debugElement
+      .queryAll(By.directive(RouterLink))
+      .map((el) => el.injector.get(RouterLink))
+      .find((l) => l.href?.endsWith('/items/i-1/edit'));
+    expect(link?.state).toEqual({ href: '/api/v1/items/i-1', imageVersion: 1234 });
   });
 
   it('renders the visual fallback instead of a broken image when the image fails to load', async () => {
