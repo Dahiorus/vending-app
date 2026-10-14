@@ -31,6 +31,10 @@
 - Création avec POST réussi puis upload échoué : rester sur le formulaire, mémoriser l'item créé, et le prochain submit ne doit refaire que l'upload.
 - Réponse HAL-FORMS de page sans `_templates.default.target` : `createItemHref(page)` doit retomber sur le lien `self`.
 - Image absente ou 404 sur détail : afficher le fallback visuel, pas une image cassée.
+- Image d'item publique (`permitAll`) : contrairement à la photo de profil (`/me/picture`, protégée et chargée en blob via `HttpClient` depuis la PR #13), un `<img [src]>` simple suffit ici. Ne pas recopier le chargement authentifié du profil.
+- Cache HTTP : `GET /items/{id}/image` est servi en `Cache-Control: public, max-age=3600` (`ToByteArrayResponseConverter.toResponseEntity`). Après un upload, l'URL ne change pas : le cache-busting `?v=` (`withCacheBuster`) est indispensable pour voir la nouvelle image avant 1 h.
+- `app.routes.ts` contient désormais la route `profile` (`userGuard`) : ne jamais remplacer le fichier entier, uniquement insérer les routes `items/*`.
+- E2E : le jeton d'accès vit en mémoire et `/authenticate/refresh` est mocké en 401, donc un `page.goto()` après la connexion perd la session (`restoreSession` au démarrage) et `adminGuard` redirige vers `/machines`. Naviguer via les liens de la toolbar, comme `manage-profile.spec.ts`.
 - Actions de suppression : annulation du dialog ne doit pas envoyer de `DELETE`; confirmation doit utiliser le lien `self` et recharger/naviguer selon la page propriétaire.
 
 ---
@@ -47,7 +51,8 @@
 - `frontend/src/app/features/items/item-list/` : liste paginée enrichie avec bouton de création, lignes cliquables et colonne actions.
 - `frontend/src/app/app.routes.ts` : routes `items/new`, `items/:id`, `items/:id/edit` avant le wildcard; garder `adminGuard` aussi sur le détail, même si `GET /items/{id}` est `permitAll`, car la feature `items` est back-office.
 - `frontend/e2e/manage-items.spec.ts` : parcours admin mocké création → édition image → suppression.
-- `frontend/README.md`, `docs/features-front-a-implementer.md` : documentation à mettre à jour sur la branche de feature; ces fichiers ont des modifications non liées sur `main`, ne pas les écraser.
+- `frontend/src/app/shared/http/cache-buster.ts` (+ `.spec.ts`) : helper `withCacheBuster`, supprimé par la PR #13 (code mort après le passage du profil au chargement en blob). Il est rétabli en Task 1 depuis `0ce5785^`, car ce plan en est le premier consommateur.
+- `frontend/README.md`, `docs/features-front-a-implementer.md` : documentation à mettre à jour sur la branche de feature. La PR #13 y a déjà ajouté l'espace profil : modifier uniquement les lignes concernant les items, ne rien réécrire en bloc.
 
 ### Interfaces partagées consommées depuis le plan 00
 
@@ -58,7 +63,7 @@ export function uploadImageFile<T = unknown>(
   href: string,
   file: File,
 ): Observable<T>;
-export function withCacheBuster(href: string, version: number): string;
+export function withCacheBuster(href: string, version: number): string; // à rétablir en Task 1 (supprimé par la PR #13)
 export function itemUrl(id: string): string;
 export function itemImageUrl(id: string): string;
 export function itemsPageUrl(
@@ -81,7 +86,7 @@ export function itemsPageUrl(
 
 **Interfaces:**
 - Consumes: prérequis du plan `docs/plans/00-frontend-prerequis-partages.md`.
-- Produces: confirmation locale que les tâches suivantes peuvent utiliser `linkHref`, `uploadImageFile`, `withCacheBuster`, `ImageUpload`, `itemUrl`, `itemImageUrl`, `itemsPageUrl`.
+- Produces: confirmation locale que les tâches suivantes peuvent utiliser `linkHref`, `uploadImageFile`, `ImageUpload`, `itemUrl`, `itemImageUrl`, `itemsPageUrl`. `withCacheBuster` n'existe plus : il est rétabli en Task 1.
 
 - [ ] **Step 1: Vérifier que la branche est isolée**
 
@@ -102,7 +107,6 @@ Run:
 ```bash
 grep -R "export function linkHref" -n frontend/src/app/shared/models/hal.ts &&
 grep -R "export function uploadImageFile" -n frontend/src/app/shared/http/upload-image-file.ts &&
-grep -R "export function withCacheBuster" -n frontend/src/app/shared/http/cache-buster.ts &&
 grep -R "selector: 'app-image-upload'" -n frontend/src/app/shared/image-upload/image-upload.ts &&
 grep -R "export function itemUrl" -n frontend/src/app/features/items/item-api.ts &&
 grep -R "export function itemImageUrl" -n frontend/src/app/features/items/item-api.ts &&
@@ -126,6 +130,8 @@ Expected: aucune sortie.
 ### Task 1: Modèles items et helpers HAL
 
 **Files:**
+- Create (restored from `0ce5785^`): `frontend/src/app/shared/http/cache-buster.ts`
+- Create (restored from `0ce5785^`): `frontend/src/app/shared/http/cache-buster.spec.ts`
 - Modify: `frontend/src/app/features/items/models/item.ts`
 - Modify: `frontend/src/app/features/items/item-api.ts`
 - Test: `frontend/src/app/features/items/item-api.spec.ts`
@@ -136,6 +142,7 @@ Expected: aucune sortie.
   - `pagedUrl(href: string | undefined, params: Record<string, string | number | undefined>): string | undefined`
   - `environment.apiBaseUrl: string`
 - Produces:
+  - `export function withCacheBuster(href: string, version: number): string` (rétabli à l'identique)
   - `export interface ItemToCreate { name: string; type: ItemType; price: number }`
   - `export interface ItemToUpdate { price: number }`
   - `export function itemsPageUrl(itemsHref: string | undefined, pageIndex: number, pageSize: number): string | undefined`
@@ -144,6 +151,18 @@ Expected: aucune sortie.
   - `export function createItemHref(page: HalPage<Item>): string | undefined`
   - `export function itemSelfHref(item: Item | null | undefined): string | undefined`
   - `export function itemImageHref(item: Item | null | undefined): string | undefined`
+
+- [ ] **Step 0: Restore `withCacheBuster`**
+
+La PR #13 a supprimé ce helper (devenu inutilisé). Les images d'item sont servies en `public, max-age=3600` : sans `?v=`, l'image éditée reste périmée jusqu'à 1 h. Rétablir le helper et sa spec tels quels :
+
+```bash
+git show 0ce5785^:frontend/src/app/shared/http/cache-buster.ts > frontend/src/app/shared/http/cache-buster.ts
+git show 0ce5785^:frontend/src/app/shared/http/cache-buster.spec.ts > frontend/src/app/shared/http/cache-buster.spec.ts
+cd frontend && npm test -- --include src/app/shared/http/cache-buster.spec.ts
+```
+
+Expected: PASS (4 tests). Ces deux fichiers sont ajoutés au commit de la Task 1.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -278,19 +297,21 @@ export function itemsPageUrl(
 }
 
 /**
- * Fallback for direct navigation to `/items/:id`, where no HATEOAS `self` link
- * can be carried in router state from the listing.
+ * Fallback used only when no HATEOAS `self` link is available (e.g. direct
+ * navigation/page refresh on an item page). Prefer following the resource's own
+ * `_links.self.href` when it is known.
  */
 export function itemUrl(id: string): string {
   return `${environment.apiBaseUrl}/items/${id}`;
 }
 
 /**
- * Fallback for a freshly created item response that unexpectedly lacks the
- * `item:image` link.
+ * Public (`permitAll`) item image URL. Prefer the `item:image` link of an `Item`
+ * when it is loaded; this fallback serves places that only know the item id
+ * (e.g. the stock of a vending machine, which exposes no `item:image` rel).
  */
 export function itemImageUrl(id: string): string {
-  return `${environment.apiBaseUrl}/items/${id}/image`;
+  return `${itemUrl(id)}/image`;
 }
 
 /**
@@ -322,7 +343,7 @@ Run:
 
 ```bash
 build-brief ./gradlew clean build
-git add frontend/src/app/features/items/models/item.ts frontend/src/app/features/items/item-api.ts frontend/src/app/features/items/item-api.spec.ts
+git add frontend/src/app/shared/http/cache-buster.ts frontend/src/app/shared/http/cache-buster.spec.ts frontend/src/app/features/items/models/item.ts frontend/src/app/features/items/item-api.ts frontend/src/app/features/items/item-api.spec.ts
 git commit -m "feat(frontend): add item HAL helpers
 
 Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
@@ -1490,7 +1511,8 @@ describe('ItemEdit', () => {
 
   it('shows field-specific validation messages returned by the update API', async () => {
     const component = await navigate();
-    component.itemForm.price().value.set(-1);
+    // Client-side valid (>= 0.01): an invalid value would make `submit()` skip the request entirely.
+    component.itemForm.price().value.set(0.5);
 
     component.submit();
 
@@ -1572,9 +1594,10 @@ export class ItemEdit {
   private readonly router = inject(Router);
   private readonly http = inject(HttpClient);
 
-  private readonly itemId = this.route.snapshot.paramMap.get('id')!;
+  protected readonly itemId = this.route.snapshot.paramMap.get('id')!;
   private readonly resourceUrl =
     (history.state as EditNavigationState | null)?.href ?? itemUrl(this.itemId);
+  protected readonly resourceHref = this.resourceUrl;
   private readonly resource = httpResource<Item>(() => this.resourceUrl);
 
   readonly item = computed(() => this.resource.value());
@@ -1668,7 +1691,7 @@ Replace `frontend/src/app/features/items/item-edit/item-edit.html` with:
 ```html
 <div class="mb-4 flex items-center justify-between">
   <h1 class="text-xl font-semibold">Edit item</h1>
-  <a mat-button [routerLink]="['/items', item()?.id]">Back to item</a>
+  <a mat-button [routerLink]="['/items', itemId]" [state]="{ href: resourceHref }">Back to item</a>
 </div>
 
 @if (isLoading()) {
@@ -2170,7 +2193,7 @@ Replace `frontend/src/app/features/items/item-list/item-list.html` with:
 }
 ```
 
-Replace the `items` route block in `frontend/src/app/app.routes.ts` with these blocks, keeping `items/new` before `items/:id`:
+Replace the `items` route block in `frontend/src/app/app.routes.ts` with these blocks, keeping `items/new` before `items/:id`. Insert only: the `profile` route (`userGuard`) added by PR #13 must stay in the file.
 
 ```ts
   {
@@ -2206,6 +2229,7 @@ Full `frontend/src/app/app.routes.ts` after the edit:
 ```ts
 import { Routes } from '@angular/router';
 import { adminGuard } from './core/auth/admin-guard';
+import { userGuard } from './core/auth/user-guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'machines' },
@@ -2253,6 +2277,12 @@ export const routes: Routes = [
     loadComponent: () => import('./features/items/item-edit/item-edit').then((m) => m.ItemEdit),
     canActivate: [adminGuard],
     title: 'Edit item',
+  },
+  {
+    path: 'profile',
+    loadComponent: () => import('./features/profile/profile/profile').then((m) => m.Profile),
+    canActivate: [userGuard],
+    title: 'My profile',
   },
   {
     path: 'login',
@@ -2305,7 +2335,8 @@ Expected: Gradle aggregate build passes before the commit.
 - Consumes:
   - UI routes `/login`, `/items`, `/items/new`, `/items/:id`, `/items/:id/edit`
   - root `/api/v1` mock with `items` link
-  - admin JWT payload `roles: ['ROLE_ADMIN']`; `AuthService` skips `/me` for admins, so no `/api/v1/me` mock is required for this flow.
+  - admin JWT payload `roles: ['ROLE_ADMIN']`; `AuthService` skips `/me` for admins (login comme `restoreSession`), so no `/api/v1/me` mock is required for this flow.
+  - toolbar link `Items` (visible pour un admin) pour atteindre `/items` sans rechargement de page.
 - Produces:
   - Playwright regression covering create → detail → edit with image → delete.
 
@@ -2470,7 +2501,10 @@ test('an admin can create, edit image, and delete an item', async ({ page }) => 
   });
 
   await signInAsAdmin(page);
-  await page.goto('/items');
+  // In-app navigation, not `page.goto`: a full reload would lose the in-memory token
+  // (refresh is mocked as 401) and `adminGuard` would redirect to /machines.
+  await page.getByRole('link', { name: 'Items' }).click();
+  await expect(page).toHaveURL(/\/items$/);
 
   await page.getByRole('link', { name: /New item/ }).click();
   await expect(page).toHaveURL(/\/items\/new$/);
@@ -2499,7 +2533,7 @@ test('an admin can create, edit image, and delete an item', async ({ page }) => 
   await page.getByRole('button', { name: 'Save item' }).click();
 
   await expect(page).toHaveURL(new RegExp(`/items/${itemId}$`));
-  await expect(page.getByText('2')).toBeVisible();
+  await expect(page.getByText('2', { exact: true })).toBeVisible();
   expect(uploadCount).toBe(1);
 
   await page.getByRole('button', { name: 'Delete' }).click();
@@ -2576,30 +2610,28 @@ In the same file, remove this line from `**Reste à faire**`:
   existe) et gestion des images d'article
 ```
 
-In `docs/features-front-a-implementer.md`, replace the `Déjà fait` items section with:
+In `docs/features-front-a-implementer.md` (la PR #13 y a déjà ajouté l'espace profil : ne toucher qu'aux lignes items), replace this `Déjà fait` bullet:
 
 ```md
-## ✅ Déjà fait
+- **Liste des items** (`ROLE_ADMIN`, `GET /items`) — lecture seule, paginée
+  (`items`), sans création/édition/suppression ni image
+```
 
-- Login, inscription (sans auto-login — l'utilisateur doit se connecter
-  ensuite), liste des machines (lecture seule, paginée)
-- **Détail d'une machine** (`GET /vending-machines/{id}`) — infos machine,
-  **stock consulté et commande d'un item** (`POST
-  /vending-machines/{id}/order/{itemId}`) pour un utilisateur `ROLE_USER`
-- **Création d'une machine** (`ROLE_ADMIN`, `POST /vending-machines`) —
-  formulaire Signal Forms dédié (`machines/new`)
+with:
+
+```md
 - **Gestion des items** (`ROLE_ADMIN`, `/items`) — liste paginée, détail,
   création, édition du prix, suppression et upload d'image
 ```
 
-In the same file, remove the old backlog line:
+In the same file, remove this backlog entry:
 
 ```md
-5. **Gestion des items** : création/édition/suppression + upload d'image
+2. **Gestion des items** : création/édition/suppression + upload d'image
    (`/items`) — seule la liste en lecture seule existe
 ```
 
-Renumber the remaining back-office entries so the list stays sequential.
+Renumber the remaining back-office entries (`3.`→`2.` … `6.`→`5.`) and update the `Priorité suggérée` line `Back-office admin (points 2-6, le plus gros lot)` to `points 2-5`. The public entry `1. Détail/visuel d'un item` keeps its number.
 
 - [ ] **Step 3: Run documentation-adjacent validation**
 
@@ -2688,4 +2720,4 @@ Expected: merge fast-forward uniquement, sans commit de merge.
 - **Placeholder scan:** aucun marqueur de contenu à compléter, aucune étape "faire pareil", aucun code volontairement omis; les snippets `.ts`, `.html`, unitaires et E2E sont écrits dans les tâches propriétaires.
 - **Type consistency:** `ItemToCreate`, `ItemToUpdate`, `Item`, `ItemDeleteDialogData`, `createItemHref`, `itemSelfHref`, `itemImageHref`, `itemUrl`, `itemImageUrl`, `withCacheBuster`, `onFileSelected` et `submit` gardent les mêmes signatures entre tâches.
 - **Review Focus:** les cinq risques listés sont chacun verrouillés : fallback `/items/new` dans Task 2, échec partiel création/upload dans Task 2, fallback HAL-FORMS dans Task 1 et Task 5, image absente/fallback dans Task 3, annulation/confirmation suppression dans Task 3 et Task 5.
-- **Écarts spec résolus:** `uploadItemImage(http,id,file)` est remplacé par `uploadImageFile(http, href, file)` du plan 00 pour éviter la duplication avec le profil; le cache-busting image utilise `withCacheBuster(href, version)` et non `pagedUrl`, afin de préserver les origines absolues HAL; `ItemCreate` ne recrée pas `itemsUrl()` et utilise `history.state.createHref` puis `ApiRootApi.link('items')`; l'erreur serveur d'upload image reste un message générique car `IllegalArgumentException` n'est pas gérée par le backend et aucun changement backend n'est autorisé.
+- **Écarts spec résolus:** `uploadItemImage(http,id,file)` est remplacé par `uploadImageFile(http, href, file)` du plan 00 pour éviter la duplication avec le profil; le cache-busting image utilise `withCacheBuster(href, version)` et non `pagedUrl`, afin de préserver les origines absolues HAL (helper supprimé par la PR #13 puis rétabli en Task 1, les images d'item étant servies en `public, max-age=3600`); `ItemCreate` ne recrée pas `itemsUrl()` et utilise `history.state.createHref` puis `ApiRootApi.link('items')`; l'erreur serveur d'upload image reste un message générique car `IllegalArgumentException` n'est pas gérée par le backend et aucun changement backend n'est autorisé.
